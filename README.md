@@ -44,7 +44,7 @@ DOWEL=/path/to/dowel make verify
 04-diagnostics
   ok   the manifest still passes check after applying the suggestion
 
-total 156 checks: 156 passed, 0 failed, 0 known, 0 fixed
+total 163 checks: 163 passed, 0 failed, 0 known, 0 fixed
 ```
 
 検査名は英語で書く。実装の中身ではなく、何が固定されているかを1行で読ませる
@@ -59,6 +59,10 @@ total 156 checks: 156 passed, 0 failed, 0 known, 0 fixed
 | [03-features](projects/03-features/) | 機能フラグによる依存の辺の出現と消失。任意の依存 |
 | [04-diagnostics](projects/04-diagnostics/) | 誤ったマニフェストに対する応答。診断コードと位置と修正提案 |
 | [05-incremental](projects/05-incremental/) | 編集してからの再ビルド。depfile、波及の範囲、テストの再実行 |
+
+プロジェクトのほかに `docs` の段がある。文書が引用する検査名が実在するか、
+リンクが解決するか、索引が中身と一致するかを機械的に見る。文書の不整合は
+スイートの実行に影響しないため、検査しない限り検出されない。
 
 設計と規約は [docs/00-design.md](docs/00-design.md) にある。
 
