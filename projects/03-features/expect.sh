@@ -31,15 +31,11 @@ out_lacks "libjson.a" "when the edge goes, the archive is not built either" \
 
 # --------------------------------------------------- 選ばれなかった任意の依存
 #
-# アクショングラフからは正しく消えるが、パッケージとしては読み込まれる。
-# 依存グラフには孤立した節点として残り、実体が無ければ読み込みが失敗する。
-# path 依存では実害が小さいが、取得を伴う依存（Phase 5）では
-# 「選ばれていない依存を取ってくる」ことになる。
+# 選ばれなかった依存は読み込まない。依存グラフにも現れない。孤立した節点が
+# 残ると、graph を見た利用者に「この構成に含まれる」と読ませる。取得を伴う
+# 依存（Phase 5）では「選ばれていない依存を取ってくる」ことになる。
 
-known_issue F-003
 out_lacks "xml:xml" "a dependency behind a disabled feature is absent from the graph" graph
-
-known_issue F-003
 ok "a disabled optional dependency need not exist on disk" -C ../missing-optional check
 
 # --------------------------------------------------- 宣言されていない機能
@@ -49,12 +45,12 @@ ok "a disabled optional dependency need not exist on disk" -C ../missing-optiona
 # 綴り間違いが黙って偽になると、最適化経路や後方互換の分岐が無言で
 # 消える。cfg.nosuchkey は unknown-cfg-key で落ちるため、非対称である。
 
-known_issue F-001
 fails "an undeclared feature passed to --features is rejected" check --features=nosuchfeature
-
-known_issue F-002
 fails "an undeclared feature referenced from dowel.build is rejected" \
     -C ../undeclared check
+
+# 綴り間違いに候補が出る。候補が出なければ、利用者は宣言を探しに行くことになる。
+out_has "did you mean" "an undeclared feature gets a suggestion" -C ../undeclared check
 
 # --------------------------------------------------- 任意の依存の実体
 

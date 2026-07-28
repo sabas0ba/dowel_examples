@@ -1,30 +1,33 @@
 # 所見
 
-本スイートが外側から見つけたもの。dowel `0.0.1`（`a8a59e7`）に対する観測である。
+本スイートが外側から見つけたもの。
+
+**9 件すべてが本体で修正済みである**（`07f16ec`）。記録は残す。何を見て
+どう報告したかが、次に同種のものを見つけるときの型になるためである。
+対応する検査は `known_issue` を外し、通常の検査として残してある。直った
+ものを消すと、退行したときに気づけない。
 
 各項目は次の形で記録する。
 
-- **観測** — 何をしたら何が起きたか
+- **観測** — 何をしたら何が起きたか（`a8a59e7` 時点）
 - **期待** — 何を期待したか。および、その期待の根拠（本体の文書）
 - **なぜ内側から見つからないか** — 本体の既存の層では原理的に現れない理由
-- **検査** — 本スイートのどの検査が対応するか（`known_issue` で登録してある）
-
-`xfail` として登録してあるため、本体が直ると `XPASS` になってスイートが落ちる。
-そのとき本文書の状態を更新し、`known_issue` の宣言を外す。
+- **修正** — どう直ったか（`07f16ec` 時点）
+- **検査** — 本スイートのどの検査が対応するか
 
 ## 一覧
 
-| # | 内容 | 種別 | 報告先 |
-|---|---|---|---|
-| [F-001](#f-001) | 宣言されていない機能名を `--features` に渡しても診断が出ない | 実装 | [#14](https://github.com/sabas0ba/dowel/issues/14) |
-| [F-002](#f-002) | `dowel.build` の `feature.<未宣言>` が黙って偽になる | 実装 | [#13](https://github.com/sabas0ba/dowel/issues/13) |
-| [F-003](#f-003) | 有効化されていない `optional` 依存が読み込まれる | 実装 | [#15](https://github.com/sabas0ba/dowel/issues/15) |
-| [F-004](#f-004) | `check` が計画段の誤りを見つけない | 実装／文書 | [#19](https://github.com/sabas0ba/dowel/issues/19) |
-| [F-005](#f-005) | `missing-manifest` に位置情報が無い | 実装 | [#18](https://github.com/sabas0ba/dowel/issues/18) |
-| [F-006](#f-006) | 修正提案の範囲が誤っており、適用するとマニフェストが壊れる | 実装 | [#12](https://github.com/sabas0ba/dowel/issues/12) |
-| [F-007](#f-007) | 併合衝突の人間向け描画が片側の位置しか出さない | 実装 | [#16](https://github.com/sabas0ba/dowel/issues/16) |
-| [F-008](#f-008) | C++ のソースが黙って受理され、リンカの誤りになる | 実装／文書 | [#19](https://github.com/sabas0ba/dowel/issues/19) |
-| [F-009](#f-009) | 宣言したツールチェーンの実在を確認しない | 実装 | [#19](https://github.com/sabas0ba/dowel/issues/19) |
+| # | 内容 | 種別 | 報告先 | 状態 |
+|---|---|---|---|---|
+| [F-001](#f-001) | 宣言されていない機能名を `--features` に渡しても診断が出ない | 実装 | [#14](https://github.com/sabas0ba/dowel/issues/14) | 修正済み |
+| [F-002](#f-002) | `dowel.build` の `feature.<未宣言>` が黙って偽になる | 実装 | [#13](https://github.com/sabas0ba/dowel/issues/13) | 修正済み |
+| [F-003](#f-003) | 有効化されていない `optional` 依存が読み込まれる | 実装 | [#15](https://github.com/sabas0ba/dowel/issues/15) | 修正済み |
+| [F-004](#f-004) | `check` が計画段の誤りを見つけない | 実装／文書 | [#19](https://github.com/sabas0ba/dowel/issues/19) | 修正済み |
+| [F-005](#f-005) | `missing-manifest` に位置情報が無い | 実装 | [#18](https://github.com/sabas0ba/dowel/issues/18) | 修正済み |
+| [F-006](#f-006) | 修正提案の範囲が誤っており、適用するとマニフェストが壊れる | 実装 | [#12](https://github.com/sabas0ba/dowel/issues/12) | 修正済み |
+| [F-007](#f-007) | 併合衝突の人間向け描画が片側の位置しか出さない | 実装 | [#16](https://github.com/sabas0ba/dowel/issues/16) | 修正済み |
+| [F-008](#f-008) | C++ のソースが黙って受理され、リンカの誤りになる | 実装／文書 | [#19](https://github.com/sabas0ba/dowel/issues/19) | 修正済み |
+| [F-009](#f-009) | 宣言したツールチェーンの実在を確認しない | 実装 | [#19](https://github.com/sabas0ba/dowel/issues/19) | 修正済み |
 
 ---
 
@@ -80,6 +83,16 @@ includes
 提案の**存在**は検査できる。しかし提案を実際に適用して再検査する経路は無い。
 範囲の誤りは、適用して初めて現れる。
 
+### 修正
+
+提案の範囲が誤った鍵だけを覆うようになった（`141..148` の 7 バイト）。
+
+```json
+{"byte_start":141,"byte_end":148,"replacement":"includes","message":"did you mean `includes`?"}
+```
+
+適用結果は `includes = [dir("src")]` となり、もう一度 `check` を通る。
+
 ### 検査
 
 `projects/04-diagnostics` の`the manifest still passes check after applying the suggestion`。
@@ -130,6 +143,20 @@ flags = ["-DALWAYS=1", "-DTYPO=1" when feature.raal]
 宣言されていない名前は入力として想定されないため、検査の対象にならない。
 外から見ると、これは利用者が最も踏みやすい入力である。
 
+### 修正
+
+`unknown-feature` として落ちるようになった。候補も出る。
+
+```
+error[unknown-feature]: unknown feature `raal`
+ --> dowel.build:8:40
+  |
+8 | flags = ["-DALWAYS=1", "-DTYPO=1" when feature.raal]
+  |                                        ^^^^^^^^^^^^ this feature is not declared in `dowel.toml`
+   = note: `[features]` declares: real
+   = help: did you mean `real`? — `feature.real`
+```
+
 ### 検査
 
 `projects/03-features` の
@@ -161,6 +188,20 @@ dowel check --features=nosuchfeature      # check passed
 根拠: F-002 と同じ。加えて `docs/91-implementation-status.md` は
 編集距離による候補提示の対象に「CLI のオプションとコマンド」を挙げており、
 CLI 引数の検証は行われる建て付けになっている。
+
+### 修正
+
+同じく `unknown-feature` で落ちる。名前がどこから来たかも注記に出る。
+
+```
+error[unknown-feature]: unknown feature `nosuchfeature`
+ --> dowel.toml:7:1
+   = note: `[features]` declares: json, xml
+   = note: `nosuchfeature` came from `--features`
+```
+
+CLI から来た名前をマニフェストの `[features]` の位置で示すのは、
+直す先がそちらであるため妥当である。
 
 ### 検査
 
@@ -219,6 +260,24 @@ undefined reference to `std::__cxx11::basic_string<...>::c_str() const'
 本体のフィクスチャと e2e は全て C で書かれている。C++ のソースは
 入力として一度も現れない。
 
+### 修正
+
+`unsupported-language` として、`check` の段で落ちるようになった。
+`build` を待たずに出る点は期待より進んでいる。
+
+```
+error[unsupported-language]: `src/main.cpp` is a C++ source
+ --> dowel.build:4:11
+  |
+4 | sources = glob("src/*.cpp")
+  |           ^^^^^^^^^^^^^^^^^ C++ cannot be built yet
+   = note: the C driver would compile it but link without the C++ runtime
+   = note: C++ support is not implemented (docs/91-implementation-status.md)
+```
+
+注記が「C の driver なら通るが C++ 実行時が付かない」という失敗の形まで
+説明している。同じ罠を別の経路で踏んだ利用者にも効く。
+
 ### 検査
 
 `projects/04-diagnostics` の
@@ -262,6 +321,22 @@ ninja: build stopped: subcommand failed.
 なお `plan.rs` には `toolchain-mismatch` の警告が既にあるが、これは
 パッケージ間でツールチェーン指定が食い違う場合のものであり、
 実在の確認とは別の検査である。
+
+### 修正
+
+`missing-toolchain` として、`check` の段で `[toolchain] c` の位置を指して落ちる。
+
+```
+error[missing-toolchain]: cannot find the C compiler `no-such-compiler-19`
+  --> dowel.toml:10:1
+   |
+10 | c = "no-such-compiler-19"
+   | ^^^^^^^^^^^^^^^^^^^^^^^^^ declared here
+    = note: fetching toolchains is Phase 5 (docs/90-roadmap.md); until then it must be on PATH
+```
+
+注記が Phase 5 との関係を示しており、「いま取得されないのは未実装だからである」
+ことが読み取れる。
 
 ### 検査
 
@@ -319,6 +394,23 @@ rustc の描画は複数ファイルにまたがるラベルを出せる（`::: 
 単体テストは `Diagnostic` の構造を検査する。ラベルは2つあるので通る。
 描画層の検査は、複数ファイルにまたがる診断を入力にしなければ現れない。
 
+### 修正
+
+rustc の `:::` の形で、別ファイルにある副ラベルも描かれるようになった。
+
+```
+error[merge-conflict]: conflicting values reached `SHARED_LIMIT` of `defines`
+ --> .../merge-conflict/lib/dowel.build:6:29
+  |
+6 | defines  = { SHARED_LIMIT = 64 }
+  |                             ^^ this one is 64
+ ::: .../merge-conflict/app/dowel.build:8:28
+  |
+8 | defines = { SHARED_LIMIT = 128 }
+  |                            --- the value that arrived first is 128
+   = note: the merge rule of `defines` is error_on_conflict
+```
+
 ### 検査
 
 `projects/04-diagnostics` の
@@ -369,6 +461,20 @@ rustc の描画は複数ファイルにまたがるラベルを出せる（`::: 
 「どのコマンドで」発生させるかまでは固定していないと見られる。
 `invalid-source` は `build` で発生することが確認されていれば網羅を満たす。
 「`check` でも出るべきか」は、コードの一覧からは出てこない問いである。
+
+### 修正
+
+3件とも `check` で出るようになった。`build` でも同じコードが出る。
+
+| 入力 | `check` | `build` |
+|---|---|---|
+| `sources = [dir("src")]` | `invalid-source` (1) | 同じ (1) |
+| `sources = [file("src/nope.c")]` | `unresolved-path` (1) | 同じ (1) |
+| `sources = glob("nosuchdir/*.c")` | `empty-glob` + `no-sources` (1) | 同じ (1) |
+
+評価から glob 展開を外すという設計（記録されない入力を混ぜない）は保ったまま、
+`check` が計画段まで進む形になったと見られる。両方の入口で同じコードが出ることは
+検査で固定してある。
 
 ### 検査
 
@@ -438,6 +544,24 @@ json:json [lib]
 合成プロジェクトの任意の依存は必ず実体を持ち、必ずどこかの構成で有効になる。
 「実体が無くてもよいはずの依存」は、外から書いて初めて現れる入力である。
 
+### 修正
+
+選ばれなかった任意の依存は読み込まれなくなった。実体が無くても `check` が通る。
+
+```console
+$ dowel check          # feature.absent は偽、../does-not-exist は存在しない
+check passed: 1 packages, 1 targets
+```
+
+依存グラフからも消えた。
+
+```console
+$ dowel graph --no-default-features
+app:app [bin]
+```
+
+Phase 5 で取得を伴う依存が入っても、選ばれていないものを取りに行かない。
+
 ### 検査
 
 `projects/03-features` の
@@ -471,6 +595,19 @@ json:json [lib]
 
 根拠: `README.md` の差別化点「全ての値が型とソース位置と来歴を持つ」。
 
+### 修正
+
+原因となった `[[dependencies]]` の `path` を指すようになった。
+
+```
+error[missing-manifest]: cannot read .../does-not-exist/dowel.toml: No such file or directory
+ --> dowel.toml:8:1
+  |
+8 | path = "../does-not-exist"
+  | ^^^^^^^^^^^^^^^^^^^^^^^^^^ this dependency does not name a package root
+   = note: a package root requires a `dowel.toml`
+```
+
 ### 検査
 
 `projects/04-diagnostics` の`missing-manifest points at the offending source`。
@@ -481,10 +618,9 @@ json:json [lib]
 
 報告しないが、記録しておく。
 
-- **`CLAUDE.md` の現況** — 「設計検討段階。実装は未着手。本リポジトリは
-  設計文書のみを含む」とあるが、実装は進んでおり `docs/91-implementation-status.md`
-  と食い違う。本スイートの検査対象ではないため所見に含めないが、
-  次に本体へ触れる際に併せて直すのがよい
+- **`CLAUDE.md` の現況** — `a8a59e7` の時点で「設計検討段階。実装は未着手。
+  本リポジトリは設計文書のみを含む」とあり、`docs/91-implementation-status.md`
+  と食い違っていた。本スイートの検査対象ではないため所見に含めていない
 - **`compile_commands.json` をパッケージ直下にも書く** — 言語サーバのための
   意図的な配置と読める。`.gitignore` への記載が要る点は利用者側の話であり、
   本体の欠陥ではない

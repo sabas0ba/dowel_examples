@@ -272,9 +272,31 @@ _ran_actions() {
     printf '%s' "$OUT" | sed -n 's/.*ran \([0-9]*\) actions.*/\1/p' | tail -1
 }
 
+# 直前の再ビルドで走ったアクションの記述。件数だけでは
+# 「どれが走ったか」が分からないため、別に取っておく。
+RAN=""
+
 # build_direct <dowel args...> — direct 実行器と debug ログでビルドする。
 build_direct() {
     run build --executor=direct --log-level=debug "$@"
+    RAN=$(printf '%s' "$OUT" | sed -n 's/.*info  exec  *//p')
+}
+
+# rebuilt <記述の一部> <desc> — そのアクションが走ったこと。
+rebuilt() {
+    _last_cmd="ran actions | grep -F -- $1"
+    OUT=$RAN
+    RC=0
+    printf '%s\n' "$RAN" | grep -qF -- "$1"; _verdict $? "$2"
+}
+
+# not_rebuilt <記述の一部> <desc> — そのアクションが走らなかったこと。
+# 波及しないことの検査は、実行しなかったことでしか観測できない。
+not_rebuilt() {
+    _last_cmd="ran actions | grep -vF -- $1"
+    OUT=$RAN
+    RC=0
+    ! printf '%s\n' "$RAN" | grep -qF -- "$1"; _verdict $? "$2"
 }
 
 # runs_actions <n> <desc> <dowel build args...> — direct 実行器で走った
