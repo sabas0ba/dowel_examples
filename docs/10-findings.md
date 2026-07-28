@@ -14,21 +14,23 @@
 
 ## 一覧
 
-| # | 内容 | 種別 | 状態 |
+| # | 内容 | 種別 | 報告先 |
 |---|---|---|---|
-| [F-001](#f-001) | 宣言されていない機能名を `--features` に渡しても診断が出ない | 実装 | 未報告 |
-| [F-002](#f-002) | `dowel.build` の `feature.<未宣言>` が黙って偽になる | 実装 | 未報告 |
-| [F-003](#f-003) | 有効化されていない `optional` 依存が読み込まれる | 実装 | 未報告 |
-| [F-004](#f-004) | `check` が計画段の誤りを見つけない | 実装／文書 | 未報告 |
-| [F-005](#f-005) | `missing-manifest` に位置情報が無い | 実装 | 未報告 |
-| [F-006](#f-006) | 修正提案の範囲が誤っており、適用するとマニフェストが壊れる | 実装 | 未報告 |
-| [F-007](#f-007) | 併合衝突の人間向け描画が片側の位置しか出さない | 実装 | 未報告 |
-| [F-008](#f-008) | C++ のソースが黙って受理され、リンカの誤りになる | 実装／文書 | 未報告 |
-| [F-009](#f-009) | 宣言したツールチェーンの実在を確認しない | 実装 | 未報告 |
+| [F-001](#f-001) | 宣言されていない機能名を `--features` に渡しても診断が出ない | 実装 | [#14](https://github.com/sabas0ba/dowel/issues/14) |
+| [F-002](#f-002) | `dowel.build` の `feature.<未宣言>` が黙って偽になる | 実装 | [#13](https://github.com/sabas0ba/dowel/issues/13) |
+| [F-003](#f-003) | 有効化されていない `optional` 依存が読み込まれる | 実装 | [#15](https://github.com/sabas0ba/dowel/issues/15) |
+| [F-004](#f-004) | `check` が計画段の誤りを見つけない | 実装／文書 | [#19](https://github.com/sabas0ba/dowel/issues/19) |
+| [F-005](#f-005) | `missing-manifest` に位置情報が無い | 実装 | [#18](https://github.com/sabas0ba/dowel/issues/18) |
+| [F-006](#f-006) | 修正提案の範囲が誤っており、適用するとマニフェストが壊れる | 実装 | [#12](https://github.com/sabas0ba/dowel/issues/12) |
+| [F-007](#f-007) | 併合衝突の人間向け描画が片側の位置しか出さない | 実装 | [#16](https://github.com/sabas0ba/dowel/issues/16) |
+| [F-008](#f-008) | C++ のソースが黙って受理され、リンカの誤りになる | 実装／文書 | [#19](https://github.com/sabas0ba/dowel/issues/19) |
+| [F-009](#f-009) | 宣言したツールチェーンの実在を確認しない | 実装 | [#19](https://github.com/sabas0ba/dowel/issues/19) |
 
 ---
 
 ## F-006
+
+報告先: [sabas0ba/dowel#12](https://github.com/sabas0ba/dowel/issues/12)
 
 **修正提案の範囲が key-value 全体を覆っており、適用するとマニフェストが壊れる。**
 
@@ -87,6 +89,8 @@ includes
 
 ## F-002
 
+報告先: [sabas0ba/dowel#13](https://github.com/sabas0ba/dowel/issues/13)
+
 **`dowel.build` から宣言されていない機能を参照しても診断が出ず、黙って偽になる。**
 
 種別: 実装。綴り間違いが無言で分岐を落とす。
@@ -135,6 +139,8 @@ flags = ["-DALWAYS=1", "-DTYPO=1" when feature.raal]
 
 ## F-001
 
+報告先: [sabas0ba/dowel#14](https://github.com/sabas0ba/dowel/issues/14)
+
 **宣言されていない機能名を `--features` に渡しても診断が出ない。**
 
 種別: 実装。F-002 と同じ根、CLI 側の入口。
@@ -164,6 +170,8 @@ CLI 引数の検証は行われる建て付けになっている。
 ---
 
 ## F-008
+
+報告先: [sabas0ba/dowel#19](https://github.com/sabas0ba/dowel/issues/19)
 
 **C++ のソースが黙って受理され、リンカの `undefined reference` になる。**
 
@@ -221,6 +229,8 @@ undefined reference to `std::__cxx11::basic_string<...>::c_str() const'
 
 ## F-009
 
+報告先: [sabas0ba/dowel#19](https://github.com/sabas0ba/dowel/issues/19)
+
 **宣言したツールチェーンの実在を確認しない。**
 
 種別: 実装。F-008 と同じ形。
@@ -262,6 +272,8 @@ ninja: build stopped: subcommand failed.
 ---
 
 ## F-007
+
+報告先: [sabas0ba/dowel#16](https://github.com/sabas0ba/dowel/issues/16)
 
 **併合の衝突で、人間向けの描画に片側の位置しか出ない。**
 
@@ -316,6 +328,8 @@ rustc の描画は複数ファイルにまたがるラベルを出せる（`::: 
 
 ## F-004
 
+報告先: [sabas0ba/dowel#19](https://github.com/sabas0ba/dowel/issues/19)
+
 **`check` が計画段の誤りを見つけない。**
 
 種別: 実装、または文書。どちらを直すかは設計の判断による。
@@ -364,6 +378,8 @@ rustc の描画は複数ファイルにまたがるラベルを出せる（`::: 
 ---
 
 ## F-003
+
+報告先: [sabas0ba/dowel#15](https://github.com/sabas0ba/dowel/issues/15)
 
 **有効化されていない `optional` 依存が読み込まれる。**
 
@@ -431,6 +447,8 @@ json:json [lib]
 ---
 
 ## F-005
+
+報告先: [sabas0ba/dowel#18](https://github.com/sabas0ba/dowel/issues/18)
 
 **`missing-manifest` に位置情報が無い。**
 
