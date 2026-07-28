@@ -1,0 +1,3 @@
+# 存在しないファイル。検出しないと ninja の no known rule になる。
+[bin.t]
+sources = [file("src/nope.c")]

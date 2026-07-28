@@ -1,0 +1,21 @@
+[package]
+name    = "app"
+version = "0.1.0"
+edition = "2026"
+
+# 機能フラグ。default は --no-default-features で外せる。
+[features]
+default = ["json"]
+json    = []
+xml     = []
+
+# 任意の依存。機能フラグで辺が現れたり消えたりする。
+[[dependencies]]
+name     = "json"
+path     = "../json"
+optional = true
+
+[[dependencies]]
+name     = "xml"
+path     = "../xml"
+optional = true

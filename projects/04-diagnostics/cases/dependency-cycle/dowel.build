@@ -1,0 +1,12 @@
+# ターゲット同士の閉路。経路が注記に出ることも期待する。
+[lib.a]
+sources = glob("src/*.c")
+
+[lib.a.private]
+deps = [target("b")]
+
+[lib.b]
+sources = glob("src/*.c")
+
+[lib.b.private]
+deps = [target("a")]

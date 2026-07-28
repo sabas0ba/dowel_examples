@@ -1,0 +1,8 @@
+# 同じ鍵に別の値が2経路から届く。defines の併合規則は
+# error_on_conflict であり、伝播せずに失敗する。
+[bin.app]
+sources = glob("src/*.c")
+
+[bin.app.private]
+deps    = [dep("lib")]
+defines = { SHARED_LIMIT = 128 }

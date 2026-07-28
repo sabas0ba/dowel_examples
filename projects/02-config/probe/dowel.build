@@ -1,0 +1,49 @@
+# 構成の語彙をひととおり使う。
+#
+# `match` の結果は Cfg<T> であり、具体化はアクション生成まで遅れる
+# （docs/10-manifest.md 3節）。ここで確かめるのは、遅らせた結果が
+# 最終的にコンパイラの引数として正しく現れることである。
+
+[lib.probe]
+sources = glob("src/**.c")
+
+[lib.probe.public]
+includes = [dir("include")]
+
+# 有限の値域を持つ鍵に対する網羅的な分岐。`_` を書かずに全アームを並べる。
+# 依存元へ伝播する値が構成で変わることも、ここで併せて確かめる。
+defines = match cfg.opt {
+    debug   => { PROBE_OPT = 0, PROBE_API = 1 },
+    release => { PROBE_OPT = 1, PROBE_API = 1 },
+}
+
+[lib.probe.private]
+includes = [dir("src")]
+
+# 値域が有限な鍵は列挙を要求される。ホストの値がそのまま定数になる。
+defines = match host.os {
+    linux   => { PROBE_OS = 1 },
+    macos   => { PROBE_OS = 2 },
+    windows => { PROBE_OS = 3 },
+}
+
+flags = [
+    "-Wall",
+    "-Wextra",
+    "-Werror",
+    # 後置 `when`。機能フラグが立っているときだけ要素が残る。
+    "-DPROBE_TRACE=1" when feature.trace,
+    "-DPROBE_QUIET=1" when feature.quiet,
+]
+
+# 値域が開いた鍵は `_` を要求される。ここでは既定の分岐しか使わない。
+link_flags = match cfg.target {
+    "x86_64-unknown-linux-gnu" => [],
+    _                          => [],
+}
+
+[test.probe_test]
+sources = glob("tests/*.c")
+
+[test.probe_test.private]
+deps = [target("probe")]

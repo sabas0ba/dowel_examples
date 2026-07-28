@@ -1,0 +1,6 @@
+# プロパティは型を持つ。文字列の列に整数は入らない。
+[bin.t]
+sources = glob("src/*.c")
+
+[bin.t.private]
+flags = 42

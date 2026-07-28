@@ -1,0 +1,10 @@
+[package]
+name    = "missing_toolchain"
+version = "0.1.0"
+edition = "2026"
+
+# 実在しないツールチェーン。再現性のためにツールチェーンを固定する以上、
+# 固定した対象が存在するかどうかは確かめられるべきである
+# （docs/10-findings.md F-009）。
+[toolchain]
+c = "no-such-compiler-19"

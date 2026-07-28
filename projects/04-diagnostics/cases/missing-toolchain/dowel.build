@@ -1,0 +1,2 @@
+[bin.t]
+sources = glob("src/*.c")

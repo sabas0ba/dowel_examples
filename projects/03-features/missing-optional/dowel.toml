@@ -1,0 +1,15 @@
+[package]
+name    = "missing-optional"
+version = "0.1.0"
+edition = "2026"
+
+[features]
+default = []
+absent  = []
+
+# 実体が存在しないパスを指す任意の依存。`absent` を有効にしなければ
+# 参照されないため、読み込む必要が無い（docs/10-findings.md F-003）。
+[[dependencies]]
+name     = "absent"
+path     = "../does-not-exist"
+optional = true

@@ -1,0 +1,22 @@
+# 依存の側から見た構成。probe の公開定義は構成で変わり、
+# その変化が app のコンパイルまで届く。
+
+[bin.app]
+sources = glob("src/*.c")
+
+[bin.app.private]
+deps = [dep("probe")]
+
+defines = match cfg.opt {
+    debug   => { APP_OPT = 0 },
+    release => { APP_OPT = 1 },
+}
+
+# 値域が有限な鍵を2つ使う。それぞれ独立に網羅性を要求される。
+flags = match host.arch {
+    x86_64  => ["-DAPP_ARCH=1"],
+    aarch64 => ["-DAPP_ARCH=2"],
+    riscv64 => ["-DAPP_ARCH=3"],
+}
+
+link_flags = ["-DUNUSED_LINK_FLAG=0" when feature.quiet]

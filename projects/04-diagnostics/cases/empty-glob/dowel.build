@@ -1,0 +1,3 @@
+# 一致が0件の glob。誤りとまでは言えないが黙って進むべきでもない。
+[bin.t]
+sources = glob("nosuchdir/*.c")

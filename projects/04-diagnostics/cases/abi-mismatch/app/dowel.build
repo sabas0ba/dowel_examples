@@ -1,0 +1,8 @@
+# ABI ラベルの併合規則は must_equal である。食い違いは
+# 伝播ではなく失敗として扱う（docs/00-overview.md 2節）。
+[bin.app]
+sources = glob("src/*.c")
+
+[bin.app.private]
+deps = [dep("lib")]
+abi  = "x86_64-linux-gnu"

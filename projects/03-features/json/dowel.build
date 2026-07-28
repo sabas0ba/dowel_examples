@@ -1,0 +1,6 @@
+[lib.json]
+sources = glob("src/*.c")
+
+[lib.json.public]
+includes = [dir("include")]
+defines  = { JSON_AVAILABLE = 1 }
