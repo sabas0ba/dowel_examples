@@ -1,0 +1,482 @@
+#!/usr/bin/env python3
+"""検査結果の集計と掲示。
+
+`run.sh` が `.work/` に残した TSV から、次の3つを作る。
+
+    summary.md    人間向け。GitHub Actions のジョブ要約へそのまま流せる形
+    results.json  機械可読。1回の実行を1オブジェクトで表す
+    index.html    掲示用。過去の実行を積んだ履歴から作る
+
+サブコマンドは2つ。
+
+    report.py run  --work .work --out <dir>
+        1回の実行をまとめる。summary.md と results.json を書く
+
+    report.py site --history <history.json> --out <dir>
+        履歴から index.html を作る。掲示用の枝で使う
+
+履歴の追記は `run --append <history.json>` で行う。同じ実行（run_id）が
+二度来た場合は後のもので置き換える。再実行しても行が増えない。
+"""
+
+import argparse
+import html
+import json
+import os
+import sys
+
+# 状態の表示順。この順序が表の列の順序になる。
+STATES = ["pass", "fail", "xfail", "xpass"]
+
+LABEL = {
+    "pass": "成功",
+    "fail": "失敗",
+    "xfail": "既知の未修正",
+    "xpass": "修正済み",
+}
+
+# 履歴に積む件数の上限。掲示する表が際限なく伸びると読めなくなる。
+HISTORY_LIMIT = 100
+
+
+# ------------------------------------------------------------------ 読み取り
+
+
+def read_tsv(path, fields):
+    rows = []
+    if not os.path.exists(path):
+        return rows
+    with open(path, encoding="utf-8") as f:
+        for line in f:
+            line = line.rstrip("\n")
+            if not line:
+                continue
+            parts = line.split("\t")
+            if len(parts) != len(fields):
+                continue
+            rows.append(dict(zip(fields, parts)))
+    return rows
+
+
+def read_meta(path):
+    meta = {}
+    for row in read_tsv(path, ["key", "value"]):
+        meta[row["key"]] = row["value"]
+    return meta
+
+
+def collect(work):
+    """`.work/` の中身を1回の実行として組み立てる。"""
+    meta = read_meta(os.path.join(work, "meta.tsv"))
+    checks = read_tsv(os.path.join(work, "results.tsv"), ["status", "project", "desc"])
+    raw = read_tsv(
+        os.path.join(work, "projects.tsv"),
+        ["name", "duration_ms", "pass", "fail", "xfail", "xpass"],
+    )
+
+    projects = []
+    for r in raw:
+        counts = {s: int(r[s]) for s in STATES}
+        projects.append(
+            {
+                "name": r["name"],
+                "duration_ms": int(r["duration_ms"]),
+                "counts": counts,
+                "total": sum(counts.values()),
+                # 失敗と XPASS のどちらも「直すべきもの」である。
+                "ok": counts["fail"] == 0 and counts["xpass"] == 0,
+            }
+        )
+
+    totals = {s: sum(p["counts"][s] for p in projects) for s in STATES}
+
+    return {
+        "run_id": os.environ.get("GITHUB_RUN_ID", ""),
+        "run_attempt": os.environ.get("GITHUB_RUN_ATTEMPT", ""),
+        "run_url": run_url(),
+        "commit": meta.get("commit", ""),
+        "branch": meta.get("branch", ""),
+        "started_at": meta.get("started_at", ""),
+        "dowel_version": meta.get("dowel_version", ""),
+        "dowel_ref": os.environ.get("DOWEL_REF", ""),
+        "dowel_commit": os.environ.get("DOWEL_COMMIT", ""),
+        "cc": meta.get("cc", ""),
+        "ninja": meta.get("ninja", ""),
+        "projects": projects,
+        "totals": totals,
+        "total": sum(totals.values()),
+        # 1件も走っていない実行を成功と呼ばない。検査が0件になるのは
+        # 走らせる前に落ちた場合であり、それは成功ではない。
+        "ok": bool(projects) and totals["fail"] == 0 and totals["xpass"] == 0,
+        "attention": [c for c in checks if c["status"] in ("fail", "xpass")],
+        "known_issues": [c for c in checks if c["status"] == "xfail"],
+    }
+
+
+def run_url():
+    server = os.environ.get("GITHUB_SERVER_URL", "")
+    repo = os.environ.get("GITHUB_REPOSITORY", "")
+    run_id = os.environ.get("GITHUB_RUN_ID", "")
+    if server and repo and run_id:
+        return f"{server}/{repo}/actions/runs/{run_id}"
+    return ""
+
+
+# -------------------------------------------------------------- 1回分の要約
+
+
+def verdict(ok):
+    return "PASSED" if ok else "FAILED"
+
+
+def render_summary(run):
+    t = run["totals"]
+    out = []
+    out.append("# dowel_examples")
+    out.append("")
+    out.append(
+        "**{}** — {} 件: 成功 {} / 失敗 {} / 既知の未修正 {} / 修正済み {}".format(
+            verdict(run["ok"]), run["total"], t["pass"], t["fail"], t["xfail"], t["xpass"]
+        )
+    )
+    out.append("")
+
+    if not run["projects"]:
+        out.append(
+            "検査が1件も走っていない。走らせる前に落ちたことを表す。ジョブのログを参照。"
+        )
+        out.append("")
+        return "\n".join(out) + "\n"
+
+    out.append("| プロジェクト | 状態 | 検査 | " + " | ".join(LABEL[s] for s in STATES) + " | 所要 |")
+    out.append("|---|---|--:|--:|--:|--:|--:|--:|")
+    for p in run["projects"]:
+        out.append(
+            "| {} | {} | {} | {} | {} | {} | {} | {:.1f}s |".format(
+                p["name"],
+                "ok" if p["ok"] else "**FAILED**",
+                p["total"],
+                *[p["counts"][s] for s in STATES],
+                p["duration_ms"] / 1000,
+            )
+        )
+    out.append("")
+
+    if run["attention"]:
+        out.append("## 直すべきもの")
+        out.append("")
+        out.append("| 状態 | プロジェクト | 検査 |")
+        out.append("|---|---|---|")
+        for c in run["attention"]:
+            out.append("| {} | {} | {} |".format(c["status"], c["project"], c["desc"]))
+        out.append("")
+        out.append(
+            "`xpass` は、既知の未修正事項として登録した検査が成功したことを表す。"
+            "本体が直ったので `docs/10-findings.md` を更新し、"
+            "`known_issue` の宣言を外す。"
+        )
+        out.append("")
+
+    if run["known_issues"]:
+        out.append("## 既知の未修正事項")
+        out.append("")
+        out.append("落ちたままにしてある検査。詳細は `docs/10-findings.md`。")
+        out.append("")
+        out.append("| プロジェクト | 検査 |")
+        out.append("|---|---|")
+        for c in run["known_issues"]:
+            out.append("| {} | {} |".format(c["project"], c["desc"]))
+        out.append("")
+
+    out.append("## 実行環境")
+    out.append("")
+    out.append("| | |")
+    out.append("|---|---|")
+    for key, label in [
+        ("dowel_version", "dowel"),
+        ("dowel_ref", "dowel の枝"),
+        ("dowel_commit", "dowel の commit"),
+        ("cc", "cc"),
+        ("ninja", "ninja"),
+        ("commit", "本リポジトリの commit"),
+        ("started_at", "開始"),
+    ]:
+        if run.get(key):
+            out.append("| {} | `{}` |".format(label, run[key]))
+    out.append("")
+
+    return "\n".join(out) + "\n"
+
+
+# ------------------------------------------------------------------ 履歴
+
+
+def append_history(path, run):
+    history = []
+    if os.path.exists(path):
+        try:
+            with open(path, encoding="utf-8") as f:
+                history = json.load(f)
+        except (json.JSONDecodeError, OSError):
+            history = []
+    if not isinstance(history, list):
+        history = []
+
+    # 同じ実行の再実行は置き換える。行を増やさない。
+    key = (run.get("run_id"), run.get("run_attempt"))
+    if key != ("", ""):
+        history = [h for h in history if (h.get("run_id"), h.get("run_attempt")) != key]
+
+    history.append(run)
+    history = history[-HISTORY_LIMIT:]
+
+    with open(path, "w", encoding="utf-8") as f:
+        json.dump(history, f, ensure_ascii=False, indent=1)
+        f.write("\n")
+    return history
+
+
+# ------------------------------------------------------------------ 掲示
+
+CSS = """
+:root { color-scheme: light dark; --fg:#1a1a1a; --bg:#fff; --muted:#666;
+        --line:#e0e0e0; --ok:#1a7f37; --ng:#cf222e; --warn:#9a6700; }
+@media (prefers-color-scheme: dark) {
+  :root { --fg:#e6e6e6; --bg:#0d1117; --muted:#9198a1; --line:#30363d;
+          --ok:#3fb950; --ng:#f85149; --warn:#d29922; }
+}
+* { box-sizing: border-box; }
+body { margin:0; padding:2rem 1rem; color:var(--fg); background:var(--bg);
+       font:15px/1.6 -apple-system, "Helvetica Neue", "Hiragino Sans",
+       "Noto Sans JP", sans-serif; }
+main { max-width: 62rem; margin: 0 auto; }
+h1 { font-size:1.5rem; margin:0 0 .25rem; }
+h2 { font-size:1.1rem; margin:2.5rem 0 .75rem; padding-bottom:.3rem;
+     border-bottom:1px solid var(--line); }
+p.lede { color:var(--muted); margin:0 0 2rem; }
+.scroll { overflow-x:auto; }
+table { border-collapse:collapse; width:100%; font-size:.9rem; }
+th, td { padding:.45rem .7rem; text-align:left; border-bottom:1px solid var(--line);
+         white-space:nowrap; }
+th { font-weight:600; color:var(--muted); font-size:.8rem;
+     text-transform:uppercase; letter-spacing:.04em; }
+td.n, th.n { text-align:right; font-variant-numeric:tabular-nums; }
+td.wrap { white-space:normal; }
+.ok { color:var(--ok); font-weight:600; }
+.ng { color:var(--ng); font-weight:600; }
+.warn { color:var(--warn); }
+.zero { color:var(--muted); }
+code, .mono { font-family:ui-monospace, SFMono-Regular, Menlo, monospace;
+              font-size:.85em; }
+a { color:inherit; }
+footer { margin-top:3rem; color:var(--muted); font-size:.8rem; }
+"""
+
+
+def cell(n, kind):
+    """0 は目立たせない。0 でない失敗は赤くする。"""
+    if n == 0:
+        return '<td class="n zero">0</td>'
+    cls = {"fail": "ng", "xpass": "ng", "xfail": "warn"}.get(kind, "")
+    return '<td class="n {}">{}</td>'.format(cls, n)
+
+
+def short(s, n=12):
+    return html.escape(s[:n]) if s else "—"
+
+
+def render_site(history):
+    if not history:
+        return "<main><h1>dowel_examples</h1><p>まだ実行がありません。</p></main>"
+
+    latest = history[-1]
+    names = sorted({p["name"] for h in history for p in h["projects"]})
+
+    out = []
+    out.append("<main>")
+    out.append("<h1>dowel_examples</h1>")
+    out.append(
+        '<p class="lede">dowel を外側から検査するテストスイートの結果。'
+        "各検査の意図は各プロジェクトの README、"
+        "落ちたままにしてある項目の理由は docs/10-findings.md にある。</p>"
+    )
+
+    # ---------------------------------------------------------- 直近の実行
+    t = latest["totals"]
+    out.append("<h2>直近の実行</h2>")
+    out.append(
+        '<p><span class="{}">{}</span> — {} 件: 成功 {} / 失敗 {} / 既知の未修正 {} / 修正済み {}'
+        "<br><span class=\"mono\">{}</span> {} on <span class=\"mono\">{}</span></p>".format(
+            "ok" if latest["ok"] else "ng",
+            verdict(latest["ok"]),
+            latest["total"],
+            t["pass"], t["fail"], t["xfail"], t["xpass"],
+            short(latest.get("commit", "")),
+            html.escape(latest.get("started_at", "")),
+            html.escape(latest.get("branch", "")),
+        )
+    )
+
+    out.append('<div class="scroll"><table>')
+    out.append(
+        "<tr><th>プロジェクト</th><th>状態</th><th class='n'>検査</th>"
+        + "".join("<th class='n'>{}</th>".format(LABEL[s]) for s in STATES)
+        + "<th class='n'>所要</th></tr>"
+    )
+    for p in latest["projects"]:
+        out.append(
+            "<tr><td>{}</td><td class='{}'>{}</td><td class='n'>{}</td>{}<td class='n'>{:.1f}s</td></tr>".format(
+                html.escape(p["name"]),
+                "ok" if p["ok"] else "ng",
+                "ok" if p["ok"] else "FAILED",
+                p["total"],
+                "".join(cell(p["counts"][s], s) for s in STATES),
+                p["duration_ms"] / 1000,
+            )
+        )
+    out.append("</table></div>")
+
+    # ------------------------------------------------------ 直すべきもの
+    if latest.get("attention"):
+        out.append("<h2>直すべきもの</h2>")
+        out.append('<div class="scroll"><table>')
+        out.append("<tr><th>状態</th><th>プロジェクト</th><th>検査</th></tr>")
+        for c in latest["attention"]:
+            out.append(
+                "<tr><td class='ng'>{}</td><td>{}</td><td class='wrap'>{}</td></tr>".format(
+                    html.escape(c["status"]), html.escape(c["project"]), html.escape(c["desc"])
+                )
+            )
+        out.append("</table></div>")
+
+    # -------------------------------------------------- 既知の未修正事項
+    if latest.get("known_issues"):
+        out.append("<h2>既知の未修正事項</h2>")
+        out.append(
+            "<p>本体が直っていないため落としたままにしてある検査。"
+            "直ると <span class='ng'>xpass</span> になって全体が落ちる。</p>"
+        )
+        out.append('<div class="scroll"><table>')
+        out.append("<tr><th>プロジェクト</th><th>検査</th></tr>")
+        for c in latest["known_issues"]:
+            out.append(
+                "<tr><td>{}</td><td class='wrap warn'>{}</td></tr>".format(
+                    html.escape(c["project"]), html.escape(c["desc"])
+                )
+            )
+        out.append("</table></div>")
+
+    # ------------------------------------------------------------ 履歴
+    out.append("<h2>履歴</h2>")
+    out.append(
+        "<p>プロジェクトごとの内訳は「成功 / 失敗 / 既知の未修正 / 修正済み」。"
+        "空欄はその時点で存在しなかったプロジェクトを表す。</p>"
+    )
+    out.append('<div class="scroll"><table>')
+    out.append(
+        "<tr><th>実行</th><th>状態</th><th>枝</th><th>commit</th><th>dowel</th>"
+        + "".join("<th class='n'>{}</th>".format(html.escape(n)) for n in names)
+        + "<th class='n'>合計</th></tr>"
+    )
+    for h in reversed(history):
+        by_name = {p["name"]: p for p in h["projects"]}
+        cells = []
+        for n in names:
+            p = by_name.get(n)
+            if p is None:
+                cells.append('<td class="n zero">—</td>')
+                continue
+            c = p["counts"]
+            cls = "ng" if not p["ok"] else ("warn" if c["xfail"] else "")
+            cells.append(
+                '<td class="n {}">{}/{}/{}/{}</td>'.format(
+                    cls, c["pass"], c["fail"], c["xfail"], c["xpass"]
+                )
+            )
+        label = html.escape(h.get("started_at", "")) or "—"
+        if h.get("run_url"):
+            label = '<a href="{}">{}</a>'.format(html.escape(h["run_url"]), label)
+        out.append(
+            "<tr><td class='mono'>{}</td><td class='{}'>{}</td><td>{}</td>"
+            "<td class='mono'>{}</td><td class='mono'>{}</td>{}<td class='n'>{}</td></tr>".format(
+                label,
+                "ok" if h["ok"] else "ng",
+                "ok" if h["ok"] else "FAILED",
+                html.escape(h.get("branch", "")),
+                short(h.get("commit", "")),
+                short(h.get("dowel_commit", "")) if h.get("dowel_commit") else html.escape(h.get("dowel_version", "")),
+                "".join(cells),
+                h["total"],
+            )
+        )
+    out.append("</table></div>")
+
+    out.append(
+        "<footer>この頁は CI が生成し、掲示用の枝へ押し込んでいる。"
+        "編集しても次の実行で上書きされる。</footer>"
+    )
+    out.append("</main>")
+    return "\n".join(out)
+
+
+def render_page(history):
+    title = "dowel_examples — 検査結果"
+    return (
+        "<!doctype html>\n"
+        '<html lang="ja">\n<head>\n<meta charset="utf-8">\n'
+        '<meta name="viewport" content="width=device-width, initial-scale=1">\n'
+        f"<title>{title}</title>\n<style>{CSS}</style>\n</head>\n<body>\n"
+        + render_site(history)
+        + "\n</body>\n</html>\n"
+    )
+
+
+# ------------------------------------------------------------------ 入口
+
+
+def main():
+    ap = argparse.ArgumentParser(description=__doc__)
+    sub = ap.add_subparsers(dest="cmd", required=True)
+
+    r = sub.add_parser("run", help="1回の実行をまとめる")
+    r.add_argument("--work", default=".work")
+    r.add_argument("--out", required=True)
+
+    a = sub.add_parser("append", help="1回分の結果を履歴へ積む")
+    a.add_argument("--results", required=True)
+    a.add_argument("--history", required=True)
+
+    s = sub.add_parser("site", help="履歴から index.html を作る")
+    s.add_argument("--history", required=True)
+    s.add_argument("--out", required=True)
+
+    args = ap.parse_args()
+
+    if args.cmd == "run":
+        os.makedirs(args.out, exist_ok=True)
+        run = collect(args.work)
+        with open(os.path.join(args.out, "summary.md"), "w", encoding="utf-8") as f:
+            f.write(render_summary(run))
+        with open(os.path.join(args.out, "results.json"), "w", encoding="utf-8") as f:
+            json.dump(run, f, ensure_ascii=False, indent=1)
+            f.write("\n")
+        # 検査そのものの合否は run.sh が返す。ここでは集計だけを行う。
+        return 0
+
+    if args.cmd == "append":
+        with open(args.results, encoding="utf-8") as f:
+            append_history(args.history, json.load(f))
+        return 0
+
+    os.makedirs(args.out, exist_ok=True)
+    history = []
+    if os.path.exists(args.history):
+        with open(args.history, encoding="utf-8") as f:
+            history = json.load(f)
+    with open(os.path.join(args.out, "index.html"), "w", encoding="utf-8") as f:
+        f.write(render_page(history))
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

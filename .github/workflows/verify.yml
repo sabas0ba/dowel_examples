@@ -1,0 +1,167 @@
+# 検証。ローカルと同じ入口（./run.sh）をそのまま実行する。
+#
+# 本スイートは dowel の成果物を必要とする。dowel は別リポジトリかつ非公開で
+# あるため、`DOWEL_REPO_TOKEN` を用いて取り出したうえで、その場で組み立てる。
+# 設定手順は docs/20-ci.md にある。
+#
+# 結果は3か所へ出す。
+#
+#   - ジョブ要約   直近の実行だけを見るための表
+#   - 成果物       results.json / summary.md / index.html（失敗した実行こそ残す）
+#   - 掲示用の枝   履歴を積んだ表。既定枝への押し込みと手動実行のときだけ
+#
+# 外部アクションはコミットへ固定する（dowel 本体の docs/50-development.md 5節に
+# 合わせる。タグやブランチ名のみによる参照は固定とみなさない）。
+
+name: verify
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      dowel_ref:
+        description: 検証に用いる dowel の枝またはコミット
+        type: string
+        default: main
+
+# 同じ枝に新しい押し込みが来たら、走っている実行を止める。
+# 掲示用の枝への押し込みが交差しないようにする意味も兼ねる。
+concurrency:
+  group: verify-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+env:
+  DOWEL_REF: ${{ inputs.dowel_ref || 'main' }}
+  PAGES_BRANCH: gh-pages
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Check for the dowel token
+        # 無いまま進むと cargo build まで行ってから落ちる。先に理由を出す。
+        env:
+          TOKEN: ${{ secrets.DOWEL_REPO_TOKEN }}
+        run: |
+          if [ -z "$TOKEN" ]; then
+            echo "::error::secret DOWEL_REPO_TOKEN が設定されていない。docs/20-ci.md を参照。"
+            exit 1
+          fi
+
+      - name: Checkout dowel
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: sabas0ba/dowel
+          ref: ${{ env.DOWEL_REF }}
+          token: ${{ secrets.DOWEL_REPO_TOKEN }}
+          path: .dowel-src
+          persist-credentials: false
+
+      - name: Record the dowel revision
+        # どの dowel に対する結果なのかが分からないと、表は読めない。
+        run: |
+          echo "DOWEL_COMMIT=$(git -C .dowel-src rev-parse HEAD)" >> "$GITHUB_ENV"
+
+      - name: Cache cargo
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            .dowel-src/target
+          key: dowel-${{ runner.os }}-${{ hashFiles('.dowel-src/Cargo.lock') }}
+          restore-keys: dowel-${{ runner.os }}-
+
+      - name: Install ninja and jq
+        # ninja が無いと direct 実行器へ落ちる。既定の経路を実際に通すために入れる。
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq ninja-build jq
+          ninja --version
+          jq --version
+          cc --version | head -1
+
+      - name: Build dowel
+        run: |
+          cargo build --release --manifest-path .dowel-src/Cargo.toml
+          echo "DOWEL=$PWD/.dowel-src/target/release/dowel" >> "$GITHUB_ENV"
+
+      - name: Run the suite
+        id: suite
+        # 落ちても要約と掲示は作る。失敗した実行の結果こそ見たい。
+        continue-on-error: true
+        run: ./run.sh
+
+      - name: Report
+        if: always()
+        run: |
+          python3 scripts/report.py run --work .work --out .work/report
+          python3 scripts/report.py append \
+            --results .work/report/results.json --history .work/report/history.json
+          python3 scripts/report.py site \
+            --history .work/report/history.json --out .work/report
+
+      - name: Summary
+        if: always()
+        run: |
+          if [ -f .work/report/summary.md ]; then
+            cat .work/report/summary.md >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo '要約が生成されなかった。ジョブのログを参照。' >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+      - name: Upload results
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: verify-results-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            .work/report/
+            .work/results.tsv
+            .work/projects.tsv
+            .work/meta.tsv
+          retention-days: 30
+          if-no-files-found: warn
+
+      - name: Gate
+        # 検査の合否はここで確定させる。掲示は先に済ませてある。
+        if: steps.suite.outcome == 'failure'
+        run: |
+          echo "::error::検査が失敗した。ジョブ要約の「直すべきもの」を参照。"
+          exit 1
+
+  publish:
+    # 掲示は既定枝と手動実行のときだけ行う。pull request では押し込まない。
+    needs: verify
+    if: always() && github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Download results
+        # upload-artifact と主番号を揃える。またぐと成果物を見つけられない。
+        uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131 # v7.0.0
+        with:
+          name: verify-results-${{ github.run_id }}-${{ github.run_attempt }}
+          path: artifact
+
+      - name: Publish
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: ./scripts/publish-pages.sh "$PAGES_BRANCH" artifact/report/results.json

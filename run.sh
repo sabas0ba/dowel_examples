@@ -18,7 +18,19 @@ set -uo pipefail
 
 SUITE_ROOT=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 WORK="$SUITE_ROOT/.work"
-RESULTS="$WORK/results.tsv"
+RESULTS="$WORK/results.tsv"     # 1 検査 1 行: status \t project \t desc
+PROJECTS="$WORK/projects.tsv"   # 1 プロジェクト 1 行: name \t ms \t pass \t fail \t xfail \t xpass
+META="$WORK/meta.tsv"           # key \t value
+
+# 経過時間。bash 5 の EPOCHREALTIME を使い、無い場合は秒に落とす。
+now_ms() {
+    if [ -n "${EPOCHREALTIME:-}" ]; then
+        local t=${EPOCHREALTIME/,/.}
+        printf '%s' "$(( ${t%.*} * 1000 + 10#${t#*.} / 1000 ))"
+    else
+        printf '%s' "$(( $(date +%s) * 1000 ))"
+    fi
+}
 
 # ------------------------------------------------------------ dowel の解決
 
@@ -73,23 +85,54 @@ fi
 
 # ------------------------------------------------------------ 実行
 
+# _record_project <name> <開始時刻ms> <この節の開始行>
+# そのプロジェクトが積んだ結果だけを数え、1行にまとめる。
+_record_project() {
+    local name=$1 started=$2 before=$3
+    local slice p f xf xp
+    slice=$(tail -n "+$((before + 1))" "$RESULTS" | cut -f1)
+    p=$(printf '%s\n'  "$slice" | grep -c '^pass$')
+    f=$(printf '%s\n'  "$slice" | grep -c '^fail$')
+    xf=$(printf '%s\n' "$slice" | grep -c '^xfail$')
+    xp=$(printf '%s\n' "$slice" | grep -c '^xpass$')
+    printf '%s\t%s\t%s\t%s\t%s\t%s\n' \
+        "$name" "$(( $(now_ms) - started ))" "$p" "$f" "$xf" "$xp" >>"$PROJECTS"
+}
+
 rm -rf "$WORK"
 mkdir -p "$WORK"
 : >"$RESULTS"
+: >"$PROJECTS"
 
-printf 'dowel: %s (%s)\n' "$DOWEL" "$("$DOWEL" --version)"
-printf 'cc:    %s\n\n' "$(cc --version 2>/dev/null | head -1)"
+dowel_version=$("$DOWEL" --version)
+cc_version=$(cc --version 2>/dev/null | head -1)
+{
+    printf 'dowel_version\t%s\n' "$dowel_version"
+    printf 'dowel_path\t%s\n'    "$DOWEL"
+    printf 'cc\t%s\n'            "$cc_version"
+    printf 'ninja\t%s\n'         "$(ninja --version 2>/dev/null)"
+    printf 'started_at\t%s\n'    "$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+    printf 'commit\t%s\n'        "$(git -C "$SUITE_ROOT" rev-parse HEAD 2>/dev/null)"
+    printf 'branch\t%s\n'        "$(git -C "$SUITE_ROOT" rev-parse --abbrev-ref HEAD 2>/dev/null)"
+} >"$META"
+
+printf 'dowel: %s (%s)\n' "$DOWEL" "$dowel_version"
+printf 'cc:    %s\n\n' "$cc_version"
 
 for name in "${selected[@]}"; do
     src="$SUITE_ROOT/projects/$name"
     dst="$WORK/$name"
     printf '%s\n' "$name"
 
+    before=$(wc -l <"$RESULTS")
+    started=$(now_ms)
+
     cp -r "$src" "$dst"
 
     if [ ! -f "$dst/expect.sh" ]; then
         printf '  FAIL expect.sh が無い\n'
         printf 'fail\t%s\t%s\n' "$name" "expect.sh が無い" >>"$RESULTS"
+        _record_project "$name" "$started" "$before"
         continue
     fi
 
@@ -114,6 +157,8 @@ for name in "${selected[@]}"; do
         printf '  FAIL 実体に成果物が残っている: %s\n' "$stray"
         printf 'fail\t%s\t%s\n' "$name" "実体に成果物が残っている" >>"$RESULTS"
     fi
+
+    _record_project "$name" "$started" "$before"
     printf '\n'
 done
 

@@ -14,19 +14,21 @@ dowel 本体は自分自身を内側から検査している（`crates/*/tests/`
 ## 走らせる
 
 ```sh
-./run.sh                 # 全プロジェクト
+make verify              # 全プロジェクト + 集計。CI もこれと同じものを実行する
+./run.sh                 # 検査だけ
 ./run.sh 02-config       # 名前（接頭辞）で絞る
 ```
 
 `dowel` の探索順は、環境変数 `DOWEL` → `PATH` → `../dowel/target/release/dowel`。
 
 ```sh
-DOWEL=/path/to/dowel ./run.sh
+DOWEL=/path/to/dowel make verify
 ```
 
 必要なもの: C コンパイラ（`cc`）、`ninja`、`jq`、`python3`、bash 4 以降。
 
 プロジェクトの実体は変更しない。`.work/` へ複製してから走らせる。
+集計の結果は `.work/report/`（`summary.md` / `results.json` / `index.html`）に残る。
 
 ## 出力
 
@@ -55,9 +57,22 @@ DOWEL=/path/to/dowel ./run.sh
 
 設計と規約は [docs/00-design.md](docs/00-design.md) にある。
 
+## CI
+
+`main` への押し込み、pull request、手動実行で走る。dowel は
+`sabas0ba/dowel` から取り出してその場で組み立てる（`DOWEL_REPO_TOKEN` が要る）。
+
+結果は3か所に出る。ジョブ要約（直近の実行）、成果物（30 日保持）、
+そして掲示用の枝 `gh-pages` に積んだ履歴の表である。手動実行では
+`dowel_ref` を渡せるため、本体の修正が本スイートの `xfail` を
+`xpass` に変えるかどうかを、取り込む前に確かめられる。
+
+準備と設定は [docs/20-ci.md](docs/20-ci.md) にある。
+
 ## 文書
 
 | 文書 | 内容 |
 |---|---|
 | [docs/00-design.md](docs/00-design.md) | スイートの設計。層の分け方、検査の置き場所、書き方の規約 |
 | [docs/10-findings.md](docs/10-findings.md) | 本スイートが見つけたもの。報告状況と、対応する検査 |
+| [docs/20-ci.md](docs/20-ci.md) | CI の準備と構成。掲示用の枝と表の読み方 |
