@@ -170,6 +170,29 @@ for name in "${selected[@]}"; do
     printf '\n'
 done
 
+# ------------------------------------------------------------ 文書の検査
+#
+# 文書の不整合はスイートの実行にもビルドにも影響しないため、検査しない限り
+# 検出されない。検査名を変えたのに引用側を直し忘れる、というのがその形である。
+#
+# 実際の検査名の一覧が要るため、全プロジェクトを走らせたときだけ行う。
+
+if [ $# -eq 0 ]; then
+    printf 'docs\n'
+    before=$(wc -l <"$RESULTS")
+    started=$(now_ms)
+    while IFS=$'\t' read -r st desc; do
+        [ -n "$st" ] || continue
+        printf '%s\t%s\t%s\n' "$st" docs "$desc" >>"$RESULTS"
+        case $st in
+            pass) printf '  ok   %s\n' "$desc" ;;
+            *)    printf '  FAIL %s\n' "$desc" ;;
+        esac
+    done < <(python3 "$SUITE_ROOT/scripts/check-docs.py" "$RESULTS")
+    _record_project docs "$started" "$before"
+    printf '\n'
+fi
+
 # ------------------------------------------------------------ 要約
 
 pass=$(grep -c '^pass' "$RESULTS")

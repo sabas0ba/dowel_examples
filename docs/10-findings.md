@@ -95,7 +95,8 @@ includes
 
 ### 検査
 
-`projects/04-diagnostics` の`the manifest still passes check after applying the suggestion`。
+`projects/04-diagnostics` の `the manifest still passes check after applying the suggestion` と
+`applying the suggestion keeps the value intact`。
 `lib/apply_fix.py` が JSON の提案を書き戻し、もう一度 `check` を掛ける。
 
 ---
@@ -280,9 +281,9 @@ error[unsupported-language]: `src/main.cpp` is a C++ source
 
 ### 検査
 
-`projects/04-diagnostics` の
-`building a C++ source produces a diagnostic of dowel's own`
-`the C++ failure is not reported in the linker's words`。
+`projects/04-diagnostics` の `check reports unsupported-language`、
+`unsupported-language points at the offending source`、
+`a C++ source never reaches the linker`。
 
 ---
 
@@ -340,9 +341,9 @@ error[missing-toolchain]: cannot find the C compiler `no-such-compiler-19`
 
 ### 検査
 
-`projects/04-diagnostics` の
-`declaring a toolchain that does not exist fails with a source location`
-`the toolchain failure is not reported in the shell's words`。
+`projects/04-diagnostics` の `check reports missing-toolchain`、
+`missing-toolchain points at the offending source`、
+`a missing toolchain never reaches the shell`。
 
 ---
 
@@ -413,8 +414,8 @@ error[merge-conflict]: conflicting values reached `SHARED_LIMIT` of `defines`
 
 ### 検査
 
-`projects/04-diagnostics` の
-`merge-conflict renders the dependent side of the conflict too` ほか1件。
+`projects/04-diagnostics` の `merge-conflict carries the location of both values` と
+`merge-conflict renders the dependent side of the conflict too`。`abi-mismatch` も同じ形。
 
 ---
 
@@ -478,8 +479,8 @@ error[merge-conflict]: conflicting values reached `SHARED_LIMIT` of `defines`
 
 ### 検査
 
-`projects/04-diagnostics` の
-`check finds invalid-source as well` ほか1件。
+`projects/04-diagnostics` の `check reports invalid-source` と
+`build reports invalid-source as well`。`unresolved-path` と `empty-glob` も同じ形。
 
 ---
 
