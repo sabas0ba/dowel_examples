@@ -1,10 +1,10 @@
 {
- "run_id": "30369922884",
+ "run_id": "30370927369",
  "run_attempt": "1",
- "run_url": "https://github.com/sabas0ba/dowel_examples/actions/runs/30369922884",
- "commit": "23244295550fcf94ec4a4f96552ddbd666177378",
+ "run_url": "https://github.com/sabas0ba/dowel_examples/actions/runs/30370927369",
+ "commit": "0c03829f19514c0dec4df518443e4421bbe3c565",
  "branch": "main",
- "started_at": "2026-07-28T14:45:50Z",
+ "started_at": "2026-07-28T14:57:38Z",
  "dowel_version": "dowel 0.0.1",
  "dowel_ref": "07f16ec59e48c764e9126f6df333417b4d104297",
  "dowel_commit": "07f16ec59e48c764e9126f6df333417b4d104297",
@@ -13,7 +13,7 @@
  "projects": [
   {
    "name": "01-minimal",
-   "duration_ms": 1305,
+   "duration_ms": 163,
    "counts": {
     "pass": 10,
     "fail": 0,
@@ -70,7 +70,7 @@
   },
   {
    "name": "02-config",
-   "duration_ms": 8511,
+   "duration_ms": 3913,
    "counts": {
     "pass": 21,
     "fail": 0,
@@ -172,7 +172,7 @@
   },
   {
    "name": "03-features",
-   "duration_ms": 236,
+   "duration_ms": 225,
    "counts": {
     "pass": 17,
     "fail": 0,
@@ -261,7 +261,7 @@
   },
   {
    "name": "04-diagnostics",
-   "duration_ms": 267,
+   "duration_ms": 244,
    "counts": {
     "pass": 64,
     "fail": 0,
@@ -553,7 +553,7 @@
   },
   {
    "name": "05-incremental",
-   "duration_ms": 1349,
+   "duration_ms": 1212,
    "counts": {
     "pass": 44,
     "fail": 0,
@@ -744,15 +744,58 @@
     "app",
     "core"
    ]
+  },
+  {
+   "name": "docs",
+   "duration_ms": 38,
+   "counts": {
+    "pass": 7,
+    "fail": 0,
+    "xfail": 0,
+    "xpass": 0
+   },
+   "total": 7,
+   "ok": true,
+   "checks": [
+    {
+     "status": "pass",
+     "desc": "every relative link in the documentation resolves"
+    },
+    {
+     "status": "pass",
+     "desc": "the project table in README.md matches projects/"
+    },
+    {
+     "status": "pass",
+     "desc": "the documentation table in README.md matches docs/"
+    },
+    {
+     "status": "pass",
+     "desc": "check names quoted in the documentation exist"
+    },
+    {
+     "status": "pass",
+     "desc": "every known_issue declaration names a finding that exists"
+    },
+    {
+     "status": "pass",
+     "desc": "the index of docs/10-findings.md matches its sections"
+    },
+    {
+     "status": "pass",
+     "desc": "the dowel revision quoted in the documentation matches dowel-ref"
+    }
+   ],
+   "packages": []
   }
  ],
  "totals": {
-  "pass": 156,
+  "pass": 163,
   "fail": 0,
   "xfail": 0,
   "xpass": 0
  },
- "total": 156,
+ "total": 163,
  "ok": true,
  "attention": [],
  "known_issues": []
