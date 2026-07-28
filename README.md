@@ -10,6 +10,7 @@ dowel 本体は自分自身を内側から検査している（`crates/*/tests/`
 仕様と実装の食い違いを仕様の側から見つけられる。
 
 見つけたものは [docs/10-findings.md](docs/10-findings.md) に記録し、本体へ報告する。
+これまでに 9 件を報告し、いずれも修正された。
 
 ## 走らせる
 
@@ -32,8 +33,8 @@ DOWEL=/path/to/dowel make verify
 
 ## 出力
 
-1 検査 1 行。既知の未修正事項に対する検査は `xfail` として登録してある。
-本体側が直ると `XPASS` になって落ち、この宣言を外すべきことが分かる。
+1 検査 1 行。本体が直していない事項に対する検査は `xfail` として登録する。
+本体側が直ると `XPASS` になって落ち、宣言を外すべきことが分かる。現在は 0 件である。
 
 ```
 02-config
@@ -41,9 +42,9 @@ DOWEL=/path/to/dowel make verify
   ok   private flags of a dependency never reach a dependent
 
 04-diagnostics
-  xfail the manifest still passes check after applying the suggestion  [F-006]
+  ok   the manifest still passes check after applying the suggestion
 
-total 94 checks: 80 passed, 0 failed, 14 known, 0 fixed
+total 112 checks: 112 passed, 0 failed, 0 known, 0 fixed
 ```
 
 検査名は英語で書く。実装の中身ではなく、何が固定されているかを1行で読ませる
@@ -73,8 +74,8 @@ total 94 checks: 80 passed, 0 failed, 14 known, 0 fixed
 結果は3か所に出る。ジョブ要約（直近の実行）、成果物（30 日保持）、
 そして掲示用の枝 `gh-pages` に積んだ表である。掲示には検査の全件と、
 それぞれが置かれた実体へのリンク、そして過去 100 回分の履歴が並ぶ。手動実行では
-`dowel_ref` を渡せるため、本体の修正が本スイートの `xfail` を
-`xpass` に変えるかどうかを、固定値を書き換える前に確かめられる。
+`dowel_ref` を渡せるため、本体の修正が本スイートの検査を
+どう動かすかを、固定値を書き換える前に確かめられる。
 
 準備と設定は [docs/20-ci.md](docs/20-ci.md) にある。
 

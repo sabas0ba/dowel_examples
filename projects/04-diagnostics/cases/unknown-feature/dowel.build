@@ -1,0 +1,7 @@
+# feature 名前空間は [features] で宣言されたものだけを受ける。
+# 綴り間違いが黙って偽になると、分岐が無言で消える。
+[bin.t]
+sources = glob("src/*.c")
+
+[bin.t.private]
+flags = ["-DALWAYS=1", "-DTYPO=1" when feature.raal]

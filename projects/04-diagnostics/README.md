@@ -51,18 +51,33 @@ dowel 本体の `crates/dowel-cli/tests/diagnostics.rs` は、診断が CLI ま�
 本体が既存システムの失敗様式として挙げているものである。
 同じ形の経路が `.cpp` のソースと実在しないツールチェーンの2つに残っている。
 
-## 既知の未修正事項
+## 事例の一覧
 
-詳細は [docs/10-findings.md](../../docs/10-findings.md)。
+`check` が報告するもの。`cases/<code>/` の名前がそのまま期待するコードである。
 
-| # | 内容 | 事例 |
-|---|---|---|
-| F-004 | `check` が計画段の誤りを見つけない | `invalid-source` `unresolved-path` |
-| F-005 | `missing-manifest` に位置情報が無い | `missing-manifest` |
-| F-006 | 修正提案の範囲が誤っており、適用すると壊れる | `unknown-property` |
-| F-007 | 併合衝突の人間向け描画が片側の位置しか出さない | `merge-conflict` `abi-mismatch` |
-| F-008 | C++ のソースが黙って受理される | `cpp-source` |
-| F-009 | 宣言したツールチェーンの実在を確認しない | `missing-toolchain` |
+| コード | 誤りの形 |
+|---|---|
+| `unknown-property` | 存在しないプロパティ。修正提案が付く |
+| `unknown-kind` | 閉じた語彙にない表種別 |
+| `unknown-function` | 値の位置で呼べない関数 |
+| `unknown-cfg-key` | `cfg` 名前空間にない鍵 |
+| `unknown-feature` | `[features]` で宣言されていない機能 |
+| `non-exhaustive-match` | 有限の値域に対する非網羅な `match` |
+| `type-mismatch` | プロパティの型に合わない値 |
+| `undeclared-dependency` | `dowel.toml` にない `dep()` |
+| `unknown-target` | 同一パッケージにない `target()` |
+| `dependency-cycle` | ターゲット同士の閉路 |
+| `missing-manifest` | 実体の無いパスを指す依存 |
+| `missing-toolchain` | 実在しないツールチェーン |
+| `unsupported-language` | 組めない言語のソース（C++） |
+| `invalid-source` | `sources` にディレクトリ |
+| `unresolved-path` | 存在しないファイル |
+| `empty-glob` | 一致0件の `glob`（警告） |
+| `merge-conflict` | `error_on_conflict` の衝突（2パッケージ） |
+| `abi-mismatch` | `must_equal` の不一致（2パッケージ） |
+
+かつて `known_issue` を付けて落としていた項目は、本体の `07f16ec` で
+すべて修正された。経緯は [docs/10-findings.md](../../docs/10-findings.md) にある。
 
 ## 事例を足すとき
 
