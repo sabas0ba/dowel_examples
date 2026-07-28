@@ -1,0 +1,144 @@
+{
+ "run_id": "30362232181",
+ "run_attempt": "1",
+ "run_url": "https://github.com/sabas0ba/dowel_examples/actions/runs/30362232181",
+ "commit": "8523cf67545839c3b054e9fa0fd3c4342bf3c6c9",
+ "branch": "main",
+ "started_at": "2026-07-28T13:10:49Z",
+ "dowel_version": "dowel 0.0.1",
+ "dowel_ref": "a8a59e7c70aa3bd15f01d8c04cf7e38a00b3bd4f",
+ "dowel_commit": "a8a59e7c70aa3bd15f01d8c04cf7e38a00b3bd4f",
+ "cc": "cc (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0",
+ "ninja": "1.13.2",
+ "projects": [
+  {
+   "name": "01-minimal",
+   "duration_ms": 212,
+   "counts": {
+    "pass": 10,
+    "fail": 0,
+    "xfail": 0,
+    "xpass": 0
+   },
+   "total": 10,
+   "ok": true
+  },
+  {
+   "name": "02-config",
+   "duration_ms": 1033,
+   "counts": {
+    "pass": 21,
+    "fail": 0,
+    "xfail": 0,
+    "xpass": 0
+   },
+   "total": 21,
+   "ok": true
+  },
+  {
+   "name": "03-features",
+   "duration_ms": 218,
+   "counts": {
+    "pass": 12,
+    "fail": 0,
+    "xfail": 4,
+    "xpass": 0
+   },
+   "total": 16,
+   "ok": true
+  },
+  {
+   "name": "04-diagnostics",
+   "duration_ms": 515,
+   "counts": {
+    "pass": 37,
+    "fail": 0,
+    "xfail": 10,
+    "xpass": 0
+   },
+   "total": 47,
+   "ok": true
+  }
+ ],
+ "totals": {
+  "pass": 80,
+  "fail": 0,
+  "xfail": 14,
+  "xpass": 0
+ },
+ "total": 94,
+ "ok": true,
+ "attention": [],
+ "known_issues": [
+  {
+   "status": "xfail",
+   "project": "03-features",
+   "desc": "a dependency behind a disabled feature is absent from the graph  [F-003]"
+  },
+  {
+   "status": "xfail",
+   "project": "03-features",
+   "desc": "a disabled optional dependency need not exist on disk  [F-003]"
+  },
+  {
+   "status": "xfail",
+   "project": "03-features",
+   "desc": "an undeclared feature passed to --features is rejected  [F-001]"
+  },
+  {
+   "status": "xfail",
+   "project": "03-features",
+   "desc": "an undeclared feature referenced from dowel.build is rejected  [F-002]"
+  },
+  {
+   "status": "xfail",
+   "project": "04-diagnostics",
+   "desc": "check finds invalid-source as well  [F-004]"
+  },
+  {
+   "status": "xfail",
+   "project": "04-diagnostics",
+   "desc": "check finds unresolved-path as well  [F-004]"
+  },
+  {
+   "status": "xfail",
+   "project": "04-diagnostics",
+   "desc": "missing-manifest points at the offending source  [F-005]"
+  },
+  {
+   "status": "xfail",
+   "project": "04-diagnostics",
+   "desc": "building a C++ source produces a diagnostic of dowel's own  [F-008]"
+  },
+  {
+   "status": "xfail",
+   "project": "04-diagnostics",
+   "desc": "declaring a toolchain that does not exist fails with a source location  [F-009]"
+  },
+  {
+   "status": "xfail",
+   "project": "04-diagnostics",
+   "desc": "the C++ failure is not reported in the linker's words  [F-008]"
+  },
+  {
+   "status": "xfail",
+   "project": "04-diagnostics",
+   "desc": "the toolchain failure is not reported in the shell's words  [F-009]"
+  },
+  {
+   "status": "xfail",
+   "project": "04-diagnostics",
+   "desc": "merge-conflict renders the dependent side of the conflict too  [F-007]"
+  },
+  {
+   "status": "xfail",
+   "project": "04-diagnostics",
+   "desc": "abi-mismatch renders the dependent side of the conflict too  [F-007]"
+  },
+  {
+   "status": "xfail",
+   "project": "04-diagnostics",
+   "desc": "the manifest still passes check after applying the suggestion  [F-006]"
+  }
+ ]
+}
