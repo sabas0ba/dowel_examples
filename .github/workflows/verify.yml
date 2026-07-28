@@ -1,8 +1,8 @@
 # 検証。ローカルと同じ入口（./run.sh）をそのまま実行する。
 #
-# 本スイートは dowel の成果物を必要とする。dowel は別リポジトリかつ非公開で
-# あるため、読み取り専用のデプロイキー（`DOWEL_DEPLOY_KEY`）で取り出したうえで、
-# その場で組み立てる。個人アクセストークンは用いない。設定手順は docs/20-ci.md。
+# 本スイートは dowel の成果物を必要とする。dowel は別リポジトリだが公開されて
+# いるため、資格情報を設定する必要は無い。checkout は既定の GITHUB_TOKEN を
+# 用い、公開リポジトリはそれで読める。設定する秘密はひとつも無い。
 #
 # 取り出す版は `dowel-ref` に固定してある。追随は、その1行を書き換える
 # pull request として現れる。手動実行のときだけ別の版を指せる。
@@ -50,17 +50,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
-      - name: Check for the deploy key
-        # 無いまま進むと checkout が 404 で落ちる。非公開リポジトリに対する
-        # 認証の失敗は「存在しない」と区別がつかないため、先に理由を出す。
-        env:
-          KEY: ${{ secrets.DOWEL_DEPLOY_KEY }}
-        run: |
-          if [ -z "$KEY" ]; then
-            echo "::error::secret DOWEL_DEPLOY_KEY が設定されていない。docs/20-ci.md を参照。"
-            exit 1
-          fi
-
       - name: Resolve the dowel revision
         # 既定は `dowel-ref` の固定値。手動実行のときだけ上書きできる。
         # 入力を直接展開せず環境変数を経由する（スクリプトへの注入を避ける）。
@@ -83,9 +72,9 @@ jobs:
         with:
           repository: sabas0ba/dowel
           ref: ${{ env.DOWEL_REF }}
-          # 読み取り専用のデプロイキー。個人アクセストークンを用いない理由は
-          # docs/20-ci.md 1節にある。
-          ssh-key: ${{ secrets.DOWEL_DEPLOY_KEY }}
+          # token も ssh-key も渡さない。既定の GITHUB_TOKEN は本リポジトリを
+          # 対象とする installation token だが、公開リポジトリの読み取りには
+          # それで足りる（docs/20-ci.md 1節）。
           path: .dowel-src
           persist-credentials: false
 

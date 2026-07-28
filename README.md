@@ -60,8 +60,8 @@ DOWEL=/path/to/dowel make verify
 ## CI
 
 `main` への押し込み、pull request、手動実行で走る。dowel は
-`sabas0ba/dowel` から取り出してその場で組み立てる。非公開リポジトリであるため
-読み取り専用のデプロイキー（`DOWEL_DEPLOY_KEY`）が要る。
+`sabas0ba/dowel` から取り出してその場で組み立てる。公開リポジトリであるため
+設定する秘密はひとつも無い。
 
 検証に用いる版は [`dowel-ref`](dowel-ref) にコミットで固定してある。枝を指すと、
 本リポジトリを何も変えていないのに結果が動き、赤がこちらの退行なのか本体の変更
