@@ -1,0 +1,6 @@
+# runner は command を必ず持つ。無ければ起動のしようがない。
+[bin.t]
+sources = glob("src/*.c")
+
+[runner.aarch64-unknown-linux-gnu]
+args = ["--emulate"]

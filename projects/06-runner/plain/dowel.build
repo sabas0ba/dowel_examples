@@ -1,0 +1,6 @@
+# ランナーを宣言しない。ホストのトリプルなら走るが、別のトリプルを
+# 指定すると起動できない。起動してから Exec format error になるのではなく、
+# 起動の前に診断で拒まれること（docs/91-implementation-status.md）。
+
+[test.plain_test]
+sources = glob("tests/*.c")
