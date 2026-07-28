@@ -1,19 +1,19 @@
 {
- "run_id": "30363901819",
+ "run_id": "30369922884",
  "run_attempt": "1",
- "run_url": "https://github.com/sabas0ba/dowel_examples/actions/runs/30363901819",
- "commit": "b69cc8fe379653e73d749c9b69accd88c3a2b8fe",
+ "run_url": "https://github.com/sabas0ba/dowel_examples/actions/runs/30369922884",
+ "commit": "23244295550fcf94ec4a4f96552ddbd666177378",
  "branch": "main",
- "started_at": "2026-07-28T13:32:14Z",
+ "started_at": "2026-07-28T14:45:50Z",
  "dowel_version": "dowel 0.0.1",
- "dowel_ref": "a8a59e7c70aa3bd15f01d8c04cf7e38a00b3bd4f",
- "dowel_commit": "a8a59e7c70aa3bd15f01d8c04cf7e38a00b3bd4f",
+ "dowel_ref": "07f16ec59e48c764e9126f6df333417b4d104297",
+ "dowel_commit": "07f16ec59e48c764e9126f6df333417b4d104297",
  "cc": "cc (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0",
  "ninja": "1.13.2",
  "projects": [
   {
    "name": "01-minimal",
-   "duration_ms": 165,
+   "duration_ms": 1305,
    "counts": {
     "pass": 10,
     "fail": 0,
@@ -70,7 +70,7 @@
   },
   {
    "name": "02-config",
-   "duration_ms": 1089,
+   "duration_ms": 8511,
    "counts": {
     "pass": 21,
     "fail": 0,
@@ -172,14 +172,14 @@
   },
   {
    "name": "03-features",
-   "duration_ms": 504,
+   "duration_ms": 236,
    "counts": {
-    "pass": 12,
+    "pass": 17,
     "fail": 0,
-    "xfail": 4,
+    "xfail": 0,
     "xpass": 0
    },
-   "total": 16,
+   "total": 17,
    "ok": true,
    "checks": [
     {
@@ -223,20 +223,24 @@
      "desc": "when the edge goes, the archive is not built either"
     },
     {
-     "status": "xfail",
-     "desc": "a dependency behind a disabled feature is absent from the graph  [F-003]"
+     "status": "pass",
+     "desc": "a dependency behind a disabled feature is absent from the graph"
     },
     {
-     "status": "xfail",
-     "desc": "a disabled optional dependency need not exist on disk  [F-003]"
+     "status": "pass",
+     "desc": "a disabled optional dependency need not exist on disk"
     },
     {
-     "status": "xfail",
-     "desc": "an undeclared feature passed to --features is rejected  [F-001]"
+     "status": "pass",
+     "desc": "an undeclared feature passed to --features is rejected"
     },
     {
-     "status": "xfail",
-     "desc": "an undeclared feature referenced from dowel.build is rejected  [F-002]"
+     "status": "pass",
+     "desc": "an undeclared feature referenced from dowel.build is rejected"
+    },
+    {
+     "status": "pass",
+     "desc": "an undeclared feature gets a suggestion"
     },
     {
      "status": "pass",
@@ -257,14 +261,14 @@
   },
   {
    "name": "04-diagnostics",
-   "duration_ms": 724,
+   "duration_ms": 267,
    "counts": {
-    "pass": 37,
+    "pass": 64,
     "fail": 0,
-    "xfail": 10,
+    "xfail": 0,
     "xpass": 0
    },
-   "total": 47,
+   "total": 64,
    "ok": true,
    "checks": [
     {
@@ -298,6 +302,14 @@
     {
      "status": "pass",
      "desc": "check exits non-zero on unknown-cfg-key"
+    },
+    {
+     "status": "pass",
+     "desc": "check reports unknown-feature"
+    },
+    {
+     "status": "pass",
+     "desc": "check exits non-zero on unknown-feature"
     },
     {
      "status": "pass",
@@ -349,6 +361,38 @@
     },
     {
      "status": "pass",
+     "desc": "check reports missing-toolchain"
+    },
+    {
+     "status": "pass",
+     "desc": "check exits non-zero on missing-toolchain"
+    },
+    {
+     "status": "pass",
+     "desc": "check reports unsupported-language"
+    },
+    {
+     "status": "pass",
+     "desc": "check exits non-zero on unsupported-language"
+    },
+    {
+     "status": "pass",
+     "desc": "check reports invalid-source"
+    },
+    {
+     "status": "pass",
+     "desc": "check exits non-zero on invalid-source"
+    },
+    {
+     "status": "pass",
+     "desc": "check reports unresolved-path"
+    },
+    {
+     "status": "pass",
+     "desc": "check exits non-zero on unresolved-path"
+    },
+    {
+     "status": "pass",
      "desc": "check reports merge-conflict"
     },
     {
@@ -365,15 +409,19 @@
     },
     {
      "status": "pass",
-     "desc": "build reports invalid-source"
+     "desc": "check reports empty-glob"
     },
     {
      "status": "pass",
-     "desc": "build reports unresolved-path"
+     "desc": "build reports invalid-source as well"
     },
     {
      "status": "pass",
-     "desc": "build reports empty-glob"
+     "desc": "build reports unresolved-path as well"
+    },
+    {
+     "status": "pass",
+     "desc": "build reports empty-glob as well"
     },
     {
      "status": "pass",
@@ -384,12 +432,12 @@
      "desc": "build exits non-zero on unresolved-path"
     },
     {
-     "status": "xfail",
-     "desc": "check finds invalid-source as well  [F-004]"
+     "status": "pass",
+     "desc": "a C++ source never reaches the linker"
     },
     {
-     "status": "xfail",
-     "desc": "check finds unresolved-path as well  [F-004]"
+     "status": "pass",
+     "desc": "a missing toolchain never reaches the shell"
     },
     {
      "status": "pass",
@@ -397,7 +445,35 @@
     },
     {
      "status": "pass",
+     "desc": "unknown-kind points at the offending source"
+    },
+    {
+     "status": "pass",
+     "desc": "unknown-function points at the offending source"
+    },
+    {
+     "status": "pass",
+     "desc": "unknown-cfg-key points at the offending source"
+    },
+    {
+     "status": "pass",
+     "desc": "unknown-feature points at the offending source"
+    },
+    {
+     "status": "pass",
+     "desc": "non-exhaustive-match points at the offending source"
+    },
+    {
+     "status": "pass",
+     "desc": "type-mismatch points at the offending source"
+    },
+    {
+     "status": "pass",
      "desc": "undeclared-dependency points at the offending source"
+    },
+    {
+     "status": "pass",
+     "desc": "unknown-target points at the offending source"
     },
     {
      "status": "pass",
@@ -405,31 +481,23 @@
     },
     {
      "status": "pass",
-     "desc": "type-mismatch points at the offending source"
-    },
-    {
-     "status": "xfail",
-     "desc": "missing-manifest points at the offending source  [F-005]"
+     "desc": "missing-manifest points at the offending source"
     },
     {
      "status": "pass",
-     "desc": "building a C++ source fails"
+     "desc": "missing-toolchain points at the offending source"
     },
     {
-     "status": "xfail",
-     "desc": "building a C++ source produces a diagnostic of dowel's own  [F-008]"
+     "status": "pass",
+     "desc": "unsupported-language points at the offending source"
     },
     {
-     "status": "xfail",
-     "desc": "declaring a toolchain that does not exist fails with a source location  [F-009]"
+     "status": "pass",
+     "desc": "invalid-source points at the offending source"
     },
     {
-     "status": "xfail",
-     "desc": "the C++ failure is not reported in the linker's words  [F-008]"
-    },
-    {
-     "status": "xfail",
-     "desc": "the toolchain failure is not reported in the shell's words  [F-009]"
+     "status": "pass",
+     "desc": "unresolved-path points at the offending source"
     },
     {
      "status": "pass",
@@ -437,29 +505,32 @@
     },
     {
      "status": "pass",
+     "desc": "merge-conflict renders the dependent side of the conflict too"
+    },
+    {
+     "status": "pass",
      "desc": "abi-mismatch carries the location of both values"
     },
     {
-     "status": "xfail",
-     "desc": "merge-conflict renders the dependent side of the conflict too  [F-007]"
-    },
-    {
-     "status": "xfail",
-     "desc": "abi-mismatch renders the dependent side of the conflict too  [F-007]"
+     "status": "pass",
+     "desc": "abi-mismatch renders the dependent side of the conflict too"
     },
     {
      "status": "pass",
      "desc": "unknown-property carries a suggestion"
     },
     {
-     "status": "xfail",
-     "desc": "the manifest still passes check after applying the suggestion  [F-006]"
+     "status": "pass",
+     "desc": "the manifest still passes check after applying the suggestion"
+    },
+    {
+     "status": "pass",
+     "desc": "applying the suggestion keeps the value intact"
     }
    ],
    "packages": [
     "cases/abi-mismatch/app",
     "cases/abi-mismatch/lib",
-    "cases/cpp-source",
     "cases/dependency-cycle",
     "cases/empty-glob",
     "cases/invalid-source",
@@ -471,93 +542,218 @@
     "cases/type-mismatch",
     "cases/undeclared-dependency",
     "cases/unknown-cfg-key",
+    "cases/unknown-feature",
     "cases/unknown-function",
     "cases/unknown-kind",
     "cases/unknown-property",
     "cases/unknown-target",
-    "cases/unresolved-path"
+    "cases/unresolved-path",
+    "cases/unsupported-language"
+   ]
+  },
+  {
+   "name": "05-incremental",
+   "duration_ms": 1349,
+   "counts": {
+    "pass": 44,
+    "fail": 0,
+    "xfail": 0,
+    "xpass": 0
+   },
+   "total": 44,
+   "ok": true,
+   "checks": [
+    {
+     "status": "pass",
+     "desc": "app: check passes"
+    },
+    {
+     "status": "pass",
+     "desc": "a first build runs every action (5 compiles, 1 archive, 3 links)"
+    },
+    {
+     "status": "pass",
+     "desc": "the binary runs"
+    },
+    {
+     "status": "pass",
+     "desc": "a second build runs nothing"
+    },
+    {
+     "status": "pass",
+     "desc": "editing one source rebuilds it and everything downstream"
+    },
+    {
+     "status": "pass",
+     "desc": "the edited unit is recompiled"
+    },
+    {
+     "status": "pass",
+     "desc": "the other unit of the same target is not"
+    },
+    {
+     "status": "pass",
+     "desc": "a dependent's own sources are not recompiled"
+    },
+    {
+     "status": "pass",
+     "desc": "the archive is rebuilt"
+    },
+    {
+     "status": "pass",
+     "desc": "the dependent is relinked"
+    },
+    {
+     "status": "pass",
+     "desc": "editing a dependent's source touches nothing in the dependency"
+    },
+    {
+     "status": "pass",
+     "desc": "the dependency's archive is left alone"
+    },
+    {
+     "status": "pass",
+     "desc": "editing a private header rebuilds through the depfile"
+    },
+    {
+     "status": "pass",
+     "desc": "the unit that includes the private header is recompiled"
+    },
+    {
+     "status": "pass",
+     "desc": "a unit of the same target that does not include it is not"
+    },
+    {
+     "status": "pass",
+     "desc": "a private header never reaches a dependent"
+    },
+    {
+     "status": "pass",
+     "desc": "nor a test that only uses the public header"
+    },
+    {
+     "status": "pass",
+     "desc": "editing a public header rebuilds every dependent unit"
+    },
+    {
+     "status": "pass",
+     "desc": "the dependency's own units are recompiled"
+    },
+    {
+     "status": "pass",
+     "desc": "both of them"
+    },
+    {
+     "status": "pass",
+     "desc": "and the dependent's unit as well"
+    },
+    {
+     "status": "pass",
+     "desc": "and the tests"
+    },
+    {
+     "status": "pass",
+     "desc": "touching a source without changing it still rebuilds (mtime judgement)"
+    },
+    {
+     "status": "pass",
+     "desc": "touching the manifest without changing it rebuilds nothing"
+    },
+    {
+     "status": "pass",
+     "desc": "adding only a comment to the manifest rebuilds nothing"
+    },
+    {
+     "status": "pass",
+     "desc": "adding a flag recompiles the target it applies to"
+    },
+    {
+     "status": "pass",
+     "desc": "the flag reaches the compile action"
+    },
+    {
+     "status": "pass",
+     "desc": "and no further than the target that declares it"
+    },
+    {
+     "status": "pass",
+     "desc": "adding a source compiles only the new one"
+    },
+    {
+     "status": "pass",
+     "desc": "the new unit is compiled"
+    },
+    {
+     "status": "pass",
+     "desc": "the existing units are not"
+    },
+    {
+     "status": "pass",
+     "desc": "removing a source rebuilds the archive without compiling anything"
+    },
+    {
+     "status": "pass",
+     "desc": "no compile action runs when only a source disappeared"
+    },
+    {
+     "status": "pass",
+     "desc": "the first release build runs every action"
+    },
+    {
+     "status": "pass",
+     "desc": "switching back to debug rebuilds nothing"
+    },
+    {
+     "status": "pass",
+     "desc": "switching to release again rebuilds nothing"
+    },
+    {
+     "status": "pass",
+     "desc": "core: both tests pass"
+    },
+    {
+     "status": "pass",
+     "desc": "test exits non-zero when a test fails"
+    },
+    {
+     "status": "pass",
+     "desc": "the summary counts both outcomes"
+    },
+    {
+     "status": "pass",
+     "desc": "--failed reruns only what failed last time"
+    },
+    {
+     "status": "pass",
+     "desc": "--failed leaves the passing test alone"
+    },
+    {
+     "status": "pass",
+     "desc": "the repaired test passes under --failed"
+    },
+    {
+     "status": "pass",
+     "desc": "--failed says so when nothing failed last time"
+    },
+    {
+     "status": "pass",
+     "desc": "a full run passes again"
+    }
+   ],
+   "packages": [
+    "app",
+    "core"
    ]
   }
  ],
  "totals": {
-  "pass": 80,
+  "pass": 156,
   "fail": 0,
-  "xfail": 14,
+  "xfail": 0,
   "xpass": 0
  },
- "total": 94,
+ "total": 156,
  "ok": true,
  "attention": [],
- "known_issues": [
-  {
-   "status": "xfail",
-   "project": "03-features",
-   "desc": "a dependency behind a disabled feature is absent from the graph  [F-003]"
-  },
-  {
-   "status": "xfail",
-   "project": "03-features",
-   "desc": "a disabled optional dependency need not exist on disk  [F-003]"
-  },
-  {
-   "status": "xfail",
-   "project": "03-features",
-   "desc": "an undeclared feature passed to --features is rejected  [F-001]"
-  },
-  {
-   "status": "xfail",
-   "project": "03-features",
-   "desc": "an undeclared feature referenced from dowel.build is rejected  [F-002]"
-  },
-  {
-   "status": "xfail",
-   "project": "04-diagnostics",
-   "desc": "check finds invalid-source as well  [F-004]"
-  },
-  {
-   "status": "xfail",
-   "project": "04-diagnostics",
-   "desc": "check finds unresolved-path as well  [F-004]"
-  },
-  {
-   "status": "xfail",
-   "project": "04-diagnostics",
-   "desc": "missing-manifest points at the offending source  [F-005]"
-  },
-  {
-   "status": "xfail",
-   "project": "04-diagnostics",
-   "desc": "building a C++ source produces a diagnostic of dowel's own  [F-008]"
-  },
-  {
-   "status": "xfail",
-   "project": "04-diagnostics",
-   "desc": "declaring a toolchain that does not exist fails with a source location  [F-009]"
-  },
-  {
-   "status": "xfail",
-   "project": "04-diagnostics",
-   "desc": "the C++ failure is not reported in the linker's words  [F-008]"
-  },
-  {
-   "status": "xfail",
-   "project": "04-diagnostics",
-   "desc": "the toolchain failure is not reported in the shell's words  [F-009]"
-  },
-  {
-   "status": "xfail",
-   "project": "04-diagnostics",
-   "desc": "merge-conflict renders the dependent side of the conflict too  [F-007]"
-  },
-  {
-   "status": "xfail",
-   "project": "04-diagnostics",
-   "desc": "abi-mismatch renders the dependent side of the conflict too  [F-007]"
-  },
-  {
-   "status": "xfail",
-   "project": "04-diagnostics",
-   "desc": "the manifest still passes check after applying the suggestion  [F-006]"
-  }
- ]
+ "known_issues": []
 }
