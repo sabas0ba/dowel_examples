@@ -19,7 +19,8 @@ report:
 
 # 履歴から掲示用の頁を作る。CI が掲示用の枝で行うのと同じもの。
 site:
-	python3 scripts/report.py site --history .work/report/history.json --out .work/report
+	python3 scripts/report.py site --history .work/report/history.json \
+	    --latest .work/report/results.json --out .work/report
 
 clean:
 	rm -rf .work
