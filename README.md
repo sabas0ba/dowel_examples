@@ -44,7 +44,7 @@ DOWEL=/path/to/dowel make verify
 04-diagnostics
   ok   the manifest still passes check after applying the suggestion
 
-total 162 checks: 162 passed, 0 failed, 0 known, 0 fixed
+total 163 checks: 163 passed, 0 failed, 0 known, 0 fixed
 ```
 
 検査名は英語で書く。実装の中身ではなく、何が固定されているかを1行で読ませる
