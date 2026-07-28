@@ -1,8 +1,11 @@
 # 検証。ローカルと同じ入口（./run.sh）をそのまま実行する。
 #
 # 本スイートは dowel の成果物を必要とする。dowel は別リポジトリかつ非公開で
-# あるため、`DOWEL_REPO_TOKEN` を用いて取り出したうえで、その場で組み立てる。
-# 設定手順は docs/20-ci.md にある。
+# あるため、読み取り専用のデプロイキー（`DOWEL_DEPLOY_KEY`）で取り出したうえで、
+# その場で組み立てる。個人アクセストークンは用いない。設定手順は docs/20-ci.md。
+#
+# 取り出す版は `dowel-ref` に固定してある。追随は、その1行を書き換える
+# pull request として現れる。手動実行のときだけ別の版を指せる。
 #
 # 結果は3か所へ出す。
 #
@@ -22,9 +25,9 @@ on:
   workflow_dispatch:
     inputs:
       dowel_ref:
-        description: 検証に用いる dowel の枝またはコミット
+        description: 検証に用いる dowel の版（省略すると dowel-ref の固定値）
         type: string
-        default: main
+        default: ""
 
 # 同じ枝に新しい押し込みが来たら、走っている実行を止める。
 # 掲示用の枝への押し込みが交差しないようにする意味も兼ねる。
@@ -36,7 +39,6 @@ permissions:
   contents: read
 
 env:
-  DOWEL_REF: ${{ inputs.dowel_ref || 'main' }}
   PAGES_BRANCH: gh-pages
 
 jobs:
@@ -48,22 +50,42 @@ jobs:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
-      - name: Check for the dowel token
-        # 無いまま進むと cargo build まで行ってから落ちる。先に理由を出す。
+      - name: Check for the deploy key
+        # 無いまま進むと checkout が 404 で落ちる。非公開リポジトリに対する
+        # 認証の失敗は「存在しない」と区別がつかないため、先に理由を出す。
         env:
-          TOKEN: ${{ secrets.DOWEL_REPO_TOKEN }}
+          KEY: ${{ secrets.DOWEL_DEPLOY_KEY }}
         run: |
-          if [ -z "$TOKEN" ]; then
-            echo "::error::secret DOWEL_REPO_TOKEN が設定されていない。docs/20-ci.md を参照。"
+          if [ -z "$KEY" ]; then
+            echo "::error::secret DOWEL_DEPLOY_KEY が設定されていない。docs/20-ci.md を参照。"
             exit 1
           fi
+
+      - name: Resolve the dowel revision
+        # 既定は `dowel-ref` の固定値。手動実行のときだけ上書きできる。
+        # 入力を直接展開せず環境変数を経由する（スクリプトへの注入を避ける）。
+        env:
+          REQUESTED: ${{ inputs.dowel_ref }}
+        run: |
+          ref=$REQUESTED
+          if [ -z "$ref" ]; then
+            ref=$(sed -e 's/#.*//' -e 's/[[:space:]]//g' dowel-ref | grep -v '^$' | tail -1)
+          fi
+          if [ -z "$ref" ]; then
+            echo "::error::dowel-ref から版を読み取れなかった。"
+            exit 1
+          fi
+          echo "検証に用いる dowel の版: $ref"
+          echo "DOWEL_REF=$ref" >> "$GITHUB_ENV"
 
       - name: Checkout dowel
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           repository: sabas0ba/dowel
           ref: ${{ env.DOWEL_REF }}
-          token: ${{ secrets.DOWEL_REPO_TOKEN }}
+          # 読み取り専用のデプロイキー。個人アクセストークンを用いない理由は
+          # docs/20-ci.md 1節にある。
+          ssh-key: ${{ secrets.DOWEL_DEPLOY_KEY }}
           path: .dowel-src
           persist-credentials: false
 
@@ -73,13 +95,15 @@ jobs:
           echo "DOWEL_COMMIT=$(git -C .dowel-src rev-parse HEAD)" >> "$GITHUB_ENV"
 
       - name: Cache cargo
+        # 鍵に版を含める。同じ版なら target/ をそのまま再利用でき、
+        # 版が動けば別の鍵になる。追随の pull request でだけ組み直す。
         uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: |
             ~/.cargo/registry
             ~/.cargo/git
             .dowel-src/target
-          key: dowel-${{ runner.os }}-${{ hashFiles('.dowel-src/Cargo.lock') }}
+          key: dowel-${{ runner.os }}-${{ env.DOWEL_COMMIT }}
           restore-keys: dowel-${{ runner.os }}-
 
       - name: Install ninja and jq

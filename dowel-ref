@@ -1,0 +1,20 @@
+# 検証に用いる dowel の版。CI はここに書かれた1行を取り出して組み立てる。
+#
+# 枝の名前ではなくコミットを書く。枝を指すと、本リポジトリを何も変えていない
+# のに結果が動く。ある日の赤が、こちらの退行なのか本体の変更なのかを
+# 区別できなくなる。
+#
+# 追随は、この1行を書き換える pull request として現れる。差分が
+# 「どの版へ移ったか」そのものになり、そのとき xfail が xpass へ変わったか
+# どうかも同じ実行で分かる。
+#
+# 手元で同じ版を使う場合:
+#
+#   git -C ../dowel checkout $(grep -v '^#' dowel-ref | tail -1)
+#   cargo build --release --manifest-path ../dowel/Cargo.toml
+#
+# 手動実行（Actions → verify → Run workflow）では dowel_ref に別の版を
+# 渡せる。本体の修正が本スイートの xfail を xpass に変えるかどうかを、
+# ここを書き換える前に確かめられる。
+
+a8a59e7c70aa3bd15f01d8c04cf7e38a00b3bd4f
