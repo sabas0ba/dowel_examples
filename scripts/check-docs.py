@@ -15,6 +15,7 @@
 
 import os
 import re
+import subprocess
 import sys
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -26,11 +27,30 @@ def looks_like_a_check_name(s):
 
 
 def markdown_files():
-    for base, dirs, names in os.walk(ROOT):
-        dirs[:] = [d for d in dirs if d not in (".git", ".work", "__pycache__")]
-        for n in names:
-            if n.endswith(".md"):
-                yield os.path.join(base, n)
+    """本リポジトリが追跡している Markdown だけを返す。
+
+    走査を作業ディレクトリ全体にすると、そこに置かれた別のものまで拾う。
+    実際 CI では dowel の checkout（`.dowel-src/`）が同じ木の中にあり、
+    その `docs/10-manifest.md` に含まれる git 依存の例の rev を
+    「文書が引用する版」と誤認して落ちた。追跡対象かどうかが正しい境界である。
+    """
+    tracked = subprocess.run(
+        ["git", "-C", ROOT, "ls-files", "-z", "*.md"],
+        capture_output=True, check=False,
+    )
+    if tracked.returncode == 0:
+        for name in tracked.stdout.decode("utf-8").split("\0"):
+            if name:
+                yield os.path.join(ROOT, name)
+        return
+    # git が使えない場合の退避。既知の置き場だけを見る。
+    for sub in ("", "docs", "projects"):
+        base = os.path.join(ROOT, sub)
+        for cur, dirs, names in os.walk(base):
+            dirs[:] = [d for d in dirs if not d.startswith(".") and d != "__pycache__"]
+            for n in names:
+                if n.endswith(".md"):
+                    yield os.path.join(cur, n)
 
 
 def rel(path):
