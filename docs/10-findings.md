@@ -82,7 +82,7 @@ includes
 
 ### 検査
 
-`projects/04-diagnostics` の「修正提案を適用したマニフェストが check を通る」。
+`projects/04-diagnostics` の`the manifest still passes check after applying the suggestion`。
 `lib/apply_fix.py` が JSON の提案を書き戻し、もう一度 `check` を掛ける。
 
 ---
@@ -133,7 +133,7 @@ flags = ["-DALWAYS=1", "-DTYPO=1" when feature.raal]
 ### 検査
 
 `projects/03-features` の
-「dowel.build から宣言されていない機能を参照すると落ちる」。
+`an undeclared feature referenced from dowel.build is rejected`。
 
 ---
 
@@ -165,7 +165,7 @@ CLI 引数の検証は行われる建て付けになっている。
 ### 検査
 
 `projects/03-features` の
-「宣言されていない機能を --features に渡すと落ちる」。
+`an undeclared feature passed to --features is rejected`。
 
 ---
 
@@ -222,8 +222,8 @@ undefined reference to `std::__cxx11::basic_string<...>::c_str() const'
 ### 検査
 
 `projects/04-diagnostics` の
-「C++ のソースに対して dowel 自身の診断が出る」
-「C++ の失敗がリンカの語で出てこない」。
+`building a C++ source produces a diagnostic of dowel's own`
+`the C++ failure is not reported in the linker's words`。
 
 ---
 
@@ -266,8 +266,8 @@ ninja: build stopped: subcommand failed.
 ### 検査
 
 `projects/04-diagnostics` の
-「実在しないツールチェーンを宣言すると位置つきで落ちる」
-「ツールチェーンの失敗がシェルの語で出てこない」。
+`declaring a toolchain that does not exist fails with a source location`
+`the toolchain failure is not reported in the shell's words`。
 
 ---
 
@@ -322,7 +322,7 @@ rustc の描画は複数ファイルにまたがるラベルを出せる（`::: 
 ### 検査
 
 `projects/04-diagnostics` の
-「merge-conflict の人間向け描画に依存元側の位置も出る」ほか1件。
+`merge-conflict renders the dependent side of the conflict too` ほか1件。
 
 ---
 
@@ -373,7 +373,7 @@ rustc の描画は複数ファイルにまたがるラベルを出せる（`::: 
 ### 検査
 
 `projects/04-diagnostics` の
-「check が invalid-source を見つける」ほか1件。
+`check finds invalid-source as well` ほか1件。
 
 ---
 
@@ -441,8 +441,8 @@ json:json [lib]
 ### 検査
 
 `projects/03-features` の
-「有効でない任意の依存は実体が無くても check できる」
-「有効でない機能の依存は依存グラフに現れない」。
+`a disabled optional dependency need not exist on disk`
+`a dependency behind a disabled feature is absent from the graph`。
 
 ---
 
@@ -473,7 +473,7 @@ json:json [lib]
 
 ### 検査
 
-`projects/04-diagnostics` の「missing-manifest は原因の位置を示す」。
+`projects/04-diagnostics` の`missing-manifest points at the offending source`。
 
 ---
 

@@ -23,14 +23,14 @@ for code in \
     dependency-cycle \
     missing-manifest
 do
-    diag "$code" "check が $code を報告する" -C "cases/$code" check
-    fails "check が $code で 0 以外を返す" -C "cases/$code" check
+    diag  "$code" "check reports $code"                -C "cases/$code" check
+    fails         "check exits non-zero on $code"      -C "cases/$code" check
 done
 
 # 2パッケージの併合で出るもの。根から見る必要がある。
 for code in merge-conflict abi-mismatch; do
-    diag "$code" "check が $code を報告する" -C "cases/$code/app" check
-    fails "check が $code で 0 以外を返す" -C "cases/$code/app" check
+    diag  "$code" "check reports $code"           -C "cases/$code/app" check
+    fails         "check exits non-zero on $code" -C "cases/$code/app" check
 done
 
 # ------------------------------------------------------- 計画の段で出るもの
@@ -40,13 +40,13 @@ done
 # （docs/10-manifest.md）。したがってこれらは build まで出てこない。
 
 for code in invalid-source unresolved-path empty-glob; do
-    diag "$code" "build が $code を報告する" -C "cases/$code" build
+    diag "$code" "build reports $code" -C "cases/$code" build
 done
 
 # 誤りの2件は 0 以外で終わる。empty-glob は警告であり、
 # それ自体では落とさない（同じ入力で no-sources が別に出る）。
-fails "build が invalid-source で 0 以外を返す"  -C cases/invalid-source build
-fails "build が unresolved-path で 0 以外を返す" -C cases/unresolved-path build
+fails "build exits non-zero on invalid-source"  -C cases/invalid-source build
+fails "build exits non-zero on unresolved-path" -C cases/unresolved-path build
 
 # ------------------------------------------------------- check の守備範囲
 #
@@ -57,7 +57,7 @@ fails "build が unresolved-path で 0 以外を返す" -C cases/unresolved-path
 
 for code in invalid-source unresolved-path; do
     known_issue F-004
-    fails "check が $code を見つける" -C "cases/$code" check
+    fails "check finds $code as well" -C "cases/$code" check
 done
 
 # ------------------------------------------------------- 位置情報
@@ -68,13 +68,13 @@ done
 # missing-manifest だけが持たないことを既知の未修正として記録する。
 
 for code in unknown-property undeclared-dependency dependency-cycle type-mismatch; do
-    diag_where "$code" '.labels | length > 0' "$code は原因の位置を示す" \
+    diag_where "$code" '.labels | length > 0' "$code points at the offending source" \
         -C "cases/$code" check
 done
 
 known_issue F-005
 diag_where missing-manifest '.labels | length > 0' \
-    "missing-manifest は原因の位置を示す" -C cases/missing-manifest check
+    "missing-manifest points at the offending source" -C cases/missing-manifest check
 
 # ------------------------------------------------------- 下流の道具に流す誤り
 #
@@ -86,26 +86,27 @@ diag_where missing-manifest '.labels | length > 0' \
 # 組めない言語のソースが受理され、リンカの undefined reference になる。
 # build 自体は 0 以外を返すが、返しているのは ninja であり、
 # 診断は1件も出ない。
-fails "C++ のソースを組もうとすると build は失敗する" -C cases/cpp-source build
+fails "building a C++ source fails" -C cases/cpp-source build
 
 known_issue F-008
-any_diag "C++ のソースに対して dowel 自身の診断が出る" -C cases/cpp-source build
+any_diag "building a C++ source produces a diagnostic of dowel's own" \
+    -C cases/cpp-source build
 
 # 宣言したツールチェーンの実在を確かめないため、ninja の
 # 「command not found」になる。再現性のために固定した対象そのものである。
 known_issue F-009
 diag_where unknown-toolchain '.labels | length > 0' \
-    "実在しないツールチェーンを宣言すると位置つきで落ちる" \
+    "declaring a toolchain that does not exist fails with a source location" \
     -C cases/missing-toolchain check
 
 # 下流へ流れていること自体は、いま観測できる事実として固定しておく。
 # 直ったときにこの2件が XPASS になり、上の xfail と対で動く。
 known_issue F-008
-out_lacks "undefined reference" "C++ の失敗がリンカの語で出てこない" \
+out_lacks "undefined reference" "the C++ failure is not reported in the linker's words" \
     -C cases/cpp-source build
 
 known_issue F-009
-out_lacks "not found" "ツールチェーンの失敗がシェルの語で出てこない" \
+out_lacks "not found" "the toolchain failure is not reported in the shell's words" \
     -C cases/missing-toolchain build
 
 # ------------------------------------------------------- 衝突の両側
@@ -115,7 +116,7 @@ out_lacks "not found" "ツールチェーンの失敗がシェルの語で出て
 # パッケージから来る。したがって2つの位置は必ず別のファイルにある。
 
 for c in merge-conflict abi-mismatch; do
-    diag_where "$c" '.labels | length >= 2' "$c は2つの値の位置を持つ" \
+    diag_where "$c" '.labels | length >= 2' "$c carries the location of both values" \
         -C "cases/$c/app" check
 done
 
@@ -123,7 +124,7 @@ done
 # 利用者が最初に見るのはこちらであり、片側だけでは衝突の相手が分からない。
 for c in merge-conflict abi-mismatch; do
     known_issue F-007
-    out_has "app/dowel.build" "$c の人間向け描画に依存元側の位置も出る" \
+    out_has "app/dowel.build" "$c renders the dependent side of the conflict too" \
         -C "cases/$c/app" check
 done
 
@@ -134,7 +135,7 @@ done
 
 rm -rf fixed && cp -r cases/unknown-property fixed
 sh_run apply_fix fixed check
-fact $? "unknown-property は修正提案を持つ"
+fact $? "unknown-property carries a suggestion"
 
 known_issue F-006
-ok "修正提案を適用したマニフェストが check を通る" -C fixed check
+ok "the manifest still passes check after applying the suggestion" -C fixed check

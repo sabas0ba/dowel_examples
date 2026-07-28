@@ -1,7 +1,7 @@
 #include <stdio.h>
 
-/* 依存の辺が消えたら、公開定義も公開ヘッダも届かない。
-   届いてしまう場合は、機能を外した意味が無い。 */
+/* When the edge goes, neither the public define nor the public header
+   arrives. If they did, disabling the feature would mean nothing. */
 #ifdef JSON_AVAILABLE
 #include "json.h"
 #endif

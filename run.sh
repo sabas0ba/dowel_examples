@@ -38,17 +38,17 @@ resolve_dowel() {
     if [ -n "${DOWEL:-}" ]; then
         command -v "$DOWEL" >/dev/null 2>&1 && { command -v "$DOWEL"; return 0; }
         [ -x "$DOWEL" ] && { printf '%s' "$DOWEL"; return 0; }
-        printf 'DOWEL=%s は実行できない\n' "$DOWEL" >&2
+        printf 'DOWEL=%s is not executable\n' "$DOWEL" >&2
         return 1
     fi
     if command -v dowel >/dev/null 2>&1; then command -v dowel; return 0; fi
     local sibling="$SUITE_ROOT/../dowel/target/release/dowel"
     if [ -x "$sibling" ]; then (cd "$(dirname "$sibling")" && printf '%s/%s' "$PWD" dowel); return 0; fi
     cat >&2 <<'EOF'
-dowel が見つからない。次のいずれかを行う。
+cannot find dowel. do one of:
 
   DOWEL=/path/to/dowel ./run.sh
-  cargo build --release   # 隣の ../dowel で
+  cargo build --release   # in ../dowel, next to this repository
 EOF
     return 1
 }
@@ -60,7 +60,7 @@ export DOWEL
 
 for tool in cc ninja jq; do
     command -v "$tool" >/dev/null 2>&1 || {
-        printf '%s が無い。C コンパイラ・ninja・jq が要る。\n' "$tool" >&2
+        printf '%s is missing. a C compiler, ninja and jq are required.\n' "$tool" >&2
         exit 2
     }
 done
@@ -79,7 +79,7 @@ else
         for p in "${all[@]}"; do
             case $p in "$pat"*) selected+=("$p"); found=1 ;; esac
         done
-        [ "$found" = 1 ] || { printf 'そのようなプロジェクトは無い: %s\n' "$pat" >&2; exit 2; }
+        [ "$found" = 1 ] || { printf 'no such project: %s\n' "$pat" >&2; exit 2; }
     done
 fi
 
@@ -130,8 +130,8 @@ for name in "${selected[@]}"; do
     cp -r "$src" "$dst"
 
     if [ ! -f "$dst/expect.sh" ]; then
-        printf '  FAIL expect.sh が無い\n'
-        printf 'fail\t%s\t%s\n' "$name" "expect.sh が無い" >>"$RESULTS"
+        printf '  FAIL expect.sh is missing\n'
+        printf 'fail\t%s\t%s\n' "$name" "expect.sh is missing" >>"$RESULTS"
         _record_project "$name" "$started" "$before"
         continue
     fi
@@ -146,16 +146,16 @@ for name in "${selected[@]}"; do
     )
     rc=$?
     if [ "$rc" -ne 0 ]; then
-        printf '  FAIL expect.sh が異常終了した (rc=%s)\n' "$rc"
-        printf 'fail\t%s\t%s\n' "$name" "expect.sh が異常終了した (rc=$rc)" >>"$RESULTS"
+        printf '  FAIL expect.sh exited abnormally (rc=%s)\n' "$rc"
+        printf 'fail\t%s\t%s\n' "$name" "expect.sh exited abnormally (rc=$rc)" >>"$RESULTS"
     fi
 
     # 実体を汚していないことの確認。dowel 本体の
     # every_fixture_is_left_clean_in_the_repository と同じ趣旨。
     stray=$(find "$src" \( -name '.dowel' -o -name 'compile_commands.json' \) -print -quit)
     if [ -n "$stray" ]; then
-        printf '  FAIL 実体に成果物が残っている: %s\n' "$stray"
-        printf 'fail\t%s\t%s\n' "$name" "実体に成果物が残っている" >>"$RESULTS"
+        printf '  FAIL build output was left in the source tree: %s\n' "$stray"
+        printf 'fail\t%s\t%s\n' "$name" "build output was left in the source tree" >>"$RESULTS"
     fi
 
     _record_project "$name" "$started" "$before"
@@ -169,11 +169,11 @@ fail=$(grep -c '^fail' "$RESULTS")
 xfail=$(grep -c '^xfail' "$RESULTS")
 xpass=$(grep -c '^xpass' "$RESULTS")
 
-printf '合計 %s 件: 成功 %s / 失敗 %s / 既知の未修正 %s / 修正済み %s\n' \
+printf 'total %s checks: %s passed, %s failed, %s known, %s fixed\n' \
     "$((pass + fail + xfail + xpass))" "$pass" "$fail" "$xfail" "$xpass"
 
 if [ "$fail" -gt 0 ] || [ "$xpass" -gt 0 ]; then
-    printf '\n落ちた検査:\n'
+    printf '\nchecks needing attention:\n'
     grep -E '^(fail|xpass)' "$RESULTS" | awk -F'\t' '{ printf "  %-6s %-16s %s\n", $1, $2, $3 }'
 fi
 

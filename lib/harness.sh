@@ -64,8 +64,8 @@ _verdict() {
         desc="$desc  [$issue]"
         if [ "$good" = 0 ]; then
             _record xpass "$desc"
-            printf '       この検査は %s の未修正を前提に xfail としているが、成功した。\n' "$issue"
-            printf '       docs/10-findings.md を更新し known_issue を外すこと。\n'
+            printf '       this check is declared xfail against %s, but it passed.\n' "$issue"
+            printf '       update docs/10-findings.md and drop the known_issue declaration.\n'
         else
             _record xfail "$desc"
         fi
@@ -135,7 +135,7 @@ diag() {
     if printf '%s' "$OUT" | jq -e --arg c "$code" 'select(.code == $c)' >/dev/null 2>&1; then
         _verdict 0 "$desc"
     else
-        _verdict 1 "$desc（診断 $code が出ていない）"
+        _verdict 1 "$desc (diagnostic $code was not emitted)"
     fi
 }
 
@@ -145,7 +145,7 @@ no_diag() {
     OUT=$(json_diags "$@")
     RC=0
     if printf '%s' "$OUT" | jq -e --arg c "$code" 'select(.code == $c)' >/dev/null 2>&1; then
-        _verdict 1 "$desc（診断 $code が出ている）"
+        _verdict 1 "$desc (diagnostic $code was emitted)"
     else
         _verdict 0 "$desc"
     fi
@@ -204,7 +204,7 @@ prints() {
     if [ "$RC" -eq 0 ] && [ "$OUT" = "$want" ]; then
         _verdict 0 "$desc"
     else
-        _verdict 1 "$desc（期待 \"$want\" / 実際 \"$OUT\"）"
+        _verdict 1 "$desc (want \"$want\", got \"$OUT\")"
     fi
 }
 
@@ -284,15 +284,15 @@ runs_actions() {
     build_direct "$@"
     local got; got=$(_ran_actions)
     if [ "$RC" -ne 0 ]; then
-        _verdict 1 "$desc（ビルドが失敗した）"
+        _verdict 1 "$desc (the build failed)"
     elif [ -z "$got" ]; then
-        _verdict 1 "$desc（実行数がログから読み取れない）"
+        _verdict 1 "$desc (no action count in the log)"
     elif [ "$want" = "+" ]; then
-        [ "$got" -gt 0 ]; _verdict $? "$desc（実行 $got 件）"
+        [ "$got" -gt 0 ]; _verdict $? "$desc ($got actions)"
     elif [ "$got" = "$want" ]; then
         _verdict 0 "$desc"
     else
-        _verdict 1 "$desc（期待 $want 件 / 実際 $got 件）"
+        _verdict 1 "$desc (want $want actions, got $got)"
     fi
 }
 
@@ -328,9 +328,9 @@ build_dir_ids() {
 # standard <desc-prefix> — カレントディレクトリのパッケージに対して行う。
 standard() {
     local name=$1
-    ok    "$name: check が通る" check
-    ok    "$name: build が通る" build
-    runs_actions 0 "$name: 再ビルドで何も走らない（実行器をまたいでも）"
+    ok    "$name: check passes" check
+    ok    "$name: build passes" build
+    runs_actions 0 "$name: a second build runs nothing, across executors too"
 }
 
 # has_tests — パッケージが test ターゲットを持つか。

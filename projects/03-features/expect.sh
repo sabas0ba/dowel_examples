@@ -8,24 +8,25 @@ standard app
 
 # --------------------------------------------------- 既定の機能
 
-prints "backends=json width=4" "既定の機能で json の辺が現れる" "$(artifact app)"
-out_has "json:json" "graph に json の辺が出る" graph
+prints "backends=json width=4" "the default features bring the json edge in" "$(artifact app)"
+out_has "json:json" "graph shows the json edge" graph
 
 # --------------------------------------------------- 機能を足す
 
-ok "json と xml の両方を有効にできる" build --features=xml
-prints "backends=json+xml width=12" "両方の辺が現れる" "$(artifact app json+xml)"
+ok "json and xml can both be enabled" build --features=xml
+prints "backends=json+xml width=12" "both edges appear" "$(artifact app json+xml)"
 
 # --------------------------------------------------- 機能を外す
 
-ok "既定の機能を外せる" build --no-default-features
-prints "backends=none width=0" "辺が消えると公開定義もヘッダも届かない" \
+ok "the default features can be turned off" build --no-default-features
+prints "backends=none width=0" \
+    "when the edge goes, neither the public defines nor the headers arrive" \
     "$(artifact app gnu-debug)"
 
 # 辺が消えたとき、ライブラリそのものがリンクされないこと。
 # 出力の内容だけでは「使っていない」ことしか分からず、
 # 「持ち込んでいない」ことはアクショングラフでしか見えない。
-out_lacks "libjson.a" "辺が消えるとアーカイブも作らない" \
+out_lacks "libjson.a" "when the edge goes, the archive is not built either" \
     graph --kind=action --no-default-features
 
 # --------------------------------------------------- 選ばれなかった任意の依存
@@ -36,10 +37,10 @@ out_lacks "libjson.a" "辺が消えるとアーカイブも作らない" \
 # 「選ばれていない依存を取ってくる」ことになる。
 
 known_issue F-003
-out_lacks "xml:xml" "有効でない機能の依存は依存グラフに現れない" graph
+out_lacks "xml:xml" "a dependency behind a disabled feature is absent from the graph" graph
 
 known_issue F-003
-ok "有効でない任意の依存は実体が無くても check できる" -C ../missing-optional check
+ok "a disabled optional dependency need not exist on disk" -C ../missing-optional check
 
 # --------------------------------------------------- 宣言されていない機能
 #
@@ -49,15 +50,15 @@ ok "有効でない任意の依存は実体が無くても check できる" -C .
 # 消える。cfg.nosuchkey は unknown-cfg-key で落ちるため、非対称である。
 
 known_issue F-001
-fails "宣言されていない機能を --features に渡すと落ちる" check --features=nosuchfeature
+fails "an undeclared feature passed to --features is rejected" check --features=nosuchfeature
 
 known_issue F-002
-fails "dowel.build から宣言されていない機能を参照すると落ちる" \
+fails "an undeclared feature referenced from dowel.build is rejected" \
     -C ../undeclared check
 
 # --------------------------------------------------- 任意の依存の実体
 
 cd ../json || exit 1
-ok "json: 単体でも組める" check
+ok "json: builds on its own" check
 cd ../xml || exit 1
-ok "xml: 単体でも組める" check
+ok "xml: builds on its own" check

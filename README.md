@@ -37,14 +37,17 @@ DOWEL=/path/to/dowel make verify
 
 ```
 02-config
-  ok   app: check が通る
-  ok   依存の非公開フラグは依存元の引数に現れない
+  ok   app: check passes
+  ok   private flags of a dependency never reach a dependent
 
 04-diagnostics
-  xfail 修正提案を適用したマニフェストが check を通る  [F-006]
+  xfail the manifest still passes check after applying the suggestion  [F-006]
 
-合計 89 件: 成功 80 / 失敗 0 / 既知の未修正 9 / 修正済み 0
+total 94 checks: 80 passed, 0 failed, 14 known, 0 fixed
 ```
+
+検査名は英語で書く。実装の中身ではなく、何が固定されているかを1行で読ませる
+ためのものであり、CI の要約と掲示にもそのまま並ぶ（[docs/00-design.md](docs/00-design.md) 6節）。
 
 ## プロジェクト
 

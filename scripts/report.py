@@ -29,10 +29,10 @@ import sys
 STATES = ["pass", "fail", "xfail", "xpass"]
 
 LABEL = {
-    "pass": "成功",
-    "fail": "失敗",
-    "xfail": "既知の未修正",
-    "xpass": "修正済み",
+    "pass": "passed",
+    "fail": "failed",
+    "xfail": "known",
+    "xpass": "fixed",
 }
 
 # 履歴に積む件数の上限。掲示する表が際限なく伸びると読めなくなる。
@@ -135,7 +135,7 @@ def render_summary(run):
     out.append("# dowel_examples")
     out.append("")
     out.append(
-        "**{}** — {} 件: 成功 {} / 失敗 {} / 既知の未修正 {} / 修正済み {}".format(
+        "**{}** — {} checks: {} passed, {} failed, {} known, {} fixed".format(
             verdict(run["ok"]), run["total"], t["pass"], t["fail"], t["xfail"], t["xpass"]
         )
     )
@@ -143,12 +143,12 @@ def render_summary(run):
 
     if not run["projects"]:
         out.append(
-            "検査が1件も走っていない。走らせる前に落ちたことを表す。ジョブのログを参照。"
+            "No check ran at all. The job failed before the suite started. See the job log."
         )
         out.append("")
         return "\n".join(out) + "\n"
 
-    out.append("| プロジェクト | 状態 | 検査 | " + " | ".join(LABEL[s] for s in STATES) + " | 所要 |")
+    out.append("| project | state | checks | " + " | ".join(LABEL[s] for s in STATES) + " | time |")
     out.append("|---|---|--:|--:|--:|--:|--:|--:|")
     for p in run["projects"]:
         out.append(
@@ -163,43 +163,43 @@ def render_summary(run):
     out.append("")
 
     if run["attention"]:
-        out.append("## 直すべきもの")
+        out.append("## Needs attention")
         out.append("")
-        out.append("| 状態 | プロジェクト | 検査 |")
+        out.append("| state | project | check |")
         out.append("|---|---|---|")
         for c in run["attention"]:
             out.append("| {} | {} | {} |".format(c["status"], c["project"], c["desc"]))
         out.append("")
         out.append(
-            "`xpass` は、既知の未修正事項として登録した検査が成功したことを表す。"
-            "本体が直ったので `docs/10-findings.md` を更新し、"
-            "`known_issue` の宣言を外す。"
+            "`xpass` means a check declared against a known unfixed issue now passes. "
+            "The upstream issue is fixed: update `docs/10-findings.md` and drop the "
+            "`known_issue` declaration."
         )
         out.append("")
 
     if run["known_issues"]:
-        out.append("## 既知の未修正事項")
+        out.append("## Known unfixed issues")
         out.append("")
-        out.append("落ちたままにしてある検査。詳細は `docs/10-findings.md`。")
+        out.append("Checks left failing on purpose. See `docs/10-findings.md`.")
         out.append("")
-        out.append("| プロジェクト | 検査 |")
+        out.append("| project | check |")
         out.append("|---|---|")
         for c in run["known_issues"]:
             out.append("| {} | {} |".format(c["project"], c["desc"]))
         out.append("")
 
-    out.append("## 実行環境")
+    out.append("## Environment")
     out.append("")
     out.append("| | |")
     out.append("|---|---|")
     for key, label in [
         ("dowel_version", "dowel"),
-        ("dowel_ref", "dowel の枝"),
-        ("dowel_commit", "dowel の commit"),
+        ("dowel_ref", "dowel ref"),
+        ("dowel_commit", "dowel commit"),
         ("cc", "cc"),
         ("ninja", "ninja"),
-        ("commit", "本リポジトリの commit"),
-        ("started_at", "開始"),
+        ("commit", "suite commit"),
+        ("started_at", "started"),
     ]:
         if run.get(key):
             out.append("| {} | `{}` |".format(label, run[key]))
@@ -287,7 +287,7 @@ def short(s, n=12):
 
 def render_site(history):
     if not history:
-        return "<main><h1>dowel_examples</h1><p>まだ実行がありません。</p></main>"
+        return "<main><h1>dowel_examples</h1><p>No run yet.</p></main>"
 
     latest = history[-1]
     names = sorted({p["name"] for h in history for p in h["projects"]})
@@ -296,16 +296,16 @@ def render_site(history):
     out.append("<main>")
     out.append("<h1>dowel_examples</h1>")
     out.append(
-        '<p class="lede">dowel を外側から検査するテストスイートの結果。'
-        "各検査の意図は各プロジェクトの README、"
-        "落ちたままにしてある項目の理由は docs/10-findings.md にある。</p>"
+        '<p class="lede">Results of the suite that checks dowel from the outside. '
+        "What each check fixes is in the README of its project; why some are left "
+        "failing is in docs/10-findings.md.</p>"
     )
 
     # ---------------------------------------------------------- 直近の実行
     t = latest["totals"]
-    out.append("<h2>直近の実行</h2>")
+    out.append("<h2>Latest run</h2>")
     out.append(
-        '<p><span class="{}">{}</span> — {} 件: 成功 {} / 失敗 {} / 既知の未修正 {} / 修正済み {}'
+        '<p><span class="{}">{}</span> — {} checks: {} passed, {} failed, {} known, {} fixed'
         "<br><span class=\"mono\">{}</span> {} on <span class=\"mono\">{}</span></p>".format(
             "ok" if latest["ok"] else "ng",
             verdict(latest["ok"]),
@@ -319,9 +319,9 @@ def render_site(history):
 
     out.append('<div class="scroll"><table>')
     out.append(
-        "<tr><th>プロジェクト</th><th>状態</th><th class='n'>検査</th>"
+        "<tr><th>project</th><th>state</th><th class='n'>checks</th>"
         + "".join("<th class='n'>{}</th>".format(LABEL[s]) for s in STATES)
-        + "<th class='n'>所要</th></tr>"
+        + "<th class='n'>time</th></tr>"
     )
     for p in latest["projects"]:
         out.append(
@@ -338,9 +338,9 @@ def render_site(history):
 
     # ------------------------------------------------------ 直すべきもの
     if latest.get("attention"):
-        out.append("<h2>直すべきもの</h2>")
+        out.append("<h2>Needs attention</h2>")
         out.append('<div class="scroll"><table>')
-        out.append("<tr><th>状態</th><th>プロジェクト</th><th>検査</th></tr>")
+        out.append("<tr><th>state</th><th>project</th><th>check</th></tr>")
         for c in latest["attention"]:
             out.append(
                 "<tr><td class='ng'>{}</td><td>{}</td><td class='wrap'>{}</td></tr>".format(
@@ -351,13 +351,14 @@ def render_site(history):
 
     # -------------------------------------------------- 既知の未修正事項
     if latest.get("known_issues"):
-        out.append("<h2>既知の未修正事項</h2>")
+        out.append("<h2>Known unfixed issues</h2>")
         out.append(
-            "<p>本体が直っていないため落としたままにしてある検査。"
-            "直ると <span class='ng'>xpass</span> になって全体が落ちる。</p>"
+            "<p>Checks left failing because the upstream issue is not fixed yet. "
+            "When it is fixed they turn <span class='ng'>xpass</span> and the suite fails, "
+            "which is the signal to drop the declaration.</p>"
         )
         out.append('<div class="scroll"><table>')
-        out.append("<tr><th>プロジェクト</th><th>検査</th></tr>")
+        out.append("<tr><th>project</th><th>check</th></tr>")
         for c in latest["known_issues"]:
             out.append(
                 "<tr><td>{}</td><td class='wrap warn'>{}</td></tr>".format(
@@ -367,16 +368,16 @@ def render_site(history):
         out.append("</table></div>")
 
     # ------------------------------------------------------------ 履歴
-    out.append("<h2>履歴</h2>")
+    out.append("<h2>History</h2>")
     out.append(
-        "<p>プロジェクトごとの内訳は「成功 / 失敗 / 既知の未修正 / 修正済み」。"
-        "空欄はその時点で存在しなかったプロジェクトを表す。</p>"
+        "<p>Each cell is passed / failed / known / fixed for that project. "
+        "A dash means the project did not exist at that point.</p>"
     )
     out.append('<div class="scroll"><table>')
     out.append(
-        "<tr><th>実行</th><th>状態</th><th>枝</th><th>commit</th><th>dowel</th>"
+        "<tr><th>run</th><th>state</th><th>branch</th><th>commit</th><th>dowel</th>"
         + "".join("<th class='n'>{}</th>".format(html.escape(n)) for n in names)
-        + "<th class='n'>合計</th></tr>"
+        + "<th class='n'>total</th></tr>"
     )
     for h in reversed(history):
         by_name = {p["name"]: p for p in h["projects"]}
@@ -412,15 +413,15 @@ def render_site(history):
     out.append("</table></div>")
 
     out.append(
-        "<footer>この頁は CI が生成し、掲示用の枝へ押し込んでいる。"
-        "編集しても次の実行で上書きされる。</footer>"
+        "<footer>This page is generated by CI and pushed to the publication branch. "
+        "Edits here are overwritten by the next run.</footer>"
     )
     out.append("</main>")
     return "\n".join(out)
 
 
 def render_page(history):
-    title = "dowel_examples — 検査結果"
+    title = "dowel_examples — check results"
     return (
         "<!doctype html>\n"
         '<html lang="ja">\n<head>\n<meta charset="utf-8">\n'

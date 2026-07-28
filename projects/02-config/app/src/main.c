@@ -2,7 +2,7 @@
 
 #include "probe.h"
 
-/* app 自身の match が届いていること。 */
+/* This package's own match arms must reach the compiler. */
 #ifndef APP_OPT
 #error "APP_OPT is missing: match cfg.opt did not reach the compiler"
 #endif
@@ -10,7 +10,7 @@
 #error "APP_ARCH is missing: match host.arch did not reach the compiler"
 #endif
 
-/* probe の非公開な定義とフラグは、依存元であるここへ届いてはならない。 */
+/* Nothing from probe's private block may reach a dependent. */
 #ifdef PROBE_OS
 #error "PROBE_OS leaked from probe's private block into a dependent"
 #endif
@@ -18,8 +18,8 @@
 #error "PROBE_TRACE leaked from probe's private flags into a dependent"
 #endif
 
-/* 公開の定義は構成で変わりながら届く。ライブラリの実体と、
-   このコンパイル単位に届いた定数が一致することを実行時に見る。 */
+/* Public defines arrive here and vary with the configuration. The constant
+   this translation unit saw must agree with the library that was linked. */
 int main(void) {
     if (probe_opt() != PROBE_OPT) {
         fprintf(stderr, "probe was built with opt=%d but APP sees %d\n", probe_opt(), PROBE_OPT);

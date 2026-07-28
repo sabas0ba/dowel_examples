@@ -1,8 +1,8 @@
-/* 終了状態 0 が成功。公開ヘッダだけで組み上がることも併せて確かめる。 */
+/* Exit status 0 means success. There is no test harness. */
 #include "probe.h"
 
-/* テストは probe の private ブロックの外にいる。
-   非公開の定義がここまで来ていたら、伝播の分離が壊れている。 */
+/* This test sits outside probe's private block. Anything declared there
+   reaching here would mean the public / private split is broken. */
 #ifdef PROBE_OS
 #error "PROBE_OS leaked out of private.defines"
 #endif
