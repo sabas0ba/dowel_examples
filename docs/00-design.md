@@ -43,6 +43,7 @@ dowel 本体の検証（`docs/51-testing.md`）は層ごとに責務を割り当
 | 診断が届くこと | `diag`（`--message-format=json`） |
 | 診断の中身（位置・注記・提案） | `diag_where` |
 | 再ビルドで何が走らないか | `runs_actions`（direct 実行器の計数） |
+| 再ビルドで走ったものの識別 | `rebuilt` / `not_rebuilt` |
 
 **C から観測できるものは C に書く。** dowel 本体の
 `tests/projects/README.md` と同じ規約である。利用者が実際に踏む経路と
@@ -120,6 +121,6 @@ dowel 本体の規約（`docs/50-development.md` 5節）に合わせる。
 |---|---|
 | 多数のソースと多数のターゲット（規模） | 計画時間の追跡と併せて |
 | `[runner.<triple>]` 経由の実行 | qemu が要る。ラッパを自作して機構だけ先に見る |
-| 編集して再ビルドする操作列 | 本体の `scenario.rs` と重ならない範囲で |
-| C++ のプロジェクト | 本体が対応した段で（[10-findings.md](10-findings.md) F-008） |
+| 並列のテスト実行（`--test-jobs`） | 共有資源を持つテストを置いて、順序に依存する失敗が出ないことを見る |
+| C++ のプロジェクト | 本体が対応した段で（[10-findings.md](10-findings.md) F-008 は診断で拒む形で決着） |
 | gcc と clang の双方 | 本体の CI 行列化と併せて |

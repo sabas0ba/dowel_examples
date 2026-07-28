@@ -1,0 +1,7 @@
+# 依存元。core の公開ヘッダを include する。
+
+[bin.app]
+sources = glob("src/*.c")
+
+[bin.app.private]
+deps = [dep("core")]

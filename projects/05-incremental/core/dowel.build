@@ -1,0 +1,29 @@
+# ソースを2つに分けてあるのは、再ビルドで「どちらが走ったか」を数えるため。
+# ヘッダも公開と非公開に分けてある。前者を触ると依存元まで波及し、
+# 後者を触っても波及しない。この差は件数でしか観測できない。
+
+[lib.core]
+sources = glob("src/*.c")
+
+[lib.core.public]
+includes = [dir("include")]
+defines  = { CORE_API = 1 }
+
+[lib.core.private]
+includes = [dir("src")]
+flags    = ["-Wall", "-Wextra"]
+
+# test ターゲットを2つに分けてある。`dowel test --failed` が
+# 「前回落ちた分だけ」を走らせることは、走らせなかった件数でしか観測できない。
+
+[test.scale_test]
+sources = [file("tests/scale_test.c")]
+
+[test.scale_test.private]
+deps = [target("core")]
+
+[test.offset_test]
+sources = [file("tests/offset_test.c")]
+
+[test.offset_test.private]
+deps = [target("core")]

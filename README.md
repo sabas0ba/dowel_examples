@@ -44,7 +44,7 @@ DOWEL=/path/to/dowel make verify
 04-diagnostics
   ok   the manifest still passes check after applying the suggestion
 
-total 112 checks: 112 passed, 0 failed, 0 known, 0 fixed
+total 156 checks: 156 passed, 0 failed, 0 known, 0 fixed
 ```
 
 検査名は英語で書く。実装の中身ではなく、何が固定されているかを1行で読ませる
@@ -58,6 +58,7 @@ total 112 checks: 112 passed, 0 failed, 0 known, 0 fixed
 | [02-config](projects/02-config/) | `match` / 後置 `when` の具体化。公開と非公開の分離 |
 | [03-features](projects/03-features/) | 機能フラグによる依存の辺の出現と消失。任意の依存 |
 | [04-diagnostics](projects/04-diagnostics/) | 誤ったマニフェストに対する応答。診断コードと位置と修正提案 |
+| [05-incremental](projects/05-incremental/) | 編集してからの再ビルド。depfile、波及の範囲、テストの再実行 |
 
 設計と規約は [docs/00-design.md](docs/00-design.md) にある。
 
