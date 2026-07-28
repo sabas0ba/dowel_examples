@@ -1,0 +1,4 @@
+# ディレクトリはコンパイルできない。検出しないとリンカの
+# input file unused になり、原因の箇所を示せない。
+[bin.t]
+sources = [dir("src")]

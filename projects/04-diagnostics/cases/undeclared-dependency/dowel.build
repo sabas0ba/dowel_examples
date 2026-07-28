@@ -1,0 +1,6 @@
+# dep() は dowel.toml で宣言された依存だけを指せる。
+[bin.t]
+sources = glob("src/*.c")
+
+[bin.t.private]
+deps = [dep("nosuchdep")]

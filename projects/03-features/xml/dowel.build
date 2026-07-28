@@ -1,0 +1,6 @@
+[lib.xml]
+sources = glob("src/*.c")
+
+[lib.xml.public]
+includes = [dir("include")]
+defines  = { XML_AVAILABLE = 1 }

@@ -1,0 +1,3 @@
+# 閉じた語彙にない表種別。
+[libary.t]
+sources = glob("src/*.c")

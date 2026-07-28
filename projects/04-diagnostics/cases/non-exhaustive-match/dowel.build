@@ -1,0 +1,8 @@
+# 値域が有限な鍵に対する match は全アームを要求する。
+[bin.t]
+sources = glob("src/*.c")
+
+[bin.t.private]
+flags = match cfg.opt {
+    debug => ["-DA=0"],
+}

@@ -1,0 +1,6 @@
+# 存在しないプロパティ。編集距離で候補が出ることも期待する。
+[bin.t]
+sources = glob("src/*.c")
+
+[bin.t.private]
+include = [dir("src")]

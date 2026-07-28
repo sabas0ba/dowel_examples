@@ -1,0 +1,6 @@
+# cfg 名前空間の鍵も閉じた語彙である。
+[bin.t]
+sources = glob("src/*.c")
+
+[bin.t.private]
+flags = ["-DA=1" when cfg.optimisation]

@@ -1,0 +1,6 @@
+[lib.lib]
+sources = glob("src/*.c")
+
+[lib.lib.public]
+includes = [dir("include")]
+abi      = "x86_64-linux-musl"

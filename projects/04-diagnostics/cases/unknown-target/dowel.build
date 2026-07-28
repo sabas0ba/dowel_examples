@@ -1,0 +1,6 @@
+# target() は同一パッケージ内のターゲットだけを指せる。
+[bin.t]
+sources = glob("src/*.c")
+
+[bin.t.private]
+deps = [target("nosuchtarget")]

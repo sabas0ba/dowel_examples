@@ -1,0 +1,5 @@
+[bin.missing_optional]
+sources = glob("src/*.c")
+
+[bin.missing_optional.private]
+deps = [dep("absent") when feature.absent]

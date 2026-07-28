@@ -1,0 +1,6 @@
+[lib.lib]
+sources = glob("src/*.c")
+
+[lib.lib.public]
+includes = [dir("include")]
+defines  = { SHARED_LIMIT = 64 }

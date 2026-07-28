@@ -1,0 +1,8 @@
+# `real` は宣言されているが `raal` は宣言されていない。
+# 綴り間違いの検出を期待する（docs/10-findings.md F-002）。
+
+[bin.undeclared]
+sources = glob("src/*.c")
+
+[bin.undeclared.private]
+flags = ["-DALWAYS=1", "-DTYPO=1" when feature.raal]
