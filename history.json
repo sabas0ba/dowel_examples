@@ -142,5 +142,112 @@
     "desc": "the manifest still passes check after applying the suggestion  [F-006]"
    }
   ]
+ },
+ {
+  "run_id": "30363901819",
+  "run_attempt": "1",
+  "run_url": "https://github.com/sabas0ba/dowel_examples/actions/runs/30363901819",
+  "commit": "b69cc8fe379653e73d749c9b69accd88c3a2b8fe",
+  "branch": "main",
+  "started_at": "2026-07-28T13:32:14Z",
+  "dowel_version": "dowel 0.0.1",
+  "dowel_ref": "a8a59e7c70aa3bd15f01d8c04cf7e38a00b3bd4f",
+  "dowel_commit": "a8a59e7c70aa3bd15f01d8c04cf7e38a00b3bd4f",
+  "cc": "cc (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0",
+  "ninja": "1.13.2",
+  "projects": [
+   {
+    "name": "01-minimal",
+    "duration_ms": 165,
+    "counts": {
+     "pass": 10,
+     "fail": 0,
+     "xfail": 0,
+     "xpass": 0
+    },
+    "total": 10,
+    "ok": true,
+    "packages": [
+     "hello"
+    ]
+   },
+   {
+    "name": "02-config",
+    "duration_ms": 1089,
+    "counts": {
+     "pass": 21,
+     "fail": 0,
+     "xfail": 0,
+     "xpass": 0
+    },
+    "total": 21,
+    "ok": true,
+    "packages": [
+     "app",
+     "probe"
+    ]
+   },
+   {
+    "name": "03-features",
+    "duration_ms": 504,
+    "counts": {
+     "pass": 12,
+     "fail": 0,
+     "xfail": 4,
+     "xpass": 0
+    },
+    "total": 16,
+    "ok": true,
+    "packages": [
+     "app",
+     "json",
+     "missing-optional",
+     "undeclared",
+     "xml"
+    ]
+   },
+   {
+    "name": "04-diagnostics",
+    "duration_ms": 724,
+    "counts": {
+     "pass": 37,
+     "fail": 0,
+     "xfail": 10,
+     "xpass": 0
+    },
+    "total": 47,
+    "ok": true,
+    "packages": [
+     "cases/abi-mismatch/app",
+     "cases/abi-mismatch/lib",
+     "cases/cpp-source",
+     "cases/dependency-cycle",
+     "cases/empty-glob",
+     "cases/invalid-source",
+     "cases/merge-conflict/app",
+     "cases/merge-conflict/lib",
+     "cases/missing-manifest",
+     "cases/missing-toolchain",
+     "cases/non-exhaustive-match",
+     "cases/type-mismatch",
+     "cases/undeclared-dependency",
+     "cases/unknown-cfg-key",
+     "cases/unknown-function",
+     "cases/unknown-kind",
+     "cases/unknown-property",
+     "cases/unknown-target",
+     "cases/unresolved-path"
+    ]
+   }
+  ],
+  "totals": {
+   "pass": 80,
+   "fail": 0,
+   "xfail": 14,
+   "xpass": 0
+  },
+  "total": 94,
+  "ok": true,
+  "attention": []
  }
 ]

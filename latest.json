@@ -1,10 +1,10 @@
 {
- "run_id": "30362232181",
+ "run_id": "30363901819",
  "run_attempt": "1",
- "run_url": "https://github.com/sabas0ba/dowel_examples/actions/runs/30362232181",
- "commit": "8523cf67545839c3b054e9fa0fd3c4342bf3c6c9",
+ "run_url": "https://github.com/sabas0ba/dowel_examples/actions/runs/30363901819",
+ "commit": "b69cc8fe379653e73d749c9b69accd88c3a2b8fe",
  "branch": "main",
- "started_at": "2026-07-28T13:10:49Z",
+ "started_at": "2026-07-28T13:32:14Z",
  "dowel_version": "dowel 0.0.1",
  "dowel_ref": "a8a59e7c70aa3bd15f01d8c04cf7e38a00b3bd4f",
  "dowel_commit": "a8a59e7c70aa3bd15f01d8c04cf7e38a00b3bd4f",
@@ -13,7 +13,7 @@
  "projects": [
   {
    "name": "01-minimal",
-   "duration_ms": 212,
+   "duration_ms": 165,
    "counts": {
     "pass": 10,
     "fail": 0,
@@ -21,11 +21,56 @@
     "xpass": 0
    },
    "total": 10,
-   "ok": true
+   "ok": true,
+   "checks": [
+    {
+     "status": "pass",
+     "desc": "hello: check passes"
+    },
+    {
+     "status": "pass",
+     "desc": "hello: build passes"
+    },
+    {
+     "status": "pass",
+     "desc": "hello: a second build runs nothing, across executors too"
+    },
+    {
+     "status": "pass",
+     "desc": "the binary runs and prints hello"
+    },
+    {
+     "status": "pass",
+     "desc": "the direct executor builds from scratch in 2 actions (1 compile, 1 link)"
+    },
+    {
+     "status": "pass",
+     "desc": "the direct executor produces a working binary too"
+    },
+    {
+     "status": "pass",
+     "desc": "release builds too"
+    },
+    {
+     "status": "pass",
+     "desc": "debug and release get separate build directories"
+    },
+    {
+     "status": "pass",
+     "desc": "nothing unexpected is written next to the manifest"
+    },
+    {
+     "status": "pass",
+     "desc": "test succeeds when the package declares no test target"
+    }
+   ],
+   "packages": [
+    "hello"
+   ]
   },
   {
    "name": "02-config",
-   "duration_ms": 1033,
+   "duration_ms": 1089,
    "counts": {
     "pass": 21,
     "fail": 0,
@@ -33,11 +78,101 @@
     "xpass": 0
    },
    "total": 21,
-   "ok": true
+   "ok": true,
+   "checks": [
+    {
+     "status": "pass",
+     "desc": "app: check passes"
+    },
+    {
+     "status": "pass",
+     "desc": "app: build passes"
+    },
+    {
+     "status": "pass",
+     "desc": "app: a second build runs nothing, across executors too"
+    },
+    {
+     "status": "pass",
+     "desc": "debug: the arms chosen by match reach the compiler"
+    },
+    {
+     "status": "pass",
+     "desc": "release builds too"
+    },
+    {
+     "status": "pass",
+     "desc": "release: the public defines of a dependency switch as well"
+    },
+    {
+     "status": "pass",
+     "desc": "each configuration gets its own build directory"
+    },
+    {
+     "status": "pass",
+     "desc": "the default features can be turned off"
+    },
+    {
+     "status": "pass",
+     "desc": "dropping when feature.trace drops the define with it"
+    },
+    {
+     "status": "pass",
+     "desc": "enabled features appear in the build directory identifier"
+    },
+    {
+     "status": "pass",
+     "desc": "the specialized defines reach the arguments of app"
+    },
+    {
+     "status": "pass",
+     "desc": "the public defines of a dependency reach app"
+    },
+    {
+     "status": "pass",
+     "desc": "private flags of a dependency never reach a dependent"
+    },
+    {
+     "status": "pass",
+     "desc": "private defines of a dependency never reach a dependent"
+    },
+    {
+     "status": "pass",
+     "desc": "private includes of a dependency never reach a dependent"
+    },
+    {
+     "status": "pass",
+     "desc": "private flags still apply to the target's own compilation"
+    },
+    {
+     "status": "pass",
+     "desc": "private includes still apply to the target's own compilation"
+    },
+    {
+     "status": "pass",
+     "desc": "compile_commands.json carries the specialized defines"
+    },
+    {
+     "status": "pass",
+     "desc": "probe: check passes"
+    },
+    {
+     "status": "pass",
+     "desc": "probe: test passes"
+    },
+    {
+     "status": "pass",
+     "desc": "probe: test passes in release too"
+    }
+   ],
+   "packages": [
+    "app",
+    "probe"
+   ]
   },
   {
    "name": "03-features",
-   "duration_ms": 218,
+   "duration_ms": 504,
    "counts": {
     "pass": 12,
     "fail": 0,
@@ -45,11 +180,84 @@
     "xpass": 0
    },
    "total": 16,
-   "ok": true
+   "ok": true,
+   "checks": [
+    {
+     "status": "pass",
+     "desc": "app: check passes"
+    },
+    {
+     "status": "pass",
+     "desc": "app: build passes"
+    },
+    {
+     "status": "pass",
+     "desc": "app: a second build runs nothing, across executors too"
+    },
+    {
+     "status": "pass",
+     "desc": "the default features bring the json edge in"
+    },
+    {
+     "status": "pass",
+     "desc": "graph shows the json edge"
+    },
+    {
+     "status": "pass",
+     "desc": "json and xml can both be enabled"
+    },
+    {
+     "status": "pass",
+     "desc": "both edges appear"
+    },
+    {
+     "status": "pass",
+     "desc": "the default features can be turned off"
+    },
+    {
+     "status": "pass",
+     "desc": "when the edge goes, neither the public defines nor the headers arrive"
+    },
+    {
+     "status": "pass",
+     "desc": "when the edge goes, the archive is not built either"
+    },
+    {
+     "status": "xfail",
+     "desc": "a dependency behind a disabled feature is absent from the graph  [F-003]"
+    },
+    {
+     "status": "xfail",
+     "desc": "a disabled optional dependency need not exist on disk  [F-003]"
+    },
+    {
+     "status": "xfail",
+     "desc": "an undeclared feature passed to --features is rejected  [F-001]"
+    },
+    {
+     "status": "xfail",
+     "desc": "an undeclared feature referenced from dowel.build is rejected  [F-002]"
+    },
+    {
+     "status": "pass",
+     "desc": "json: builds on its own"
+    },
+    {
+     "status": "pass",
+     "desc": "xml: builds on its own"
+    }
+   ],
+   "packages": [
+    "app",
+    "json",
+    "missing-optional",
+    "undeclared",
+    "xml"
+   ]
   },
   {
    "name": "04-diagnostics",
-   "duration_ms": 515,
+   "duration_ms": 724,
    "counts": {
     "pass": 37,
     "fail": 0,
@@ -57,7 +265,218 @@
     "xpass": 0
    },
    "total": 47,
-   "ok": true
+   "ok": true,
+   "checks": [
+    {
+     "status": "pass",
+     "desc": "check reports unknown-property"
+    },
+    {
+     "status": "pass",
+     "desc": "check exits non-zero on unknown-property"
+    },
+    {
+     "status": "pass",
+     "desc": "check reports unknown-kind"
+    },
+    {
+     "status": "pass",
+     "desc": "check exits non-zero on unknown-kind"
+    },
+    {
+     "status": "pass",
+     "desc": "check reports unknown-function"
+    },
+    {
+     "status": "pass",
+     "desc": "check exits non-zero on unknown-function"
+    },
+    {
+     "status": "pass",
+     "desc": "check reports unknown-cfg-key"
+    },
+    {
+     "status": "pass",
+     "desc": "check exits non-zero on unknown-cfg-key"
+    },
+    {
+     "status": "pass",
+     "desc": "check reports non-exhaustive-match"
+    },
+    {
+     "status": "pass",
+     "desc": "check exits non-zero on non-exhaustive-match"
+    },
+    {
+     "status": "pass",
+     "desc": "check reports type-mismatch"
+    },
+    {
+     "status": "pass",
+     "desc": "check exits non-zero on type-mismatch"
+    },
+    {
+     "status": "pass",
+     "desc": "check reports undeclared-dependency"
+    },
+    {
+     "status": "pass",
+     "desc": "check exits non-zero on undeclared-dependency"
+    },
+    {
+     "status": "pass",
+     "desc": "check reports unknown-target"
+    },
+    {
+     "status": "pass",
+     "desc": "check exits non-zero on unknown-target"
+    },
+    {
+     "status": "pass",
+     "desc": "check reports dependency-cycle"
+    },
+    {
+     "status": "pass",
+     "desc": "check exits non-zero on dependency-cycle"
+    },
+    {
+     "status": "pass",
+     "desc": "check reports missing-manifest"
+    },
+    {
+     "status": "pass",
+     "desc": "check exits non-zero on missing-manifest"
+    },
+    {
+     "status": "pass",
+     "desc": "check reports merge-conflict"
+    },
+    {
+     "status": "pass",
+     "desc": "check exits non-zero on merge-conflict"
+    },
+    {
+     "status": "pass",
+     "desc": "check reports abi-mismatch"
+    },
+    {
+     "status": "pass",
+     "desc": "check exits non-zero on abi-mismatch"
+    },
+    {
+     "status": "pass",
+     "desc": "build reports invalid-source"
+    },
+    {
+     "status": "pass",
+     "desc": "build reports unresolved-path"
+    },
+    {
+     "status": "pass",
+     "desc": "build reports empty-glob"
+    },
+    {
+     "status": "pass",
+     "desc": "build exits non-zero on invalid-source"
+    },
+    {
+     "status": "pass",
+     "desc": "build exits non-zero on unresolved-path"
+    },
+    {
+     "status": "xfail",
+     "desc": "check finds invalid-source as well  [F-004]"
+    },
+    {
+     "status": "xfail",
+     "desc": "check finds unresolved-path as well  [F-004]"
+    },
+    {
+     "status": "pass",
+     "desc": "unknown-property points at the offending source"
+    },
+    {
+     "status": "pass",
+     "desc": "undeclared-dependency points at the offending source"
+    },
+    {
+     "status": "pass",
+     "desc": "dependency-cycle points at the offending source"
+    },
+    {
+     "status": "pass",
+     "desc": "type-mismatch points at the offending source"
+    },
+    {
+     "status": "xfail",
+     "desc": "missing-manifest points at the offending source  [F-005]"
+    },
+    {
+     "status": "pass",
+     "desc": "building a C++ source fails"
+    },
+    {
+     "status": "xfail",
+     "desc": "building a C++ source produces a diagnostic of dowel's own  [F-008]"
+    },
+    {
+     "status": "xfail",
+     "desc": "declaring a toolchain that does not exist fails with a source location  [F-009]"
+    },
+    {
+     "status": "xfail",
+     "desc": "the C++ failure is not reported in the linker's words  [F-008]"
+    },
+    {
+     "status": "xfail",
+     "desc": "the toolchain failure is not reported in the shell's words  [F-009]"
+    },
+    {
+     "status": "pass",
+     "desc": "merge-conflict carries the location of both values"
+    },
+    {
+     "status": "pass",
+     "desc": "abi-mismatch carries the location of both values"
+    },
+    {
+     "status": "xfail",
+     "desc": "merge-conflict renders the dependent side of the conflict too  [F-007]"
+    },
+    {
+     "status": "xfail",
+     "desc": "abi-mismatch renders the dependent side of the conflict too  [F-007]"
+    },
+    {
+     "status": "pass",
+     "desc": "unknown-property carries a suggestion"
+    },
+    {
+     "status": "xfail",
+     "desc": "the manifest still passes check after applying the suggestion  [F-006]"
+    }
+   ],
+   "packages": [
+    "cases/abi-mismatch/app",
+    "cases/abi-mismatch/lib",
+    "cases/cpp-source",
+    "cases/dependency-cycle",
+    "cases/empty-glob",
+    "cases/invalid-source",
+    "cases/merge-conflict/app",
+    "cases/merge-conflict/lib",
+    "cases/missing-manifest",
+    "cases/missing-toolchain",
+    "cases/non-exhaustive-match",
+    "cases/type-mismatch",
+    "cases/undeclared-dependency",
+    "cases/unknown-cfg-key",
+    "cases/unknown-function",
+    "cases/unknown-kind",
+    "cases/unknown-property",
+    "cases/unknown-target",
+    "cases/unresolved-path"
+   ]
   }
  ],
  "totals": {

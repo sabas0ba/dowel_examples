@@ -36,44 +36,160 @@ code, .mono { font-family:ui-monospace, SFMono-Regular, Menlo, monospace;
               font-size:.85em; }
 a { color:inherit; }
 footer { margin-top:3rem; color:var(--muted); font-size:.8rem; }
+p.links { margin:.4rem 0 1.2rem; font-size:.85rem; color:var(--muted); }
+p.links a { color:inherit; }
+.muted { color:var(--muted); font-weight:400; }
+details { border:1px solid var(--line); border-radius:6px; padding:.6rem .9rem;
+          margin-bottom:.6rem; }
+details[open] { padding-bottom:.2rem; }
+summary { cursor:pointer; font-size:.95rem; }
+summary::marker { color:var(--muted); }
+details p.links { margin:.5rem 0 .6rem; }
 </style>
 </head>
 <body>
 <main>
 <h1>dowel_examples</h1>
 <p class="lede">Results of the suite that checks dowel from the outside. What each check fixes is in the README of its project; why some are left failing is in docs/10-findings.md.</p>
+<p class="links"><a href="https://github.com/sabas0ba/dowel">dowel</a> &middot; checked against <a href="https://github.com/sabas0ba/dowel/commit/a8a59e7c70aa3bd15f01d8c04cf7e38a00b3bd4f"><code>a8a59e7c70aa</code></a> &middot; <a href="https://github.com/sabas0ba/dowel_examples">dowel_examples</a> &middot; <a href="https://github.com/sabas0ba/dowel_examples/blob/b69cc8fe379653e73d749c9b69accd88c3a2b8fe/dowel-ref">dowel-ref</a> &middot; <a href="https://github.com/sabas0ba/dowel_examples/blob/b69cc8fe379653e73d749c9b69accd88c3a2b8fe/docs/10-findings.md">docs/10-findings.md</a></p>
 <h2>Latest run</h2>
-<p><span class="ok">PASSED</span> — 94 checks: 80 passed, 0 failed, 14 known, 0 fixed<br><span class="mono">8523cf675458</span> 2026-07-28T13:10:49Z on <span class="mono">main</span></p>
+<p><span class="ok">PASSED</span> — 94 checks: 80 passed, 0 failed, 14 known, 0 fixed<br><span class="mono">b69cc8fe3796</span> 2026-07-28T13:32:14Z on <span class="mono">main</span></p>
 <div class="scroll"><table>
 <tr><th>project</th><th>state</th><th class='n'>checks</th><th class='n'>passed</th><th class='n'>failed</th><th class='n'>known</th><th class='n'>fixed</th><th class='n'>time</th></tr>
-<tr><td>01-minimal</td><td class='ok'>ok</td><td class='n'>10</td><td class="n ">10</td><td class="n zero">0</td><td class="n zero">0</td><td class="n zero">0</td><td class='n'>0.2s</td></tr>
-<tr><td>02-config</td><td class='ok'>ok</td><td class='n'>21</td><td class="n ">21</td><td class="n zero">0</td><td class="n zero">0</td><td class="n zero">0</td><td class='n'>1.0s</td></tr>
-<tr><td>03-features</td><td class='ok'>ok</td><td class='n'>16</td><td class="n ">12</td><td class="n zero">0</td><td class="n warn">4</td><td class="n zero">0</td><td class='n'>0.2s</td></tr>
-<tr><td>04-diagnostics</td><td class='ok'>ok</td><td class='n'>47</td><td class="n ">37</td><td class="n zero">0</td><td class="n warn">10</td><td class="n zero">0</td><td class='n'>0.5s</td></tr>
+<tr><td><a href="https://github.com/sabas0ba/dowel_examples/tree/b69cc8fe379653e73d749c9b69accd88c3a2b8fe/projects/01-minimal">01-minimal</a></td><td class='ok'>ok</td><td class='n'>10</td><td class="n ">10</td><td class="n zero">0</td><td class="n zero">0</td><td class="n zero">0</td><td class='n'>0.2s</td></tr>
+<tr><td><a href="https://github.com/sabas0ba/dowel_examples/tree/b69cc8fe379653e73d749c9b69accd88c3a2b8fe/projects/02-config">02-config</a></td><td class='ok'>ok</td><td class='n'>21</td><td class="n ">21</td><td class="n zero">0</td><td class="n zero">0</td><td class="n zero">0</td><td class='n'>1.1s</td></tr>
+<tr><td><a href="https://github.com/sabas0ba/dowel_examples/tree/b69cc8fe379653e73d749c9b69accd88c3a2b8fe/projects/03-features">03-features</a></td><td class='ok'>ok</td><td class='n'>16</td><td class="n ">12</td><td class="n zero">0</td><td class="n warn">4</td><td class="n zero">0</td><td class='n'>0.5s</td></tr>
+<tr><td><a href="https://github.com/sabas0ba/dowel_examples/tree/b69cc8fe379653e73d749c9b69accd88c3a2b8fe/projects/04-diagnostics">04-diagnostics</a></td><td class='ok'>ok</td><td class='n'>47</td><td class="n ">37</td><td class="n zero">0</td><td class="n warn">10</td><td class="n zero">0</td><td class='n'>0.7s</td></tr>
 </table></div>
-<h2>Known unfixed issues</h2>
-<p>Checks left failing because the upstream issue is not fixed yet. When it is fixed they turn <span class='ng'>xpass</span> and the suite fails, which is the signal to drop the declaration.</p>
+<h2>Checks</h2>
+<p>Every check this run made, by project. Each project links to its directory in the repository; <code>README</code> states what that project fixes.</p>
+<details>
+<summary><span class='ok'>ok</span> <a href='https://github.com/sabas0ba/dowel_examples/tree/b69cc8fe379653e73d749c9b69accd88c3a2b8fe/projects/01-minimal'>01-minimal</a> — 10 checks <span class='muted'>(10 passed, 0 failed, 0 known, 0 fixed)</span></summary>
+<p class="links"><a href="https://github.com/sabas0ba/dowel_examples/blob/b69cc8fe379653e73d749c9b69accd88c3a2b8fe/projects/01-minimal/README.md">README</a> &middot; <a href="https://github.com/sabas0ba/dowel_examples/tree/b69cc8fe379653e73d749c9b69accd88c3a2b8fe/projects/01-minimal/hello"><code>hello</code></a></p>
 <div class="scroll"><table>
-<tr><th>project</th><th>check</th></tr>
-<tr><td>03-features</td><td class='wrap warn'>a dependency behind a disabled feature is absent from the graph  [F-003]</td></tr>
-<tr><td>03-features</td><td class='wrap warn'>a disabled optional dependency need not exist on disk  [F-003]</td></tr>
-<tr><td>03-features</td><td class='wrap warn'>an undeclared feature passed to --features is rejected  [F-001]</td></tr>
-<tr><td>03-features</td><td class='wrap warn'>an undeclared feature referenced from dowel.build is rejected  [F-002]</td></tr>
-<tr><td>04-diagnostics</td><td class='wrap warn'>check finds invalid-source as well  [F-004]</td></tr>
-<tr><td>04-diagnostics</td><td class='wrap warn'>check finds unresolved-path as well  [F-004]</td></tr>
-<tr><td>04-diagnostics</td><td class='wrap warn'>missing-manifest points at the offending source  [F-005]</td></tr>
-<tr><td>04-diagnostics</td><td class='wrap warn'>building a C++ source produces a diagnostic of dowel&#x27;s own  [F-008]</td></tr>
-<tr><td>04-diagnostics</td><td class='wrap warn'>declaring a toolchain that does not exist fails with a source location  [F-009]</td></tr>
-<tr><td>04-diagnostics</td><td class='wrap warn'>the C++ failure is not reported in the linker&#x27;s words  [F-008]</td></tr>
-<tr><td>04-diagnostics</td><td class='wrap warn'>the toolchain failure is not reported in the shell&#x27;s words  [F-009]</td></tr>
-<tr><td>04-diagnostics</td><td class='wrap warn'>merge-conflict renders the dependent side of the conflict too  [F-007]</td></tr>
-<tr><td>04-diagnostics</td><td class='wrap warn'>abi-mismatch renders the dependent side of the conflict too  [F-007]</td></tr>
-<tr><td>04-diagnostics</td><td class='wrap warn'>the manifest still passes check after applying the suggestion  [F-006]</td></tr>
+<tr><th>state</th><th>check</th></tr>
+<tr><td class='ok'>passed</td><td class='wrap'>hello: check passes</td></tr>
+<tr><td class='ok'>passed</td><td class='wrap'>hello: build passes</td></tr>
+<tr><td class='ok'>passed</td><td class='wrap'>hello: a second build runs nothing, across executors too</td></tr>
+<tr><td class='ok'>passed</td><td class='wrap'>the binary runs and prints hello</td></tr>
+<tr><td class='ok'>passed</td><td class='wrap'>the direct executor builds from scratch in 2 actions (1 compile, 1 link)</td></tr>
+<tr><td class='ok'>passed</td><td class='wrap'>the direct executor produces a working binary too</td></tr>
+<tr><td class='ok'>passed</td><td class='wrap'>release builds too</td></tr>
+<tr><td class='ok'>passed</td><td class='wrap'>debug and release get separate build directories</td></tr>
+<tr><td class='ok'>passed</td><td class='wrap'>nothing unexpected is written next to the manifest</td></tr>
+<tr><td class='ok'>passed</td><td class='wrap'>test succeeds when the package declares no test target</td></tr>
 </table></div>
+</details>
+<details>
+<summary><span class='ok'>ok</span> <a href='https://github.com/sabas0ba/dowel_examples/tree/b69cc8fe379653e73d749c9b69accd88c3a2b8fe/projects/02-config'>02-config</a> — 21 checks <span class='muted'>(21 passed, 0 failed, 0 known, 0 fixed)</span></summary>
+<p class="links"><a href="https://github.com/sabas0ba/dowel_examples/blob/b69cc8fe379653e73d749c9b69accd88c3a2b8fe/projects/02-config/README.md">README</a> &middot; <a href="https://github.com/sabas0ba/dowel_examples/tree/b69cc8fe379653e73d749c9b69accd88c3a2b8fe/projects/02-config/app"><code>app</code></a> &middot; <a href="https://github.com/sabas0ba/dowel_examples/tree/b69cc8fe379653e73d749c9b69accd88c3a2b8fe/projects/02-config/probe"><code>probe</code></a></p>
+<div class="scroll"><table>
+<tr><th>state</th><th>check</th></tr>
+<tr><td class='ok'>passed</td><td class='wrap'>app: check passes</td></tr>
+<tr><td class='ok'>passed</td><td class='wrap'>app: build passes</td></tr>
+<tr><td class='ok'>passed</td><td class='wrap'>app: a second build runs nothing, across executors too</td></tr>
+<tr><td class='ok'>passed</td><td class='wrap'>debug: the arms chosen by match reach the compiler</td></tr>
+<tr><td class='ok'>passed</td><td class='wrap'>release builds too</td></tr>
+<tr><td class='ok'>passed</td><td class='wrap'>release: the public defines of a dependency switch as well</td></tr>
+<tr><td class='ok'>passed</td><td class='wrap'>each configuration gets its own build directory</td></tr>
+<tr><td class='ok'>passed</td><td class='wrap'>the default features can be turned off</td></tr>
+<tr><td class='ok'>passed</td><td class='wrap'>dropping when feature.trace drops the define with it</td></tr>
+<tr><td class='ok'>passed</td><td class='wrap'>enabled features appear in the build directory identifier</td></tr>
+<tr><td class='ok'>passed</td><td class='wrap'>the specialized defines reach the arguments of app</td></tr>
+<tr><td class='ok'>passed</td><td class='wrap'>the public defines of a dependency reach app</td></tr>
+<tr><td class='ok'>passed</td><td class='wrap'>private flags of a dependency never reach a dependent</td></tr>
+<tr><td class='ok'>passed</td><td class='wrap'>private defines of a dependency never reach a dependent</td></tr>
+<tr><td class='ok'>passed</td><td class='wrap'>private includes of a dependency never reach a dependent</td></tr>
+<tr><td class='ok'>passed</td><td class='wrap'>private flags still apply to the target&#x27;s own compilation</td></tr>
+<tr><td class='ok'>passed</td><td class='wrap'>private includes still apply to the target&#x27;s own compilation</td></tr>
+<tr><td class='ok'>passed</td><td class='wrap'>compile_commands.json carries the specialized defines</td></tr>
+<tr><td class='ok'>passed</td><td class='wrap'>probe: check passes</td></tr>
+<tr><td class='ok'>passed</td><td class='wrap'>probe: test passes</td></tr>
+<tr><td class='ok'>passed</td><td class='wrap'>probe: test passes in release too</td></tr>
+</table></div>
+</details>
+<details open>
+<summary><span class='ok'>ok</span> <a href='https://github.com/sabas0ba/dowel_examples/tree/b69cc8fe379653e73d749c9b69accd88c3a2b8fe/projects/03-features'>03-features</a> — 16 checks <span class='muted'>(12 passed, 0 failed, 4 known, 0 fixed)</span></summary>
+<p class="links"><a href="https://github.com/sabas0ba/dowel_examples/blob/b69cc8fe379653e73d749c9b69accd88c3a2b8fe/projects/03-features/README.md">README</a> &middot; <a href="https://github.com/sabas0ba/dowel_examples/tree/b69cc8fe379653e73d749c9b69accd88c3a2b8fe/projects/03-features/app"><code>app</code></a> &middot; <a href="https://github.com/sabas0ba/dowel_examples/tree/b69cc8fe379653e73d749c9b69accd88c3a2b8fe/projects/03-features/json"><code>json</code></a> &middot; <a href="https://github.com/sabas0ba/dowel_examples/tree/b69cc8fe379653e73d749c9b69accd88c3a2b8fe/projects/03-features/missing-optional"><code>missing-optional</code></a> &middot; <a href="https://github.com/sabas0ba/dowel_examples/tree/b69cc8fe379653e73d749c9b69accd88c3a2b8fe/projects/03-features/undeclared"><code>undeclared</code></a> &middot; <a href="https://github.com/sabas0ba/dowel_examples/tree/b69cc8fe379653e73d749c9b69accd88c3a2b8fe/projects/03-features/xml"><code>xml</code></a></p>
+<div class="scroll"><table>
+<tr><th>state</th><th>check</th></tr>
+<tr><td class='ok'>passed</td><td class='wrap'>app: check passes</td></tr>
+<tr><td class='ok'>passed</td><td class='wrap'>app: build passes</td></tr>
+<tr><td class='ok'>passed</td><td class='wrap'>app: a second build runs nothing, across executors too</td></tr>
+<tr><td class='ok'>passed</td><td class='wrap'>the default features bring the json edge in</td></tr>
+<tr><td class='ok'>passed</td><td class='wrap'>graph shows the json edge</td></tr>
+<tr><td class='ok'>passed</td><td class='wrap'>json and xml can both be enabled</td></tr>
+<tr><td class='ok'>passed</td><td class='wrap'>both edges appear</td></tr>
+<tr><td class='ok'>passed</td><td class='wrap'>the default features can be turned off</td></tr>
+<tr><td class='ok'>passed</td><td class='wrap'>when the edge goes, neither the public defines nor the headers arrive</td></tr>
+<tr><td class='ok'>passed</td><td class='wrap'>when the edge goes, the archive is not built either</td></tr>
+<tr><td class='warn'>known</td><td class='wrap'>a dependency behind a disabled feature is absent from the graph  [F-003]</td></tr>
+<tr><td class='warn'>known</td><td class='wrap'>a disabled optional dependency need not exist on disk  [F-003]</td></tr>
+<tr><td class='warn'>known</td><td class='wrap'>an undeclared feature passed to --features is rejected  [F-001]</td></tr>
+<tr><td class='warn'>known</td><td class='wrap'>an undeclared feature referenced from dowel.build is rejected  [F-002]</td></tr>
+<tr><td class='ok'>passed</td><td class='wrap'>json: builds on its own</td></tr>
+<tr><td class='ok'>passed</td><td class='wrap'>xml: builds on its own</td></tr>
+</table></div>
+</details>
+<details open>
+<summary><span class='ok'>ok</span> <a href='https://github.com/sabas0ba/dowel_examples/tree/b69cc8fe379653e73d749c9b69accd88c3a2b8fe/projects/04-diagnostics'>04-diagnostics</a> — 47 checks <span class='muted'>(37 passed, 0 failed, 10 known, 0 fixed)</span></summary>
+<p class="links"><a href="https://github.com/sabas0ba/dowel_examples/blob/b69cc8fe379653e73d749c9b69accd88c3a2b8fe/projects/04-diagnostics/README.md">README</a> &middot; <a href="https://github.com/sabas0ba/dowel_examples/tree/b69cc8fe379653e73d749c9b69accd88c3a2b8fe/projects/04-diagnostics/cases/abi-mismatch/app"><code>cases/abi-mismatch/app</code></a> &middot; <a href="https://github.com/sabas0ba/dowel_examples/tree/b69cc8fe379653e73d749c9b69accd88c3a2b8fe/projects/04-diagnostics/cases/abi-mismatch/lib"><code>cases/abi-mismatch/lib</code></a> &middot; <a href="https://github.com/sabas0ba/dowel_examples/tree/b69cc8fe379653e73d749c9b69accd88c3a2b8fe/projects/04-diagnostics/cases/cpp-source"><code>cases/cpp-source</code></a> &middot; <a href="https://github.com/sabas0ba/dowel_examples/tree/b69cc8fe379653e73d749c9b69accd88c3a2b8fe/projects/04-diagnostics/cases/dependency-cycle"><code>cases/dependency-cycle</code></a> &middot; <a href="https://github.com/sabas0ba/dowel_examples/tree/b69cc8fe379653e73d749c9b69accd88c3a2b8fe/projects/04-diagnostics/cases/empty-glob"><code>cases/empty-glob</code></a> &middot; <a href="https://github.com/sabas0ba/dowel_examples/tree/b69cc8fe379653e73d749c9b69accd88c3a2b8fe/projects/04-diagnostics/cases/invalid-source"><code>cases/invalid-source</code></a> &middot; <a href="https://github.com/sabas0ba/dowel_examples/tree/b69cc8fe379653e73d749c9b69accd88c3a2b8fe/projects/04-diagnostics/cases/merge-conflict/app"><code>cases/merge-conflict/app</code></a> &middot; <a href="https://github.com/sabas0ba/dowel_examples/tree/b69cc8fe379653e73d749c9b69accd88c3a2b8fe/projects/04-diagnostics/cases/merge-conflict/lib"><code>cases/merge-conflict/lib</code></a> &middot; <a href="https://github.com/sabas0ba/dowel_examples/tree/b69cc8fe379653e73d749c9b69accd88c3a2b8fe/projects/04-diagnostics/cases/missing-manifest"><code>cases/missing-manifest</code></a> &middot; <a href="https://github.com/sabas0ba/dowel_examples/tree/b69cc8fe379653e73d749c9b69accd88c3a2b8fe/projects/04-diagnostics/cases/missing-toolchain"><code>cases/missing-toolchain</code></a> &middot; <a href="https://github.com/sabas0ba/dowel_examples/tree/b69cc8fe379653e73d749c9b69accd88c3a2b8fe/projects/04-diagnostics/cases/non-exhaustive-match"><code>cases/non-exhaustive-match</code></a> &middot; <a href="https://github.com/sabas0ba/dowel_examples/tree/b69cc8fe379653e73d749c9b69accd88c3a2b8fe/projects/04-diagnostics/cases/type-mismatch"><code>cases/type-mismatch</code></a> &middot; <a href="https://github.com/sabas0ba/dowel_examples/tree/b69cc8fe379653e73d749c9b69accd88c3a2b8fe/projects/04-diagnostics/cases/undeclared-dependency"><code>cases/undeclared-dependency</code></a> &middot; <a href="https://github.com/sabas0ba/dowel_examples/tree/b69cc8fe379653e73d749c9b69accd88c3a2b8fe/projects/04-diagnostics/cases/unknown-cfg-key"><code>cases/unknown-cfg-key</code></a> &middot; <a href="https://github.com/sabas0ba/dowel_examples/tree/b69cc8fe379653e73d749c9b69accd88c3a2b8fe/projects/04-diagnostics/cases/unknown-function"><code>cases/unknown-function</code></a> &middot; <a href="https://github.com/sabas0ba/dowel_examples/tree/b69cc8fe379653e73d749c9b69accd88c3a2b8fe/projects/04-diagnostics/cases/unknown-kind"><code>cases/unknown-kind</code></a> &middot; <a href="https://github.com/sabas0ba/dowel_examples/tree/b69cc8fe379653e73d749c9b69accd88c3a2b8fe/projects/04-diagnostics/cases/unknown-property"><code>cases/unknown-property</code></a> &middot; <a href="https://github.com/sabas0ba/dowel_examples/tree/b69cc8fe379653e73d749c9b69accd88c3a2b8fe/projects/04-diagnostics/cases/unknown-target"><code>cases/unknown-target</code></a> &middot; <a href="https://github.com/sabas0ba/dowel_examples/tree/b69cc8fe379653e73d749c9b69accd88c3a2b8fe/projects/04-diagnostics/cases/unresolved-path"><code>cases/unresolved-path</code></a></p>
+<div class="scroll"><table>
+<tr><th>state</th><th>check</th></tr>
+<tr><td class='ok'>passed</td><td class='wrap'>check reports unknown-property</td></tr>
+<tr><td class='ok'>passed</td><td class='wrap'>check exits non-zero on unknown-property</td></tr>
+<tr><td class='ok'>passed</td><td class='wrap'>check reports unknown-kind</td></tr>
+<tr><td class='ok'>passed</td><td class='wrap'>check exits non-zero on unknown-kind</td></tr>
+<tr><td class='ok'>passed</td><td class='wrap'>check reports unknown-function</td></tr>
+<tr><td class='ok'>passed</td><td class='wrap'>check exits non-zero on unknown-function</td></tr>
+<tr><td class='ok'>passed</td><td class='wrap'>check reports unknown-cfg-key</td></tr>
+<tr><td class='ok'>passed</td><td class='wrap'>check exits non-zero on unknown-cfg-key</td></tr>
+<tr><td class='ok'>passed</td><td class='wrap'>check reports non-exhaustive-match</td></tr>
+<tr><td class='ok'>passed</td><td class='wrap'>check exits non-zero on non-exhaustive-match</td></tr>
+<tr><td class='ok'>passed</td><td class='wrap'>check reports type-mismatch</td></tr>
+<tr><td class='ok'>passed</td><td class='wrap'>check exits non-zero on type-mismatch</td></tr>
+<tr><td class='ok'>passed</td><td class='wrap'>check reports undeclared-dependency</td></tr>
+<tr><td class='ok'>passed</td><td class='wrap'>check exits non-zero on undeclared-dependency</td></tr>
+<tr><td class='ok'>passed</td><td class='wrap'>check reports unknown-target</td></tr>
+<tr><td class='ok'>passed</td><td class='wrap'>check exits non-zero on unknown-target</td></tr>
+<tr><td class='ok'>passed</td><td class='wrap'>check reports dependency-cycle</td></tr>
+<tr><td class='ok'>passed</td><td class='wrap'>check exits non-zero on dependency-cycle</td></tr>
+<tr><td class='ok'>passed</td><td class='wrap'>check reports missing-manifest</td></tr>
+<tr><td class='ok'>passed</td><td class='wrap'>check exits non-zero on missing-manifest</td></tr>
+<tr><td class='ok'>passed</td><td class='wrap'>check reports merge-conflict</td></tr>
+<tr><td class='ok'>passed</td><td class='wrap'>check exits non-zero on merge-conflict</td></tr>
+<tr><td class='ok'>passed</td><td class='wrap'>check reports abi-mismatch</td></tr>
+<tr><td class='ok'>passed</td><td class='wrap'>check exits non-zero on abi-mismatch</td></tr>
+<tr><td class='ok'>passed</td><td class='wrap'>build reports invalid-source</td></tr>
+<tr><td class='ok'>passed</td><td class='wrap'>build reports unresolved-path</td></tr>
+<tr><td class='ok'>passed</td><td class='wrap'>build reports empty-glob</td></tr>
+<tr><td class='ok'>passed</td><td class='wrap'>build exits non-zero on invalid-source</td></tr>
+<tr><td class='ok'>passed</td><td class='wrap'>build exits non-zero on unresolved-path</td></tr>
+<tr><td class='warn'>known</td><td class='wrap'>check finds invalid-source as well  [F-004]</td></tr>
+<tr><td class='warn'>known</td><td class='wrap'>check finds unresolved-path as well  [F-004]</td></tr>
+<tr><td class='ok'>passed</td><td class='wrap'>unknown-property points at the offending source</td></tr>
+<tr><td class='ok'>passed</td><td class='wrap'>undeclared-dependency points at the offending source</td></tr>
+<tr><td class='ok'>passed</td><td class='wrap'>dependency-cycle points at the offending source</td></tr>
+<tr><td class='ok'>passed</td><td class='wrap'>type-mismatch points at the offending source</td></tr>
+<tr><td class='warn'>known</td><td class='wrap'>missing-manifest points at the offending source  [F-005]</td></tr>
+<tr><td class='ok'>passed</td><td class='wrap'>building a C++ source fails</td></tr>
+<tr><td class='warn'>known</td><td class='wrap'>building a C++ source produces a diagnostic of dowel&#x27;s own  [F-008]</td></tr>
+<tr><td class='warn'>known</td><td class='wrap'>declaring a toolchain that does not exist fails with a source location  [F-009]</td></tr>
+<tr><td class='warn'>known</td><td class='wrap'>the C++ failure is not reported in the linker&#x27;s words  [F-008]</td></tr>
+<tr><td class='warn'>known</td><td class='wrap'>the toolchain failure is not reported in the shell&#x27;s words  [F-009]</td></tr>
+<tr><td class='ok'>passed</td><td class='wrap'>merge-conflict carries the location of both values</td></tr>
+<tr><td class='ok'>passed</td><td class='wrap'>abi-mismatch carries the location of both values</td></tr>
+<tr><td class='warn'>known</td><td class='wrap'>merge-conflict renders the dependent side of the conflict too  [F-007]</td></tr>
+<tr><td class='warn'>known</td><td class='wrap'>abi-mismatch renders the dependent side of the conflict too  [F-007]</td></tr>
+<tr><td class='ok'>passed</td><td class='wrap'>unknown-property carries a suggestion</td></tr>
+<tr><td class='warn'>known</td><td class='wrap'>the manifest still passes check after applying the suggestion  [F-006]</td></tr>
+</table></div>
+</details>
 <h2>History</h2>
 <p>Each cell is passed / failed / known / fixed for that project. A dash means the project did not exist at that point.</p>
 <div class="scroll"><table>
 <tr><th>run</th><th>state</th><th>branch</th><th>commit</th><th>dowel</th><th class='n'>01-minimal</th><th class='n'>02-config</th><th class='n'>03-features</th><th class='n'>04-diagnostics</th><th class='n'>total</th></tr>
+<tr><td class='mono'><a href="https://github.com/sabas0ba/dowel_examples/actions/runs/30363901819">2026-07-28T13:32:14Z</a></td><td class='ok'>ok</td><td>main</td><td class='mono'>b69cc8fe3796</td><td class='mono'>a8a59e7c70aa</td><td class="n ">10/0/0/0</td><td class="n ">21/0/0/0</td><td class="n warn">12/0/4/0</td><td class="n warn">37/0/10/0</td><td class='n'>94</td></tr>
 <tr><td class='mono'><a href="https://github.com/sabas0ba/dowel_examples/actions/runs/30362232181">2026-07-28T13:10:49Z</a></td><td class='ok'>ok</td><td>main</td><td class='mono'>8523cf675458</td><td class='mono'>a8a59e7c70aa</td><td class="n ">10/0/0/0</td><td class="n ">21/0/0/0</td><td class="n warn">12/0/4/0</td><td class="n warn">37/0/10/0</td><td class='n'>94</td></tr>
 </table></div>
 <footer>This page is generated by CI and pushed to the publication branch. Edits here are overwritten by the next run.</footer>
