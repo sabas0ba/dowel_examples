@@ -20,6 +20,7 @@ SUITE_ROOT=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 WORK="$SUITE_ROOT/.work"
 RESULTS="$WORK/results.tsv"     # 1 検査 1 行: status \t project \t desc
 PROJECTS="$WORK/projects.tsv"   # 1 プロジェクト 1 行: name \t ms \t pass \t fail \t xfail \t xpass
+PACKAGES="$WORK/packages.tsv"   # 1 パッケージ 1 行: project \t パッケージの相対パス
 META="$WORK/meta.tsv"           # key \t value
 
 # 経過時間。bash 5 の EPOCHREALTIME を使い、無い場合は秒に落とす。
@@ -103,6 +104,7 @@ rm -rf "$WORK"
 mkdir -p "$WORK"
 : >"$RESULTS"
 : >"$PROJECTS"
+: >"$PACKAGES"
 
 dowel_version=$("$DOWEL" --version)
 cc_version=$(cc --version 2>/dev/null | head -1)
@@ -128,6 +130,12 @@ for name in "${selected[@]}"; do
     started=$(now_ms)
 
     cp -r "$src" "$dst"
+
+    # そのプロジェクトが含むパッケージ。掲示の表から実体へ辿る材料になる。
+    (cd "$dst" && find . -name dowel.toml -printf '%h\n' | sed 's|^\./||' | sort) |
+        while IFS= read -r pkg; do
+            printf '%s\t%s\n' "$name" "$pkg" >>"$PACKAGES"
+        done
 
     if [ ! -f "$dst/expect.sh" ]; then
         printf '  FAIL expect.sh is missing\n'

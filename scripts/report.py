@@ -12,8 +12,9 @@
     report.py run  --work .work --out <dir>
         1回の実行をまとめる。summary.md と results.json を書く
 
-    report.py site --history <history.json> --out <dir>
-        履歴から index.html を作る。掲示用の枝で使う
+    report.py site --history <history.json> [--latest <results.json>] --out <dir>
+        履歴から index.html を作る。掲示用の枝で使う。
+        --latest を渡すと、直近の実行の内訳（検査の全件）も出す
 
 履歴の追記は `run --append <history.json>` で行う。同じ実行（run_id）が
 二度来た場合は後のもので置き換える。再実行しても行が増えない。
@@ -73,6 +74,7 @@ def collect(work):
         os.path.join(work, "projects.tsv"),
         ["name", "duration_ms", "pass", "fail", "xfail", "xpass"],
     )
+    pkgs = read_tsv(os.path.join(work, "packages.tsv"), ["project", "path"])
 
     projects = []
     for r in raw:
@@ -85,6 +87,15 @@ def collect(work):
                 "total": sum(counts.values()),
                 # 失敗と XPASS のどちらも「直すべきもの」である。
                 "ok": counts["fail"] == 0 and counts["xpass"] == 0,
+                # 検査の全件。掲示で内訳を出すために持つ。履歴には積まない
+                # （100 回分を抱えると読めない大きさになる）。
+                "checks": [
+                    {"status": c["status"], "desc": c["desc"]}
+                    for c in checks
+                    if c["project"] == r["name"]
+                ],
+                # 実体へ辿るための材料。
+                "packages": [p["path"] for p in pkgs if p["project"] == r["name"]],
             }
         )
 
@@ -120,6 +131,33 @@ def run_url():
     if server and repo and run_id:
         return f"{server}/{repo}/actions/runs/{run_id}"
     return ""
+
+
+# ---------------------------------------------------------------- 実体への道
+#
+# 掲示は結果しか持たない。「この検査は何を見ているのか」を追うには、
+# 実体へ辿れる必要がある。相手は2つのリポジトリに固定されているため、
+# ここで定数として持つ。環境変数で上書きできる。
+
+SUITE_REPO = os.environ.get("SUITE_REPO_URL", "https://github.com/sabas0ba/dowel_examples")
+DOWEL_REPO = os.environ.get("DOWEL_REPO_URL", "https://github.com/sabas0ba/dowel")
+
+
+def suite_tree(run, path=""):
+    """本リポジトリの、その実行が用いた版へのリンク。"""
+    ref = run.get("commit") or "main"
+    return f"{SUITE_REPO}/tree/{ref}/{path}".rstrip("/")
+
+
+def suite_blob(run, path):
+    ref = run.get("commit") or "main"
+    return f"{SUITE_REPO}/blob/{ref}/{path}"
+
+
+def dowel_link(run):
+    """検証に用いた dowel。版が分かっていればその commit を指す。"""
+    sha = run.get("dowel_commit") or ""
+    return f"{DOWEL_REPO}/commit/{sha}" if sha else DOWEL_REPO
 
 
 # -------------------------------------------------------------- 1回分の要約
@@ -211,6 +249,20 @@ def render_summary(run):
 # ------------------------------------------------------------------ 履歴
 
 
+def for_history(run):
+    """履歴へ積む形。1回分の重い部分を落とす。
+
+    履歴が要るのは各回の内訳の数であって、検査1件ずつの一覧ではない。
+    100 回分の全件を抱えると、読むにも押し込むにも大きくなりすぎる。
+    直近の実行の全件は `latest.json` にあり、掲示はそちらから描く。
+    """
+    trimmed = {k: v for k, v in run.items() if k != "known_issues"}
+    trimmed["projects"] = [
+        {k: v for k, v in p.items() if k != "checks"} for p in run.get("projects", [])
+    ]
+    return trimmed
+
+
 def append_history(path, run):
     history = []
     if os.path.exists(path):
@@ -227,7 +279,7 @@ def append_history(path, run):
     if key != ("", ""):
         history = [h for h in history if (h.get("run_id"), h.get("run_attempt")) != key]
 
-    history.append(run)
+    history.append(for_history(run))
     history = history[-HISTORY_LIMIT:]
 
     with open(path, "w", encoding="utf-8") as f:
@@ -270,6 +322,15 @@ code, .mono { font-family:ui-monospace, SFMono-Regular, Menlo, monospace;
               font-size:.85em; }
 a { color:inherit; }
 footer { margin-top:3rem; color:var(--muted); font-size:.8rem; }
+p.links { margin:.4rem 0 1.2rem; font-size:.85rem; color:var(--muted); }
+p.links a { color:inherit; }
+.muted { color:var(--muted); font-weight:400; }
+details { border:1px solid var(--line); border-radius:6px; padding:.6rem .9rem;
+          margin-bottom:.6rem; }
+details[open] { padding-bottom:.2rem; }
+summary { cursor:pointer; font-size:.95rem; }
+summary::marker { color:var(--muted); }
+details p.links { margin:.5rem 0 .6rem; }
 """
 
 
@@ -285,11 +346,21 @@ def short(s, n=12):
     return html.escape(s[:n]) if s else "—"
 
 
-def render_site(history):
-    if not history:
+def render_site(history, latest=None):
+    """履歴から掲示の本文を作る。
+
+    `latest` は直近の実行の全件（`latest.json`）。履歴には検査1件ずつの
+    一覧を積まないため、内訳を出すにはこちらが要る。省いた場合は
+    履歴の最後の要素で代用し、内訳の節は出さない。
+    """
+    if not history and not latest:
         return "<main><h1>dowel_examples</h1><p>No run yet.</p></main>"
 
-    latest = history[-1]
+    detailed = latest is not None
+    if latest is None:
+        latest = history[-1]
+    if not history:
+        history = [for_history(latest)]
     names = sorted({p["name"] for h in history for p in h["projects"]})
 
     out = []
@@ -300,6 +371,23 @@ def render_site(history):
         "What each check fixes is in the README of its project; why some are left "
         "failing is in docs/10-findings.md.</p>"
     )
+
+    # 掲示は結果しか持たない。実体へ辿れないと「何を見ている検査なのか」が
+    # 分からないため、対象と自分自身への道をここに置く。
+    links = [
+        '<a href="{}">dowel</a>'.format(DOWEL_REPO),
+    ]
+    if latest.get("dowel_commit"):
+        links.append(
+            'checked against <a href="{}"><code>{}</code></a>'.format(
+                dowel_link(latest), short(latest["dowel_commit"])
+            )
+        )
+    links.append('<a href="{}">dowel_examples</a>'.format(SUITE_REPO))
+    links.append('<a href="{}">dowel-ref</a>'.format(suite_blob(latest, "dowel-ref")))
+    links.append('<a href="{}">docs/10-findings.md</a>'.format(
+        suite_blob(latest, "docs/10-findings.md")))
+    out.append('<p class="links">' + " &middot; ".join(links) + "</p>")
 
     # ---------------------------------------------------------- 直近の実行
     t = latest["totals"]
@@ -326,7 +414,9 @@ def render_site(history):
     for p in latest["projects"]:
         out.append(
             "<tr><td>{}</td><td class='{}'>{}</td><td class='n'>{}</td>{}<td class='n'>{:.1f}s</td></tr>".format(
-                html.escape(p["name"]),
+                '<a href="{}">{}</a>'.format(
+                    suite_tree(latest, "projects/" + p["name"]), html.escape(p["name"])
+                ),
                 "ok" if p["ok"] else "ng",
                 "ok" if p["ok"] else "FAILED",
                 p["total"],
@@ -335,6 +425,58 @@ def render_site(history):
             )
         )
     out.append("</table></div>")
+
+    # ------------------------------------------------------------ 内訳
+    #
+    # 表の数だけでは「何を固定している検査なのか」が分からない。
+    # 全件を出し、あわせて実体（プロジェクトと各パッケージ）へのリンクを置く。
+    # 落ちているものを含むプロジェクトだけ開いた状態にする。
+    if detailed:
+        out.append("<h2>Checks</h2>")
+        out.append(
+            "<p>Every check this run made, by project. "
+            "Each project links to its directory in the repository; "
+            "<code>README</code> states what that project fixes.</p>"
+        )
+        for p in latest["projects"]:
+            opened = "" if p["ok"] and not p["counts"]["xfail"] else " open"
+            tree = suite_tree(latest, "projects/" + p["name"])
+            out.append("<details{}>".format(opened))
+            out.append(
+                "<summary><span class='{}'>{}</span> "
+                "<a href='{}'>{}</a> — {} checks "
+                "<span class='muted'>({} passed, {} failed, {} known, {} fixed)</span>"
+                "</summary>".format(
+                    "ok" if p["ok"] else "ng",
+                    "ok" if p["ok"] else "FAILED",
+                    tree,
+                    html.escape(p["name"]),
+                    p["total"],
+                    p["counts"]["pass"], p["counts"]["fail"],
+                    p["counts"]["xfail"], p["counts"]["xpass"],
+                )
+            )
+            src = [
+                '<a href="{}">README</a>'.format(
+                    suite_blob(latest, "projects/{}/README.md".format(p["name"]))
+                )
+            ]
+            src += [
+                '<a href="{}/{}"><code>{}</code></a>'.format(tree, pkg, html.escape(pkg))
+                for pkg in p.get("packages", [])
+            ]
+            out.append('<p class="links">' + " &middot; ".join(src) + "</p>")
+            out.append('<div class="scroll"><table>')
+            out.append("<tr><th>state</th><th>check</th></tr>")
+            for c in p.get("checks", []):
+                cls = {"pass": "ok", "fail": "ng", "xfail": "warn", "xpass": "ng"}[c["status"]]
+                out.append(
+                    "<tr><td class='{}'>{}</td><td class='wrap'>{}</td></tr>".format(
+                        cls, LABEL[c["status"]], html.escape(c["desc"])
+                    )
+                )
+            out.append("</table></div>")
+            out.append("</details>")
 
     # ------------------------------------------------------ 直すべきもの
     if latest.get("attention"):
@@ -350,7 +492,7 @@ def render_site(history):
         out.append("</table></div>")
 
     # -------------------------------------------------- 既知の未修正事項
-    if latest.get("known_issues"):
+    if not detailed and latest.get("known_issues"):
         out.append("<h2>Known unfixed issues</h2>")
         out.append(
             "<p>Checks left failing because the upstream issue is not fixed yet. "
@@ -420,14 +562,14 @@ def render_site(history):
     return "\n".join(out)
 
 
-def render_page(history):
+def render_page(history, latest=None):
     title = "dowel_examples — check results"
     return (
         "<!doctype html>\n"
         '<html lang="ja">\n<head>\n<meta charset="utf-8">\n'
         '<meta name="viewport" content="width=device-width, initial-scale=1">\n'
         f"<title>{title}</title>\n<style>{CSS}</style>\n</head>\n<body>\n"
-        + render_site(history)
+        + render_site(history, latest)
         + "\n</body>\n</html>\n"
     )
 
@@ -449,6 +591,7 @@ def main():
 
     s = sub.add_parser("site", help="履歴から index.html を作る")
     s.add_argument("--history", required=True)
+    s.add_argument("--latest", help="直近の実行の全件（results.json / latest.json）")
     s.add_argument("--out", required=True)
 
     args = ap.parse_args()
@@ -474,8 +617,12 @@ def main():
     if os.path.exists(args.history):
         with open(args.history, encoding="utf-8") as f:
             history = json.load(f)
+    latest = None
+    if args.latest and os.path.exists(args.latest):
+        with open(args.latest, encoding="utf-8") as f:
+            latest = json.load(f)
     with open(os.path.join(args.out, "index.html"), "w", encoding="utf-8") as f:
-        f.write(render_page(history))
+        f.write(render_page(history, latest))
     return 0
 
 

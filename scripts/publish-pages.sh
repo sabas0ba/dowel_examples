@@ -55,7 +55,7 @@ for attempt in $(seq 1 "$ATTEMPTS"); do
     python3 "$SUITE_ROOT/scripts/report.py" append \
         --results "$RESULTS" --history "$WORK/history.json"
     python3 "$SUITE_ROOT/scripts/report.py" site \
-        --history "$WORK/history.json" --out "$WORK"
+        --history "$WORK/history.json" --latest "$WORK/latest.json" --out "$WORK"
 
     # GitHub Pages が下線で始まる名前を落とさないようにする。
     : >"$WORK/.nojekyll"

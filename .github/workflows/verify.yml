@@ -122,7 +122,8 @@ jobs:
           python3 scripts/report.py append \
             --results .work/report/results.json --history .work/report/history.json
           python3 scripts/report.py site \
-            --history .work/report/history.json --out .work/report
+            --history .work/report/history.json \
+            --latest .work/report/results.json --out .work/report
 
       - name: Summary
         if: always()
