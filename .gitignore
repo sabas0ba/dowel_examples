@@ -1,2 +1,3 @@
 .work/
 .dowel-src/
+__pycache__/
