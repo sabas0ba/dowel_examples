@@ -34,11 +34,14 @@ def markdown_files():
     その `docs/10-manifest.md` に含まれる git 依存の例の rev を
     「文書が引用する版」と誤認して落ちた。追跡対象かどうかが正しい境界である。
     """
-    tracked = subprocess.run(
-        ["git", "-C", ROOT, "ls-files", "-z", "*.md"],
-        capture_output=True, check=False,
-    )
-    if tracked.returncode == 0:
+    try:
+        tracked = subprocess.run(
+            ["git", "-C", ROOT, "ls-files", "-z", "*.md"],
+            capture_output=True, check=False,
+        )
+    except OSError:
+        tracked = None  # git が無い
+    if tracked is not None and tracked.returncode == 0:
         for name in tracked.stdout.decode("utf-8").split("\0"):
             if name:
                 yield os.path.join(ROOT, name)
