@@ -110,12 +110,13 @@ known_issue F-015
 out_lacks "Invalid ELF image" \
     "the mismatch is caught before the artifact is started" -C subject test --target=$TRIPLE
 
-# 逆向き。クロスのツールチェーンでホスト向けの構成を組むと、
-# ランナーを通らずに直接起動され、Exec format error になる。
-cross_toml
-rm -rf "$SUBJECT/.dowel"
-known_issue F-015
-out_lacks "Exec format error" \
-    "an artifact that cannot run on the host is refused before it is started" -C subject test
+# 逆向き（クロスのツールチェーンでホスト向けの構成を組む）は検査にしない。
+# 起動できるかどうかが機械の設定で決まるためである。qemu-user-static を
+# 入れた環境では binfmt_misc に登録され、別アーキテクチャの実行ファイルが
+# そのまま起動する。手元では `Exec format error` になり、CI では通る。
+#
+# 「起動の前に拒む」ことを見たいのに、拒まなかった結果が機械によって
+# 変わるなら、その検査が記録するのは dowel ではなく実行した機械である。
+# F-015 の観測としては docs/10-findings.md に残す。
 
 host_toml

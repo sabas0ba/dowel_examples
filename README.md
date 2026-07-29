@@ -46,7 +46,7 @@ DOWELUP=/path/to/dowelup DOWEL_SRC=/path/to/dowel ./run.sh
 ## 出力
 
 1 検査 1 行。本体が直していない事項に対する検査は `xfail` として登録する。
-本体側が直ると `XPASS` になって落ち、宣言を外すべきことが分かる。現在は 5 件で、
+本体側が直ると `XPASS` になって落ち、宣言を外すべきことが分かる。現在は 4 件で、
 [F-011](docs/10-findings.md#f-011) の残っている側、
 [F-014](docs/10-findings.md#f-014)、[F-015](docs/10-findings.md#f-015) に対応する。
 
@@ -63,7 +63,7 @@ DOWELUP=/path/to/dowelup DOWEL_SRC=/path/to/dowel ./run.sh
   ok   the cross tests run under the emulator and pass
   xfail an artifact filed under a triple is built for that triple  [F-015]
 
-total 545 checks: 540 passed, 0 failed, 5 known, 0 fixed
+total 544 checks: 540 passed, 0 failed, 4 known, 0 fixed
 ```
 
 検査名は英語で書く。実装の中身ではなく、何が固定されているかを1行で読ませる

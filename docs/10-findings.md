@@ -1127,7 +1127,11 @@ test result: FAILED. 0 passed; 1 failed
 
 - `an artifact filed under a triple is built for that triple`
 - `the mismatch is caught before the artifact is started`
-- `an artifact that cannot run on the host is refused before it is started`
+
+逆向き（クロスのツールチェーンでホスト向けの構成を組む場合）は検査にしていない。起動できるかどうかが機械の設定で決まるためである。
+`qemu-user-static` を入れた環境では binfmt_misc に登録され、別アーキテクチャの
+実行ファイルがそのまま起動する。拒まなかった結果が機械によって変わるなら、
+その検査が記録するのは dowel ではなく実行した機械である。
 
 通る側（宣言したクロスツールチェーンで組み、qemu で走らせる）が同じ
 プロジェクトにあるため、**機構は揃っていて結び付けが無いだけ**であることが
