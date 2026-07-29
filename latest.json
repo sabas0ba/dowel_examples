@@ -1,10 +1,10 @@
 {
- "run_id": "30370927369",
+ "run_id": "30411196263",
  "run_attempt": "1",
- "run_url": "https://github.com/sabas0ba/dowel_examples/actions/runs/30370927369",
- "commit": "0c03829f19514c0dec4df518443e4421bbe3c565",
+ "run_url": "https://github.com/sabas0ba/dowel_examples/actions/runs/30411196263",
+ "commit": "83dc45bb1fbd4e6aa413ede98a7afa185cf23e2d",
  "branch": "main",
- "started_at": "2026-07-28T14:57:38Z",
+ "started_at": "2026-07-29T00:28:01Z",
  "dowel_version": "dowel 0.0.1",
  "dowel_ref": "07f16ec59e48c764e9126f6df333417b4d104297",
  "dowel_commit": "07f16ec59e48c764e9126f6df333417b4d104297",
@@ -13,7 +13,7 @@
  "projects": [
   {
    "name": "01-minimal",
-   "duration_ms": 163,
+   "duration_ms": 1405,
    "counts": {
     "pass": 10,
     "fail": 0,
@@ -70,7 +70,7 @@
   },
   {
    "name": "02-config",
-   "duration_ms": 3913,
+   "duration_ms": 8754,
    "counts": {
     "pass": 21,
     "fail": 0,
@@ -172,7 +172,7 @@
   },
   {
    "name": "03-features",
-   "duration_ms": 225,
+   "duration_ms": 287,
    "counts": {
     "pass": 17,
     "fail": 0,
@@ -261,14 +261,14 @@
   },
   {
    "name": "04-diagnostics",
-   "duration_ms": 244,
+   "duration_ms": 343,
    "counts": {
-    "pass": 64,
+    "pass": 70,
     "fail": 0,
     "xfail": 0,
     "xpass": 0
    },
-   "total": 64,
+   "total": 70,
    "ok": true,
    "checks": [
     {
@@ -393,6 +393,22 @@
     },
     {
      "status": "pass",
+     "desc": "check reports incomplete-runner"
+    },
+    {
+     "status": "pass",
+     "desc": "check exits non-zero on incomplete-runner"
+    },
+    {
+     "status": "pass",
+     "desc": "check reports missing-field"
+    },
+    {
+     "status": "pass",
+     "desc": "check exits non-zero on missing-field"
+    },
+    {
+     "status": "pass",
      "desc": "check reports merge-conflict"
     },
     {
@@ -501,6 +517,14 @@
     },
     {
      "status": "pass",
+     "desc": "incomplete-runner points at the offending source"
+    },
+    {
+     "status": "pass",
+     "desc": "missing-field points at the offending source"
+    },
+    {
+     "status": "pass",
      "desc": "merge-conflict carries the location of both values"
     },
     {
@@ -533,9 +557,11 @@
     "cases/abi-mismatch/lib",
     "cases/dependency-cycle",
     "cases/empty-glob",
+    "cases/incomplete-runner",
     "cases/invalid-source",
     "cases/merge-conflict/app",
     "cases/merge-conflict/lib",
+    "cases/missing-field",
     "cases/missing-manifest",
     "cases/missing-toolchain",
     "cases/non-exhaustive-match",
@@ -553,7 +579,7 @@
   },
   {
    "name": "05-incremental",
-   "duration_ms": 1212,
+   "duration_ms": 1568,
    "counts": {
     "pass": 44,
     "fail": 0,
@@ -746,8 +772,95 @@
    ]
   },
   {
+   "name": "06-runner",
+   "duration_ms": 265,
+   "counts": {
+    "pass": 17,
+    "fail": 0,
+    "xfail": 0,
+    "xpass": 0
+   },
+   "total": 17,
+   "ok": true,
+   "checks": [
+    {
+     "status": "pass",
+     "desc": "the host triple needs no runner"
+    },
+    {
+     "status": "pass",
+     "desc": "running for another triple without a runner is refused"
+    },
+    {
+     "status": "pass",
+     "desc": "the refusal carries the missing-runner code"
+    },
+    {
+     "status": "pass",
+     "desc": "the refusal happens before the artifact is started"
+    },
+    {
+     "status": "pass",
+     "desc": "building for another triple still works"
+    },
+    {
+     "status": "pass",
+     "desc": "a declared runner lets the tests run for another triple"
+    },
+    {
+     "status": "pass",
+     "desc": "the runner receives its declared args then the artifact"
+    },
+    {
+     "status": "pass",
+     "desc": "the runner starts in the package root"
+    },
+    {
+     "status": "pass",
+     "desc": "the build directory is per target triple"
+    },
+    {
+     "status": "pass",
+     "desc": "a failing test still fails when it runs through a runner"
+    },
+    {
+     "status": "pass",
+     "desc": "the exit status passes through the runner unchanged"
+    },
+    {
+     "status": "pass",
+     "desc": "a runner that transfers the artifact works"
+    },
+    {
+     "status": "pass",
+     "desc": "transfer gets the local path and the destination appended"
+    },
+    {
+     "status": "pass",
+     "desc": "host prefixes the destination as ADR-0008 specifies"
+    },
+    {
+     "status": "pass",
+     "desc": "the launch command gets the remote path, not the local one"
+    },
+    {
+     "status": "pass",
+     "desc": "the artifact really arrives at the destination"
+    },
+    {
+     "status": "pass",
+     "desc": "the manifest carries no placeholder for the transferred path"
+    }
+   ],
+   "packages": [
+    "crossed",
+    "plain",
+    "transferred"
+   ]
+  },
+  {
    "name": "docs",
-   "duration_ms": 38,
+   "duration_ms": 52,
    "counts": {
     "pass": 7,
     "fail": 0,
@@ -790,12 +903,12 @@
   }
  ],
  "totals": {
-  "pass": 163,
+  "pass": 186,
   "fail": 0,
   "xfail": 0,
   "xpass": 0
  },
- "total": 163,
+ "total": 186,
  "ok": true,
  "attention": [],
  "known_issues": []

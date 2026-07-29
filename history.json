@@ -510,5 +510,161 @@
   "total": 163,
   "ok": true,
   "attention": []
+ },
+ {
+  "run_id": "30411196263",
+  "run_attempt": "1",
+  "run_url": "https://github.com/sabas0ba/dowel_examples/actions/runs/30411196263",
+  "commit": "83dc45bb1fbd4e6aa413ede98a7afa185cf23e2d",
+  "branch": "main",
+  "started_at": "2026-07-29T00:28:01Z",
+  "dowel_version": "dowel 0.0.1",
+  "dowel_ref": "07f16ec59e48c764e9126f6df333417b4d104297",
+  "dowel_commit": "07f16ec59e48c764e9126f6df333417b4d104297",
+  "cc": "cc (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0",
+  "ninja": "1.13.2",
+  "projects": [
+   {
+    "name": "01-minimal",
+    "duration_ms": 1405,
+    "counts": {
+     "pass": 10,
+     "fail": 0,
+     "xfail": 0,
+     "xpass": 0
+    },
+    "total": 10,
+    "ok": true,
+    "packages": [
+     "hello"
+    ]
+   },
+   {
+    "name": "02-config",
+    "duration_ms": 8754,
+    "counts": {
+     "pass": 21,
+     "fail": 0,
+     "xfail": 0,
+     "xpass": 0
+    },
+    "total": 21,
+    "ok": true,
+    "packages": [
+     "app",
+     "probe"
+    ]
+   },
+   {
+    "name": "03-features",
+    "duration_ms": 287,
+    "counts": {
+     "pass": 17,
+     "fail": 0,
+     "xfail": 0,
+     "xpass": 0
+    },
+    "total": 17,
+    "ok": true,
+    "packages": [
+     "app",
+     "json",
+     "missing-optional",
+     "undeclared",
+     "xml"
+    ]
+   },
+   {
+    "name": "04-diagnostics",
+    "duration_ms": 343,
+    "counts": {
+     "pass": 70,
+     "fail": 0,
+     "xfail": 0,
+     "xpass": 0
+    },
+    "total": 70,
+    "ok": true,
+    "packages": [
+     "cases/abi-mismatch/app",
+     "cases/abi-mismatch/lib",
+     "cases/dependency-cycle",
+     "cases/empty-glob",
+     "cases/incomplete-runner",
+     "cases/invalid-source",
+     "cases/merge-conflict/app",
+     "cases/merge-conflict/lib",
+     "cases/missing-field",
+     "cases/missing-manifest",
+     "cases/missing-toolchain",
+     "cases/non-exhaustive-match",
+     "cases/type-mismatch",
+     "cases/undeclared-dependency",
+     "cases/unknown-cfg-key",
+     "cases/unknown-feature",
+     "cases/unknown-function",
+     "cases/unknown-kind",
+     "cases/unknown-property",
+     "cases/unknown-target",
+     "cases/unresolved-path",
+     "cases/unsupported-language"
+    ]
+   },
+   {
+    "name": "05-incremental",
+    "duration_ms": 1568,
+    "counts": {
+     "pass": 44,
+     "fail": 0,
+     "xfail": 0,
+     "xpass": 0
+    },
+    "total": 44,
+    "ok": true,
+    "packages": [
+     "app",
+     "core"
+    ]
+   },
+   {
+    "name": "06-runner",
+    "duration_ms": 265,
+    "counts": {
+     "pass": 17,
+     "fail": 0,
+     "xfail": 0,
+     "xpass": 0
+    },
+    "total": 17,
+    "ok": true,
+    "packages": [
+     "crossed",
+     "plain",
+     "transferred"
+    ]
+   },
+   {
+    "name": "docs",
+    "duration_ms": 52,
+    "counts": {
+     "pass": 7,
+     "fail": 0,
+     "xfail": 0,
+     "xpass": 0
+    },
+    "total": 7,
+    "ok": true,
+    "packages": []
+   }
+  ],
+  "totals": {
+   "pass": 186,
+   "fail": 0,
+   "xfail": 0,
+   "xpass": 0
+  },
+  "total": 186,
+  "ok": true,
+  "attention": []
  }
 ]
