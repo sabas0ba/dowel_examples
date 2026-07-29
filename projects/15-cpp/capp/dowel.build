@@ -1,0 +1,13 @@
+# ソースは C だけである。それでもリンクは C++ の driver で行われる必要がある。
+# 依存の閉包に C++ の翻訳単位が居るためである。
+[bin.capp]
+sources = glob("src/*.c")
+
+[bin.capp.private]
+deps = [dep("cpplib")]
+
+[test.capp_test]
+sources = glob("tests/*.c")
+
+[test.capp_test.private]
+deps = [dep("cpplib")]

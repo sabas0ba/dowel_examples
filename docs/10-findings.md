@@ -3,7 +3,8 @@
 本スイートが外側から見つけたもの。
 
 F-001 から F-009 までの 9 件は `07f16ec` で、F-010 / F-012 / F-013 は
-`95daf9f` で修正された。記録は残す。
+`95daf9f` で修正された。F-008 はさらに `9ed13f4` で二段目の決着を見ている。
+記録は残す。
 何を見てどう報告したかが、次に同種のものを見つけるときの型になるためである。
 対応する検査は `known_issue` を外し、通常の検査として残してある。直った
 ものを消すと、退行したときに気づけない。
@@ -271,10 +272,11 @@ undefined reference to `std::__cxx11::basic_string<...>::c_str() const'
 本体のフィクスチャと e2e は全て C で書かれている。C++ のソースは
 入力として一度も現れない。
 
-### 修正
+### 修正（2段階）
 
-`unsupported-language` として、`check` の段で落ちるようになった。
-`build` を待たずに出る点は期待より進んでいる。
+まず `unsupported-language` として `check` の段で落ちるようになった。
+挙げた2案のうち短期の案（診断で拒む）であり、`build` を待たずに出る点は
+期待より進んでいた。
 
 ```
 error[unsupported-language]: `src/main.cpp` is a C++ source
@@ -287,13 +289,22 @@ error[unsupported-language]: `src/main.cpp` is a C++ source
 ```
 
 注記が「C の driver なら通るが C++ 実行時が付かない」という失敗の形まで
-説明している。同じ罠を別の経路で踏んだ利用者にも効く。
+説明している。同じ罠を別の経路で踏んだ利用者にも効いた。
+
+その後 `9ed13f4` で**もう一方の案（C++ を組めるようにする）**が入り、
+`unsupported-language` は出なくなった。拡張子ごとにコンパイラを選び、
+`tc.cxx` を構成の語彙に加え、**依存の閉包に C++ の翻訳単位があれば
+リンクも C++ の driver で行う**。最後の点が本件の失敗様式そのものへの
+答であり、純 C の実行ファイルでも C++ の実行時が繋がる。
 
 ### 検査
 
-`projects/04-diagnostics` の `check reports unsupported-language`、
-`unsupported-language points at the offending source`、
-`a C++ source never reaches the linker`。
+`projects/15-cpp` が受け持つ。とくに
+`but the link uses the C++ driver because a dependency is C++` と
+`the link never fails the way F-008 did` が本件に対応する。
+
+`projects/04-diagnostics` からは `unsupported-language` の事例を外した。
+出なくなった診断を検査に残すと、実在しない約束を固定することになる。
 
 ---
 

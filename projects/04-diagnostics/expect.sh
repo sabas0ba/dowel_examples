@@ -21,7 +21,6 @@ unknown-target
 dependency-cycle
 missing-manifest
 missing-toolchain
-unsupported-language
 invalid-source
 unresolved-path
 incomplete-runner
@@ -64,9 +63,12 @@ fails "build exits non-zero on unresolved-path" -C cases/unresolved-path build
 # 下流へ流し、原因の箇所を示さない誤りとして出すことである
 # （docs/00-overview.md 1節、docs/51-testing.md の invalid-source の経緯）。
 # 組めない言語と、実在しないツールチェーンが同じ形で残っていた。
+#
+# C++ の側は `unsupported-language` で拒む形をいったん経てから、
+# 組めるようにする側で決着した（docs/10-findings.md F-008）。
+# したがってここに残るのはツールチェーンだけである。C++ が本当に
+# 組めることは projects/15-cpp が見る。
 
-out_lacks "undefined reference" "a C++ source never reaches the linker" \
-    -C cases/unsupported-language build
 out_lacks "not found" "a missing toolchain never reaches the shell" \
     -C cases/missing-toolchain build
 
