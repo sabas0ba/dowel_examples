@@ -837,5 +837,204 @@
   "total": 316,
   "ok": true,
   "attention": []
+ },
+ {
+  "run_id": "30462541775",
+  "run_attempt": "1",
+  "run_url": "https://github.com/sabas0ba/dowel_examples/actions/runs/30462541775",
+  "commit": "b1380dd21bfe32a7ac5e2715b4815cd52e50040b",
+  "branch": "main",
+  "started_at": "2026-07-29T14:46:56Z",
+  "dowel_version": "dowel 0.0.1",
+  "dowel_ref": "19a4a409f6e87b3bd0615aead465888878f621d5",
+  "dowel_commit": "19a4a409f6e87b3bd0615aead465888878f621d5",
+  "cc": "cc (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0",
+  "ninja": "1.13.2",
+  "projects": [
+   {
+    "name": "01-minimal",
+    "duration_ms": 252,
+    "counts": {
+     "pass": 10,
+     "fail": 0,
+     "xfail": 0,
+     "xpass": 0
+    },
+    "total": 10,
+    "ok": true,
+    "packages": [
+     "hello"
+    ]
+   },
+   {
+    "name": "02-config",
+    "duration_ms": 1142,
+    "counts": {
+     "pass": 21,
+     "fail": 0,
+     "xfail": 0,
+     "xpass": 0
+    },
+    "total": 21,
+    "ok": true,
+    "packages": [
+     "app",
+     "probe"
+    ]
+   },
+   {
+    "name": "03-features",
+    "duration_ms": 275,
+    "counts": {
+     "pass": 17,
+     "fail": 0,
+     "xfail": 0,
+     "xpass": 0
+    },
+    "total": 17,
+    "ok": true,
+    "packages": [
+     "app",
+     "json",
+     "missing-optional",
+     "undeclared",
+     "xml"
+    ]
+   },
+   {
+    "name": "04-diagnostics",
+    "duration_ms": 346,
+    "counts": {
+     "pass": 70,
+     "fail": 0,
+     "xfail": 0,
+     "xpass": 0
+    },
+    "total": 70,
+    "ok": true,
+    "packages": [
+     "cases/abi-mismatch/app",
+     "cases/abi-mismatch/lib",
+     "cases/dependency-cycle",
+     "cases/empty-glob",
+     "cases/incomplete-runner",
+     "cases/invalid-source",
+     "cases/merge-conflict/app",
+     "cases/merge-conflict/lib",
+     "cases/missing-field",
+     "cases/missing-manifest",
+     "cases/missing-toolchain",
+     "cases/non-exhaustive-match",
+     "cases/type-mismatch",
+     "cases/undeclared-dependency",
+     "cases/unknown-cfg-key",
+     "cases/unknown-feature",
+     "cases/unknown-function",
+     "cases/unknown-kind",
+     "cases/unknown-property",
+     "cases/unknown-target",
+     "cases/unresolved-path",
+     "cases/unsupported-language"
+    ]
+   },
+   {
+    "name": "05-incremental",
+    "duration_ms": 1387,
+    "counts": {
+     "pass": 44,
+     "fail": 0,
+     "xfail": 0,
+     "xpass": 0
+    },
+    "total": 44,
+    "ok": true,
+    "packages": [
+     "app",
+     "core"
+    ]
+   },
+   {
+    "name": "06-runner",
+    "duration_ms": 245,
+    "counts": {
+     "pass": 17,
+     "fail": 0,
+     "xfail": 0,
+     "xpass": 0
+    },
+    "total": 17,
+    "ok": true,
+    "packages": [
+     "crossed",
+     "plain",
+     "transferred"
+    ]
+   },
+   {
+    "name": "07-robustness",
+    "duration_ms": 7859,
+    "counts": {
+     "pass": 118,
+     "fail": 0,
+     "xfail": 12,
+     "xpass": 0
+    },
+    "total": 130,
+    "ok": true,
+    "packages": [
+     "subject"
+    ]
+   },
+   {
+    "name": "08-lsp",
+    "duration_ms": 11154,
+    "counts": {
+     "pass": 88,
+     "fail": 0,
+     "xfail": 9,
+     "xpass": 0
+    },
+    "total": 97,
+    "ok": true,
+    "packages": [
+     "subject"
+    ]
+   },
+   {
+    "name": "09-acquisition",
+    "duration_ms": 15248,
+    "counts": {
+     "pass": 62,
+     "fail": 0,
+     "xfail": 3,
+     "xpass": 0
+    },
+    "total": 65,
+    "ok": true,
+    "packages": []
+   },
+   {
+    "name": "docs",
+    "duration_ms": 50,
+    "counts": {
+     "pass": 7,
+     "fail": 0,
+     "xfail": 0,
+     "xpass": 0
+    },
+    "total": 7,
+    "ok": true,
+    "packages": []
+   }
+  ],
+  "totals": {
+   "pass": 454,
+   "fail": 0,
+   "xfail": 24,
+   "xpass": 0
+  },
+  "total": 478,
+  "ok": true,
+  "attention": []
  }
 ]

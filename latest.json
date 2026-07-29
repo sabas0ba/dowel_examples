@@ -1,19 +1,19 @@
 {
- "run_id": "30453133399",
+ "run_id": "30462541775",
  "run_attempt": "1",
- "run_url": "https://github.com/sabas0ba/dowel_examples/actions/runs/30453133399",
- "commit": "f572f6c393f485072cba58c053832e9955274008",
+ "run_url": "https://github.com/sabas0ba/dowel_examples/actions/runs/30462541775",
+ "commit": "b1380dd21bfe32a7ac5e2715b4815cd52e50040b",
  "branch": "main",
- "started_at": "2026-07-29T12:49:06Z",
+ "started_at": "2026-07-29T14:46:56Z",
  "dowel_version": "dowel 0.0.1",
- "dowel_ref": "07f16ec59e48c764e9126f6df333417b4d104297",
- "dowel_commit": "07f16ec59e48c764e9126f6df333417b4d104297",
+ "dowel_ref": "19a4a409f6e87b3bd0615aead465888878f621d5",
+ "dowel_commit": "19a4a409f6e87b3bd0615aead465888878f621d5",
  "cc": "cc (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0",
  "ninja": "1.13.2",
  "projects": [
   {
    "name": "01-minimal",
-   "duration_ms": 247,
+   "duration_ms": 252,
    "counts": {
     "pass": 10,
     "fail": 0,
@@ -70,7 +70,7 @@
   },
   {
    "name": "02-config",
-   "duration_ms": 1161,
+   "duration_ms": 1142,
    "counts": {
     "pass": 21,
     "fail": 0,
@@ -172,7 +172,7 @@
   },
   {
    "name": "03-features",
-   "duration_ms": 291,
+   "duration_ms": 275,
    "counts": {
     "pass": 17,
     "fail": 0,
@@ -261,7 +261,7 @@
   },
   {
    "name": "04-diagnostics",
-   "duration_ms": 350,
+   "duration_ms": 346,
    "counts": {
     "pass": 70,
     "fail": 0,
@@ -579,7 +579,7 @@
   },
   {
    "name": "05-incremental",
-   "duration_ms": 1579,
+   "duration_ms": 1387,
    "counts": {
     "pass": 44,
     "fail": 0,
@@ -773,7 +773,7 @@
   },
   {
    "name": "06-runner",
-   "duration_ms": 270,
+   "duration_ms": 245,
    "counts": {
     "pass": 17,
     "fail": 0,
@@ -860,7 +860,7 @@
   },
   {
    "name": "07-robustness",
-   "duration_ms": 7974,
+   "duration_ms": 7859,
    "counts": {
     "pass": 118,
     "fail": 0,
@@ -1396,8 +1396,688 @@
    ]
   },
   {
+   "name": "08-lsp",
+   "duration_ms": 11154,
+   "counts": {
+    "pass": 88,
+    "fail": 0,
+    "xfail": 9,
+    "xpass": 0
+   },
+   "total": 97,
+   "ok": true,
+   "checks": [
+    {
+     "status": "pass",
+     "desc": "initialize is answered"
+    },
+    {
+     "status": "pass",
+     "desc": "the server advertises hover"
+    },
+    {
+     "status": "pass",
+     "desc": "the server advertises document sync"
+    },
+    {
+     "status": "pass",
+     "desc": "didOpen publishes diagnostics even when there are none"
+    },
+    {
+     "status": "pass",
+     "desc": "a valid manifest publishes an empty list"
+    },
+    {
+     "status": "pass",
+     "desc": "didChange republishes for the new text"
+    },
+    {
+     "status": "pass",
+     "desc": "didSave does not upset the server"
+    },
+    {
+     "status": "pass",
+     "desc": "didClose clears the diagnostics of that document"
+    },
+    {
+     "status": "pass",
+     "desc": "reopening a closed document publishes again"
+    },
+    {
+     "status": "pass",
+     "desc": "shutdown and exit end the process cleanly"
+    },
+    {
+     "status": "pass",
+     "desc": "the server survives a body that is not JSON"
+    },
+    {
+     "status": "pass",
+     "desc": "diagnostics still arrive after a body that is not JSON"
+    },
+    {
+     "status": "pass",
+     "desc": "the server survives a JSON body that is not a request"
+    },
+    {
+     "status": "pass",
+     "desc": "diagnostics still arrive after a JSON body that is not a request"
+    },
+    {
+     "status": "pass",
+     "desc": "the server survives a body shorter than Content-Length says"
+    },
+    {
+     "status": "pass",
+     "desc": "the server survives a body with no Content-Length"
+    },
+    {
+     "status": "pass",
+     "desc": "the server survives a Content-Length that is not a number"
+    },
+    {
+     "status": "pass",
+     "desc": "an unknown method is answered with method-not-found"
+    },
+    {
+     "status": "pass",
+     "desc": "the server survives an unknown method"
+    },
+    {
+     "status": "pass",
+     "desc": "a broken manifest yields at least one diagnostic"
+    },
+    {
+     "status": "pass",
+     "desc": "the diagnostic carries the stable code"
+    },
+    {
+     "status": "pass",
+     "desc": "the diagnostic names dowel as its source"
+    },
+    {
+     "status": "pass",
+     "desc": "a parse error is reported as an error"
+    },
+    {
+     "status": "pass",
+     "desc": "the diagnostic carries a range"
+    },
+    {
+     "status": "pass",
+     "desc": "diagnostic lines are zero based"
+    },
+    {
+     "status": "pass",
+     "desc": "the column of a diagnostic is in UTF-16 units after ASCII"
+    },
+    {
+     "status": "pass",
+     "desc": "the column of a diagnostic is in UTF-16 units after a two byte character"
+    },
+    {
+     "status": "pass",
+     "desc": "the column of a diagnostic is in UTF-16 units after a three byte character"
+    },
+    {
+     "status": "pass",
+     "desc": "the column of a diagnostic is in UTF-16 units after an astral plane character"
+    },
+    {
+     "status": "pass",
+     "desc": "a hover position is read in UTF-16 units after ASCII"
+    },
+    {
+     "status": "pass",
+     "desc": "a hover position is read in UTF-16 units after a two byte character"
+    },
+    {
+     "status": "pass",
+     "desc": "a hover position is read in UTF-16 units after a three byte character"
+    },
+    {
+     "status": "pass",
+     "desc": "a hover position is read in UTF-16 units after an astral plane character"
+    },
+    {
+     "status": "pass",
+     "desc": "dowel check still reports unterminated-string"
+    },
+    {
+     "status": "pass",
+     "desc": "the language server reports unterminated-string as dowel check does"
+    },
+    {
+     "status": "pass",
+     "desc": "dowel check still reports expected-token"
+    },
+    {
+     "status": "pass",
+     "desc": "the language server reports expected-token as dowel check does"
+    },
+    {
+     "status": "pass",
+     "desc": "dowel check still reports unknown-char"
+    },
+    {
+     "status": "pass",
+     "desc": "the language server reports unknown-char as dowel check does"
+    },
+    {
+     "status": "pass",
+     "desc": "dowel check still reports expected-value"
+    },
+    {
+     "status": "pass",
+     "desc": "the language server reports expected-value as dowel check does"
+    },
+    {
+     "status": "pass",
+     "desc": "dowel check still reports missing-newline"
+    },
+    {
+     "status": "pass",
+     "desc": "the language server reports missing-newline as dowel check does"
+    },
+    {
+     "status": "pass",
+     "desc": "dowel check still reports unterminated-comment"
+    },
+    {
+     "status": "pass",
+     "desc": "the language server reports unterminated-comment as dowel check does"
+    },
+    {
+     "status": "pass",
+     "desc": "dowel check still reports duplicate-table"
+    },
+    {
+     "status": "pass",
+     "desc": "the language server reports duplicate-table as dowel check does"
+    },
+    {
+     "status": "pass",
+     "desc": "dowel check still reports unknown-function"
+    },
+    {
+     "status": "pass",
+     "desc": "the language server reports unknown-function as dowel check does"
+    },
+    {
+     "status": "pass",
+     "desc": "dowel check still reports unknown-cfg-key"
+    },
+    {
+     "status": "pass",
+     "desc": "the language server reports unknown-cfg-key as dowel check does"
+    },
+    {
+     "status": "pass",
+     "desc": "dowel check still reports non-exhaustive-match"
+    },
+    {
+     "status": "pass",
+     "desc": "the language server reports non-exhaustive-match as dowel check does"
+    },
+    {
+     "status": "pass",
+     "desc": "dowel check still reports unknown-property"
+    },
+    {
+     "status": "xfail",
+     "desc": "the language server reports unknown-property as dowel check does  [F-012]"
+    },
+    {
+     "status": "pass",
+     "desc": "dowel check still reports unknown-kind"
+    },
+    {
+     "status": "xfail",
+     "desc": "the language server reports unknown-kind as dowel check does  [F-012]"
+    },
+    {
+     "status": "pass",
+     "desc": "dowel check still reports type-mismatch"
+    },
+    {
+     "status": "xfail",
+     "desc": "the language server reports type-mismatch as dowel check does  [F-012]"
+    },
+    {
+     "status": "pass",
+     "desc": "dowel check still reports toplevel-entry"
+    },
+    {
+     "status": "xfail",
+     "desc": "the language server reports toplevel-entry as dowel check does  [F-012]"
+    },
+    {
+     "status": "pass",
+     "desc": "dowel check still reports missing-field"
+    },
+    {
+     "status": "xfail",
+     "desc": "the language server reports missing-field as dowel check does  [F-012]"
+    },
+    {
+     "status": "pass",
+     "desc": "dowel check still reports expression-in-strict-toml in dowel.toml"
+    },
+    {
+     "status": "pass",
+     "desc": "the language server reports expression-in-strict-toml in dowel.toml"
+    },
+    {
+     "status": "pass",
+     "desc": "dowel check still reports expected-token in dowel.toml"
+    },
+    {
+     "status": "pass",
+     "desc": "the language server reports expected-token in dowel.toml"
+    },
+    {
+     "status": "pass",
+     "desc": "dowel check still reports unterminated-string in dowel.toml"
+    },
+    {
+     "status": "pass",
+     "desc": "the language server reports unterminated-string in dowel.toml"
+    },
+    {
+     "status": "pass",
+     "desc": "dowel check still reports duplicate-key in dowel.toml"
+    },
+    {
+     "status": "pass",
+     "desc": "the language server reports duplicate-key in dowel.toml"
+    },
+    {
+     "status": "pass",
+     "desc": "dowel check still reports missing-table in dowel.toml"
+    },
+    {
+     "status": "xfail",
+     "desc": "the language server reports missing-table in dowel.toml  [F-012]"
+    },
+    {
+     "status": "pass",
+     "desc": "hover on a property gives its type and merge rule"
+    },
+    {
+     "status": "pass",
+     "desc": "hover on includes gives union as its merge rule"
+    },
+    {
+     "status": "pass",
+     "desc": "hover on a builtin gives its signature"
+    },
+    {
+     "status": "pass",
+     "desc": "hover on a configuration key gives its domain"
+    },
+    {
+     "status": "pass",
+     "desc": "hover on a table kind explains the kind"
+    },
+    {
+     "status": "pass",
+     "desc": "hover on a target name names the target"
+    },
+    {
+     "status": "pass",
+     "desc": "hover on a block explains the block"
+    },
+    {
+     "status": "pass",
+     "desc": "hover answers for sources while a later line has a parse error"
+    },
+    {
+     "status": "pass",
+     "desc": "hover answers for glob while a later line has a parse error"
+    },
+    {
+     "status": "pass",
+     "desc": "hover answers for includes while a later line has a parse error"
+    },
+    {
+     "status": "pass",
+     "desc": "hover on a blank line answers with no contents"
+    },
+    {
+     "status": "pass",
+     "desc": "hover past the end of the file answers with no contents"
+    },
+    {
+     "status": "pass",
+     "desc": "hover past the end of a line answers with no contents"
+    },
+    {
+     "status": "pass",
+     "desc": "the server survives hover positions that are out of range"
+    },
+    {
+     "status": "pass",
+     "desc": "hover on an unknown property answers with no contents"
+    },
+    {
+     "status": "pass",
+     "desc": "the server survives a didChange nested 64 deep"
+    },
+    {
+     "status": "pass",
+     "desc": "the server answers a didChange nested 64 deep"
+    },
+    {
+     "status": "pass",
+     "desc": "the server survives a didChange nested 1000 deep"
+    },
+    {
+     "status": "pass",
+     "desc": "the server answers a didChange nested 1000 deep"
+    },
+    {
+     "status": "xfail",
+     "desc": "the server survives a didChange nested 100000 deep  [F-010]"
+    },
+    {
+     "status": "xfail",
+     "desc": "the server answers a didChange nested 100000 deep  [F-010]"
+    },
+    {
+     "status": "xfail",
+     "desc": "a UTF-8 BOM in the buffer is not reported as an error  [F-011]"
+    },
+    {
+     "status": "pass",
+     "desc": "CRLF in the buffer is not reported as an error"
+    },
+    {
+     "status": "pass",
+     "desc": "the server survives non-ASCII paths in the buffer"
+    }
+   ],
+   "packages": [
+    "subject"
+   ]
+  },
+  {
+   "name": "09-acquisition",
+   "duration_ms": 15248,
+   "counts": {
+    "pass": 62,
+    "fail": 0,
+    "xfail": 3,
+    "xpass": 0
+   },
+   "total": 65,
+   "ok": true,
+   "checks": [
+    {
+     "status": "pass",
+     "desc": "installing a revision from the upstream succeeds"
+    },
+    {
+     "status": "pass",
+     "desc": "the resolved commit is written to stdout"
+    },
+    {
+     "status": "pass",
+     "desc": "installing an already installed revision succeeds and says so"
+    },
+    {
+     "status": "pass",
+     "desc": "an installed revision appears in the list"
+    },
+    {
+     "status": "pass",
+     "desc": "the installed revision is laid out under versions/<sha>/bin"
+    },
+    {
+     "status": "pass",
+     "desc": "run starts the requested revision without selecting it"
+    },
+    {
+     "status": "pass",
+     "desc": "the shim can be created"
+    },
+    {
+     "status": "pass",
+     "desc": "the shim is a link named dowel"
+    },
+    {
+     "status": "pass",
+     "desc": "with no pin and no default, nothing is selected"
+    },
+    {
+     "status": "pass",
+     "desc": "the shim refuses to run when nothing is selected"
+    },
+    {
+     "status": "pass",
+     "desc": "setting a default succeeds"
+    },
+    {
+     "status": "pass",
+     "desc": "the default is used where no pin file applies"
+    },
+    {
+     "status": "pass",
+     "desc": "a pin file is used in the directory that holds it"
+    },
+    {
+     "status": "pass",
+     "desc": "a pin file is found by walking up from a subdirectory"
+    },
+    {
+     "status": "pass",
+     "desc": "the nearest pin file wins over one further up"
+    },
+    {
+     "status": "pass",
+     "desc": "selection works with the upstream unreachable"
+    },
+    {
+     "status": "pass",
+     "desc": "the shim runs with the upstream unreachable"
+    },
+    {
+     "status": "pass",
+     "desc": "pinning an installed revision needs no network"
+    },
+    {
+     "status": "pass",
+     "desc": "pin writes the resolved commit to the pin file"
+    },
+    {
+     "status": "pass",
+     "desc": "pin records which specifier it resolved from"
+    },
+    {
+     "status": "pass",
+     "desc": "a pin file holding `nightly` is refused"
+    },
+    {
+     "status": "pass",
+     "desc": "a pin file holding `stable` is refused"
+    },
+    {
+     "status": "pass",
+     "desc": "a pin file holding `main` is refused"
+    },
+    {
+     "status": "pass",
+     "desc": "a pin file holding `branch:side` is refused"
+    },
+    {
+     "status": "pass",
+     "desc": "a pin file holding `19a4a40` is refused"
+    },
+    {
+     "status": "pass",
+     "desc": "refusing a hand written channel name points at dowelup pin"
+    },
+    {
+     "status": "pass",
+     "desc": "a pinned revision that is not installed is refused"
+    },
+    {
+     "status": "pass",
+     "desc": "refusing an uninstalled revision points at dowelup install"
+    },
+    {
+     "status": "pass",
+     "desc": "a pin file without a trailing newline is read"
+    },
+    {
+     "status": "pass",
+     "desc": "a pin file with CRLF is read"
+    },
+    {
+     "status": "pass",
+     "desc": "surrounding spaces in a pin file are ignored"
+    },
+    {
+     "status": "pass",
+     "desc": "an uppercase commit hash in a pin file is read"
+    },
+    {
+     "status": "pass",
+     "desc": "a pin file with no commit hash is refused"
+    },
+    {
+     "status": "xfail",
+     "desc": "a pin file with a UTF-8 BOM is read  [F-011]"
+    },
+    {
+     "status": "pass",
+     "desc": "a branch that exists resolves"
+    },
+    {
+     "status": "pass",
+     "desc": "a tag that exists resolves"
+    },
+    {
+     "status": "pass",
+     "desc": "a release number resolves to its tag"
+    },
+    {
+     "status": "pass",
+     "desc": "stable resolves to the newest tag"
+    },
+    {
+     "status": "pass",
+     "desc": "a dated nightly resolves"
+    },
+    {
+     "status": "pass",
+     "desc": "a branch that does not exist is refused"
+    },
+    {
+     "status": "pass",
+     "desc": "a tag that does not exist is refused"
+    },
+    {
+     "status": "pass",
+     "desc": "a date before the first commit is refused"
+    },
+    {
+     "status": "pass",
+     "desc": "a malformed date is refused"
+    },
+    {
+     "status": "pass",
+     "desc": "a commit hash prefix that is too short is refused"
+    },
+    {
+     "status": "pass",
+     "desc": "a branch specifier with no name is refused"
+    },
+    {
+     "status": "pass",
+     "desc": "an unresolvable commit is refused"
+    },
+    {
+     "status": "pass",
+     "desc": "a malformed specifier and an unresolvable one exit differently"
+    },
+    {
+     "status": "pass",
+     "desc": "a full commit hash selects an installed revision"
+    },
+    {
+     "status": "pass",
+     "desc": "a commit hash prefix selects an installed revision"
+    },
+    {
+     "status": "pass",
+     "desc": "the specifier it was installed from selects it"
+    },
+    {
+     "status": "pass",
+     "desc": "installing the same commit under another specifier succeeds"
+    },
+    {
+     "status": "xfail",
+     "desc": "a specifier that installed successfully can select  [F-013]"
+    },
+    {
+     "status": "pass",
+     "desc": "an unknown specifier is refused by the shim"
+    },
+    {
+     "status": "pass",
+     "desc": "refusing an unknown specifier points at dowelup list"
+    },
+    {
+     "status": "pass",
+     "desc": "a leading specifier overrides the pin file"
+    },
+    {
+     "status": "pass",
+     "desc": "installing a revision that does not build fails"
+    },
+    {
+     "status": "pass",
+     "desc": "a failed install leaves nothing under versions/"
+    },
+    {
+     "status": "pass",
+     "desc": "a failed install does not appear in the list"
+    },
+    {
+     "status": "pass",
+     "desc": "a failed install keeps its checkout for inspection"
+    },
+    {
+     "status": "pass",
+     "desc": "a revision whose install failed is not selectable"
+    },
+    {
+     "status": "xfail",
+     "desc": "uninstalling by the specifier it was installed from succeeds  [F-013]"
+    },
+    {
+     "status": "pass",
+     "desc": "uninstalling an installed revision succeeds"
+    },
+    {
+     "status": "pass",
+     "desc": "an uninstalled revision leaves the list"
+    },
+    {
+     "status": "pass",
+     "desc": "uninstalling removes the directory under versions/"
+    },
+    {
+     "status": "pass",
+     "desc": "selecting an uninstalled revision is refused"
+    }
+   ],
+   "packages": []
+  },
+  {
    "name": "docs",
-   "duration_ms": 52,
+   "duration_ms": 50,
    "counts": {
     "pass": 7,
     "fail": 0,
@@ -1440,12 +2120,12 @@
   }
  ],
  "totals": {
-  "pass": 304,
+  "pass": 454,
   "fail": 0,
-  "xfail": 12,
+  "xfail": 24,
   "xpass": 0
  },
- "total": 316,
+ "total": 478,
  "ok": true,
  "attention": [],
  "known_issues": [
@@ -1508,6 +2188,66 @@
    "status": "xfail",
    "project": "07-robustness",
    "desc": "2k nested inline tables is answered within the budget  [F-010]"
+  },
+  {
+   "status": "xfail",
+   "project": "08-lsp",
+   "desc": "the language server reports unknown-property as dowel check does  [F-012]"
+  },
+  {
+   "status": "xfail",
+   "project": "08-lsp",
+   "desc": "the language server reports unknown-kind as dowel check does  [F-012]"
+  },
+  {
+   "status": "xfail",
+   "project": "08-lsp",
+   "desc": "the language server reports type-mismatch as dowel check does  [F-012]"
+  },
+  {
+   "status": "xfail",
+   "project": "08-lsp",
+   "desc": "the language server reports toplevel-entry as dowel check does  [F-012]"
+  },
+  {
+   "status": "xfail",
+   "project": "08-lsp",
+   "desc": "the language server reports missing-field as dowel check does  [F-012]"
+  },
+  {
+   "status": "xfail",
+   "project": "08-lsp",
+   "desc": "the language server reports missing-table in dowel.toml  [F-012]"
+  },
+  {
+   "status": "xfail",
+   "project": "08-lsp",
+   "desc": "the server survives a didChange nested 100000 deep  [F-010]"
+  },
+  {
+   "status": "xfail",
+   "project": "08-lsp",
+   "desc": "the server answers a didChange nested 100000 deep  [F-010]"
+  },
+  {
+   "status": "xfail",
+   "project": "08-lsp",
+   "desc": "a UTF-8 BOM in the buffer is not reported as an error  [F-011]"
+  },
+  {
+   "status": "xfail",
+   "project": "09-acquisition",
+   "desc": "a pin file with a UTF-8 BOM is read  [F-011]"
+  },
+  {
+   "status": "xfail",
+   "project": "09-acquisition",
+   "desc": "a specifier that installed successfully can select  [F-013]"
+  },
+  {
+   "status": "xfail",
+   "project": "09-acquisition",
+   "desc": "uninstalling by the specifier it was installed from succeeds  [F-013]"
   }
  ]
 }
