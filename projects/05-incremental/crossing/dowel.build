@@ -1,0 +1,6 @@
+# 実行器を跨いだときに依存の記録が引き継がれるかを見るためだけのパッケージ。
+[bin.show]
+sources = glob("src/*.c")
+
+[bin.show.private]
+includes = [dir("include")]

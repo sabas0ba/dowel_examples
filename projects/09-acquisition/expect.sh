@@ -186,6 +186,9 @@ printf '# only a comment\n' > "$PROJ/.dowel-version"
 up_fails "a pin file with no commit hash is refused" -C "$PROJ" which
 
 # BOM。Windows の編集器が黙って付ける（docs/10-findings.md F-011）。
+# マニフェストの側は些末部として読み飛ばすようになったが、pin ファイルを
+# 読む経路には届いていない。しかも拒否が促す `dowelup pin <sha>` の引数に
+# BOM が入るため、貼り付けても同じ理由でまた拒まれる。
 printf '\xef\xbb\xbf%s\n' "$TIP" > "$PROJ/.dowel-version"
 known_issue F-011
 selects "$TIP" "$PROJ" "a pin file with a UTF-8 BOM is read"
@@ -225,12 +228,16 @@ shim "+${TIP:0:7}" --version
 shim +nightly --version
 [ "$RC" -eq 0 ]; _verdict $? "the specifier it was installed from selects it"
 
-# 同じ sha を別の指定子で入れても、記録されるのは最初の1つだけである
-# （docs/10-findings.md F-013）。install は成功するのに選べない。
+# 同じ sha を別の指定子で入れた場合。かつては最初の1つしか記録されず、
+# install は成功するのに選べなかった（docs/10-findings.md F-013）。
 up_ok "installing the same commit under another specifier succeeds" install branch:side
-known_issue F-013
 shim +branch:side --version
 [ "$RC" -eq 0 ]; _verdict $? "a specifier that installed successfully can select"
+shim +nightly --version
+[ "$RC" -eq 0 ]; _verdict $? "the first specifier still selects after a second one is added"
+up list
+printf '%s' "$OUT" | grep -q 'branch:side'
+fact $? "the list shows every specifier the revision was installed from"
 
 shim +nosuchspec --version
 said=$OUT; rc=$RC
@@ -279,11 +286,10 @@ pin_file '%s\n'
 
 # --------------------------------------------------------------- 8. 取り除く
 
-# 取り除く側にも F-013 が出る。入れるのに使った指定子で取り除けない。
-known_issue F-013
+# 取り除く側でも指定子で照合する（F-013）。入れるのに使った名前で取り除けない
+# なら、利用者は sha を調べ直すことになる。
 up_ok "uninstalling by the specifier it was installed from succeeds" uninstall branch:side
 
-up_ok "uninstalling an installed revision succeeds" uninstall "$TIP"
 up list
 ! printf '%s' "$OUT" | grep -q "$TIP"
 fact $? "an uninstalled revision leaves the list"
@@ -292,6 +298,7 @@ if [ -e "$HOME_DIR/versions/$TIP" ]; then
 else
     fact 0 "uninstalling removes the directory under versions/"
 fi
+up_fails "uninstalling the same revision twice is refused" uninstall "$TIP"
 up_fails "selecting an uninstalled revision is refused" -C "$PROJ" which
 
 rm -rf "$W"

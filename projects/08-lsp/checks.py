@@ -253,16 +253,17 @@ SINGLE_FILE = [
     ("non-exhaustive-match",
      '[bin.subject]\nsources = glob("src/*.c")\n\n[bin.subject.private]\n'
      'flags = [match cfg.opt { debug => "-O0" }]\n', ""),
-    # ここから下が型検査の段。CLI は出すが言語サーバは出さない（F-012）。
+    # 型検査の段。かつては言語サーバから出ていなかった
+    # （docs/10-findings.md F-012）。開いている1ファイルだけで決まる。
     ("unknown-property",
      '[bin.subject]\nsources = glob("src/*.c")\n\n[bin.subject.private]\n'
-     'include = [dir("src")]\n', "F-012"),
-    ("unknown-kind", '[binn.subject]\nsources = glob("src/*.c")\n', "F-012"),
-    ("type-mismatch", "[bin.subject]\nsources = 42\n", "F-012"),
-    ("toplevel-entry", 'sources = glob("src/*.c")\n', "F-012"),
+     'include = [dir("src")]\n', ""),
+    ("unknown-kind", '[binn.subject]\nsources = glob("src/*.c")\n', ""),
+    ("type-mismatch", "[bin.subject]\nsources = 42\n", ""),
+    ("toplevel-entry", 'sources = glob("src/*.c")\n', ""),
     ("missing-field",
      '[bin.subject]\nsources = glob("src/*.c")\n\n'
-     '[runner.aarch64-unknown-linux-gnu]\nargs = ["-x"]\n', "F-012"),
+     '[runner.aarch64-unknown-linux-gnu]\nargs = ["-x"]\n', ""),
 ]
 
 
@@ -292,7 +293,7 @@ def toml_agreement():
         ("duplicate-key",
          '[package]\nname = "p"\nname = "q"\nversion = "0.1.0"\n'
          'edition = "2026"\n', ""),
-        ("missing-table", 'name = "p"\n', "F-012"),
+        ("missing-table", 'name = "p"\n', ""),
     ]
     with session() as s:
         for code, text, issue in cases:
@@ -366,7 +367,7 @@ def hover():
         report(s.alive(), "the server survives hover positions that are out of range")
 
         # 未知のプロパティにはホバーが無い。スキーマを引けている証拠であり、
-        # 同じ判定が診断として出ていないこと（F-012）と対になる。
+        # 同じ判定が unknown-property として出ることと対になる（F-012）。
         s.settle()
         s.change(BUILD_URI, text.replace("includes =", "include  ="), 4)
         s.diagnostics(BUILD_URI, timeout=5)
@@ -384,7 +385,7 @@ def robustness():
     # 機械の stack の大きさで決まるため、その付近に置いた検査は dowel ではなく
     # 実行した機械を記録することになる。実際、深さ 10000 は手元では abort し、
     # CI の runner では通った（07-robustness が 100000 を選ぶのと同じ理由）。
-    for depth, issue in [(64, ""), (1000, ""), (100000, "F-010")]:
+    for depth, issue in [(64, ""), (1000, ""), (100000, "")]:
         with session() as s:
             s.open(BUILD_URI, VALID)
             s.diagnostics(BUILD_URI)
@@ -398,15 +399,14 @@ def robustness():
                    "the server answers a didChange nested %d deep" % depth, issue)
 
     # 素直でないバイト列。エディタの緩衝は文字列として渡るため、
-    # BOM は本文の先頭の1文字として現れる（F-011 と同じ根）。
+    # BOM は本文の先頭の1文字として現れる。些末部として読み飛ばされる（F-011）。
     with session() as s:
         s.open(BUILD_URI, VALID)
         s.diagnostics(BUILD_URI)
         s.settle()
         s.change(BUILD_URI, "﻿" + VALID, 2)
         got = s.codes(BUILD_URI, timeout=8)
-        report(got == [], "a UTF-8 BOM in the buffer is not reported as an error",
-               "F-011")
+        report(got == [], "a UTF-8 BOM in the buffer is not reported as an error")
         s.settle()
         s.change(BUILD_URI, VALID.replace("\n", "\r\n"), 3)
         report(s.codes(BUILD_URI, timeout=8) == [],

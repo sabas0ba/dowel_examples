@@ -142,21 +142,26 @@ survives
 accepted
 
 # BOM は Windows の編集器と PowerShell のリダイレクトが付ける。付いたことは
-# 画面に出ないため、利用者からは「正しい行なのに拒まれた」としか見えない
-# （docs/10-findings.md F-011）。
+# 画面に出ないため、拒まれると「正しい行なのに拒まれた」としか見えない
+# （docs/10-findings.md F-011）。些末部として読み飛ばされる。
 feed_gen "a UTF-8 BOM on dowel.build" \
     'import sys; sys.stdout.buffer.write(b"\xef\xbb\xbf[bin.subject]\nsources = glob(\"src/*.c\")\n")'
 survives
-known_issue F-011
 accepted
 
 printf '\xef\xbb\xbf%s\n' "$TOML" >"$SUBJECT/dowel.toml"
 printf '[bin.subject]\nsources = glob("src/*.c")\n' >"$SUBJECT/dowel.build"
 probe "a UTF-8 BOM on dowel.toml"
 survives
-known_issue F-011
 accepted
 printf '%s\n' "$TOML" >"$SUBJECT/dowel.toml"
+
+# 先頭以外に現れた同じバイト列は、些末部ではなく誤りである。
+feed_gen "a BOM in the middle of a line" \
+    'import sys; sys.stdout.buffer.write(b"[bin.subject]\nsources = \xef\xbb\xbfglob(\"src/*.c\")\n")'
+survives
+refused
+located
 
 # 読めないバイト列。ここは拒むのが正しい。位置を持つことだけ見る。
 feed_gen "invalid UTF-8 bytes" \
@@ -200,11 +205,12 @@ answers
 # ------------------------------------------------------- 入れ子の深さ
 #
 # 再帰下降の解析器に深さの上限が無いと、入れ子はそのまま呼び出し段数になる。
-# 上限を超えた時点で Rust の実行時が abort するため、診断は1件も出ず、
-# 終了状態はシグナルになる（docs/10-findings.md F-010）。
+# かつては上限が無く、超えた時点で abort していた（docs/10-findings.md F-010）。
+# 上限は診断として現れる必要がある。
 #
 # 深さ 100000 を選ぶのは、上限を持たない実装では確実に溢れ、上限を持つ
-# 実装では即座に診断で拒まれるためである。どちらでも待たされない。
+# 実装では即座に診断で拒まれるためである。どちらでも待たされない。境目の
+# 付近を選ぶと、dowel ではなく実行した機械の stack の大きさを記録することになる。
 
 for form in \
     'print("[bin.subject]"); print("sources = " + "["*100000 + "]"*100000)|100k nested arrays' \
@@ -212,22 +218,66 @@ for form in \
     'print("[bin.subject]"); print("sources = " + "glob("*50000 + "\"x\"" + ")"*50000)|50k nested calls'
 do
     feed_gen "${form#*|}" "${form%|*}"
-    known_issue F-010
     survives
-    known_issue F-010
     refused
-    known_issue F-010
     located
     answers
+    case $PROBE_CODES in
+        *nesting-too-deep*) fact 0 "$PROBE_LABEL is refused as nesting-too-deep" ;;
+        *) fact 1 "$PROBE_LABEL is refused as nesting-too-deep (got $PROBE_CODES)" ;;
+    esac
 done
 
-# 溢れる手前の深さ。abort しないため診断は出るが、入力は 4KB しかないのに
-# 応答が秒の単位になる。深さに対して超線形であることが同じ形で現れる。
+# かつて超線形だったところ。入力は 4KB しかないのに応答が秒の単位になっていた。
 feed_gen "2k nested inline tables" \
     'print("[bin.subject]"); print("sources = " + "{a="*2000 + "1" + "}"*2000)'
 survives
-known_issue F-010
 answers
+
+# ------------------------------------------------------- 上限そのもの
+#
+# 上限は生成された記述を拒むためのものであり、人が書く深さを拒んではならない。
+# どこに置かれているかと、動かせることを見る。
+#
+# 入れ子には型として通る形を使う。配列を重ねると深さの前に型で落ちてしまい、
+# 何を見ているのか分からなくなる。
+
+nested() {
+    feed_gen "$2" "
+n = $1
+print('[bin.subject]')
+print('sources = ' + 'match cfg.opt { debug => '*n + 'glob(\"src/*.c\")' + ', release => [] }'*n)
+"
+}
+
+nested 63 "nesting 63 deep"
+accepted
+nested 100 "nesting 100 deep"
+refused
+located
+
+# 上限は動かせる。生成された記述を扱う利用者に逃げ道が要る。
+nested 100 "nesting 100 deep with a raised limit"
+_last=$PROBE_LABEL
+probe_with() {
+    local json=$SUBJECT/../probe.json
+    (cd "$SUBJECT" && timeout "$LIMIT_S" "$DOWEL" check --message-format=json "$@" >"$json" 2>/dev/null)
+    PROBE_RC=$?
+}
+probe_with --max-nesting=200
+[ "$PROBE_RC" -eq 0 ]
+fact $? "--max-nesting raises the limit"
+probe_with --max-nesting=50
+[ "$PROBE_RC" -ne 0 ]
+fact $? "--max-nesting can lower the limit too"
+
+# 上限そのものにも上限がある。無制限にできるなら、上限を置いた意味が無い。
+nested 10 "a shallow value"
+for bad in 0 513 abc -1; do
+    probe_with "--max-nesting=$bad"
+    [ "$PROBE_RC" -eq 2 ]
+    fact $? "--max-nesting=$bad is refused as a usage error"
+done
 
 # ------------------------------------------------------- I/O
 #

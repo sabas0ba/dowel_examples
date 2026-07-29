@@ -95,14 +95,22 @@ jobs:
           key: dowel-${{ runner.os }}-${{ env.DOWEL_COMMIT }}
           restore-keys: dowel-${{ runner.os }}-
 
-      - name: Install ninja and jq
+      - name: Install the toolchains
         # ninja が無いと direct 実行器へ落ちる。既定の経路を実際に通すために入れる。
+        #
+        # gcc と clang の双方、そしてクロスコンパイラと qemu-user は
+        # 10-toolchain と 11-cross が使う。`cc` だけでは、実際に検査されるのが
+        # その機械の既定のコンパイラ1つだけになる。
         run: |
           sudo apt-get update -qq
-          sudo apt-get install -y -qq ninja-build jq
+          sudo apt-get install -y -qq ninja-build jq gcc clang \
+              gcc-aarch64-linux-gnu qemu-user-static
           ninja --version
           jq --version
-          cc --version | head -1
+          gcc --version | head -1
+          clang --version | head -1
+          aarch64-linux-gnu-gcc --version | head -1
+          qemu-aarch64-static --version | head -1
 
       - name: Build dowel
         run: |

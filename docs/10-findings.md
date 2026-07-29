@@ -2,13 +2,14 @@
 
 本スイートが外側から見つけたもの。
 
-F-001 から F-009 までの 9 件は本体で修正済みである（`07f16ec`）。記録は残す。
+F-001 から F-009 までの 9 件は `07f16ec` で、F-010 / F-012 / F-013 は
+`95daf9f` で修正された。記録は残す。
 何を見てどう報告したかが、次に同種のものを見つけるときの型になるためである。
 対応する検査は `known_issue` を外し、通常の検査として残してある。直った
 ものを消すと、退行したときに気づけない。
 
-F-010 から F-013 までは未修正である。対応する検査は `known_issue` を
-付けてあり、本体が直すと `XPASS` になって落ちる。
+未修正は F-014 / F-015 と、F-011 の残っている側である。対応する検査は
+`known_issue` を付けてあり、本体が直すと `XPASS` になって落ちる。
 
 各項目は次の形で記録する。
 
@@ -31,10 +32,12 @@ F-010 から F-013 までは未修正である。対応する検査は `known_is
 | [F-007](#f-007) | 併合衝突の人間向け描画が片側の位置しか出さない | 実装 | [#16](https://github.com/sabas0ba/dowel/issues/16) | 修正済み |
 | [F-008](#f-008) | C++ のソースが黙って受理され、リンカの誤りになる | 実装／文書 | [#19](https://github.com/sabas0ba/dowel/issues/19) | 修正済み |
 | [F-009](#f-009) | 宣言したツールチェーンの実在を確認しない | 実装 | [#19](https://github.com/sabas0ba/dowel/issues/19) | 修正済み |
-| [F-010](#f-010) | 深い入れ子でスタックが溢れ、診断を出さずに abort する | 実装 | [#33](https://github.com/sabas0ba/dowel/issues/33) | 未修正 |
-| [F-011](#f-011) | UTF-8 BOM 付きのマニフェストが拒まれる | 実装 | [#34](https://github.com/sabas0ba/dowel/issues/34) | 未修正 |
-| [F-012](#f-012) | 言語サーバが型検査の段の診断を出さず、`UNSUPPORTED` にも無い | 実装 | [#38](https://github.com/sabas0ba/dowel/issues/38) | 未修正 |
-| [F-013](#f-013) | install に使った指定子で `dowel +<指定子>` が選べない | 実装 | [#39](https://github.com/sabas0ba/dowel/issues/39) | 未修正 |
+| [F-010](#f-010) | 深い入れ子でスタックが溢れ、診断を出さずに abort する | 実装 | [#33](https://github.com/sabas0ba/dowel/issues/33) | 修正済み |
+| [F-011](#f-011) | UTF-8 BOM 付きのマニフェストが拒まれる | 実装 | [#34](https://github.com/sabas0ba/dowel/issues/34) | 一部修正 |
+| [F-012](#f-012) | 言語サーバが型検査の段の診断を出さず、`UNSUPPORTED` にも無い | 実装 | [#38](https://github.com/sabas0ba/dowel/issues/38) | 修正済み |
+| [F-013](#f-013) | install に使った指定子で `dowel +<指定子>` が選べない | 実装 | [#39](https://github.com/sabas0ba/dowel/issues/39) | 修正済み |
+| [F-014](#f-014) | ninja で組んだあと direct で組むと、ヘッダの変更が見落とされる | 実装 | [#41](https://github.com/sabas0ba/dowel/issues/41) | 未修正 |
+| [F-015](#f-015) | `--target` がツールチェーンを選ばない | 実装 | [#42](https://github.com/sabas0ba/dowel/issues/42) | 未修正 |
 
 ---
 
@@ -628,7 +631,7 @@ error[missing-manifest]: cannot read .../does-not-exist/dowel.toml: No such file
 
 **入れ子の深い値でスタックが溢れ、診断を1件も出さずに abort する。**
 
-種別: 実装。未修正（`07f16ec` および `2ab1428` の両方で再現）。
+種別: 実装。修正済み（`95daf9f`）。
 
 ### 観測
 
@@ -705,6 +708,25 @@ $                                     # 標準出力は空
 網羅の追跡は診断コードの有無を見るため、「診断が組み立てられない入力」は
 その枠の外にある。
 
+### 修正
+
+値の入れ子に深さの上限が入った（既定 64、`nesting-too-deep`）。
+
+```
+error[nesting-too-deep]: the value is nested more than 64 levels deep
+ --> dowel.build:2:75
+   = note: such depth usually comes from a generated manifest; flatten the value,
+           or raise the limit with `--max-nesting`
+```
+
+超線形だった側も同時に消えた。深さ 2000 のインラインテーブルは
+60 秒超から **14ms** になった。上限が呼び出し段数を定数で抑えるため、
+2つの症状が1つの変更で直っている。
+
+`--max-nesting` で上限を動かせる（1〜512）。生成された記述を扱う利用者に
+逃げ道が要るという判断だと読める。上限そのものに上限があるため、
+「上限を置いた意味が無くなる」ことは起きない。
+
 ### 検査
 
 `projects/07-robustness` の以下 10 件。いずれも known_issue F-010 として登録した。
@@ -735,8 +757,7 @@ $                                     # 標準出力は空
 **先頭に UTF-8 BOM が付いたマニフェストが拒まれる。しかも診断が
 正しく見える行を指す。**
 
-種別: 実装。未修正（`07f16ec` および `2ab1428` の両方で再現）。軽微だが、
-失敗の様式が悪い。
+種別: 実装。**一部修正**（`95daf9f`）。軽微だが、失敗の様式が悪い。
 
 ### 観測
 
@@ -792,15 +813,36 @@ TOML の仕様は BOM の扱いを規定していないが、広く使われて�
 CRLF は正しく扱えている（同じ経路で検査してある）。BOM だけが残っているのは、
 改行の正規化はあるが先頭バイトの正規化が無い、という形と思われる。
 
+### 修正（一部）
+
+マニフェストの側は直った。先頭の BOM を些末部として読み飛ばす。行の途中に
+現れた同じバイト列は従来どおり誤りとして残る。
+
+**`dowelup` が `.dowel-version` を読む経路には届いていない。**
+
+```console
+$ printf '\xef\xbb\xbf95daf9ff8dac60310d2ff5c427a53804d2870890\n' > .dowel-version
+$ dowel --version
+error: .../.dowel-version contains `95daf9ff…`, which is not a full commit hash;
+       run `dowelup pin 95daf9ff…` to resolve it and rewrite the file
+```
+
+促される `dowelup pin` の引数に BOM がそのまま入るため、**貼り付けても
+同じ理由でまた拒まれる**。`dowelup` は `dowel-syntax` を通らないため、
+そちらの修正が届かないのは自然である。
+
 ### 検査
 
-`projects/07-robustness` の以下 2 件。いずれも known_issue F-011 として登録した。
+`projects/07-robustness` の2件は通常の検査へ戻した。
 
 - `a UTF-8 BOM on dowel.build is accepted`
 - `a UTF-8 BOM on dowel.toml is accepted`
+- `a BOM in the middle of a line is refused`（先頭だけが些末部であること）
 
-対になる `CRLF line endings is accepted` は通っている。
-BOM だけが例外であることが、検査の並びから読める。
+残っている側は `projects/09-acquisition` の
+`a pin file with a UTF-8 BOM is read` で、known_issue F-011 である。
+対になる CRLF・空白・大文字の sha はいずれも通っており、
+BOM だけが例外であることが検査の並びから読める。
 
 ---
 
@@ -811,7 +853,7 @@ BOM だけが例外であることが、検査の並びから読める。
 **言語サーバが型検査の段の診断を出さない。しかも `dowel_lsp::UNSUPPORTED` に
 載っていないため、出ないことが分からない。**
 
-種別: 実装。未修正（`19a4a40`）。
+種別: 実装。修正済み（`95daf9f`）。
 
 ### 観測
 
@@ -859,6 +901,15 @@ BOM だけが例外であることが、検査の並びから読める。
 一覧が漏れていることは、一覧の外から見ないと分からない。外から見るとは、
 この場合「CLI が出す診断の全体と突き合わせる」ことである。
 
+### 修正
+
+開いている1ファイルだけで決まる型検査の診断が、言語サーバからも出るように
+なった。6 件すべてが `dowel check` と一致する。
+
+期待として挙げた2案のうち、`UNSUPPORTED` に足す側ではなく**型検査を走らせる**
+側が採られている。`UNSUPPORTED` に残るのは、ワークスペースの模型と計画段を
+要するものだけになった。
+
 ### 検査
 
 `projects/08-lsp` の以下 6 件。いずれも known_issue F-012 として登録した。
@@ -883,8 +934,8 @@ BOM だけが例外であることが、検査の並びから読める。
 **`dowelup install <指定子>` が成功した指定子で、`dowel +<指定子>` が
 選べないことがある。**
 
-種別: 実装。未修正（`19a4a40`）。軽微だが、成功した操作の直後に
-矛盾した応答が返る。
+種別: 実装。修正済み（`95daf9f`）。軽微だが、成功した操作の直後に
+矛盾した応答が返っていた。
 
 ### 観測
 
@@ -926,6 +977,15 @@ error: no installed version matches `tag:v0.9.0`; `dowelup list` shows what is i
 タグとチャネルが同じコミットを指すのは通常の状態であり（`stable` は
 最新の release タグそのもの）、利用者が両方を試すのは自然である。
 
+### 修正
+
+`origin` が複数の指定子を持てるようになり、`+<指定子>` と `uninstall` の
+両方がそれらすべてと照合するようになった。期待として挙げた2案のうち、
+記録を増やす側が採られている。shim の選択がネットワークに触れないという
+性質は保たれている。
+
+`dowelup list` にも、その版を入れるのに使った指定子が並ぶ。
+
 ### 検査
 
 `projects/09-acquisition` の以下 2 件。いずれも known_issue F-013 である。
@@ -935,6 +995,147 @@ error: no installed version matches `tag:v0.9.0`; `dowelup list` shows what is i
 
 直前に `installing the same commit under another specifier succeeds` を
 置いてある。install が成功していることが、比較の前提として見える。
+
+---
+
+## F-014
+
+報告先: [sabas0ba/dowel#41](https://github.com/sabas0ba/dowel/issues/41)
+
+**ninja で組んだあと direct 実行器で組むと、ヘッダの変更が見落とされ、
+古い成果物が黙って残る。**
+
+種別: 実装。未修正（`95daf9f`）。本一覧のうち最も影響が大きい。
+
+### 観測
+
+`include/h.h` の `V` を成果物の終了状態に載せ、新しいかどうかを外から見る。
+
+```console
+$ dowel build                       # 既定の ninja
+$ printf '#define V 7\n' > include/h.h
+$ dowel build --executor=direct --log-level=debug
+... ran 0 actions, skipped 2 already up to date
+$ ./.dowel/build/*/bin/m; echo $?
+0                                   # 期待は 6。古い成果物のまま
+```
+
+| 最初 | 2回目 | ヘッダ変更の反映 |
+|---|---|---|
+| direct | direct | される |
+| ninja | ninja | される |
+| direct | ninja | される |
+| **ninja** | **direct** | **されない** |
+
+ソースの変更はどの組み合わせでも反映される。落ちるのは depfile 経由で
+辿る依存に限られる。ninja に戻すと正しく組み直される。
+
+ninja は `deps = gcc` で depfile を読むと `.d` を消して `.ninja_deps` へ畳む。
+direct は `.d` を読むため、ninja のあとは**依存情報が1件も無い状態**で
+最新性を判定し、無いことを検出せずに「最新である」と結論する。
+
+### 期待
+
+依存の記録を実行器の実装詳細から切り離す。`direct-log.tsv` が既にコマンドの
+記録を持っているので、依存もそこへ寄せる形になる。少なくとも、依存情報を
+持たない目的物に対して「最新である」と結論しないこと。
+
+根拠は `docs/00-overview.md` 7節。実行層を ninja に委ねると述べているのは
+**実行**の話であり、最新性の判定は dowel の側にある。
+
+### なぜ内側から見つからないか
+
+増分の検査は「何を計算しなかったか」を見るために実行回数を数える必要があり、
+そのために direct の debug ログを使う（`docs/51-testing.md`）。つまり
+**増分を見る検査は最初から最後まで direct で走る**。既定の経路である ninja と、
+その間の行き来は、数えられないため入力にならない。
+
+本スイートの `projects/05-incremental` も同じ形になっていた。`10-toolchain` を
+書いていて、既定どおり `build` してから計数のために direct へ渡したところ、
+数が合わずに気づいた。
+
+コマンドの記録は共有されているため、目的物は実行器をまたいで再利用される。
+**部分的に共有されていること**が原因であり、全部が共有されていなければ
+全部組み直すのでこの形は現れなかった。
+
+### 検査
+
+`projects/05-incremental` の
+`a header edit is seen after building with ninja then direct`
+（known_issue F-014）。残る3通りの組み合わせは通常の検査である。
+
+`crossing/` は専用のパッケージである。`core` の検査は両側が同じ定数を使う形で
+あり、双方が古いままなら食い違いが打ち消し合ってテストが通ってしまう。
+
+---
+
+## F-015
+
+報告先: [sabas0ba/dowel#42](https://github.com/sabas0ba/dowel/issues/42)
+
+**`--target` が構成識別子を変えるだけで、ツールチェーンを選ばない。**
+
+種別: 実装。未修正（`95daf9f`）。
+
+### 観測
+
+```console
+$ dowel build --target=aarch64-unknown-linux-gnu
+built: .../.dowel/build/aarch64-unknown-linux-gnu-debug/bin/t
+$ readelf -h .../aarch64-unknown-linux-gnu-debug/bin/t | grep Machine
+  Machine:                           Advanced Micro Devices X86-64
+```
+
+コンパイル行にもトリプルは現れない。`--target` の有無で変わるのはパスだけである。
+
+`[runner.<triple>]` を宣言してあると、ホスト向けの成果物が qemu へ渡る。
+
+```
+qemu-aarch64-static: .../bin/smoke: Invalid ELF image for this architecture
+test result: FAILED. 0 passed; 1 failed
+```
+
+`missing-runner` を足した理由として本体が挙げているのは、まさにこの形である。
+
+> 起動してから `Exec format error` になるのでは、構成の誤りがテストの失敗として
+> 報告される。起動の前に拒むのが約束である。
+
+宣言が**無い**場合は約束どおり起動前に拒む。宣言が**あって成果物の
+アーキテクチャが違う**場合は、同じ誤りが1段あとに戻ってきている。
+
+### 期待
+
+`[toolchain]` をトリプルごとに書けるようにする（`[runner.<triple>]` と同じ形）。
+そのうえで、宣言の無いトリプルへ `--target` を渡したら拒む。
+
+`schema dump` は `toolchain` を `implemented: false` としており、未実装で
+あること自体は宣言されている。所見にしたのはそこではなく、**未実装の
+現れ方が「黙って別のものを作る」になっている**点である。
+
+### なぜ内側から見つからないか
+
+本体のフィクスチャと CI は単一のホスト向けにしか組まない。クロス用の
+ツールチェーンを置いた環境が入力にならないため、「ビルドディレクトリの名前と
+成果物のアーキテクチャが食い違う」状態が作れない。
+
+`[runner.<triple>]` の検査も、記録だけを行うラッパで組める。
+その形ではアーキテクチャの不一致は現れない。
+
+### 検査
+
+`projects/11-cross` の以下 3 件。いずれも known_issue F-015 である。
+
+- `an artifact filed under a triple is built for that triple`
+- `the mismatch is caught before the artifact is started`
+
+逆向き（クロスのツールチェーンでホスト向けの構成を組む場合）は検査にしていない。起動できるかどうかが機械の設定で決まるためである。
+`qemu-user-static` を入れた環境では binfmt_misc に登録され、別アーキテクチャの
+実行ファイルがそのまま起動する。拒まなかった結果が機械によって変わるなら、
+その検査が記録するのは dowel ではなく実行した機械である。
+
+通る側（宣言したクロスツールチェーンで組み、qemu で走らせる）が同じ
+プロジェクトにあるため、**機構は揃っていて結び付けが無いだけ**であることが
+検査の並びから読める。
 
 ---
 

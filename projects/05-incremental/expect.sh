@@ -123,3 +123,52 @@ out_has "nothing to rerun" "--failed says so when nothing failed last time" test
 
 # 判定が消えないこと。走らせなかったターゲットの記録は残る（docs/60-cli.md）。
 ok "a full run passes again" test
+
+# --------------------------------------------------- 実行器を跨ぐ
+#
+# 実行器は差し替え可能なものとして提示されている（`--executor=ninja|direct`、
+# ninja が無ければ direct へ落ちる）。利用者から見れば「同じものを別の方法で
+# 実行するだけ」であり、片方で組んでから他方に渡すのは自然な操作である。
+#
+# ところが依存の記録は共有されていない。ninja は depfile を読むと `.d` を
+# 消して `.ninja_deps` に畳むため、そのあと direct へ渡ると
+# ヘッダの依存情報が1件も無い状態で最新性を判定することになる
+# （docs/10-findings.md F-014）。
+#
+# コマンドの記録は共有されているため、目的物は実行器をまたいで再利用される。
+# 全部が共有されていなければ全部組み直すので、この形は現れなかった。
+#
+# 別のパッケージを使う。core の検査は「両側が同じ定数を使う」形であり、
+# 双方が古いままなら food違いが打ち消し合ってテストが通ってしまう。
+# ここでは成果物の終了状態にヘッダの値をそのまま載せ、
+# **古いまま残ったこと自体**を観測できるようにする。
+
+cd ../crossing || exit 1
+
+# built_value — 成果物を起動し、組まれた時点のヘッダの値を返させる。
+built_value() {
+    local p
+    p=$(find .dowel/build -type f -path '*/bin/show' 2>/dev/null | head -1)
+    [ -n "$p" ] || { printf '(no artifact)'; return 0; }
+    "$p"
+    printf '%s' "$?"
+}
+
+for pair in "ninja direct" "direct ninja" "ninja ninja" "direct direct"; do
+    set -- $pair
+    first=$1 second=$2
+    rm -rf .dowel
+    printf '#define VALUE 3\n' > include/value.h
+    run build --executor="$first"
+
+    printf '#define VALUE 7\n' > include/value.h
+    run build --executor="$second"
+
+    got=$(built_value)
+    [ "$got" = 7 ]; verdict=$?
+    # known_issue は判定の直前に置く。間に何か挟むと $? がそちらの結果になる。
+    if [ "$first" = ninja ] && [ "$second" = direct ]; then known_issue F-014; fi
+    fact "$verdict" "a header edit is seen after building with $first then $second"
+done
+
+printf '#define VALUE 3\n' > include/value.h
