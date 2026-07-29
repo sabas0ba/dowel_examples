@@ -2,13 +2,15 @@
 
 本スイートが外側から見つけたもの。
 
-F-001 から F-009 までの 9 件は本体で修正済みである（`07f16ec`）。記録は残す。
+F-001 から F-009 までの 9 件は `07f16ec` で、F-010 / F-012 / F-013 は
+`95daf9f` で修正された。記録は残す。
 何を見てどう報告したかが、次に同種のものを見つけるときの型になるためである。
 対応する検査は `known_issue` を外し、通常の検査として残してある。直った
 ものを消すと、退行したときに気づけない。
 
-F-010 から F-013 までは未修正である。対応する検査は `known_issue` を
-付けてあり、本体が直すと `XPASS` になって落ちる。
+F-011 だけが部分的に残っている。マニフェストの2箇所は直ったが、
+`dowelup` が `.dowel-version` を読む経路には届いていない。対応する検査は
+`known_issue` を付けてあり、本体が直すと `XPASS` になって落ちる。
 
 各項目は次の形で記録する。
 
@@ -31,10 +33,10 @@ F-010 から F-013 までは未修正である。対応する検査は `known_is
 | [F-007](#f-007) | 併合衝突の人間向け描画が片側の位置しか出さない | 実装 | [#16](https://github.com/sabas0ba/dowel/issues/16) | 修正済み |
 | [F-008](#f-008) | C++ のソースが黙って受理され、リンカの誤りになる | 実装／文書 | [#19](https://github.com/sabas0ba/dowel/issues/19) | 修正済み |
 | [F-009](#f-009) | 宣言したツールチェーンの実在を確認しない | 実装 | [#19](https://github.com/sabas0ba/dowel/issues/19) | 修正済み |
-| [F-010](#f-010) | 深い入れ子でスタックが溢れ、診断を出さずに abort する | 実装 | [#33](https://github.com/sabas0ba/dowel/issues/33) | 未修正 |
-| [F-011](#f-011) | UTF-8 BOM 付きのマニフェストが拒まれる | 実装 | [#34](https://github.com/sabas0ba/dowel/issues/34) | 未修正 |
-| [F-012](#f-012) | 言語サーバが型検査の段の診断を出さず、`UNSUPPORTED` にも無い | 実装 | [#38](https://github.com/sabas0ba/dowel/issues/38) | 未修正 |
-| [F-013](#f-013) | install に使った指定子で `dowel +<指定子>` が選べない | 実装 | [#39](https://github.com/sabas0ba/dowel/issues/39) | 未修正 |
+| [F-010](#f-010) | 深い入れ子でスタックが溢れ、診断を出さずに abort する | 実装 | [#33](https://github.com/sabas0ba/dowel/issues/33) | 修正済み |
+| [F-011](#f-011) | UTF-8 BOM 付きのマニフェストが拒まれる | 実装 | [#34](https://github.com/sabas0ba/dowel/issues/34) | 一部修正 |
+| [F-012](#f-012) | 言語サーバが型検査の段の診断を出さず、`UNSUPPORTED` にも無い | 実装 | [#38](https://github.com/sabas0ba/dowel/issues/38) | 修正済み |
+| [F-013](#f-013) | install に使った指定子で `dowel +<指定子>` が選べない | 実装 | [#39](https://github.com/sabas0ba/dowel/issues/39) | 修正済み |
 
 ---
 
@@ -628,7 +630,7 @@ error[missing-manifest]: cannot read .../does-not-exist/dowel.toml: No such file
 
 **入れ子の深い値でスタックが溢れ、診断を1件も出さずに abort する。**
 
-種別: 実装。未修正（`07f16ec` および `2ab1428` の両方で再現）。
+種別: 実装。修正済み（`95daf9f`）。
 
 ### 観測
 
@@ -705,6 +707,25 @@ $                                     # 標準出力は空
 網羅の追跡は診断コードの有無を見るため、「診断が組み立てられない入力」は
 その枠の外にある。
 
+### 修正
+
+値の入れ子に深さの上限が入った（既定 64、`nesting-too-deep`）。
+
+```
+error[nesting-too-deep]: the value is nested more than 64 levels deep
+ --> dowel.build:2:75
+   = note: such depth usually comes from a generated manifest; flatten the value,
+           or raise the limit with `--max-nesting`
+```
+
+超線形だった側も同時に消えた。深さ 2000 のインラインテーブルは
+60 秒超から **14ms** になった。上限が呼び出し段数を定数で抑えるため、
+2つの症状が1つの変更で直っている。
+
+`--max-nesting` で上限を動かせる（1〜512）。生成された記述を扱う利用者に
+逃げ道が要るという判断だと読める。上限そのものに上限があるため、
+「上限を置いた意味が無くなる」ことは起きない。
+
 ### 検査
 
 `projects/07-robustness` の以下 10 件。いずれも known_issue F-010 として登録した。
@@ -735,8 +756,7 @@ $                                     # 標準出力は空
 **先頭に UTF-8 BOM が付いたマニフェストが拒まれる。しかも診断が
 正しく見える行を指す。**
 
-種別: 実装。未修正（`07f16ec` および `2ab1428` の両方で再現）。軽微だが、
-失敗の様式が悪い。
+種別: 実装。**一部修正**（`95daf9f`）。軽微だが、失敗の様式が悪い。
 
 ### 観測
 
@@ -792,15 +812,36 @@ TOML の仕様は BOM の扱いを規定していないが、広く使われて�
 CRLF は正しく扱えている（同じ経路で検査してある）。BOM だけが残っているのは、
 改行の正規化はあるが先頭バイトの正規化が無い、という形と思われる。
 
+### 修正（一部）
+
+マニフェストの側は直った。先頭の BOM を些末部として読み飛ばす。行の途中に
+現れた同じバイト列は従来どおり誤りとして残る。
+
+**`dowelup` が `.dowel-version` を読む経路には届いていない。**
+
+```console
+$ printf '\xef\xbb\xbf95daf9ff8dac60310d2ff5c427a53804d2870890\n' > .dowel-version
+$ dowel --version
+error: .../.dowel-version contains `95daf9ff…`, which is not a full commit hash;
+       run `dowelup pin 95daf9ff…` to resolve it and rewrite the file
+```
+
+促される `dowelup pin` の引数に BOM がそのまま入るため、**貼り付けても
+同じ理由でまた拒まれる**。`dowelup` は `dowel-syntax` を通らないため、
+そちらの修正が届かないのは自然である。
+
 ### 検査
 
-`projects/07-robustness` の以下 2 件。いずれも known_issue F-011 として登録した。
+`projects/07-robustness` の2件は通常の検査へ戻した。
 
 - `a UTF-8 BOM on dowel.build is accepted`
 - `a UTF-8 BOM on dowel.toml is accepted`
+- `a BOM in the middle of a line is refused`（先頭だけが些末部であること）
 
-対になる `CRLF line endings is accepted` は通っている。
-BOM だけが例外であることが、検査の並びから読める。
+残っている側は `projects/09-acquisition` の
+`a pin file with a UTF-8 BOM is read` で、known_issue F-011 である。
+対になる CRLF・空白・大文字の sha はいずれも通っており、
+BOM だけが例外であることが検査の並びから読める。
 
 ---
 
@@ -811,7 +852,7 @@ BOM だけが例外であることが、検査の並びから読める。
 **言語サーバが型検査の段の診断を出さない。しかも `dowel_lsp::UNSUPPORTED` に
 載っていないため、出ないことが分からない。**
 
-種別: 実装。未修正（`19a4a40`）。
+種別: 実装。修正済み（`95daf9f`）。
 
 ### 観測
 
@@ -859,6 +900,15 @@ BOM だけが例外であることが、検査の並びから読める。
 一覧が漏れていることは、一覧の外から見ないと分からない。外から見るとは、
 この場合「CLI が出す診断の全体と突き合わせる」ことである。
 
+### 修正
+
+開いている1ファイルだけで決まる型検査の診断が、言語サーバからも出るように
+なった。6 件すべてが `dowel check` と一致する。
+
+期待として挙げた2案のうち、`UNSUPPORTED` に足す側ではなく**型検査を走らせる**
+側が採られている。`UNSUPPORTED` に残るのは、ワークスペースの模型と計画段を
+要するものだけになった。
+
 ### 検査
 
 `projects/08-lsp` の以下 6 件。いずれも known_issue F-012 として登録した。
@@ -883,8 +933,8 @@ BOM だけが例外であることが、検査の並びから読める。
 **`dowelup install <指定子>` が成功した指定子で、`dowel +<指定子>` が
 選べないことがある。**
 
-種別: 実装。未修正（`19a4a40`）。軽微だが、成功した操作の直後に
-矛盾した応答が返る。
+種別: 実装。修正済み（`95daf9f`）。軽微だが、成功した操作の直後に
+矛盾した応答が返っていた。
 
 ### 観測
 
@@ -925,6 +975,15 @@ error: no installed version matches `tag:v0.9.0`; `dowelup list` shows what is i
 
 タグとチャネルが同じコミットを指すのは通常の状態であり（`stable` は
 最新の release タグそのもの）、利用者が両方を試すのは自然である。
+
+### 修正
+
+`origin` が複数の指定子を持てるようになり、`+<指定子>` と `uninstall` の
+両方がそれらすべてと照合するようになった。期待として挙げた2案のうち、
+記録を増やす側が採られている。shim の選択がネットワークに触れないという
+性質は保たれている。
+
+`dowelup list` にも、その版を入れるのに使った指定子が並ぶ。
 
 ### 検査
 

@@ -10,7 +10,7 @@ dowel 本体は自分自身を内側から検査している（`crates/*/tests/`
 仕様と実装の食い違いを仕様の側から見つけられる。
 
 見つけたものは [docs/10-findings.md](docs/10-findings.md) に記録し、本体へ報告する。
-これまでに 13 件を報告し、うち 9 件は修正された。残り 4 件は未修正である。
+これまでに 13 件を報告し、12 件が修正された。残り1件も一部は直っている。
 
 ## 走らせる
 
@@ -46,8 +46,8 @@ DOWELUP=/path/to/dowelup DOWEL_SRC=/path/to/dowel ./run.sh
 ## 出力
 
 1 検査 1 行。本体が直していない事項に対する検査は `xfail` として登録する。
-本体側が直ると `XPASS` になって落ち、宣言を外すべきことが分かる。現在は 24 件で、
-[F-010](docs/10-findings.md#f-010) から [F-013](docs/10-findings.md#f-013) に対応する。
+本体側が直ると `XPASS` になって落ち、宣言を外すべきことが分かる。現在は 1 件で、
+[F-011](docs/10-findings.md#f-011) の残っている側に対応する。
 
 ```
 02-config
@@ -56,13 +56,13 @@ DOWELUP=/path/to/dowelup DOWEL_SRC=/path/to/dowel ./run.sh
 
 07-robustness
   ok   unclosed-paren is refused with a source location
-  xfail 100k nested arrays does not abort dowel  [F-010]
+  ok   100k nested arrays is refused as nesting-too-deep
 
-08-lsp
-  ok   the column of a diagnostic is in UTF-16 units after an astral plane character
-  xfail the language server reports unknown-property as dowel check does  [F-012]
+09-acquisition
+  ok   a pin file with CRLF is read
+  xfail a pin file with a UTF-8 BOM is read  [F-011]
 
-total 478 checks: 454 passed, 0 failed, 24 known, 0 fixed
+total 495 checks: 494 passed, 0 failed, 1 known, 0 fixed
 ```
 
 検査名は英語で書く。実装の中身ではなく、何が固定されているかを1行で読ませる
