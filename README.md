@@ -10,7 +10,7 @@ dowel 本体は自分自身を内側から検査している（`crates/*/tests/`
 仕様と実装の食い違いを仕様の側から見つけられる。
 
 見つけたものは [docs/10-findings.md](docs/10-findings.md) に記録し、本体へ報告する。
-これまでに 9 件を報告し、いずれも修正された。未報告のものが 2 件ある。
+これまでに 13 件を報告し、うち 9 件は修正された。残り 4 件は未修正である。
 
 ## 走らせる
 
@@ -26,7 +26,19 @@ make verify              # 全プロジェクト + 集計。CI もこれと同�
 DOWEL=/path/to/dowel make verify
 ```
 
-必要なもの: C コンパイラ（`cc`）、`ninja`、`jq`、`python3`、bash 4 以降。
+必要なもの: C コンパイラ（`cc`）、`ninja`、`jq`、`python3`、`git`、`cargo`、
+bash 4 以降。
+
+`09-acquisition` は `dowelup` と dowel の**作業木**も要る。取得を検査する層で
+あり、上流にあたる git リポジトリを手元へ複製して相手にするためである
+（実際の上流には触れない）。既定では `dowel` の隣と `../dowel` を探す。
+
+```sh
+DOWELUP=/path/to/dowelup DOWEL_SRC=/path/to/dowel ./run.sh
+```
+
+見つからなければ始めない。環境によって走る検査が変わると、結果を過去の実行と
+比べられなくなる。
 
 プロジェクトの実体は変更しない。`.work/` へ複製してから走らせる。
 集計の結果は `.work/report/`（`summary.md` / `results.json` / `index.html`）に残る。
@@ -34,8 +46,8 @@ DOWEL=/path/to/dowel make verify
 ## 出力
 
 1 検査 1 行。本体が直していない事項に対する検査は `xfail` として登録する。
-本体側が直ると `XPASS` になって落ち、宣言を外すべきことが分かる。現在は 12 件である
-（[F-010](docs/10-findings.md#f-010) と [F-011](docs/10-findings.md#f-011)）。
+本体側が直ると `XPASS` になって落ち、宣言を外すべきことが分かる。現在は 26 件で、
+[F-010](docs/10-findings.md#f-010) から [F-013](docs/10-findings.md#f-013) に対応する。
 
 ```
 02-config
@@ -46,7 +58,11 @@ DOWEL=/path/to/dowel make verify
   ok   unclosed-paren is refused with a source location
   xfail 100k nested arrays does not abort dowel  [F-010]
 
-total 316 checks: 304 passed, 0 failed, 12 known, 0 fixed
+08-lsp
+  ok   the column of a diagnostic is in UTF-16 units after an astral plane character
+  xfail the language server reports unknown-property as dowel check does  [F-012]
+
+total 480 checks: 454 passed, 0 failed, 26 known, 0 fixed
 ```
 
 検査名は英語で書く。実装の中身ではなく、何が固定されているかを1行で読ませる
@@ -63,6 +79,8 @@ total 316 checks: 304 passed, 0 failed, 12 known, 0 fixed
 | [05-incremental](projects/05-incremental/) | 編集してからの再ビルド。depfile、波及の範囲、テストの再実行 |
 | [06-runner](projects/06-runner/) | `[runner.<triple>]`。宣言が無いときの拒否、引数の形、転送 |
 | [07-robustness](projects/07-robustness/) | 壊れた入力に対する応答の形。abort しないこと、位置つきで拒むこと |
+| [08-lsp](projects/08-lsp/) | 言語サーバ。CLI との一致、UTF-16 の桁、ホバー、壊れた JSON-RPC |
+| [09-acquisition](projects/09-acquisition/) | `dowelup`。版の選択順、pin ファイル、指定子の解決、失敗した取得 |
 
 プロジェクトのほかに `docs` の段がある。文書が引用する検査名が実在するか、
 リンクが解決するか、索引が中身と一致するかを機械的に見る。文書の不整合は

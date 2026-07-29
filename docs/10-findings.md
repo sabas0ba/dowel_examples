@@ -7,8 +7,8 @@ F-001 から F-009 までの 9 件は本体で修正済みである（`07f16ec`�
 対応する検査は `known_issue` を外し、通常の検査として残してある。直った
 ものを消すと、退行したときに気づけない。
 
-F-010 と F-011 は未修正である。対応する検査は `known_issue` を付けてあり、
-本体が直すと `XPASS` になって落ちる。
+F-010 から F-013 までは未修正である。対応する検査は `known_issue` を
+付けてあり、本体が直すと `XPASS` になって落ちる。
 
 各項目は次の形で記録する。
 
@@ -33,6 +33,8 @@ F-010 と F-011 は未修正である。対応する検査は `known_issue` を�
 | [F-009](#f-009) | 宣言したツールチェーンの実在を確認しない | 実装 | [#19](https://github.com/sabas0ba/dowel/issues/19) | 修正済み |
 | [F-010](#f-010) | 深い入れ子でスタックが溢れ、診断を出さずに abort する | 実装 | [#33](https://github.com/sabas0ba/dowel/issues/33) | 未修正 |
 | [F-011](#f-011) | UTF-8 BOM 付きのマニフェストが拒まれる | 実装 | [#34](https://github.com/sabas0ba/dowel/issues/34) | 未修正 |
+| [F-012](#f-012) | 言語サーバが型検査の段の診断を出さず、`UNSUPPORTED` にも無い | 実装 | [#38](https://github.com/sabas0ba/dowel/issues/38) | 未修正 |
+| [F-013](#f-013) | install に使った指定子で `dowel +<指定子>` が選べない | 実装 | [#39](https://github.com/sabas0ba/dowel/issues/39) | 未修正 |
 
 ---
 
@@ -794,6 +796,140 @@ CRLF は正しく扱えている（同じ経路で検査してある）。BOM �
 
 対になる `CRLF line endings is accepted` は通っている。
 BOM だけが例外であることが、検査の並びから読める。
+
+---
+
+## F-012
+
+報告先: [sabas0ba/dowel#38](https://github.com/sabas0ba/dowel/issues/38)
+
+**言語サーバが型検査の段の診断を出さない。しかも `dowel_lsp::UNSUPPORTED` に
+載っていないため、出ないことが分からない。**
+
+種別: 実装。未修正（`19a4a40`）。
+
+### 観測
+
+同じ本文を、`didOpen` でエディタの緩衝として渡した場合と、ディスクに置いて
+`dowel check --message-format=json` を掛けた場合の比較。
+
+| 入力 | `dowel check` | `dowel lsp` |
+|---|---|---|
+| `include = [dir("src")]` | `unknown-property` | 出ない |
+| `[binn.subject]` | `unknown-kind` | 出ない |
+| `sources = 42` | `type-mismatch` | 出ない |
+| 見出しの外の鍵 | `toplevel-entry` | 出ない |
+| `command` の無い `[runner.<triple>]` | `missing-field` | 出ない |
+| `[package]` の無い `dowel.toml` | `missing-table` | 出ない |
+
+境目は段にある。字句・構文（`expected-token` ほか7件）と評価
+（`unknown-cfg-key` / `non-exhaustive-match` / `unknown-function`）は出る。
+型検査だけが出ない。
+
+同じ位置でホバーすると `null` が返り、正しい `includes` に直すとホバーは
+`Set<Path>` と併合規則を返す。**言語サーバはスキーマを持っており、その語が
+未知であることも判定できている。** 判定した結果をホバーの不在としては使い、
+診断としては使っていない。
+
+### 期待
+
+型検査の段を言語サーバでも走らせる。`UNSUPPORTED` に並ぶ理由はいずれも
+「開いている1ファイルの外を要する」だが、上の6件はどれも開いている
+ファイルだけで決まる。
+
+走らせない判断を採るなら、6件を `UNSUPPORTED` に理由とともに足すことが要る。
+`docs/30-devexp.md` 3.2 節は「出さないものは `dowel_lsp::UNSUPPORTED` に
+理由とともに列挙してあり」と述べており、現状はこの記述が成り立っていない。
+
+`unknown-property` はとりわけ効く。マニフェストで最も踏みやすい誤りであり、
+編集距離による候補と機械適用可能な修正提案（F-006 で直した経路）が
+用意されているのは、まさにこの診断である。
+
+### なぜ内側から見つからないか
+
+`dowel-lsp` の検査は「一覧の綴りが実在すること」と「一覧の項目が実は
+出ていないこと」の2つを見ている。どちらも**一覧に載っているもの**を
+起点にしており、「出ないのに一覧にも無い」ものはどちらの起点にも現れない。
+
+一覧が漏れていることは、一覧の外から見ないと分からない。外から見るとは、
+この場合「CLI が出す診断の全体と突き合わせる」ことである。
+
+### 検査
+
+`projects/08-lsp` の以下 6 件。いずれも known_issue F-012 として登録した。
+
+- `the language server reports unknown-property as dowel check does`
+- `the language server reports unknown-kind as dowel check does`
+- `the language server reports type-mismatch as dowel check does`
+- `the language server reports toplevel-entry as dowel check does`
+- `the language server reports missing-field as dowel check does`
+- `the language server reports missing-table in dowel.toml`
+
+各件には CLI 側が同じ診断を出していることの確認が対になっている
+（`dowel check still reports unknown-property` ほか）。CLI 側が出さなく
+なった場合に、一致していないのか、そもそも誤りでなくなったのかを見分けられる。
+
+---
+
+## F-013
+
+報告先: [sabas0ba/dowel#39](https://github.com/sabas0ba/dowel/issues/39)
+
+**`dowelup install <指定子>` が成功した指定子で、`dowel +<指定子>` が
+選べないことがある。**
+
+種別: 実装。未修正（`19a4a40`）。軽微だが、成功した操作の直後に
+矛盾した応答が返る。
+
+### 観測
+
+上流でタグ `v0.9.0` と `stable` が同じコミットを指す状態から。
+
+```console
+$ dowelup install stable
+2ab1428cf1e1
+$ dowelup install tag:v0.9.0
+2ab1428cf1e1 is already installed
+2ab1428cf1e1
+
+$ dowel +stable --version
+dowel 0.0.1
+$ dowel +tag:v0.9.0 --version
+error: no installed version matches `tag:v0.9.0`; `dowelup list` shows what is installed
+```
+
+`versions/<sha>/origin` に記録されるのは、その sha を**最初に入れたときの
+指定子1つだけ**である。`+<指定子>` はその文字列との完全一致で照合するため、
+2つ目以降の指定子は install が成功しても選べない。順序を入れ替えると、
+選べる指定子も入れ替わる。
+
+`uninstall` にも同じ形が出る。sha による指定は接頭辞も含めて常に通る。
+
+### 期待
+
+`dowelup install <指定子>` が成功したなら、その指定子で選べる。
+
+`origin` を複数持てるようにするのが素直だと考える。`+<指定子>` の照合を
+解決に寄せる案は、`stable` や `branch:` の解決がネットワークを要するため
+「shim はネットワークに触れない」（ADR-0013）と衝突する。
+
+### なぜ内側から見つからないか
+
+同じコミットを別の指定子で2度入れる、という操作が入力にならないため。
+1つの指定子につき1つの sha を入れる形では、記録と照合は常に一致する。
+
+タグとチャネルが同じコミットを指すのは通常の状態であり（`stable` は
+最新の release タグそのもの）、利用者が両方を試すのは自然である。
+
+### 検査
+
+`projects/09-acquisition` の以下 2 件。いずれも known_issue F-013 である。
+
+- `a specifier that installed successfully can select`
+- `uninstalling by the specifier it was installed from succeeds`
+
+直前に `installing the same commit under another specifier succeeds` を
+置いてある。install が成功していることが、比較の前提として見える。
 
 ---
 
