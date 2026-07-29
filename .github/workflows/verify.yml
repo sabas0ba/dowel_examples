@@ -5,7 +5,12 @@
 # 用い、公開リポジトリはそれで読める。設定する秘密はひとつも無い。
 #
 # 取り出す版は `dowel-ref` に固定してある。追随は、その1行を書き換える
-# pull request として現れる。手動実行のときだけ別の版を指せる。
+# pull request として現れる（`.github/workflows/bump-dowel.yml` が起票する）。
+# 手動実行のときだけ別の版を指せる。
+#
+# 固定した版に対する実行が合否を決める。あわせて本家の先端に対しても走らせ、
+# そちらは参考として扱う（合否に関与しない）。先端で `xpass` が出れば
+# 「本家が直った」と分かり、追随の pull request を取り込む合図になる。
 #
 # 結果は3か所へ出す。
 #
@@ -22,6 +27,9 @@ on:
   push:
     branches: [main]
   pull_request:
+  schedule:
+    # 本家の先端に対する参考の実行。日次で十分である。
+    - cron: "0 3 * * *"
   workflow_dispatch:
     inputs:
       dowel_ref:
@@ -46,25 +54,43 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
 
+    # 先端に対する実行は落ちても全体を落とさない。本家の変更は本リポジトリの
+    # 退行ではないため、こちらの pull request を止める理由にならない。
+    # 落ちたこと自体はジョブとして赤く残り、要約に理由が出る。
+    continue-on-error: ${{ matrix.source == 'tip' }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        # pull request では固定した版だけを見る。先端との差は、
+        # 日次の実行と追随の pull request で分かる。
+        source: ${{ fromJSON(github.event_name == 'pull_request' && '["pinned"]' || '["pinned","tip"]') }}
+
     steps:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - name: Resolve the dowel revision
-        # 既定は `dowel-ref` の固定値。手動実行のときだけ上書きできる。
-        # 入力を直接展開せず環境変数を経由する（スクリプトへの注入を避ける）。
+        # pinned は `dowel-ref` の固定値（手動実行のときだけ上書きできる）。
+        # tip は本家の先端。入力を直接展開せず環境変数を経由する
+        # （スクリプトへの注入を避ける）。
         env:
           REQUESTED: ${{ inputs.dowel_ref }}
+          SOURCE: ${{ matrix.source }}
         run: |
-          ref=$REQUESTED
-          if [ -z "$ref" ]; then
-            ref=$(sed -e 's/#.*//' -e 's/[[:space:]]//g' dowel-ref | grep -v '^$' | tail -1)
+          if [ "$SOURCE" = tip ]; then
+            ref=$(git ls-remote https://github.com/sabas0ba/dowel HEAD | cut -f1)
+          else
+            ref=$REQUESTED
+            if [ -z "$ref" ]; then
+              ref=$(sed -e 's/#.*//' -e 's/[[:space:]]//g' dowel-ref | grep -v '^$' | tail -1)
+            fi
           fi
           if [ -z "$ref" ]; then
-            echo "::error::dowel-ref から版を読み取れなかった。"
+            echo "::error::dowel の版を決められなかった（source=$SOURCE）。"
             exit 1
           fi
-          echo "検証に用いる dowel の版: $ref"
+          echo "検証に用いる dowel の版（$SOURCE）: $ref"
           echo "DOWEL_REF=$ref" >> "$GITHUB_ENV"
 
       - name: Checkout dowel
@@ -127,7 +153,18 @@ jobs:
 
       - name: Summary
         if: always()
+        env:
+          SOURCE: ${{ matrix.source }}
         run: |
+          if [ "$SOURCE" = tip ]; then
+            {
+              echo "## 参考: 本家の先端に対する実行"
+              echo
+              echo "この結果は合否に関与しない。落ちていても本リポジトリの退行ではなく、"
+              echo "本家が動いたことを表す。\`xpass\` が出ていれば追随の合図である。"
+              echo
+            } >> "$GITHUB_STEP_SUMMARY"
+          fi
           if [ -f .work/report/summary.md ]; then
             cat .work/report/summary.md >> "$GITHUB_STEP_SUMMARY"
           else
@@ -138,7 +175,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
-          name: verify-results-${{ github.run_id }}-${{ github.run_attempt }}
+          name: verify-results-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.source }}
           path: |
             .work/report/
             .work/results.tsv
@@ -169,10 +206,12 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - name: Download results
+        # 掲示するのは固定した版の結果だけである。先端の結果を履歴へ混ぜると、
+        # 「この行はどの dowel のものか」が読めなくなる。
         # upload-artifact と主番号を揃える。またぐと成果物を見つけられない。
         uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131 # v7.0.0
         with:
-          name: verify-results-${{ github.run_id }}-${{ github.run_attempt }}
+          name: verify-results-${{ github.run_id }}-${{ github.run_attempt }}-pinned
           path: artifact
 
       - name: Publish
