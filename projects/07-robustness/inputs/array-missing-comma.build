@@ -1,0 +1,2 @@
+[bin.subject]
+sources = ["src/main.c" "src/other.c"]

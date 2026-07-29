@@ -1,0 +1,5 @@
+[bin.subject]
+sources = glob("src/*.c")
+
+[bin.subject.private]
+defines = { LIMIT = 64

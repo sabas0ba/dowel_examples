@@ -1,0 +1,3 @@
+[bin.subject]
+sources = glob("src/*.c")
+}

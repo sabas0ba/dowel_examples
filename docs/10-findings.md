@@ -2,10 +2,13 @@
 
 本スイートが外側から見つけたもの。
 
-**9 件すべてが本体で修正済みである**（`07f16ec`）。記録は残す。何を見て
-どう報告したかが、次に同種のものを見つけるときの型になるためである。
+F-001 から F-009 までの 9 件は本体で修正済みである（`07f16ec`）。記録は残す。
+何を見てどう報告したかが、次に同種のものを見つけるときの型になるためである。
 対応する検査は `known_issue` を外し、通常の検査として残してある。直った
 ものを消すと、退行したときに気づけない。
+
+F-010 と F-011 は未修正である。対応する検査は `known_issue` を付けてあり、
+本体が直すと `XPASS` になって落ちる。
 
 各項目は次の形で記録する。
 
@@ -28,6 +31,8 @@
 | [F-007](#f-007) | 併合衝突の人間向け描画が片側の位置しか出さない | 実装 | [#16](https://github.com/sabas0ba/dowel/issues/16) | 修正済み |
 | [F-008](#f-008) | C++ のソースが黙って受理され、リンカの誤りになる | 実装／文書 | [#19](https://github.com/sabas0ba/dowel/issues/19) | 修正済み |
 | [F-009](#f-009) | 宣言したツールチェーンの実在を確認しない | 実装 | [#19](https://github.com/sabas0ba/dowel/issues/19) | 修正済み |
+| [F-010](#f-010) | 深い入れ子でスタックが溢れ、診断を出さずに abort する | 実装 | 報告予定 | 未修正 |
+| [F-011](#f-011) | UTF-8 BOM 付きのマニフェストが拒まれる | 実装 | 報告予定 | 未修正 |
 
 ---
 
@@ -612,6 +617,183 @@ error[missing-manifest]: cannot read .../does-not-exist/dowel.toml: No such file
 ### 検査
 
 `projects/04-diagnostics` の`missing-manifest points at the offending source`。
+
+---
+
+## F-010
+
+報告先: 報告予定。
+
+**入れ子の深い値でスタックが溢れ、診断を1件も出さずに abort する。**
+
+種別: 実装。未修正（`07f16ec` および `2ab1428` の両方で再現）。
+
+### 観測
+
+`sources` の値を深く入れ子にする。3つの形のいずれでも起きる。
+
+```
+[bin.subject]
+sources = [[[[[ …（10 万段）… ]]]]]
+sources = {a={a={a= …（10 万段）… }}}
+sources = glob(glob(glob( …（5 万段）… )))
+```
+
+```console
+$ dowel check
+
+thread 'main' (18892) has overflowed its stack
+fatal runtime error: stack overflow, aborting
+$ echo $?
+134
+$ dowel check --message-format=json
+$                                     # 標準出力は空
+```
+
+診断は1件も出ない。終了状態はシグナル（`SIGABRT`）である。
+
+溢れる手前の深さでは abort しないが、応答が深さに対して超線形になる。
+入力は 4KB しかない。
+
+| 形 | 深さ | 応答 |
+|---|---|---|
+| 配列 | 1000 | 80ms |
+| 配列 | 2000 | 487ms |
+| 配列 | 4000 | 2180ms |
+| 配列 | 6000 | 5460ms |
+| 配列 | 8000 | abort |
+| インラインテーブル | 1000 | 9212ms |
+| インラインテーブル | 2000 | 60秒を超える |
+
+閉じていない入力（`[[[[[` のみ。型検査に到達しない）でも同じ形で伸びるため、
+超線形なのは型検査だけではない。
+
+### 期待
+
+深さの上限を持ち、超えたら診断として拒む。位置を伴う。
+
+根拠は3つある。
+
+1. `docs/10-manifest.md` 2節が「式は**純粋かつ全域**とする。（…）これにより
+   停止性を言語仕様として保証する」と述べている。停止性を仕様として保証する
+   言語の処理系が、入力の深さで abort するのは主張と食い違う
+2. `README.md` の差別化点は「全ての値が型とソース位置と来歴を持つ」。
+   abort した実行はこのいずれも提示しない
+3. 上限を持つと超線形の問題も同時に消える。上限を 64 なり 128 なりに置けば、
+   越えた入力は即座に拒まれ、越えない入力は深さが定数で抑えられる
+
+深さ 10 万を手で書く利用者はいない。この形が問題になるのは、
+**マニフェストを生成する道具**（移行、コード生成）と、
+**言語サーバ**である。`2ab1428` で `dowel-lsp` が入り、編集のたびに
+未完成のマニフェストを解析するようになった。解析器の abort は
+そこでは編集器の接続が切れる形で現れ、利用者は原因を知る手立てを持たない。
+
+### なぜ内側から見つからないか
+
+本体のフィクスチャと e2e の入力は、いずれも人が書いた正しい形の
+マニフェストか、意図した1箇所の誤りを含むものである。深さは常に
+2〜3 段であり、解析器の再帰段数が入力から決まるという性質そのものが
+入力にならない。
+
+網羅の追跡は診断コードの有無を見るため、「診断が組み立てられない入力」は
+その枠の外にある。
+
+### 検査
+
+`projects/07-robustness` の以下 10 件。いずれも known_issue F-010 として登録した。
+
+| 入力 | 検査 |
+|---|---|
+| 100k nested arrays | `100k nested arrays does not abort dowel` |
+| 100k nested arrays | `100k nested arrays is refused` |
+| 100k nested arrays | `100k nested arrays is refused with a source location` |
+| 100k nested inline tables | `100k nested inline tables does not abort dowel` |
+| 100k nested inline tables | `100k nested inline tables is refused` |
+| 100k nested inline tables | `100k nested inline tables is refused with a source location` |
+| 50k nested calls | `50k nested calls does not abort dowel` |
+| 50k nested calls | `50k nested calls is refused` |
+| 50k nested calls | `50k nested calls is refused with a source location` |
+| 2k nested inline tables | `2k nested inline tables is answered within the budget` |
+
+最後の1件が超線形の側である。abort する3件については
+`100k nested arrays is answered within the budget` が通っているが、
+これは溢れるのが速いためであり、直ったあとも同じ検査が同じ意味で通る。
+
+---
+
+## F-011
+
+報告先: 報告予定。
+
+**先頭に UTF-8 BOM が付いたマニフェストが拒まれる。しかも診断が
+正しく見える行を指す。**
+
+種別: 実装。未修正（`07f16ec` および `2ab1428` の両方で再現）。軽微だが、
+失敗の様式が悪い。
+
+### 観測
+
+`dowel.build` と `dowel.toml` のどちらでも同じ形で起きる。
+
+```console
+$ printf '\xef\xbb\xbf[package]\nname = "p"\n…' > dowel.toml
+$ dowel check
+error[unknown-char]: unrecognized character
+ --> dowel.toml:1:1
+  |
+1 | ﻿[package]
+  | ^ this character cannot appear here
+error[unexpected-token]: an unrecognized character cannot appear here
+ --> dowel.toml:1:1
+  |
+1 | ﻿[package]
+  | ^ expected a table header `[...]` or a key
+error[missing-table]: missing `[package]`
+ --> dowel.toml:1:1
+  |
+1 | ﻿[package]
+  | ^ `dowel.toml` requires a `[package]` table
+```
+
+BOM は幅を持たないため、描画された行は正しい行にしか見えない。
+3件目の `missing `[package]`` は、まさに `[package]` と書かれた行を指す。
+
+### 期待
+
+先頭の BOM を読み飛ばす。
+
+BOM は利用者が書いた覚えの無い違いである。Windows のメモ帳、
+PowerShell の `>` によるリダイレクト、Visual Studio の既定の保存形式が
+いずれも付ける。利用者から見ると「画面上は正しいのに拒まれ、しかも
+`[package]` が無いと言われる」という形になり、原因に辿り着く手掛かりが無い。
+
+`dowel.toml` は厳密な TOML であると定めてある（`docs/10-manifest.md` 2節）。
+TOML の仕様は BOM の扱いを規定していないが、広く使われている実装は
+先頭の BOM を読み飛ばす側に倒しており、Cargo も BOM 付きの `Cargo.toml` を
+受け付ける。既存の TOML から移行してくる利用者は、その挙動を前提にしている。
+
+読み飛ばさないという判断もありうる。その場合に必要なのは、
+`unknown-char` ではなく「先頭に BOM がある」と述べる診断である。
+原因が名指しされれば、利用者は編集器の保存形式を直せる。
+
+### なぜ内側から見つからないか
+
+本体のフィクスチャはリポジトリの中でテキストとして書かれる。BOM 付きの
+ファイルを git に置くと編集器が黙って落とすため、入力として作りにくい。
+本スイートでも同じ理由でファイルに置かず、`expect.sh` が生成している。
+
+CRLF は正しく扱えている（同じ経路で検査してある）。BOM だけが残っているのは、
+改行の正規化はあるが先頭バイトの正規化が無い、という形と思われる。
+
+### 検査
+
+`projects/07-robustness` の以下 2 件。いずれも known_issue F-011 として登録した。
+
+- `a UTF-8 BOM on dowel.build is accepted`
+- `a UTF-8 BOM on dowel.toml is accepted`
+
+対になる `CRLF line endings is accepted` は通っている。
+BOM だけが例外であることが、検査の並びから読める。
 
 ---
 
