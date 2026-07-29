@@ -24,6 +24,8 @@ missing-toolchain
 unsupported-language
 invalid-source
 unresolved-path
+incomplete-runner
+missing-field
 "
 
 # ------------------------------------------------------- 利用者の入口へ届く

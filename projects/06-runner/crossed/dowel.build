@@ -1,0 +1,18 @@
+# ホストと異なるトリプルに対して実行ラッパを宣言する。
+#
+# 実体として想定されるのは qemu-user や実機への ssh だが、機構そのものは
+# 「成果物のパスを末尾に付けて起動する」だけである。ここでは記録を残す
+# シェルスクリプトを置き、何がどう渡ったかを外から確かめられるようにする。
+
+[bin.app]
+sources = glob("src/*.c")
+
+[test.status_test]
+sources = glob("tests/*.c")
+
+# command と args だけを持つ形。転送は伴わない（qemu-user がこれにあたる）。
+# パスは相対で書ける。ランナーはパッケージルートを作業ディレクトリとして
+# 起動されるため、tools/ を指せる。
+[runner.aarch64-unknown-linux-gnu]
+command = "sh"
+args    = ["tools/runner.sh", "--emulate"]

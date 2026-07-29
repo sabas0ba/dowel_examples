@@ -72,6 +72,8 @@ dowel 本体の `crates/dowel-cli/tests/diagnostics.rs` は、診断が CLI ま�
 | `unsupported-language` | 組めない言語のソース（C++） |
 | `invalid-source` | `sources` にディレクトリ |
 | `unresolved-path` | 存在しないファイル |
+| `incomplete-runner` | `transfer` と `remote_dir` の片方だけ |
+| `missing-field` | `runner` に `command` が無い |
 | `empty-glob` | 一致0件の `glob`（警告） |
 | `merge-conflict` | `error_on_conflict` の衝突（2パッケージ） |
 | `abi-mismatch` | `must_equal` の不一致（2パッケージ） |

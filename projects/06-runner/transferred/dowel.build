@@ -1,0 +1,19 @@
+# 転送を伴うランナー（ADR-0008）。対象機がビルド機のファイルシステムを
+# 参照できない場合の形である。
+#
+# 転送元と転送先のパスはマニフェストに書かない。実装が末尾に付け足す。
+# プレースホルダを導入しないのは、パス構築を文字列操作として言語に
+# 持ち込まないためである（docs/10-manifest.md 3節の Path と Str の分離）。
+#
+#   transfer: <宣言した args...> <ローカルパス> <host>:<remote_dir>/<名前>
+#   command : <宣言した args...> <remote_dir>/<名前>
+
+[test.remote_test]
+sources = glob("tests/*.c")
+
+[runner.aarch64-unknown-linux-gnu]
+host       = "board.local"
+transfer   = ["sh", "tools/wire.sh", "--transfer"]
+remote_dir = "remote"
+command    = "sh"
+args       = ["tools/wire.sh"]
