@@ -1,19 +1,19 @@
 {
- "run_id": "30462541775",
+ "run_id": "30467015089",
  "run_attempt": "1",
- "run_url": "https://github.com/sabas0ba/dowel_examples/actions/runs/30462541775",
- "commit": "b1380dd21bfe32a7ac5e2715b4815cd52e50040b",
+ "run_url": "https://github.com/sabas0ba/dowel_examples/actions/runs/30467015089",
+ "commit": "986b5f773b5b9d8b15d77d9dc7f92582d541e048",
  "branch": "main",
- "started_at": "2026-07-29T14:46:56Z",
+ "started_at": "2026-07-29T15:41:23Z",
  "dowel_version": "dowel 0.0.1",
- "dowel_ref": "19a4a409f6e87b3bd0615aead465888878f621d5",
- "dowel_commit": "19a4a409f6e87b3bd0615aead465888878f621d5",
+ "dowel_ref": "95daf9ff8dac60310d2ff5c427a53804d2870890",
+ "dowel_commit": "95daf9ff8dac60310d2ff5c427a53804d2870890",
  "cc": "cc (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0",
  "ninja": "1.13.2",
  "projects": [
   {
    "name": "01-minimal",
-   "duration_ms": 252,
+   "duration_ms": 246,
    "counts": {
     "pass": 10,
     "fail": 0,
@@ -70,7 +70,7 @@
   },
   {
    "name": "02-config",
-   "duration_ms": 1142,
+   "duration_ms": 901,
    "counts": {
     "pass": 21,
     "fail": 0,
@@ -172,7 +172,7 @@
   },
   {
    "name": "03-features",
-   "duration_ms": 275,
+   "duration_ms": 269,
    "counts": {
     "pass": 17,
     "fail": 0,
@@ -261,7 +261,7 @@
   },
   {
    "name": "04-diagnostics",
-   "duration_ms": 346,
+   "duration_ms": 343,
    "counts": {
     "pass": 70,
     "fail": 0,
@@ -579,14 +579,14 @@
   },
   {
    "name": "05-incremental",
-   "duration_ms": 1387,
+   "duration_ms": 1661,
    "counts": {
-    "pass": 44,
+    "pass": 47,
     "fail": 0,
-    "xfail": 0,
+    "xfail": 1,
     "xpass": 0
    },
-   "total": 44,
+   "total": 48,
    "ok": true,
    "checks": [
     {
@@ -764,16 +764,33 @@
     {
      "status": "pass",
      "desc": "a full run passes again"
+    },
+    {
+     "status": "xfail",
+     "desc": "a header edit is seen after building with ninja then direct  [F-014]"
+    },
+    {
+     "status": "pass",
+     "desc": "a header edit is seen after building with direct then ninja"
+    },
+    {
+     "status": "pass",
+     "desc": "a header edit is seen after building with ninja then ninja"
+    },
+    {
+     "status": "pass",
+     "desc": "a header edit is seen after building with direct then direct"
     }
    ],
    "packages": [
     "app",
-    "core"
+    "core",
+    "crossing"
    ]
   },
   {
    "name": "06-runner",
-   "duration_ms": 245,
+   "duration_ms": 247,
    "counts": {
     "pass": 17,
     "fail": 0,
@@ -860,14 +877,14 @@
   },
   {
    "name": "07-robustness",
-   "duration_ms": 7859,
+   "duration_ms": 1296,
    "counts": {
-    "pass": 118,
+    "pass": 145,
     "fail": 0,
-    "xfail": 12,
+    "xfail": 0,
     "xpass": 0
    },
-   "total": 130,
+   "total": 145,
    "ok": true,
    "checks": [
     {
@@ -1227,16 +1244,28 @@
      "desc": "a UTF-8 BOM on dowel.build does not abort dowel"
     },
     {
-     "status": "xfail",
-     "desc": "a UTF-8 BOM on dowel.build is accepted  [F-011]"
+     "status": "pass",
+     "desc": "a UTF-8 BOM on dowel.build is accepted"
     },
     {
      "status": "pass",
      "desc": "a UTF-8 BOM on dowel.toml does not abort dowel"
     },
     {
-     "status": "xfail",
-     "desc": "a UTF-8 BOM on dowel.toml is accepted  [F-011]"
+     "status": "pass",
+     "desc": "a UTF-8 BOM on dowel.toml is accepted"
+    },
+    {
+     "status": "pass",
+     "desc": "a BOM in the middle of a line does not abort dowel"
+    },
+    {
+     "status": "pass",
+     "desc": "a BOM in the middle of a line is refused"
+    },
+    {
+     "status": "pass",
+     "desc": "a BOM in the middle of a line is refused with a source location"
     },
     {
      "status": "pass",
@@ -1307,48 +1336,56 @@
      "desc": "200k comment lines is answered within the budget"
     },
     {
-     "status": "xfail",
-     "desc": "100k nested arrays does not abort dowel  [F-010]"
+     "status": "pass",
+     "desc": "100k nested arrays does not abort dowel"
     },
     {
-     "status": "xfail",
-     "desc": "100k nested arrays is refused  [F-010]"
+     "status": "pass",
+     "desc": "100k nested arrays is refused"
     },
     {
-     "status": "xfail",
-     "desc": "100k nested arrays is refused with a source location  [F-010]"
+     "status": "pass",
+     "desc": "100k nested arrays is refused with a source location"
     },
     {
      "status": "pass",
      "desc": "100k nested arrays is answered within the budget"
     },
     {
-     "status": "xfail",
-     "desc": "100k nested inline tables does not abort dowel  [F-010]"
+     "status": "pass",
+     "desc": "100k nested arrays is refused as nesting-too-deep"
     },
     {
-     "status": "xfail",
-     "desc": "100k nested inline tables is refused  [F-010]"
+     "status": "pass",
+     "desc": "100k nested inline tables does not abort dowel"
     },
     {
-     "status": "xfail",
-     "desc": "100k nested inline tables is refused with a source location  [F-010]"
+     "status": "pass",
+     "desc": "100k nested inline tables is refused"
+    },
+    {
+     "status": "pass",
+     "desc": "100k nested inline tables is refused with a source location"
     },
     {
      "status": "pass",
      "desc": "100k nested inline tables is answered within the budget"
     },
     {
-     "status": "xfail",
-     "desc": "50k nested calls does not abort dowel  [F-010]"
+     "status": "pass",
+     "desc": "100k nested inline tables is refused as nesting-too-deep"
     },
     {
-     "status": "xfail",
-     "desc": "50k nested calls is refused  [F-010]"
+     "status": "pass",
+     "desc": "50k nested calls does not abort dowel"
     },
     {
-     "status": "xfail",
-     "desc": "50k nested calls is refused with a source location  [F-010]"
+     "status": "pass",
+     "desc": "50k nested calls is refused"
+    },
+    {
+     "status": "pass",
+     "desc": "50k nested calls is refused with a source location"
     },
     {
      "status": "pass",
@@ -1356,11 +1393,51 @@
     },
     {
      "status": "pass",
+     "desc": "50k nested calls is refused as nesting-too-deep"
+    },
+    {
+     "status": "pass",
      "desc": "2k nested inline tables does not abort dowel"
     },
     {
-     "status": "xfail",
-     "desc": "2k nested inline tables is answered within the budget  [F-010]"
+     "status": "pass",
+     "desc": "2k nested inline tables is answered within the budget"
+    },
+    {
+     "status": "pass",
+     "desc": "nesting 63 deep is accepted"
+    },
+    {
+     "status": "pass",
+     "desc": "nesting 100 deep is refused"
+    },
+    {
+     "status": "pass",
+     "desc": "nesting 100 deep is refused with a source location"
+    },
+    {
+     "status": "pass",
+     "desc": "--max-nesting raises the limit"
+    },
+    {
+     "status": "pass",
+     "desc": "--max-nesting can lower the limit too"
+    },
+    {
+     "status": "pass",
+     "desc": "--max-nesting=0 is refused as a usage error"
+    },
+    {
+     "status": "pass",
+     "desc": "--max-nesting=513 is refused as a usage error"
+    },
+    {
+     "status": "pass",
+     "desc": "--max-nesting=abc is refused as a usage error"
+    },
+    {
+     "status": "pass",
+     "desc": "--max-nesting=-1 is refused as a usage error"
     },
     {
      "status": "pass",
@@ -1397,11 +1474,11 @@
   },
   {
    "name": "08-lsp",
-   "duration_ms": 11154,
+   "duration_ms": 10919,
    "counts": {
-    "pass": 88,
+    "pass": 97,
     "fail": 0,
-    "xfail": 9,
+    "xfail": 0,
     "xpass": 0
    },
    "total": 97,
@@ -1624,40 +1701,40 @@
      "desc": "dowel check still reports unknown-property"
     },
     {
-     "status": "xfail",
-     "desc": "the language server reports unknown-property as dowel check does  [F-012]"
+     "status": "pass",
+     "desc": "the language server reports unknown-property as dowel check does"
     },
     {
      "status": "pass",
      "desc": "dowel check still reports unknown-kind"
     },
     {
-     "status": "xfail",
-     "desc": "the language server reports unknown-kind as dowel check does  [F-012]"
+     "status": "pass",
+     "desc": "the language server reports unknown-kind as dowel check does"
     },
     {
      "status": "pass",
      "desc": "dowel check still reports type-mismatch"
     },
     {
-     "status": "xfail",
-     "desc": "the language server reports type-mismatch as dowel check does  [F-012]"
+     "status": "pass",
+     "desc": "the language server reports type-mismatch as dowel check does"
     },
     {
      "status": "pass",
      "desc": "dowel check still reports toplevel-entry"
     },
     {
-     "status": "xfail",
-     "desc": "the language server reports toplevel-entry as dowel check does  [F-012]"
+     "status": "pass",
+     "desc": "the language server reports toplevel-entry as dowel check does"
     },
     {
      "status": "pass",
      "desc": "dowel check still reports missing-field"
     },
     {
-     "status": "xfail",
-     "desc": "the language server reports missing-field as dowel check does  [F-012]"
+     "status": "pass",
+     "desc": "the language server reports missing-field as dowel check does"
     },
     {
      "status": "pass",
@@ -1696,8 +1773,8 @@
      "desc": "dowel check still reports missing-table in dowel.toml"
     },
     {
-     "status": "xfail",
-     "desc": "the language server reports missing-table in dowel.toml  [F-012]"
+     "status": "pass",
+     "desc": "the language server reports missing-table in dowel.toml"
     },
     {
      "status": "pass",
@@ -1776,16 +1853,16 @@
      "desc": "the server answers a didChange nested 1000 deep"
     },
     {
-     "status": "xfail",
-     "desc": "the server survives a didChange nested 100000 deep  [F-010]"
+     "status": "pass",
+     "desc": "the server survives a didChange nested 100000 deep"
     },
     {
-     "status": "xfail",
-     "desc": "the server answers a didChange nested 100000 deep  [F-010]"
+     "status": "pass",
+     "desc": "the server answers a didChange nested 100000 deep"
     },
     {
-     "status": "xfail",
-     "desc": "a UTF-8 BOM in the buffer is not reported as an error  [F-011]"
+     "status": "pass",
+     "desc": "a UTF-8 BOM in the buffer is not reported as an error"
     },
     {
      "status": "pass",
@@ -1802,14 +1879,14 @@
   },
   {
    "name": "09-acquisition",
-   "duration_ms": 15248,
+   "duration_ms": 15932,
    "counts": {
-    "pass": 62,
+    "pass": 66,
     "fail": 0,
-    "xfail": 3,
+    "xfail": 1,
     "xpass": 0
    },
-   "total": 65,
+   "total": 67,
    "ok": true,
    "checks": [
     {
@@ -2017,8 +2094,16 @@
      "desc": "installing the same commit under another specifier succeeds"
     },
     {
-     "status": "xfail",
-     "desc": "a specifier that installed successfully can select  [F-013]"
+     "status": "pass",
+     "desc": "a specifier that installed successfully can select"
+    },
+    {
+     "status": "pass",
+     "desc": "the first specifier still selects after a second one is added"
+    },
+    {
+     "status": "pass",
+     "desc": "the list shows every specifier the revision was installed from"
     },
     {
      "status": "pass",
@@ -2053,12 +2138,8 @@
      "desc": "a revision whose install failed is not selectable"
     },
     {
-     "status": "xfail",
-     "desc": "uninstalling by the specifier it was installed from succeeds  [F-013]"
-    },
-    {
      "status": "pass",
-     "desc": "uninstalling an installed revision succeeds"
+     "desc": "uninstalling by the specifier it was installed from succeeds"
     },
     {
      "status": "pass",
@@ -2070,14 +2151,232 @@
     },
     {
      "status": "pass",
+     "desc": "uninstalling the same revision twice is refused"
+    },
+    {
+     "status": "pass",
      "desc": "selecting an uninstalled revision is refused"
     }
    ],
    "packages": []
   },
   {
+   "name": "10-toolchain",
+   "duration_ms": 6101,
+   "counts": {
+    "pass": 31,
+    "fail": 0,
+    "xfail": 0,
+    "xpass": 0
+   },
+   "total": 31,
+   "ok": true,
+   "checks": [
+    {
+     "status": "pass",
+     "desc": "gcc: check passes"
+    },
+    {
+     "status": "pass",
+     "desc": "gcc: build passes"
+    },
+    {
+     "status": "pass",
+     "desc": "gcc: the declared toolchain is what gets invoked"
+    },
+    {
+     "status": "pass",
+     "desc": "gcc: the artifact was translated by the declared compiler"
+    },
+    {
+     "status": "pass",
+     "desc": "gcc: the artifact agrees with the declaration, checked in C"
+    },
+    {
+     "status": "pass",
+     "desc": "clang: check passes"
+    },
+    {
+     "status": "pass",
+     "desc": "clang: build passes"
+    },
+    {
+     "status": "pass",
+     "desc": "clang: the declared toolchain is what gets invoked"
+    },
+    {
+     "status": "pass",
+     "desc": "clang: the artifact was translated by the declared compiler"
+    },
+    {
+     "status": "pass",
+     "desc": "clang: the artifact agrees with the declaration, checked in C"
+    },
+    {
+     "status": "pass",
+     "desc": "match on tc.c picks the clang arm"
+    },
+    {
+     "status": "pass",
+     "desc": "match on tc.c picks the gcc arm"
+    },
+    {
+     "status": "pass",
+     "desc": "the clang arm actually compiles under clang"
+    },
+    {
+     "status": "pass",
+     "desc": "the gcc arm actually compiles under gcc"
+    },
+    {
+     "status": "pass",
+     "desc": "switching the toolchain rebuilds"
+    },
+    {
+     "status": "pass",
+     "desc": "the rebuilt artifact is the one the new toolchain produced"
+    },
+    {
+     "status": "pass",
+     "desc": "building again with the same toolchain runs nothing"
+    },
+    {
+     "status": "pass",
+     "desc": "switching back rebuilds as well"
+    },
+    {
+     "status": "pass",
+     "desc": "switching back gives the earlier compiler's artifact again"
+    },
+    {
+     "status": "pass",
+     "desc": "gcc: a first build runs every action"
+    },
+    {
+     "status": "pass",
+     "desc": "gcc: a second build runs nothing"
+    },
+    {
+     "status": "pass",
+     "desc": "gcc: editing a header rebuilds through the depfile"
+    },
+    {
+     "status": "pass",
+     "desc": "gcc: and settles again"
+    },
+    {
+     "status": "pass",
+     "desc": "clang: a first build runs every action"
+    },
+    {
+     "status": "pass",
+     "desc": "clang: a second build runs nothing"
+    },
+    {
+     "status": "pass",
+     "desc": "clang: editing a header rebuilds through the depfile"
+    },
+    {
+     "status": "pass",
+     "desc": "clang: and settles again"
+    },
+    {
+     "status": "pass",
+     "desc": "a toolchain that does not exist is refused"
+    },
+    {
+     "status": "pass",
+     "desc": "the refusal carries the missing-toolchain code"
+    },
+    {
+     "status": "pass",
+     "desc": "the refusal points at the declaration"
+    },
+    {
+     "status": "pass",
+     "desc": "the missing toolchain never reaches the shell"
+    }
+   ],
+   "packages": [
+    "subject"
+   ]
+  },
+  {
+   "name": "11-cross",
+   "duration_ms": 1282,
+   "counts": {
+    "pass": 12,
+    "fail": 0,
+    "xfail": 2,
+    "xpass": 0
+   },
+   "total": 14,
+   "ok": true,
+   "checks": [
+    {
+     "status": "pass",
+     "desc": "the host build passes"
+    },
+    {
+     "status": "pass",
+     "desc": "the host build produces a host artifact"
+    },
+    {
+     "status": "pass",
+     "desc": "the host artifact names its own architecture"
+    },
+    {
+     "status": "pass",
+     "desc": "the host tests pass"
+    },
+    {
+     "status": "pass",
+     "desc": "the cross build passes"
+    },
+    {
+     "status": "pass",
+     "desc": "the cross build produces an artifact for the target"
+    },
+    {
+     "status": "pass",
+     "desc": "the cross tests run under the emulator and pass"
+    },
+    {
+     "status": "pass",
+     "desc": "the host and cross build directories both survive"
+    },
+    {
+     "status": "pass",
+     "desc": "a second cross build runs nothing"
+    },
+    {
+     "status": "pass",
+     "desc": "the host build is not confused by the cross build"
+    },
+    {
+     "status": "pass",
+     "desc": "and the cross build is still up to date afterwards"
+    },
+    {
+     "status": "pass",
+     "desc": "building for another triple with the host toolchain still reports success"
+    },
+    {
+     "status": "xfail",
+     "desc": "an artifact filed under a triple is built for that triple  [F-015]"
+    },
+    {
+     "status": "xfail",
+     "desc": "the mismatch is caught before the artifact is started  [F-015]"
+    }
+   ],
+   "packages": [
+    "subject"
+   ]
+  },
+  {
    "name": "docs",
-   "duration_ms": 50,
+   "duration_ms": 53,
    "counts": {
     "pass": 7,
     "fail": 0,
@@ -2120,119 +2419,19 @@
   }
  ],
  "totals": {
-  "pass": 454,
+  "pass": 540,
   "fail": 0,
-  "xfail": 24,
+  "xfail": 4,
   "xpass": 0
  },
- "total": 478,
+ "total": 544,
  "ok": true,
  "attention": [],
  "known_issues": [
   {
    "status": "xfail",
-   "project": "07-robustness",
-   "desc": "a UTF-8 BOM on dowel.build is accepted  [F-011]"
-  },
-  {
-   "status": "xfail",
-   "project": "07-robustness",
-   "desc": "a UTF-8 BOM on dowel.toml is accepted  [F-011]"
-  },
-  {
-   "status": "xfail",
-   "project": "07-robustness",
-   "desc": "100k nested arrays does not abort dowel  [F-010]"
-  },
-  {
-   "status": "xfail",
-   "project": "07-robustness",
-   "desc": "100k nested arrays is refused  [F-010]"
-  },
-  {
-   "status": "xfail",
-   "project": "07-robustness",
-   "desc": "100k nested arrays is refused with a source location  [F-010]"
-  },
-  {
-   "status": "xfail",
-   "project": "07-robustness",
-   "desc": "100k nested inline tables does not abort dowel  [F-010]"
-  },
-  {
-   "status": "xfail",
-   "project": "07-robustness",
-   "desc": "100k nested inline tables is refused  [F-010]"
-  },
-  {
-   "status": "xfail",
-   "project": "07-robustness",
-   "desc": "100k nested inline tables is refused with a source location  [F-010]"
-  },
-  {
-   "status": "xfail",
-   "project": "07-robustness",
-   "desc": "50k nested calls does not abort dowel  [F-010]"
-  },
-  {
-   "status": "xfail",
-   "project": "07-robustness",
-   "desc": "50k nested calls is refused  [F-010]"
-  },
-  {
-   "status": "xfail",
-   "project": "07-robustness",
-   "desc": "50k nested calls is refused with a source location  [F-010]"
-  },
-  {
-   "status": "xfail",
-   "project": "07-robustness",
-   "desc": "2k nested inline tables is answered within the budget  [F-010]"
-  },
-  {
-   "status": "xfail",
-   "project": "08-lsp",
-   "desc": "the language server reports unknown-property as dowel check does  [F-012]"
-  },
-  {
-   "status": "xfail",
-   "project": "08-lsp",
-   "desc": "the language server reports unknown-kind as dowel check does  [F-012]"
-  },
-  {
-   "status": "xfail",
-   "project": "08-lsp",
-   "desc": "the language server reports type-mismatch as dowel check does  [F-012]"
-  },
-  {
-   "status": "xfail",
-   "project": "08-lsp",
-   "desc": "the language server reports toplevel-entry as dowel check does  [F-012]"
-  },
-  {
-   "status": "xfail",
-   "project": "08-lsp",
-   "desc": "the language server reports missing-field as dowel check does  [F-012]"
-  },
-  {
-   "status": "xfail",
-   "project": "08-lsp",
-   "desc": "the language server reports missing-table in dowel.toml  [F-012]"
-  },
-  {
-   "status": "xfail",
-   "project": "08-lsp",
-   "desc": "the server survives a didChange nested 100000 deep  [F-010]"
-  },
-  {
-   "status": "xfail",
-   "project": "08-lsp",
-   "desc": "the server answers a didChange nested 100000 deep  [F-010]"
-  },
-  {
-   "status": "xfail",
-   "project": "08-lsp",
-   "desc": "a UTF-8 BOM in the buffer is not reported as an error  [F-011]"
+   "project": "05-incremental",
+   "desc": "a header edit is seen after building with ninja then direct  [F-014]"
   },
   {
    "status": "xfail",
@@ -2241,13 +2440,13 @@
   },
   {
    "status": "xfail",
-   "project": "09-acquisition",
-   "desc": "a specifier that installed successfully can select  [F-013]"
+   "project": "11-cross",
+   "desc": "an artifact filed under a triple is built for that triple  [F-015]"
   },
   {
    "status": "xfail",
-   "project": "09-acquisition",
-   "desc": "uninstalling by the specifier it was installed from succeeds  [F-013]"
+   "project": "11-cross",
+   "desc": "the mismatch is caught before the artifact is started  [F-015]"
   }
  ]
 }
