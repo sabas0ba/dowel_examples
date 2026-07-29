@@ -1,10 +1,10 @@
 {
- "run_id": "30468537489",
+ "run_id": "30469437328",
  "run_attempt": "1",
- "run_url": "https://github.com/sabas0ba/dowel_examples/actions/runs/30468537489",
- "commit": "a8de02c1ad5148b46dbb95ed67d1b55baaa55703",
+ "run_url": "https://github.com/sabas0ba/dowel_examples/actions/runs/30469437328",
+ "commit": "c77f4253144a001d43870101c48f5265029eb69b",
  "branch": "main",
- "started_at": "2026-07-29T15:59:52Z",
+ "started_at": "2026-07-29T16:10:49Z",
  "dowel_version": "dowel 0.0.1",
  "dowel_ref": "95daf9ff8dac60310d2ff5c427a53804d2870890",
  "dowel_commit": "95daf9ff8dac60310d2ff5c427a53804d2870890",
@@ -13,7 +13,7 @@
  "projects": [
   {
    "name": "01-minimal",
-   "duration_ms": 296,
+   "duration_ms": 275,
    "counts": {
     "pass": 10,
     "fail": 0,
@@ -70,7 +70,7 @@
   },
   {
    "name": "02-config",
-   "duration_ms": 5335,
+   "duration_ms": 946,
    "counts": {
     "pass": 21,
     "fail": 0,
@@ -172,7 +172,7 @@
   },
   {
    "name": "03-features",
-   "duration_ms": 271,
+   "duration_ms": 272,
    "counts": {
     "pass": 17,
     "fail": 0,
@@ -261,7 +261,7 @@
   },
   {
    "name": "04-diagnostics",
-   "duration_ms": 343,
+   "duration_ms": 354,
    "counts": {
     "pass": 70,
     "fail": 0,
@@ -579,7 +579,7 @@
   },
   {
    "name": "05-incremental",
-   "duration_ms": 1694,
+   "duration_ms": 1705,
    "counts": {
     "pass": 47,
     "fail": 0,
@@ -790,7 +790,7 @@
   },
   {
    "name": "06-runner",
-   "duration_ms": 245,
+   "duration_ms": 251,
    "counts": {
     "pass": 17,
     "fail": 0,
@@ -877,7 +877,7 @@
   },
   {
    "name": "07-robustness",
-   "duration_ms": 1313,
+   "duration_ms": 1325,
    "counts": {
     "pass": 145,
     "fail": 0,
@@ -1474,7 +1474,7 @@
   },
   {
    "name": "08-lsp",
-   "duration_ms": 10922,
+   "duration_ms": 10920,
    "counts": {
     "pass": 97,
     "fail": 0,
@@ -1879,7 +1879,7 @@
   },
   {
    "name": "09-acquisition",
-   "duration_ms": 15986,
+   "duration_ms": 15749,
    "counts": {
     "pass": 66,
     "fail": 0,
@@ -2162,7 +2162,7 @@
   },
   {
    "name": "10-toolchain",
-   "duration_ms": 2107,
+   "duration_ms": 2081,
    "counts": {
     "pass": 31,
     "fail": 0,
@@ -2303,7 +2303,7 @@
   },
   {
    "name": "11-cross",
-   "duration_ms": 992,
+   "duration_ms": 1006,
    "counts": {
     "pass": 12,
     "fail": 0,
@@ -2376,7 +2376,7 @@
   },
   {
    "name": "12-store",
-   "duration_ms": 205,
+   "duration_ms": 212,
    "counts": {
     "pass": 29,
     "fail": 0,
@@ -2509,7 +2509,7 @@
   },
   {
    "name": "13-parallel",
-   "duration_ms": 10765,
+   "duration_ms": 10745,
    "counts": {
     "pass": 18,
     "fail": 0,
@@ -2597,8 +2597,91 @@
    ]
   },
   {
+   "name": "14-scale",
+   "duration_ms": 6087,
+   "counts": {
+    "pass": 17,
+    "fail": 0,
+    "xfail": 0,
+    "xpass": 0
+   },
+   "total": 17,
+   "ok": true,
+   "checks": [
+    {
+     "status": "pass",
+     "desc": "check passes on a package with 120 sources and 8 targets"
+    },
+    {
+     "status": "pass",
+     "desc": "the first build runs one action per source, archive and link"
+    },
+    {
+     "status": "pass",
+     "desc": "a second build runs nothing and accounts for every action"
+    },
+    {
+     "status": "pass",
+     "desc": "editing one source of 120 rebuilds only it, the archive and the dependents"
+    },
+    {
+     "status": "pass",
+     "desc": "editing one dependent rebuilds only that dependent"
+    },
+    {
+     "status": "pass",
+     "desc": "editing the public header rebuilds everything that includes it"
+    },
+    {
+     "status": "pass",
+     "desc": "adding one source compiles only the new one"
+    },
+    {
+     "status": "pass",
+     "desc": "removing one source recompiles nothing and relinks the dependents"
+    },
+    {
+     "status": "pass",
+     "desc": "the tests of the wide package still pass"
+    },
+    {
+     "status": "pass",
+     "desc": "check passes through a 6 level dependency chain"
+    },
+    {
+     "status": "pass",
+     "desc": "the first build of the chain runs every action"
+    },
+    {
+     "status": "pass",
+     "desc": "a second build of the chain runs nothing"
+    },
+    {
+     "status": "pass",
+     "desc": "editing the nearest level does not rebuild the whole chain"
+    },
+    {
+     "status": "pass",
+     "desc": "editing the deepest header rebuilds only what includes it"
+    },
+    {
+     "status": "pass",
+     "desc": "the chain still builds after the edits"
+    },
+    {
+     "status": "pass",
+     "desc": "check on a large package stays far below the budget"
+    },
+    {
+     "status": "pass",
+     "desc": "the plan phase is reported for a large package"
+    }
+   ],
+   "packages": []
+  },
+  {
    "name": "docs",
-   "duration_ms": 52,
+   "duration_ms": 53,
    "counts": {
     "pass": 7,
     "fail": 0,
@@ -2641,12 +2724,12 @@
   }
  ],
  "totals": {
-  "pass": 587,
+  "pass": 604,
   "fail": 0,
   "xfail": 4,
   "xpass": 0
  },
- "total": 591,
+ "total": 608,
  "ok": true,
  "attention": [],
  "known_issues": [
