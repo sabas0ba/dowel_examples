@@ -1,10 +1,10 @@
 {
- "run_id": "30411196263",
+ "run_id": "30453133399",
  "run_attempt": "1",
- "run_url": "https://github.com/sabas0ba/dowel_examples/actions/runs/30411196263",
- "commit": "83dc45bb1fbd4e6aa413ede98a7afa185cf23e2d",
+ "run_url": "https://github.com/sabas0ba/dowel_examples/actions/runs/30453133399",
+ "commit": "f572f6c393f485072cba58c053832e9955274008",
  "branch": "main",
- "started_at": "2026-07-29T00:28:01Z",
+ "started_at": "2026-07-29T12:49:06Z",
  "dowel_version": "dowel 0.0.1",
  "dowel_ref": "07f16ec59e48c764e9126f6df333417b4d104297",
  "dowel_commit": "07f16ec59e48c764e9126f6df333417b4d104297",
@@ -13,7 +13,7 @@
  "projects": [
   {
    "name": "01-minimal",
-   "duration_ms": 1405,
+   "duration_ms": 247,
    "counts": {
     "pass": 10,
     "fail": 0,
@@ -70,7 +70,7 @@
   },
   {
    "name": "02-config",
-   "duration_ms": 8754,
+   "duration_ms": 1161,
    "counts": {
     "pass": 21,
     "fail": 0,
@@ -172,7 +172,7 @@
   },
   {
    "name": "03-features",
-   "duration_ms": 287,
+   "duration_ms": 291,
    "counts": {
     "pass": 17,
     "fail": 0,
@@ -261,7 +261,7 @@
   },
   {
    "name": "04-diagnostics",
-   "duration_ms": 343,
+   "duration_ms": 350,
    "counts": {
     "pass": 70,
     "fail": 0,
@@ -579,7 +579,7 @@
   },
   {
    "name": "05-incremental",
-   "duration_ms": 1568,
+   "duration_ms": 1579,
    "counts": {
     "pass": 44,
     "fail": 0,
@@ -773,7 +773,7 @@
   },
   {
    "name": "06-runner",
-   "duration_ms": 265,
+   "duration_ms": 270,
    "counts": {
     "pass": 17,
     "fail": 0,
@@ -859,6 +859,543 @@
    ]
   },
   {
+   "name": "07-robustness",
+   "duration_ms": 7974,
+   "counts": {
+    "pass": 118,
+    "fail": 0,
+    "xfail": 12,
+    "xpass": 0
+   },
+   "total": 130,
+   "ok": true,
+   "checks": [
+    {
+     "status": "pass",
+     "desc": "array-missing-comma does not abort dowel"
+    },
+    {
+     "status": "pass",
+     "desc": "array-missing-comma is refused"
+    },
+    {
+     "status": "pass",
+     "desc": "array-missing-comma is refused with a source location"
+    },
+    {
+     "status": "pass",
+     "desc": "array-missing-comma is answered within the budget"
+    },
+    {
+     "status": "pass",
+     "desc": "cmake-syntax does not abort dowel"
+    },
+    {
+     "status": "pass",
+     "desc": "cmake-syntax is refused"
+    },
+    {
+     "status": "pass",
+     "desc": "cmake-syntax is refused with a source location"
+    },
+    {
+     "status": "pass",
+     "desc": "cmake-syntax is answered within the budget"
+    },
+    {
+     "status": "pass",
+     "desc": "json-object does not abort dowel"
+    },
+    {
+     "status": "pass",
+     "desc": "json-object is refused"
+    },
+    {
+     "status": "pass",
+     "desc": "json-object is refused with a source location"
+    },
+    {
+     "status": "pass",
+     "desc": "json-object is answered within the budget"
+    },
+    {
+     "status": "pass",
+     "desc": "key-with-space does not abort dowel"
+    },
+    {
+     "status": "pass",
+     "desc": "key-with-space is refused"
+    },
+    {
+     "status": "pass",
+     "desc": "key-with-space is refused with a source location"
+    },
+    {
+     "status": "pass",
+     "desc": "key-with-space is answered within the budget"
+    },
+    {
+     "status": "pass",
+     "desc": "match-missing-comma does not abort dowel"
+    },
+    {
+     "status": "pass",
+     "desc": "match-missing-comma is refused"
+    },
+    {
+     "status": "pass",
+     "desc": "match-missing-comma is refused with a source location"
+    },
+    {
+     "status": "pass",
+     "desc": "match-missing-comma is answered within the budget"
+    },
+    {
+     "status": "pass",
+     "desc": "missing-equals does not abort dowel"
+    },
+    {
+     "status": "pass",
+     "desc": "missing-equals is refused"
+    },
+    {
+     "status": "pass",
+     "desc": "missing-equals is refused with a source location"
+    },
+    {
+     "status": "pass",
+     "desc": "missing-equals is answered within the budget"
+    },
+    {
+     "status": "pass",
+     "desc": "missing-value does not abort dowel"
+    },
+    {
+     "status": "pass",
+     "desc": "missing-value is refused"
+    },
+    {
+     "status": "pass",
+     "desc": "missing-value is refused with a source location"
+    },
+    {
+     "status": "pass",
+     "desc": "missing-value is answered within the budget"
+    },
+    {
+     "status": "pass",
+     "desc": "semicolon does not abort dowel"
+    },
+    {
+     "status": "pass",
+     "desc": "semicolon is refused"
+    },
+    {
+     "status": "pass",
+     "desc": "semicolon is refused with a source location"
+    },
+    {
+     "status": "pass",
+     "desc": "semicolon is answered within the budget"
+    },
+    {
+     "status": "pass",
+     "desc": "smart-quotes does not abort dowel"
+    },
+    {
+     "status": "pass",
+     "desc": "smart-quotes is refused"
+    },
+    {
+     "status": "pass",
+     "desc": "smart-quotes is refused with a source location"
+    },
+    {
+     "status": "pass",
+     "desc": "smart-quotes is answered within the budget"
+    },
+    {
+     "status": "pass",
+     "desc": "stray-brace does not abort dowel"
+    },
+    {
+     "status": "pass",
+     "desc": "stray-brace is refused"
+    },
+    {
+     "status": "pass",
+     "desc": "stray-brace is refused with a source location"
+    },
+    {
+     "status": "pass",
+     "desc": "stray-brace is answered within the budget"
+    },
+    {
+     "status": "pass",
+     "desc": "two-headers-one-line does not abort dowel"
+    },
+    {
+     "status": "pass",
+     "desc": "two-headers-one-line is refused"
+    },
+    {
+     "status": "pass",
+     "desc": "two-headers-one-line is refused with a source location"
+    },
+    {
+     "status": "pass",
+     "desc": "two-headers-one-line is answered within the budget"
+    },
+    {
+     "status": "pass",
+     "desc": "unclosed-block-comment does not abort dowel"
+    },
+    {
+     "status": "pass",
+     "desc": "unclosed-block-comment is refused"
+    },
+    {
+     "status": "pass",
+     "desc": "unclosed-block-comment is refused with a source location"
+    },
+    {
+     "status": "pass",
+     "desc": "unclosed-block-comment is answered within the budget"
+    },
+    {
+     "status": "pass",
+     "desc": "unclosed-bracket does not abort dowel"
+    },
+    {
+     "status": "pass",
+     "desc": "unclosed-bracket is refused"
+    },
+    {
+     "status": "pass",
+     "desc": "unclosed-bracket is refused with a source location"
+    },
+    {
+     "status": "pass",
+     "desc": "unclosed-bracket is answered within the budget"
+    },
+    {
+     "status": "pass",
+     "desc": "unclosed-header does not abort dowel"
+    },
+    {
+     "status": "pass",
+     "desc": "unclosed-header is refused"
+    },
+    {
+     "status": "pass",
+     "desc": "unclosed-header is refused with a source location"
+    },
+    {
+     "status": "pass",
+     "desc": "unclosed-header is answered within the budget"
+    },
+    {
+     "status": "pass",
+     "desc": "unclosed-inline-table does not abort dowel"
+    },
+    {
+     "status": "pass",
+     "desc": "unclosed-inline-table is refused"
+    },
+    {
+     "status": "pass",
+     "desc": "unclosed-inline-table is refused with a source location"
+    },
+    {
+     "status": "pass",
+     "desc": "unclosed-inline-table is answered within the budget"
+    },
+    {
+     "status": "pass",
+     "desc": "unclosed-paren does not abort dowel"
+    },
+    {
+     "status": "pass",
+     "desc": "unclosed-paren is refused"
+    },
+    {
+     "status": "pass",
+     "desc": "unclosed-paren is refused with a source location"
+    },
+    {
+     "status": "pass",
+     "desc": "unclosed-paren is answered within the budget"
+    },
+    {
+     "status": "pass",
+     "desc": "unterminated-string does not abort dowel"
+    },
+    {
+     "status": "pass",
+     "desc": "unterminated-string is refused"
+    },
+    {
+     "status": "pass",
+     "desc": "unterminated-string is refused with a source location"
+    },
+    {
+     "status": "pass",
+     "desc": "unterminated-string is answered within the budget"
+    },
+    {
+     "status": "pass",
+     "desc": "wrong-arrow does not abort dowel"
+    },
+    {
+     "status": "pass",
+     "desc": "wrong-arrow is refused"
+    },
+    {
+     "status": "pass",
+     "desc": "wrong-arrow is refused with a source location"
+    },
+    {
+     "status": "pass",
+     "desc": "wrong-arrow is answered within the budget"
+    },
+    {
+     "status": "pass",
+     "desc": "yaml-colon does not abort dowel"
+    },
+    {
+     "status": "pass",
+     "desc": "yaml-colon is refused"
+    },
+    {
+     "status": "pass",
+     "desc": "yaml-colon is refused with a source location"
+    },
+    {
+     "status": "pass",
+     "desc": "yaml-colon is answered within the budget"
+    },
+    {
+     "status": "pass",
+     "desc": "ok-block-comment does not abort dowel"
+    },
+    {
+     "status": "pass",
+     "desc": "ok-block-comment is accepted"
+    },
+    {
+     "status": "pass",
+     "desc": "ok-line-comment does not abort dowel"
+    },
+    {
+     "status": "pass",
+     "desc": "ok-line-comment is accepted"
+    },
+    {
+     "status": "pass",
+     "desc": "ok-single-quotes does not abort dowel"
+    },
+    {
+     "status": "pass",
+     "desc": "ok-single-quotes is accepted"
+    },
+    {
+     "status": "pass",
+     "desc": "ok-tab-indent does not abort dowel"
+    },
+    {
+     "status": "pass",
+     "desc": "ok-tab-indent is accepted"
+    },
+    {
+     "status": "pass",
+     "desc": "ok-trailing-comma does not abort dowel"
+    },
+    {
+     "status": "pass",
+     "desc": "ok-trailing-comma is accepted"
+    },
+    {
+     "status": "pass",
+     "desc": "CRLF line endings does not abort dowel"
+    },
+    {
+     "status": "pass",
+     "desc": "CRLF line endings is accepted"
+    },
+    {
+     "status": "pass",
+     "desc": "a UTF-8 BOM on dowel.build does not abort dowel"
+    },
+    {
+     "status": "xfail",
+     "desc": "a UTF-8 BOM on dowel.build is accepted  [F-011]"
+    },
+    {
+     "status": "pass",
+     "desc": "a UTF-8 BOM on dowel.toml does not abort dowel"
+    },
+    {
+     "status": "xfail",
+     "desc": "a UTF-8 BOM on dowel.toml is accepted  [F-011]"
+    },
+    {
+     "status": "pass",
+     "desc": "invalid UTF-8 bytes does not abort dowel"
+    },
+    {
+     "status": "pass",
+     "desc": "invalid UTF-8 bytes is refused"
+    },
+    {
+     "status": "pass",
+     "desc": "invalid UTF-8 bytes is refused with a source location"
+    },
+    {
+     "status": "pass",
+     "desc": "a NUL byte does not abort dowel"
+    },
+    {
+     "status": "pass",
+     "desc": "a NUL byte is refused"
+    },
+    {
+     "status": "pass",
+     "desc": "a NUL byte is refused with a source location"
+    },
+    {
+     "status": "pass",
+     "desc": "a 200k element list does not abort dowel"
+    },
+    {
+     "status": "pass",
+     "desc": "a 200k element list is refused"
+    },
+    {
+     "status": "pass",
+     "desc": "a 200k element list is refused with a source location"
+    },
+    {
+     "status": "pass",
+     "desc": "a 200k element list is answered within the budget"
+    },
+    {
+     "status": "pass",
+     "desc": "a 10MB string literal does not abort dowel"
+    },
+    {
+     "status": "pass",
+     "desc": "a 10MB string literal is refused"
+    },
+    {
+     "status": "pass",
+     "desc": "a 10MB string literal is refused with a source location"
+    },
+    {
+     "status": "pass",
+     "desc": "a 10MB string literal is answered within the budget"
+    },
+    {
+     "status": "pass",
+     "desc": "200k comment lines does not abort dowel"
+    },
+    {
+     "status": "pass",
+     "desc": "200k comment lines is accepted"
+    },
+    {
+     "status": "pass",
+     "desc": "200k comment lines is answered within the budget"
+    },
+    {
+     "status": "xfail",
+     "desc": "100k nested arrays does not abort dowel  [F-010]"
+    },
+    {
+     "status": "xfail",
+     "desc": "100k nested arrays is refused  [F-010]"
+    },
+    {
+     "status": "xfail",
+     "desc": "100k nested arrays is refused with a source location  [F-010]"
+    },
+    {
+     "status": "pass",
+     "desc": "100k nested arrays is answered within the budget"
+    },
+    {
+     "status": "xfail",
+     "desc": "100k nested inline tables does not abort dowel  [F-010]"
+    },
+    {
+     "status": "xfail",
+     "desc": "100k nested inline tables is refused  [F-010]"
+    },
+    {
+     "status": "xfail",
+     "desc": "100k nested inline tables is refused with a source location  [F-010]"
+    },
+    {
+     "status": "pass",
+     "desc": "100k nested inline tables is answered within the budget"
+    },
+    {
+     "status": "xfail",
+     "desc": "50k nested calls does not abort dowel  [F-010]"
+    },
+    {
+     "status": "xfail",
+     "desc": "50k nested calls is refused  [F-010]"
+    },
+    {
+     "status": "xfail",
+     "desc": "50k nested calls is refused with a source location  [F-010]"
+    },
+    {
+     "status": "pass",
+     "desc": "50k nested calls is answered within the budget"
+    },
+    {
+     "status": "pass",
+     "desc": "2k nested inline tables does not abort dowel"
+    },
+    {
+     "status": "xfail",
+     "desc": "2k nested inline tables is answered within the budget  [F-010]"
+    },
+    {
+     "status": "pass",
+     "desc": "dowel.build being a directory does not abort dowel"
+    },
+    {
+     "status": "pass",
+     "desc": "dowel.build being a directory is refused"
+    },
+    {
+     "status": "pass",
+     "desc": "dowel.build being a directory is refused with a source location"
+    },
+    {
+     "status": "pass",
+     "desc": "dowel.build being a symlink loop does not abort dowel"
+    },
+    {
+     "status": "pass",
+     "desc": "dowel.build being a symlink loop is refused"
+    },
+    {
+     "status": "pass",
+     "desc": "dowel.build being a symlink loop is refused with a source location"
+    },
+    {
+     "status": "pass",
+     "desc": "three independent errors are reported in one run"
+    }
+   ],
+   "packages": [
+    "subject"
+   ]
+  },
+  {
    "name": "docs",
    "duration_ms": 52,
    "counts": {
@@ -903,13 +1440,74 @@
   }
  ],
  "totals": {
-  "pass": 186,
+  "pass": 304,
   "fail": 0,
-  "xfail": 0,
+  "xfail": 12,
   "xpass": 0
  },
- "total": 186,
+ "total": 316,
  "ok": true,
  "attention": [],
- "known_issues": []
+ "known_issues": [
+  {
+   "status": "xfail",
+   "project": "07-robustness",
+   "desc": "a UTF-8 BOM on dowel.build is accepted  [F-011]"
+  },
+  {
+   "status": "xfail",
+   "project": "07-robustness",
+   "desc": "a UTF-8 BOM on dowel.toml is accepted  [F-011]"
+  },
+  {
+   "status": "xfail",
+   "project": "07-robustness",
+   "desc": "100k nested arrays does not abort dowel  [F-010]"
+  },
+  {
+   "status": "xfail",
+   "project": "07-robustness",
+   "desc": "100k nested arrays is refused  [F-010]"
+  },
+  {
+   "status": "xfail",
+   "project": "07-robustness",
+   "desc": "100k nested arrays is refused with a source location  [F-010]"
+  },
+  {
+   "status": "xfail",
+   "project": "07-robustness",
+   "desc": "100k nested inline tables does not abort dowel  [F-010]"
+  },
+  {
+   "status": "xfail",
+   "project": "07-robustness",
+   "desc": "100k nested inline tables is refused  [F-010]"
+  },
+  {
+   "status": "xfail",
+   "project": "07-robustness",
+   "desc": "100k nested inline tables is refused with a source location  [F-010]"
+  },
+  {
+   "status": "xfail",
+   "project": "07-robustness",
+   "desc": "50k nested calls does not abort dowel  [F-010]"
+  },
+  {
+   "status": "xfail",
+   "project": "07-robustness",
+   "desc": "50k nested calls is refused  [F-010]"
+  },
+  {
+   "status": "xfail",
+   "project": "07-robustness",
+   "desc": "50k nested calls is refused with a source location  [F-010]"
+  },
+  {
+   "status": "xfail",
+   "project": "07-robustness",
+   "desc": "2k nested inline tables is answered within the budget  [F-010]"
+  }
+ ]
 }
