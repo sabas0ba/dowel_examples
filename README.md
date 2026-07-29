@@ -46,7 +46,7 @@ DOWELUP=/path/to/dowelup DOWEL_SRC=/path/to/dowel ./run.sh
 ## 出力
 
 1 検査 1 行。本体が直していない事項に対する検査は `xfail` として登録する。
-本体側が直ると `XPASS` になって落ち、宣言を外すべきことが分かる。現在は 26 件で、
+本体側が直ると `XPASS` になって落ち、宣言を外すべきことが分かる。現在は 24 件で、
 [F-010](docs/10-findings.md#f-010) から [F-013](docs/10-findings.md#f-013) に対応する。
 
 ```
@@ -62,7 +62,7 @@ DOWELUP=/path/to/dowelup DOWEL_SRC=/path/to/dowel ./run.sh
   ok   the column of a diagnostic is in UTF-16 units after an astral plane character
   xfail the language server reports unknown-property as dowel check does  [F-012]
 
-total 480 checks: 454 passed, 0 failed, 26 known, 0 fixed
+total 478 checks: 454 passed, 0 failed, 24 known, 0 fixed
 ```
 
 検査名は英語で書く。実装の中身ではなく、何が固定されているかを1行で読ませる

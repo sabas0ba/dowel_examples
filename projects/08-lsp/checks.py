@@ -380,7 +380,11 @@ def hover():
 # シェルに戻るだけだが、ここで落ちるとエディタとの接続が切れる。
 
 def robustness():
-    for depth, issue in [(64, ""), (1000, ""), (10000, "F-010"), (100000, "F-010")]:
+    # 深さは「確実に足りる」ものと「確実に溢れる」ものだけを使う。溢れる境目は
+    # 機械の stack の大きさで決まるため、その付近に置いた検査は dowel ではなく
+    # 実行した機械を記録することになる。実際、深さ 10000 は手元では abort し、
+    # CI の runner では通った（07-robustness が 100000 を選ぶのと同じ理由）。
+    for depth, issue in [(64, ""), (1000, ""), (100000, "F-010")]:
         with session() as s:
             s.open(BUILD_URI, VALID)
             s.diagnostics(BUILD_URI)
