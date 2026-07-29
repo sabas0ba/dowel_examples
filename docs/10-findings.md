@@ -31,8 +31,8 @@ F-010 と F-011 は未修正である。対応する検査は `known_issue` を�
 | [F-007](#f-007) | 併合衝突の人間向け描画が片側の位置しか出さない | 実装 | [#16](https://github.com/sabas0ba/dowel/issues/16) | 修正済み |
 | [F-008](#f-008) | C++ のソースが黙って受理され、リンカの誤りになる | 実装／文書 | [#19](https://github.com/sabas0ba/dowel/issues/19) | 修正済み |
 | [F-009](#f-009) | 宣言したツールチェーンの実在を確認しない | 実装 | [#19](https://github.com/sabas0ba/dowel/issues/19) | 修正済み |
-| [F-010](#f-010) | 深い入れ子でスタックが溢れ、診断を出さずに abort する | 実装 | 報告予定 | 未修正 |
-| [F-011](#f-011) | UTF-8 BOM 付きのマニフェストが拒まれる | 実装 | 報告予定 | 未修正 |
+| [F-010](#f-010) | 深い入れ子でスタックが溢れ、診断を出さずに abort する | 実装 | [#33](https://github.com/sabas0ba/dowel/issues/33) | 未修正 |
+| [F-011](#f-011) | UTF-8 BOM 付きのマニフェストが拒まれる | 実装 | [#34](https://github.com/sabas0ba/dowel/issues/34) | 未修正 |
 
 ---
 
@@ -622,7 +622,7 @@ error[missing-manifest]: cannot read .../does-not-exist/dowel.toml: No such file
 
 ## F-010
 
-報告先: 報告予定。
+報告先: [sabas0ba/dowel#33](https://github.com/sabas0ba/dowel/issues/33)
 
 **入れ子の深い値でスタックが溢れ、診断を1件も出さずに abort する。**
 
@@ -723,7 +723,7 @@ $                                     # 標準出力は空
 
 ## F-011
 
-報告先: 報告予定。
+報告先: [sabas0ba/dowel#34](https://github.com/sabas0ba/dowel/issues/34)
 
 **先頭に UTF-8 BOM が付いたマニフェストが拒まれる。しかも診断が
 正しく見える行を指す。**
