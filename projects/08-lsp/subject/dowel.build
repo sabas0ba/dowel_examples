@@ -1,0 +1,7 @@
+# checks.py がエディタの緩衝として本文を差し替える。ディスク側は正しい形。
+[bin.subject]
+sources = glob("src/*.c")
+
+[bin.subject.private]
+includes = [dir("src")]
+flags    = [match cfg.opt { debug => "-O0", release => "-O2" }]

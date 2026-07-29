@@ -52,6 +52,53 @@ EOF
 DOWEL=$(resolve_dowel) || exit 2
 export DOWEL
 
+# dowelup と dowel の作業木。09-acquisition だけが使う。
+#
+# dowelup は取得をソースからのビルドとして行うため（ADR-0013）、検査には
+# 上流にあたる git リポジトリが要る。実際の上流には触れず、ここで見つけた
+# ものを手元へ複製して相手にする。
+#
+# 見つからない場合は始めない。環境によって走る検査が変わると、
+# 結果を過去の実行と比べられなくなる。
+resolve_dowelup() {
+    if [ -n "${DOWELUP:-}" ]; then printf '%s' "$DOWELUP"; return 0; fi
+    local beside; beside=$(dirname "$DOWEL")/dowelup
+    [ -x "$beside" ] && { printf '%s' "$beside"; return 0; }
+    command -v dowelup 2>/dev/null && return 0
+    return 1
+}
+
+resolve_dowel_src() {
+    local c
+    for c in "${DOWEL_SRC:-}" "$SUITE_ROOT/.dowel-src" "$SUITE_ROOT/../dowel" \
+             "$(dirname "$DOWEL")/../.."; do
+        [ -n "$c" ] || continue
+        [ -d "$c/.git" ] && (cd "$c" && pwd) && return 0
+    done
+    return 1
+}
+
+DOWELUP=$(resolve_dowelup) || {
+    cat >&2 <<'EOF'
+cannot find dowelup. it is built alongside dowel:
+
+  cargo build --release        # in the dowel checkout
+  DOWELUP=/path/to/dowelup ./run.sh
+EOF
+    exit 2
+}
+DOWEL_SRC=$(resolve_dowel_src) || {
+    cat >&2 <<'EOF'
+cannot find the dowel source checkout. 09-acquisition mirrors it locally so
+that the acquisition checks never touch the network. do one of:
+
+  DOWEL_SRC=/path/to/dowel ./run.sh
+  git clone https://github.com/sabas0ba/dowel ../dowel
+EOF
+    exit 2
+}
+export DOWELUP DOWEL_SRC
+
 # ------------------------------------------------------------ 前提の確認
 
 for tool in cc ninja jq; do
