@@ -8,8 +8,7 @@ F-001 から F-009 までの 9 件は `07f16ec` で、F-010 / F-012 / F-013 は
 対応する検査は `known_issue` を外し、通常の検査として残してある。直った
 ものを消すと、退行したときに気づけない。
 
-F-011 だけが部分的に残っている。マニフェストの2箇所は直ったが、
-`dowelup` が `.dowel-version` を読む経路には届いていない。対応する検査は
+未修正は F-014 / F-015 と、F-011 の残っている側である。対応する検査は
 `known_issue` を付けてあり、本体が直すと `XPASS` になって落ちる。
 
 各項目は次の形で記録する。
@@ -37,6 +36,8 @@ F-011 だけが部分的に残っている。マニフェストの2箇所は直�
 | [F-011](#f-011) | UTF-8 BOM 付きのマニフェストが拒まれる | 実装 | [#34](https://github.com/sabas0ba/dowel/issues/34) | 一部修正 |
 | [F-012](#f-012) | 言語サーバが型検査の段の診断を出さず、`UNSUPPORTED` にも無い | 実装 | [#38](https://github.com/sabas0ba/dowel/issues/38) | 修正済み |
 | [F-013](#f-013) | install に使った指定子で `dowel +<指定子>` が選べない | 実装 | [#39](https://github.com/sabas0ba/dowel/issues/39) | 修正済み |
+| [F-014](#f-014) | ninja で組んだあと direct で組むと、ヘッダの変更が見落とされる | 実装 | [#41](https://github.com/sabas0ba/dowel/issues/41) | 未修正 |
+| [F-015](#f-015) | `--target` がツールチェーンを選ばない | 実装 | [#42](https://github.com/sabas0ba/dowel/issues/42) | 未修正 |
 
 ---
 
@@ -994,6 +995,143 @@ error: no installed version matches `tag:v0.9.0`; `dowelup list` shows what is i
 
 直前に `installing the same commit under another specifier succeeds` を
 置いてある。install が成功していることが、比較の前提として見える。
+
+---
+
+## F-014
+
+報告先: [sabas0ba/dowel#41](https://github.com/sabas0ba/dowel/issues/41)
+
+**ninja で組んだあと direct 実行器で組むと、ヘッダの変更が見落とされ、
+古い成果物が黙って残る。**
+
+種別: 実装。未修正（`95daf9f`）。本一覧のうち最も影響が大きい。
+
+### 観測
+
+`include/h.h` の `V` を成果物の終了状態に載せ、新しいかどうかを外から見る。
+
+```console
+$ dowel build                       # 既定の ninja
+$ printf '#define V 7\n' > include/h.h
+$ dowel build --executor=direct --log-level=debug
+... ran 0 actions, skipped 2 already up to date
+$ ./.dowel/build/*/bin/m; echo $?
+0                                   # 期待は 6。古い成果物のまま
+```
+
+| 最初 | 2回目 | ヘッダ変更の反映 |
+|---|---|---|
+| direct | direct | される |
+| ninja | ninja | される |
+| direct | ninja | される |
+| **ninja** | **direct** | **されない** |
+
+ソースの変更はどの組み合わせでも反映される。落ちるのは depfile 経由で
+辿る依存に限られる。ninja に戻すと正しく組み直される。
+
+ninja は `deps = gcc` で depfile を読むと `.d` を消して `.ninja_deps` へ畳む。
+direct は `.d` を読むため、ninja のあとは**依存情報が1件も無い状態**で
+最新性を判定し、無いことを検出せずに「最新である」と結論する。
+
+### 期待
+
+依存の記録を実行器の実装詳細から切り離す。`direct-log.tsv` が既にコマンドの
+記録を持っているので、依存もそこへ寄せる形になる。少なくとも、依存情報を
+持たない目的物に対して「最新である」と結論しないこと。
+
+根拠は `docs/00-overview.md` 7節。実行層を ninja に委ねると述べているのは
+**実行**の話であり、最新性の判定は dowel の側にある。
+
+### なぜ内側から見つからないか
+
+増分の検査は「何を計算しなかったか」を見るために実行回数を数える必要があり、
+そのために direct の debug ログを使う（`docs/51-testing.md`）。つまり
+**増分を見る検査は最初から最後まで direct で走る**。既定の経路である ninja と、
+その間の行き来は、数えられないため入力にならない。
+
+本スイートの `projects/05-incremental` も同じ形になっていた。`10-toolchain` を
+書いていて、既定どおり `build` してから計数のために direct へ渡したところ、
+数が合わずに気づいた。
+
+コマンドの記録は共有されているため、目的物は実行器をまたいで再利用される。
+**部分的に共有されていること**が原因であり、全部が共有されていなければ
+全部組み直すのでこの形は現れなかった。
+
+### 検査
+
+`projects/05-incremental` の
+`a header edit is seen after building with ninja then direct`
+（known_issue F-014）。残る3通りの組み合わせは通常の検査である。
+
+`crossing/` は専用のパッケージである。`core` の検査は両側が同じ定数を使う形で
+あり、双方が古いままなら食い違いが打ち消し合ってテストが通ってしまう。
+
+---
+
+## F-015
+
+報告先: [sabas0ba/dowel#42](https://github.com/sabas0ba/dowel/issues/42)
+
+**`--target` が構成識別子を変えるだけで、ツールチェーンを選ばない。**
+
+種別: 実装。未修正（`95daf9f`）。
+
+### 観測
+
+```console
+$ dowel build --target=aarch64-unknown-linux-gnu
+built: .../.dowel/build/aarch64-unknown-linux-gnu-debug/bin/t
+$ readelf -h .../aarch64-unknown-linux-gnu-debug/bin/t | grep Machine
+  Machine:                           Advanced Micro Devices X86-64
+```
+
+コンパイル行にもトリプルは現れない。`--target` の有無で変わるのはパスだけである。
+
+`[runner.<triple>]` を宣言してあると、ホスト向けの成果物が qemu へ渡る。
+
+```
+qemu-aarch64-static: .../bin/smoke: Invalid ELF image for this architecture
+test result: FAILED. 0 passed; 1 failed
+```
+
+`missing-runner` を足した理由として本体が挙げているのは、まさにこの形である。
+
+> 起動してから `Exec format error` になるのでは、構成の誤りがテストの失敗として
+> 報告される。起動の前に拒むのが約束である。
+
+宣言が**無い**場合は約束どおり起動前に拒む。宣言が**あって成果物の
+アーキテクチャが違う**場合は、同じ誤りが1段あとに戻ってきている。
+
+### 期待
+
+`[toolchain]` をトリプルごとに書けるようにする（`[runner.<triple>]` と同じ形）。
+そのうえで、宣言の無いトリプルへ `--target` を渡したら拒む。
+
+`schema dump` は `toolchain` を `implemented: false` としており、未実装で
+あること自体は宣言されている。所見にしたのはそこではなく、**未実装の
+現れ方が「黙って別のものを作る」になっている**点である。
+
+### なぜ内側から見つからないか
+
+本体のフィクスチャと CI は単一のホスト向けにしか組まない。クロス用の
+ツールチェーンを置いた環境が入力にならないため、「ビルドディレクトリの名前と
+成果物のアーキテクチャが食い違う」状態が作れない。
+
+`[runner.<triple>]` の検査も、記録だけを行うラッパで組める。
+その形ではアーキテクチャの不一致は現れない。
+
+### 検査
+
+`projects/11-cross` の以下 3 件。いずれも known_issue F-015 である。
+
+- `an artifact filed under a triple is built for that triple`
+- `the mismatch is caught before the artifact is started`
+- `an artifact that cannot run on the host is refused before it is started`
+
+通る側（宣言したクロスツールチェーンで組み、qemu で走らせる）が同じ
+プロジェクトにあるため、**機構は揃っていて結び付けが無いだけ**であることが
+検査の並びから読める。
 
 ---
 

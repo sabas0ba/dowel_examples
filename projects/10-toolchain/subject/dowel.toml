@@ -1,0 +1,8 @@
+# expect.sh が [toolchain] を書き換える。置いてあるのは既定の形。
+[package]
+name    = "subject"
+version = "0.1.0"
+edition = "2026"
+
+[toolchain]
+c = "gcc"

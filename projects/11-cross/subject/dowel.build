@@ -1,0 +1,27 @@
+[bin.subject]
+sources = glob("src/*.c")
+
+[bin.subject.private]
+includes = [dir("include")]
+
+[test.arch]
+sources = glob("tests/*.c")
+
+[test.arch.private]
+includes = [dir("include")]
+# 静的リンクにする。qemu-user に対象の動的ローダの場所を教える必要が無くなり、
+# 検査が sysroot の置き場所に依存しなくなる。
+link_flags = ["-static"]
+# 期待値はマニフェストが `cfg.target` から与え、実際の値は翻訳したコンパイラが
+# 与える。突き合わせは C の中で起きるため、期待値をハーネスと二重に持たない。
+# アームは文字列の完全一致である。`"aarch64-*"` のような形は模様ではなく、
+# ただの文字列として扱われ、どのトリプルにも一致しない（マニフェスト言語は
+# 文字列埋め込みの小言語を採らない。docs/10-manifest.md 2節）。
+defines = { EXPECTED_ARCH = match cfg.target {
+    "aarch64-unknown-linux-gnu" => "\"aarch64\"",
+    _                           => "\"x86_64\"",
+} }
+
+# qemu-user 経由で起動する。実機は要らないが、翻訳は本物である。
+[runner.aarch64-unknown-linux-gnu]
+command = "qemu-aarch64-static"

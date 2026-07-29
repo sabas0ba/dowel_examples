@@ -101,9 +101,26 @@ export DOWELUP DOWEL_SRC
 
 # ------------------------------------------------------------ 前提の確認
 
-for tool in cc ninja jq; do
+# 10-toolchain は gcc と clang の双方を、11-cross は本物のクロスコンパイラと
+# qemu-user を使う。`cc` だけで走らせると、実際に検査されるのはその機械の
+# 既定のコンパイラ1つだけになる。
+#
+# 揃っていなければ始めない。環境によって走る検査が変わると、結果を過去の
+# 実行と比べられなくなる。
+for tool in cc ninja jq git gcc clang aarch64-linux-gnu-gcc qemu-aarch64-static; do
     command -v "$tool" >/dev/null 2>&1 || {
-        printf '%s is missing. a C compiler, ninja and jq are required.\n' "$tool" >&2
+        printf '%s is missing.\n\n' "$tool" >&2
+        cat >&2 <<'EOF'
+required: cc ninja jq git python3 cargo, and for the toolchain and cross layers
+
+  gcc clang                    10-toolchain builds with both
+  aarch64-linux-gnu-gcc        11-cross compiles for another architecture
+  qemu-aarch64-static          11-cross runs what it compiled
+
+on debian and ubuntu:
+
+  apt-get install -y ninja-build jq gcc clang gcc-aarch64-linux-gnu qemu-user-static
+EOF
         exit 2
     }
 done

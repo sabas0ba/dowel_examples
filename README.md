@@ -10,7 +10,7 @@ dowel 本体は自分自身を内側から検査している（`crates/*/tests/`
 仕様と実装の食い違いを仕様の側から見つけられる。
 
 見つけたものは [docs/10-findings.md](docs/10-findings.md) に記録し、本体へ報告する。
-これまでに 13 件を報告し、12 件が修正された。残り1件も一部は直っている。
+これまでに 15 件を報告し、12 件が修正された。
 
 ## 走らせる
 
@@ -46,8 +46,9 @@ DOWELUP=/path/to/dowelup DOWEL_SRC=/path/to/dowel ./run.sh
 ## 出力
 
 1 検査 1 行。本体が直していない事項に対する検査は `xfail` として登録する。
-本体側が直ると `XPASS` になって落ち、宣言を外すべきことが分かる。現在は 1 件で、
-[F-011](docs/10-findings.md#f-011) の残っている側に対応する。
+本体側が直ると `XPASS` になって落ち、宣言を外すべきことが分かる。現在は 5 件で、
+[F-011](docs/10-findings.md#f-011) の残っている側、
+[F-014](docs/10-findings.md#f-014)、[F-015](docs/10-findings.md#f-015) に対応する。
 
 ```
 02-config
@@ -58,11 +59,11 @@ DOWELUP=/path/to/dowelup DOWEL_SRC=/path/to/dowel ./run.sh
   ok   unclosed-paren is refused with a source location
   ok   100k nested arrays is refused as nesting-too-deep
 
-09-acquisition
-  ok   a pin file with CRLF is read
-  xfail a pin file with a UTF-8 BOM is read  [F-011]
+11-cross
+  ok   the cross tests run under the emulator and pass
+  xfail an artifact filed under a triple is built for that triple  [F-015]
 
-total 495 checks: 494 passed, 0 failed, 1 known, 0 fixed
+total 545 checks: 540 passed, 0 failed, 5 known, 0 fixed
 ```
 
 検査名は英語で書く。実装の中身ではなく、何が固定されているかを1行で読ませる
@@ -81,6 +82,8 @@ total 495 checks: 494 passed, 0 failed, 1 known, 0 fixed
 | [07-robustness](projects/07-robustness/) | 壊れた入力に対する応答の形。abort しないこと、位置つきで拒むこと |
 | [08-lsp](projects/08-lsp/) | 言語サーバ。CLI との一致、UTF-16 の桁、ホバー、壊れた JSON-RPC |
 | [09-acquisition](projects/09-acquisition/) | `dowelup`。版の選択順、pin ファイル、指定子の解決、失敗した取得 |
+| [10-toolchain](projects/10-toolchain/) | gcc と clang の双方。宣言が起動に届くか、成果物が宣言どおりか |
+| [11-cross](projects/11-cross/) | 本物のクロスコンパイル。翻訳先が変わること、qemu 経由の実行 |
 
 プロジェクトのほかに `docs` の段がある。文書が引用する検査名が実在するか、
 リンクが解決するか、索引が中身と一致するかを機械的に見る。文書の不整合は

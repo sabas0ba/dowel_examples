@@ -1,0 +1,21 @@
+[bin.subject]
+sources = glob("src/*.c")
+
+[bin.subject.private]
+includes = [dir("include")]
+# 宣言したツールチェーンによって具体化が変わること。どちらの語も
+# 相手のコンパイラには通らないため、取り違えるとビルドが落ちる。
+flags = [match tc.c {
+    "clang" => "-Wno-unknown-warning-option",
+    _       => "-Wno-unused-but-set-variable",
+}]
+
+[test.identity]
+sources = glob("tests/*.c")
+
+# 宣言と実物の突き合わせは C の側で行う。EXPECTED はマニフェストが
+# `tc.c` から与え、COMPILED_BY は実際に翻訳したコンパイラが与える。
+# 食い違えばテストが落ちる。期待値をハーネスに二重に持たない。
+[test.identity.private]
+includes = [dir("include")]
+defines  = { EXPECTED = match tc.c { "clang" => "\"clang\"", _ => "\"gcc\"" } }
