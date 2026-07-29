@@ -1,0 +1,5 @@
+[bin.subject]
+sources = glob("src/*.c")
+
+[bin.subject.private]
+flags = [match cfg.opt { debug => "-O0", release => "-O2" }]

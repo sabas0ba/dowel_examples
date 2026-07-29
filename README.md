@@ -63,7 +63,7 @@ DOWELUP=/path/to/dowelup DOWEL_SRC=/path/to/dowel ./run.sh
   ok   the cross tests run under the emulator and pass
   xfail an artifact filed under a triple is built for that triple  [F-015]
 
-total 544 checks: 540 passed, 0 failed, 4 known, 0 fixed
+total 591 checks: 587 passed, 0 failed, 4 known, 0 fixed
 ```
 
 検査名は英語で書く。実装の中身ではなく、何が固定されているかを1行で読ませる
@@ -84,6 +84,8 @@ total 544 checks: 540 passed, 0 failed, 4 known, 0 fixed
 | [09-acquisition](projects/09-acquisition/) | `dowelup`。版の選択順、pin ファイル、指定子の解決、失敗した取得 |
 | [10-toolchain](projects/10-toolchain/) | gcc と clang の双方。宣言が起動に届くか、成果物が宣言どおりか |
 | [11-cross](projects/11-cross/) | 本物のクロスコンパイル。翻訳先が変わること、qemu 経由の実行 |
+| [12-store](projects/12-store/) | プロセスを跨いだ復元。変更の検出、壊れたストアが答を変えないこと |
+| [13-parallel](projects/13-parallel/) | `--test-jobs`。既定が逐次であること、表示順、失敗の扱い |
 
 プロジェクトのほかに `docs` の段がある。文書が引用する検査名が実在するか、
 リンクが解決するか、索引が中身と一致するかを機械的に見る。文書の不整合は
