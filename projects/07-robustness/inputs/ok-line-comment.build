@@ -1,0 +1,4 @@
+[bin.subject]
+// これも行コメントである
+# これも行コメントである
+sources = glob("src/*.c")

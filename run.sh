@@ -23,15 +23,10 @@ PROJECTS="$WORK/projects.tsv"   # 1 プロジェクト 1 行: name \t ms \t pass
 PACKAGES="$WORK/packages.tsv"   # 1 パッケージ 1 行: project \t パッケージの相対パス
 META="$WORK/meta.tsv"           # key \t value
 
-# 経過時間。bash 5 の EPOCHREALTIME を使い、無い場合は秒に落とす。
-now_ms() {
-    if [ -n "${EPOCHREALTIME:-}" ]; then
-        local t=${EPOCHREALTIME/,/.}
-        printf '%s' "$(( ${t%.*} * 1000 + 10#${t#*.} / 1000 ))"
-    else
-        printf '%s' "$(( $(date +%s) * 1000 ))"
-    fi
-}
+# 検査手続きの共通部分。ここでは now_ms だけを使う。プロジェクトごとの
+# 実行は下の部分シェルで改めて読み込む（そちらが本来の利用者である）。
+# shellcheck source=lib/harness.sh
+. "$SUITE_ROOT/lib/harness.sh"
 
 # ------------------------------------------------------------ dowel の解決
 

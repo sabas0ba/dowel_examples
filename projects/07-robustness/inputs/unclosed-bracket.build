@@ -1,0 +1,5 @@
+[bin.subject]
+sources = ["src/main.c"
+
+[bin.subject.private]
+flags = ["-O0"]

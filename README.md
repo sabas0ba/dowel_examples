@@ -10,7 +10,7 @@ dowel 本体は自分自身を内側から検査している（`crates/*/tests/`
 仕様と実装の食い違いを仕様の側から見つけられる。
 
 見つけたものは [docs/10-findings.md](docs/10-findings.md) に記録し、本体へ報告する。
-これまでに 9 件を報告し、いずれも修正された。
+これまでに 9 件を報告し、いずれも修正された。未報告のものが 2 件ある。
 
 ## 走らせる
 
@@ -34,17 +34,19 @@ DOWEL=/path/to/dowel make verify
 ## 出力
 
 1 検査 1 行。本体が直していない事項に対する検査は `xfail` として登録する。
-本体側が直ると `XPASS` になって落ち、宣言を外すべきことが分かる。現在は 0 件である。
+本体側が直ると `XPASS` になって落ち、宣言を外すべきことが分かる。現在は 12 件である
+（[F-010](docs/10-findings.md#f-010) と [F-011](docs/10-findings.md#f-011)）。
 
 ```
 02-config
   ok   app: check passes
   ok   private flags of a dependency never reach a dependent
 
-04-diagnostics
-  ok   the manifest still passes check after applying the suggestion
+07-robustness
+  ok   unclosed-paren is refused with a source location
+  xfail 100k nested arrays does not abort dowel  [F-010]
 
-total 186 checks: 186 passed, 0 failed, 0 known, 0 fixed
+total 316 checks: 304 passed, 0 failed, 12 known, 0 fixed
 ```
 
 検査名は英語で書く。実装の中身ではなく、何が固定されているかを1行で読ませる
@@ -60,6 +62,7 @@ total 186 checks: 186 passed, 0 failed, 0 known, 0 fixed
 | [04-diagnostics](projects/04-diagnostics/) | 誤ったマニフェストに対する応答。診断コードと位置と修正提案 |
 | [05-incremental](projects/05-incremental/) | 編集してからの再ビルド。depfile、波及の範囲、テストの再実行 |
 | [06-runner](projects/06-runner/) | `[runner.<triple>]`。宣言が無いときの拒否、引数の形、転送 |
+| [07-robustness](projects/07-robustness/) | 壊れた入力に対する応答の形。abort しないこと、位置つきで拒むこと |
 
 プロジェクトのほかに `docs` の段がある。文書が引用する検査名が実在するか、
 リンクが解決するか、索引が中身と一致するかを機械的に見る。文書の不整合は

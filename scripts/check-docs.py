@@ -193,7 +193,10 @@ def main():
             for line in f:
                 parts = line.rstrip("\n").split("\t")
                 if len(parts) == 3:
-                    actual.add(parts[2])
+                    # xfail / xpass の行には harness が `  [F-010]` を足す。
+                    # これは検査名ではなく状態の注記なので、照合の前に外す。
+                    # 外さないと、未修正事項に対する検査は文書から引用できない。
+                    actual.add(re.sub(r"\s+\[F-\d{3}\]$", "", parts[2]))
 
     failed = 0
 

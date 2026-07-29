@@ -1,0 +1,4 @@
+[bin.subject]
+/* 複数行に
+   わたるコメント */
+sources = glob("src/*.c")
