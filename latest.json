@@ -1,10 +1,10 @@
 {
- "run_id": "30467015089",
+ "run_id": "30468537489",
  "run_attempt": "1",
- "run_url": "https://github.com/sabas0ba/dowel_examples/actions/runs/30467015089",
- "commit": "986b5f773b5b9d8b15d77d9dc7f92582d541e048",
+ "run_url": "https://github.com/sabas0ba/dowel_examples/actions/runs/30468537489",
+ "commit": "a8de02c1ad5148b46dbb95ed67d1b55baaa55703",
  "branch": "main",
- "started_at": "2026-07-29T15:41:23Z",
+ "started_at": "2026-07-29T15:59:52Z",
  "dowel_version": "dowel 0.0.1",
  "dowel_ref": "95daf9ff8dac60310d2ff5c427a53804d2870890",
  "dowel_commit": "95daf9ff8dac60310d2ff5c427a53804d2870890",
@@ -13,7 +13,7 @@
  "projects": [
   {
    "name": "01-minimal",
-   "duration_ms": 246,
+   "duration_ms": 296,
    "counts": {
     "pass": 10,
     "fail": 0,
@@ -70,7 +70,7 @@
   },
   {
    "name": "02-config",
-   "duration_ms": 901,
+   "duration_ms": 5335,
    "counts": {
     "pass": 21,
     "fail": 0,
@@ -172,7 +172,7 @@
   },
   {
    "name": "03-features",
-   "duration_ms": 269,
+   "duration_ms": 271,
    "counts": {
     "pass": 17,
     "fail": 0,
@@ -579,7 +579,7 @@
   },
   {
    "name": "05-incremental",
-   "duration_ms": 1661,
+   "duration_ms": 1694,
    "counts": {
     "pass": 47,
     "fail": 0,
@@ -790,7 +790,7 @@
   },
   {
    "name": "06-runner",
-   "duration_ms": 247,
+   "duration_ms": 245,
    "counts": {
     "pass": 17,
     "fail": 0,
@@ -877,7 +877,7 @@
   },
   {
    "name": "07-robustness",
-   "duration_ms": 1296,
+   "duration_ms": 1313,
    "counts": {
     "pass": 145,
     "fail": 0,
@@ -1474,7 +1474,7 @@
   },
   {
    "name": "08-lsp",
-   "duration_ms": 10919,
+   "duration_ms": 10922,
    "counts": {
     "pass": 97,
     "fail": 0,
@@ -1879,7 +1879,7 @@
   },
   {
    "name": "09-acquisition",
-   "duration_ms": 15932,
+   "duration_ms": 15986,
    "counts": {
     "pass": 66,
     "fail": 0,
@@ -2162,7 +2162,7 @@
   },
   {
    "name": "10-toolchain",
-   "duration_ms": 6101,
+   "duration_ms": 2107,
    "counts": {
     "pass": 31,
     "fail": 0,
@@ -2303,7 +2303,7 @@
   },
   {
    "name": "11-cross",
-   "duration_ms": 1282,
+   "duration_ms": 992,
    "counts": {
     "pass": 12,
     "fail": 0,
@@ -2375,8 +2375,230 @@
    ]
   },
   {
+   "name": "12-store",
+   "duration_ms": 205,
+   "counts": {
+    "pass": 29,
+    "fail": 0,
+    "xfail": 0,
+    "xpass": 0
+   },
+   "total": 29,
+   "ok": true,
+   "checks": [
+    {
+     "status": "pass",
+     "desc": "the first run in a fresh tree stores and restores nothing"
+    },
+    {
+     "status": "pass",
+     "desc": "the next process restores what the first one stored"
+    },
+    {
+     "status": "pass",
+     "desc": "and stores nothing new when nothing changed"
+    },
+    {
+     "status": "pass",
+     "desc": "a restored run still passes check"
+    },
+    {
+     "status": "pass",
+     "desc": "a restored run still builds"
+    },
+    {
+     "status": "pass",
+     "desc": "an untouched file is judged unchanged by its stat alone"
+    },
+    {
+     "status": "pass",
+     "desc": "a touched file falls back to its content fingerprint"
+    },
+    {
+     "status": "pass",
+     "desc": "a touched but unchanged file is still restored"
+    },
+    {
+     "status": "pass",
+     "desc": "an edited file is judged changed"
+    },
+    {
+     "status": "pass",
+     "desc": "an edited file is evaluated again and stored again"
+    },
+    {
+     "status": "pass",
+     "desc": "a file whose evaluation produced diagnostics is not stored"
+    },
+    {
+     "status": "pass",
+     "desc": "the diagnostic is reported on the first run"
+    },
+    {
+     "status": "pass",
+     "desc": "and on the next process too, not only the first"
+    },
+    {
+     "status": "pass",
+     "desc": "fixing the manifest clears the diagnostic in the next process"
+    },
+    {
+     "status": "pass",
+     "desc": "a truncated value log does not change the answer"
+    },
+    {
+     "status": "pass",
+     "desc": "an empty value log does not change the answer"
+    },
+    {
+     "status": "pass",
+     "desc": "an index cut at a partial record does not change the answer"
+    },
+    {
+     "status": "pass",
+     "desc": "an index full of noise does not change the answer"
+    },
+    {
+     "status": "pass",
+     "desc": "a value log full of noise does not change the answer"
+    },
+    {
+     "status": "pass",
+     "desc": "a missing index does not change the answer"
+    },
+    {
+     "status": "pass",
+     "desc": "a missing value log does not change the answer"
+    },
+    {
+     "status": "pass",
+     "desc": "a store written by an unknown format version does not change the answer"
+    },
+    {
+     "status": "pass",
+     "desc": "the store recovers by itself after being corrupted"
+    },
+    {
+     "status": "pass",
+     "desc": "cache info reports what the store holds"
+    },
+    {
+     "status": "pass",
+     "desc": "cache info names the format version"
+    },
+    {
+     "status": "pass",
+     "desc": "cache gc runs"
+    },
+    {
+     "status": "pass",
+     "desc": "cache gc removes stores left by older formats"
+    },
+    {
+     "status": "pass",
+     "desc": "cache gc keeps the store of the current format"
+    },
+    {
+     "status": "pass",
+     "desc": "check still passes after gc"
+    }
+   ],
+   "packages": [
+    "subject"
+   ]
+  },
+  {
+   "name": "13-parallel",
+   "duration_ms": 10765,
+   "counts": {
+    "pass": 18,
+    "fail": 0,
+    "xfail": 0,
+    "xpass": 0
+   },
+   "total": 18,
+   "ok": true,
+   "checks": [
+    {
+     "status": "pass",
+     "desc": "by default the tests do not overlap"
+    },
+    {
+     "status": "pass",
+     "desc": "all of them pass when run sequentially"
+    },
+    {
+     "status": "pass",
+     "desc": "--test-jobs=1 is the same as the default"
+    },
+    {
+     "status": "pass",
+     "desc": "--test-jobs=4 really runs them at the same time"
+    },
+    {
+     "status": "pass",
+     "desc": "all of them pass when run in parallel"
+    },
+    {
+     "status": "pass",
+     "desc": "--test-jobs=2 overlaps as well"
+    },
+    {
+     "status": "pass",
+     "desc": "every test still runs when only two go at a time"
+    },
+    {
+     "status": "pass",
+     "desc": "the report keeps the requested order under parallelism"
+    },
+    {
+     "status": "pass",
+     "desc": "a failing test fails the run when sequential"
+    },
+    {
+     "status": "pass",
+     "desc": "the sequential summary counts it once"
+    },
+    {
+     "status": "pass",
+     "desc": "a failing test fails the run when parallel"
+    },
+    {
+     "status": "pass",
+     "desc": "the parallel summary counts it the same"
+    },
+    {
+     "status": "pass",
+     "desc": "the exit status of the failing test survives parallelism"
+    },
+    {
+     "status": "pass",
+     "desc": "--failed reruns only the failure after a parallel run"
+    },
+    {
+     "status": "pass",
+     "desc": "--failed leaves the passing tests alone after a parallel run"
+    },
+    {
+     "status": "pass",
+     "desc": "the repaired test passes again in parallel"
+    },
+    {
+     "status": "pass",
+     "desc": "--test-jobs with a negative count is refused"
+    },
+    {
+     "status": "pass",
+     "desc": "--test-jobs with a non-number is refused"
+    }
+   ],
+   "packages": [
+    "subject"
+   ]
+  },
+  {
    "name": "docs",
-   "duration_ms": 53,
+   "duration_ms": 52,
    "counts": {
     "pass": 7,
     "fail": 0,
@@ -2419,12 +2641,12 @@
   }
  ],
  "totals": {
-  "pass": 540,
+  "pass": 587,
   "fail": 0,
   "xfail": 4,
   "xpass": 0
  },
- "total": 544,
+ "total": 591,
  "ok": true,
  "attention": [],
  "known_issues": [
