@@ -9,7 +9,7 @@ F-001 から F-009 までの 9 件は `07f16ec` で、F-010 / F-012 / F-013 は
 対応する検査は `known_issue` を外し、通常の検査として残してある。直った
 ものを消すと、退行したときに気づけない。
 
-未修正は F-014 / F-015 と、F-011 の残っている側である。対応する検査は
+未修正は F-014 / F-015 / F-016 と、F-011 の残っている側である。対応する検査は
 `known_issue` を付けてあり、本体が直すと `XPASS` になって落ちる。
 
 各項目は次の形で記録する。
@@ -39,6 +39,7 @@ F-001 から F-009 までの 9 件は `07f16ec` で、F-010 / F-012 / F-013 は
 | [F-013](#f-013) | install に使った指定子で `dowel +<指定子>` が選べない | 実装 | [#39](https://github.com/sabas0ba/dowel/issues/39) | 修正済み |
 | [F-014](#f-014) | ninja で組んだあと direct で組むと、ヘッダの変更が見落とされる | 実装 | [#41](https://github.com/sabas0ba/dowel/issues/41) | 未修正 |
 | [F-015](#f-015) | `--target` がツールチェーンを選ばない | 実装 | [#42](https://github.com/sabas0ba/dowel/issues/42) | 未修正 |
+| [F-016](#f-016) | `ar` を宣言できず、記録された入力にもなっていない | 要望 | [#50](https://github.com/sabas0ba/dowel/issues/50) | 未修正 |
 
 ---
 
@@ -1147,6 +1148,76 @@ test result: FAILED. 0 passed; 1 failed
 通る側（宣言したクロスツールチェーンで組み、qemu で走らせる）が同じ
 プロジェクトにあるため、**機構は揃っていて結び付けが無いだけ**であることが
 検査の並びから読める。
+
+---
+
+## F-016
+
+報告先: [sabas0ba/dowel#50](https://github.com/sabas0ba/dowel/issues/50)
+
+**書庫の作成に使う `ar` を `[toolchain]` で宣言できない。しかもどの `ar` を
+使ったかが記録された入力になっていない。**
+
+種別: 要望。未修正（`9ed13f4`）。手元でも CI でも現状のまま通るが、
+組み込みの構成では課題になりうる。
+
+### 観測
+
+クロスの構成でも、書庫の作成だけがホストの道具に落ちる。
+
+```console
+$ dowel graph --kind=action --format=json --target=aarch64-unknown-linux-gnu \
+  | jq -r '.actions[]|"\(.kind)  \(.command[0])"'
+cc    aarch64-linux-gnu-g++
+ar    ar                        ← ここだけ接頭辞が無い
+cc    aarch64-linux-gnu-gcc
+link  aarch64-linux-gnu-g++
+```
+
+このホストの `ar` は対応する目標に aarch64 を持たない。通っているのは
+総称の `elf64-little` に当たっているからである。`aarch64-linux-gnu-ar` は
+同じ機械にあるのに使われない。
+
+さらに、`ar` は記録された入力になっていない。
+
+```console
+$ PATH=/path/to/other-ar:$PATH dowel build --target=... --executor=direct --log-level=debug
+... ran 0 actions
+```
+
+`[toolchain] c` は記録された入力である（gcc から clang へ変えると組み直される。
+`projects/10-toolchain` が見ている）。`ar` にはそれが無く、記録されているのは
+`ar` という名前だけで、それがどの実体を指すかは記録の外にある。
+
+### 期待
+
+`[toolchain]` に `ar` を足す。既定は `ar`。`c` / `cxx` と同じく、PATH に
+無ければ `missing-toolchain` で拒み、変えたら組み直す。
+
+根拠は `docs/00-overview.md` 2節の目標「再現性 — ツールチェーンを含めて
+ロックし、**記録されない入力を排除する**」。`ar` はちょうどその
+「記録されない入力」になっている。
+
+組み込みでは、ベンダが配る toolchain がコンパイラ・リンカ・書庫の道具を
+一組で配り、混ぜることを想定していない。現状はその混成を**利用者が
+避けられない**。macOS をホストに ELF へクロスする場合は、Apple の `ar` が
+GNU 形式の ELF 書庫を作れないため、より直接に効く。
+
+### なぜ内側から見つからないか
+
+本体のフィクスチャと CI は単一のホスト向けにしか組まない。ホストの `ar` が
+ホストの目的物を扱うのは当然通るため、「書庫の道具だけがホストのものである」
+状態が入力として現れない。
+
+`missing-toolchain` の検査も `c` と `cxx` を対象にしており、宣言できない
+ものは網羅の対象にならない。**宣言できない道具は、宣言の検査から漏れる。**
+
+### 検査
+
+`projects/15-cpp` の以下 2 件。いずれも known_issue F-016 である。
+
+- `the archiver can be declared like the compilers`
+- `changing the archiver rebuilds the archive`
 
 ---
 
