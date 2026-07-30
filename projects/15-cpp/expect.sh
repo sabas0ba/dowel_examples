@@ -17,9 +17,13 @@
 # C++ のライブラリに依存していれば C++ の driver でリンクしなければ、
 # 標準ライブラリが繋がらない。
 
+# 追加で渡す dowel の引数。`--target` を伴う場合に使う。
+EXTRA=""
+
 # cc_of <パッケージ> <ソース名の一部> — その翻訳単位を組む driver。
 cc_of() {
-    "$DOWEL" -C "$1" graph --kind=action --format=json 2>/dev/null |
+    # shellcheck disable=SC2086
+    "$DOWEL" -C "$1" graph --kind=action --format=json $EXTRA 2>/dev/null |
         jq -r --arg s "$2" '.actions[] | select(.kind == "cc")
             | select(.command | map(select(test($s))) | length > 0)
             | .command[0]' | head -1
@@ -27,7 +31,8 @@ cc_of() {
 
 # link_of <パッケージ> — リンクを行う driver。
 link_of() {
-    "$DOWEL" -C "$1" graph --kind=action --format=json 2>/dev/null |
+    # shellcheck disable=SC2086
+    "$DOWEL" -C "$1" graph --kind=action --format=json $EXTRA 2>/dev/null |
         jq -r '.actions[] | select(.kind == "link") | .command[0]' | head -1
 }
 
@@ -72,9 +77,19 @@ got=$(link_of capp)
 RC=0; _last_cmd="graph --kind=action | select(.kind==\"link\")"; OUT="link driver = ${got:-(none)}"
 _verdict $v "but the link uses the C++ driver because a dependency is C++"
 
-# 引数の形ではなく、実際に繋がっていることを見る。C++ 実行時が欠けていれば
-# リンクで落ち、通っても std::string を使う関数が動かない。
+# 引数の形ではなく、実際に繋がっていることを見る。記号が解決するだけでは
+# 足りない。例外の巻き戻しと大域構築子は、リンクの driver を取り違えると
+# 記号が揃っていても働かない。
+#
+#   cpplib_len       標準ライブラリ
+#   cpplib_throws    送出と捕捉（巻き戻しの機構）
+#   cpplib_ctor_ran  書庫の中の大域オブジェクトの構築子（.init_array）
+#
+# 判定は C の中で行い、終了状態でどれが欠けたかまで分かるようにしてある。
 ok "the binary links and runs" -C capp build
+ok "a C main gets the whole C++ runtime, not just the symbols" -C capp build
+prints "" "running it exercises the standard library, exceptions and constructors" \
+    "$PWD/capp/$(cd capp 2>/dev/null && find .dowel/build -type f -path '*/bin/capp' | head -1)"
 ok "a C test can call into the C++ library and pass" -C capp test
 out_lacks "undefined reference" "the link never fails the way F-008 did" -C capp build
 
@@ -90,9 +105,18 @@ _verdict $v "a mixed target links with the C++ driver"
 
 # C の側で確かめる。C の翻訳単位で __cplusplus が定義されていたら、
 # 拡張子による選択が効いていない。成果物自身に答えさせる。
+# 終了状態に両方の値を載せてある（C 側 × 10 + C++ 側）。片方だけが
+# 古いまま残っても、片方が誤った driver で組まれても、値が変わる。
 ok "the mixed binary agrees about which unit was compiled as what" -C mixed build
-prints "" "the mixed binary runs and its C and C++ halves both behave" \
-    "$PWD/mixed/$(cd mixed && find .dowel/build -type f -path '*/bin/mixed' | head -1)"
+mixed_exit() {
+    local p; p=$(find "$PWD/mixed/.dowel/build" -type f -path '*/bin/mixed' 2>/dev/null | head -1)
+    [ -n "$p" ] || return 99
+    "$p"; return $?
+}
+mixed_exit; got=$?
+[ "$got" = 13 ]; v=$?
+RC=0; _last_cmd="<mixed>"; OUT="the binary exits with $got (wanted 13 = C 1, C++ 3)"
+_verdict $v "the mixed binary runs and its C and C++ halves both behave"
 
 # ------------------------------------------------------- ツールチェーンの宣言
 
@@ -145,3 +169,152 @@ rm -f mixed/src/cxx_part.c
 mv mixed/cxx_part.cpp.hidden mixed/src/cxx_part.cpp
 printf '[package]\nname    = "mixed"\nversion = "0.1.0"\nedition = "2026"\n' > mixed/dowel.toml
 printf '[package]\nname    = "cpplib"\nversion = "0.1.0"\nedition = "2026"\n' > cpplib/dowel.toml
+
+# ------------------------------------------------------- 推移的な閉包
+#
+# 「依存の閉包に C++ の翻訳単位があれば」であって「直接の依存が C++ なら」
+# ではない。間に純 C の層を挟むと、直接の依存だけを見る実装は取りこぼす。
+#
+#   topc[C] -> mid[C] -> deep[C++]
+#
+# topc は C++ のライブラリを直接には知らない。
+
+ok "a chain of C packages over a C++ leaf passes check" -C chain/topc check
+driver_is c++ chain/topc '/deep\.cpp$' "the C++ leaf of the chain uses the C++ driver"
+driver_is cc  chain/topc '/mid\.c$'    "the C layer between them uses the C driver"
+driver_is cc  chain/topc '/main\.c$'   "and so does the root"
+
+got=$(link_of chain/topc)
+[ "$got" = c++ ]; v=$?
+RC=0; OUT="link driver = ${got:-(none)}"
+_verdict $v "the root links with the C++ driver although its dependency is C"
+
+ok "the chain builds and its test passes" -C chain/topc build
+prints "" "the root binary runs through two C layers into C++" \
+    "$PWD/chain/topc/$(cd chain/topc 2>/dev/null && find .dowel/build -type f -path '*/bin/topc' | head -1)"
+
+# ------------------------------------------------------- 逆向き
+#
+# C++ の実行ファイルが C のライブラリを使う。こちらは自明に見えるが、
+# 「C++ のソースがあるかどうか」だけで決めていると、依存の側が C である
+# ことに引きずられる実装がありうる。
+
+ok "a C++ binary that depends on a C library passes check" -C reverse/cxxapp check
+driver_is cc  reverse/cxxapp '/c\.c$'      "the C dependency uses the C driver"
+driver_is c++ reverse/cxxapp '/main\.cpp$' "the C++ binary uses the C++ driver"
+got=$(link_of reverse/cxxapp)
+[ "$got" = c++ ]; v=$?
+RC=0; OUT="link driver = ${got:-(none)}"
+_verdict $v "the link uses the C++ driver in this direction too"
+ok "the C++ binary builds and runs" -C reverse/cxxapp build
+
+# テストターゲット自体が C++ である場合。
+ok "a test target written in C++ builds and passes" -C reverse/cxxapp test
+
+# ------------------------------------------------------- 増分
+#
+# depfile は driver が出す。C++ の側でも同じように出て、同じように読まれ
+# なければ、C++ のヘッダを編集しても波及しない。05-incremental は C だけを
+# 見ているため、この経路は通っていない。
+#
+# 実行器は direct で通す。数えるために要るうえ、ninja と跨ぐと依存の記録が
+# 引き継がれない（docs/10-findings.md F-014）。
+
+MIXED=$PWD/mixed
+mixed_ran() {
+    OUT=$("$DOWEL" -C mixed build --executor=direct --log-level=debug 2>&1)
+    RC=$?
+    _last_cmd="dowel -C mixed build --executor=direct"
+    printf '%s' "$OUT" | sed -n 's/.*ran \([0-9]*\) actions.*/\1/p' | tail -1
+}
+mixed_says() {
+    local p; p=$(find "$MIXED/.dowel/build" -type f -path '*/bin/mixed' 2>/dev/null | head -1)
+    [ -n "$p" ] || { printf 'none'; return 0; }
+    "$p"; printf '%s' "$?"
+}
+
+rm -rf "$MIXED/.dowel"
+n=$(mixed_ran); [ "${n:-0}" -gt 0 ]; _verdict $? "the mixed target builds from scratch"
+n=$(mixed_ran); [ "$n" = 0 ]; _verdict $? "and settles"
+
+# depfile が C++ の翻訳単位にも出ていること。
+if find "$MIXED/.dowel" -name '*cxx_part.cpp.o.d' | grep -q .; then
+    fact 0 "a depfile is written for the C++ translation unit too"
+else
+    fact 1 "a depfile is written for the C++ translation unit too"
+fi
+
+# C++ だけが読むヘッダを編集する。C 側は組み直す必要が無い。
+sed -i 's/#define CXX_VALUE .*/#define CXX_VALUE 4/' "$MIXED/include/cxx_only.h"
+n=$(mixed_ran); [ "${n:-0}" -gt 0 ]
+_verdict $? "editing a header that only C++ reads rebuilds through the C++ depfile"
+got=$(mixed_says); [ "$got" = 14 ]; v=$?
+RC=0; OUT="the binary says $got (wanted 14)"
+_verdict $v "and the artifact reflects the new value"
+
+# C だけが読むヘッダ。
+sed -i 's/#define C_VALUE .*/#define C_VALUE 2/' "$MIXED/include/c_only.h"
+n=$(mixed_ran); [ "${n:-0}" -gt 0 ]
+_verdict $? "editing a header that only C reads rebuilds through the C depfile"
+got=$(mixed_says); [ "$got" = 24 ]; v=$?
+RC=0; OUT="the binary says $got (wanted 24)"
+_verdict $v "and the artifact reflects that too"
+
+sed -i 's/#define CXX_VALUE .*/#define CXX_VALUE 3/' "$MIXED/include/cxx_only.h"
+sed -i 's/#define C_VALUE .*/#define C_VALUE 1/' "$MIXED/include/c_only.h"
+run -C mixed build --executor=direct
+
+# ------------------------------------------------------- ほかのツールチェーン
+#
+# 10-toolchain は C について gcc と clang の双方を見る。C++ の側にも
+# 同じことが要る。C と C++ で別のコンパイラを選ぶ構成も通る必要がある。
+
+CPPLIB_TOML=$PWD/cpplib/dowel.toml
+with_tc() {
+    printf '[package]\nname    = "cpplib"\nversion = "0.1.0"\nedition = "2026"\n\n[toolchain]\nc   = "%s"\ncxx = "%s"\n' \
+        "$1" "$2" > "$CPPLIB_TOML"
+}
+
+with_tc gcc g++
+driver_is g++ cpplib '/lib\.cpp$' "g++ is used when it is declared"
+ok "the library builds with g++" -C cpplib build
+
+with_tc clang clang++
+driver_is clang++ cpplib '/lib\.cpp$' "clang++ is used when it is declared"
+ok "the library builds with clang++" -C cpplib build
+
+# C は gcc、C++ は clang++。混ぜても通ること。
+with_tc gcc clang++
+driver_is clang++ cpplib '/lib\.cpp$' "the C and C++ compilers can come from different families"
+ok "the library builds with a mixed pair" -C cpplib build
+
+printf '[package]\nname    = "cpplib"\nversion = "0.1.0"\nedition = "2026"\n' > "$CPPLIB_TOML"
+
+# ------------------------------------------------------- クロス + C++
+#
+# 11-cross は C だけを見る。クロスで C++ を組むと、driver の選択と
+# トリプルの選択が同時に効く。純 C のテストが別アーキテクチャ向けの
+# C++ ライブラリを使い、qemu 経由で走るところまで通す。
+
+TRIPLE=aarch64-unknown-linux-gnu
+ok "a cross C++ package passes check" -C cross/xapp check --target=$TRIPLE
+EXTRA="--target=$TRIPLE"
+driver_is aarch64-linux-gnu-g++ cross/xapp '/x\.cpp$' \
+    "the cross C++ compiler is used for the C++ source"
+driver_is aarch64-linux-gnu-gcc cross/xapp '/x\.c$' \
+    "the cross C compiler is used for the C source"
+
+got=$(link_of cross/xapp)
+[ "$got" = aarch64-linux-gnu-g++ ]; v=$?
+RC=0; OUT="link driver = ${got:-(none)}"
+_verdict $v "the cross link uses the cross C++ driver"
+
+ok "the cross C++ build produces an artifact" -C cross/xapp build --target=$TRIPLE
+art=$(find "$PWD/cross/xapp/.dowel/build/$TRIPLE"*/bin -type f 2>/dev/null | head -1)
+got=$(readelf -h "$art" 2>/dev/null | sed -n 's/ *Machine: *//p')
+case $got in *AArch64*) v=0 ;; *) v=1 ;; esac
+RC=0; OUT="machine = ${got:-(no artifact)}"
+_verdict $v "the cross C++ artifact is built for the target architecture"
+
+ok "the cross C++ test runs under the emulator and passes" -C cross/xapp test --target=$TRIPLE
+EXTRA=""

@@ -1,0 +1,7 @@
+# 中間。純 C だが、C++ のライブラリに依存する。
+[lib.mid]
+sources = glob("src/*.c")
+
+[lib.mid.public]
+includes = [dir("include")]
+deps     = [dep("deep")]

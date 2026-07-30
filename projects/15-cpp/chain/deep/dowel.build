@@ -1,0 +1,6 @@
+# 連鎖のいちばん奥。ここだけが C++ である。
+[lib.deep]
+sources = glob("src/*.cpp")
+
+[lib.deep.public]
+includes = [dir("include")]

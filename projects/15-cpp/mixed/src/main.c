@@ -1,8 +1,5 @@
 #include "parts.h"
 
-int main(void)
-{
-    if (c_part() != 1) return 1;    /* C 側が C として翻訳された */
-    if (cxx_part() != 3) return 2;  /* C++ 側が動く */
-    return 0;
-}
+/* 終了状態に両方の値を載せる。増分で片方だけが古いまま残ったことを、
+   件数ではなく中身で観測するための仕掛けである。 */
+int main(void) { return c_part() * 10 + cxx_part(); }

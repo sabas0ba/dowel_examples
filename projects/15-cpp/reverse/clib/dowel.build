@@ -1,0 +1,5 @@
+[lib.clib]
+sources = glob("src/*.c")
+
+[lib.clib.public]
+includes = [dir("include")]
