@@ -1,0 +1,11 @@
+# 純 C のテストが、別アーキテクチャ向けに組まれた C++ ライブラリを使う。
+# 静的リンクにして、qemu-user に対象の動的ローダの場所を教えずに済ませる。
+[test.xtest]
+sources = glob("tests/*.c")
+
+[test.xtest.private]
+deps       = [dep("xlib")]
+link_flags = ["-static"]
+
+[runner.aarch64-unknown-linux-gnu]
+command = "qemu-aarch64-static"

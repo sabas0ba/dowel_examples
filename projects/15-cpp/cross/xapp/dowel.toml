@@ -1,0 +1,12 @@
+[package]
+name    = "xapp"
+version = "0.1.0"
+edition = "2026"
+
+[toolchain]
+c   = "aarch64-linux-gnu-gcc"
+cxx = "aarch64-linux-gnu-g++"
+
+[[dependencies]]
+name = "xlib"
+path = "../xlib"

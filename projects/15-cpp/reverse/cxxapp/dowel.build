@@ -1,0 +1,13 @@
+# C++ の実行ファイルが C のライブラリを使う。逆向きでも C++ の
+# driver でリンクされる必要がある。
+[bin.cxxapp]
+sources = glob("src/*.cpp")
+
+[bin.cxxapp.private]
+deps = [dep("clib")]
+
+[test.cxxtest]
+sources = glob("tests/*.cpp")
+
+[test.cxxtest.private]
+deps = [dep("clib")]

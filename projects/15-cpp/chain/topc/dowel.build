@@ -1,0 +1,7 @@
+# 根。純 C であり、C++ のライブラリを直接には知らない。
+# それでもリンクは C++ の driver で行われる必要がある。
+[bin.topc]
+sources = glob("src/*.c")
+
+[bin.topc.private]
+deps = [dep("mid")]

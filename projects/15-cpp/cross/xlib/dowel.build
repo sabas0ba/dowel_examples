@@ -1,0 +1,5 @@
+[lib.xlib]
+sources = glob("src/*.cpp")
+
+[lib.xlib.public]
+includes = [dir("include")]
