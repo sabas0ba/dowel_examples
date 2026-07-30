@@ -318,3 +318,40 @@ _verdict $v "the cross C++ artifact is built for the target architecture"
 
 ok "the cross C++ test runs under the emulator and passes" -C cross/xapp test --target=$TRIPLE
 EXTRA=""
+
+# ------------------------------------------------------- 書庫の道具
+#
+# コンパイラとリンカは宣言できるのに、書庫の作成に使う `ar` は宣言できない。
+# クロスの構成でもここだけがホストの道具に落ちる
+# （docs/10-findings.md F-016）。
+#
+# 組み込みでは、ベンダが配る toolchain がコンパイラ・リンカ・書庫の道具を
+# 一組で配り、混ぜることを想定していない。現状はその混成を利用者が避けられない。
+
+printf '[package]\nname    = "cpplib"\nversion = "0.1.0"\nedition = "2026"\n\n[toolchain]\nar = "llvm-ar"\n' \
+    > "$CPPLIB_TOML"
+got=$("$DOWEL" -C cpplib graph --kind=action --format=json 2>/dev/null |
+      jq -r '.actions[] | select(.kind == "ar") | .command[0]' | head -1)
+[ "$got" = llvm-ar ]; v=$?
+RC=0; _last_cmd="graph --kind=action | select(.kind==\"ar\")"; OUT="archiver = ${got:-(none)}"
+known_issue F-016
+_verdict $v "the archiver can be declared like the compilers"
+printf '[package]\nname    = "cpplib"\nversion = "0.1.0"\nedition = "2026"\n' > "$CPPLIB_TOML"
+
+# どの `ar` を使ったかが記録された入力であること。`[toolchain] c` は
+# 記録されている（10-toolchain が見ている）。差し替えても組み直されないなら、
+# 書庫の中身が黙って変わりうる。
+FAKE=$PWD/fake-bin
+rm -rf "$FAKE"; mkdir -p "$FAKE"
+printf '#!/bin/sh\nexec %s "$@"\n' "$(command -v llvm-ar || command -v ar)" > "$FAKE/ar"
+chmod +x "$FAKE/ar"
+
+rm -rf cpplib/.dowel
+run -C cpplib build
+n=$(PATH="$FAKE:$PATH" "$DOWEL" -C cpplib build --executor=direct --log-level=debug 2>&1 |
+    sed -n 's/.*ran \([0-9]*\) actions.*/\1/p' | tail -1)
+[ "${n:-0}" -gt 0 ]; v=$?
+RC=0; _last_cmd="PATH=<other ar> dowel build --executor=direct"; OUT="ran ${n:-?} actions"
+known_issue F-016
+_verdict $v "changing the archiver rebuilds the archive"
+rm -rf "$FAKE"
