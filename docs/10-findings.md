@@ -3,13 +3,13 @@
 本スイートが外側から見つけたもの。
 
 F-001 から F-009 までの 9 件は `07f16ec` で、F-010 / F-012 / F-013 は
-`95daf9f` で修正された。F-008 はさらに `9ed13f4` で二段目の決着を見ている。
-記録は残す。
+`95daf9f` で、F-014 / F-015 は `3e84cbd` で修正された。F-008 はさらに
+`9ed13f4` で二段目の決着を見ている。記録は残す。
 何を見てどう報告したかが、次に同種のものを見つけるときの型になるためである。
 対応する検査は `known_issue` を外し、通常の検査として残してある。直った
 ものを消すと、退行したときに気づけない。
 
-未修正は F-014 / F-015 / F-016 と、F-011 の残っている側である。対応する検査は
+未修正は F-016 と F-017、および F-011 の残っている側である。対応する検査は
 `known_issue` を付けてあり、本体が直すと `XPASS` になって落ちる。
 
 各項目は次の形で記録する。
@@ -37,9 +37,10 @@ F-001 から F-009 までの 9 件は `07f16ec` で、F-010 / F-012 / F-013 は
 | [F-011](#f-011) | UTF-8 BOM 付きのマニフェストが拒まれる | 実装 | [#34](https://github.com/sabas0ba/dowel/issues/34) | 一部修正 |
 | [F-012](#f-012) | 言語サーバが型検査の段の診断を出さず、`UNSUPPORTED` にも無い | 実装 | [#38](https://github.com/sabas0ba/dowel/issues/38) | 修正済み |
 | [F-013](#f-013) | install に使った指定子で `dowel +<指定子>` が選べない | 実装 | [#39](https://github.com/sabas0ba/dowel/issues/39) | 修正済み |
-| [F-014](#f-014) | ninja で組んだあと direct で組むと、ヘッダの変更が見落とされる | 実装 | [#41](https://github.com/sabas0ba/dowel/issues/41) | 未修正 |
-| [F-015](#f-015) | `--target` がツールチェーンを選ばない | 実装 | [#42](https://github.com/sabas0ba/dowel/issues/42) | 未修正 |
+| [F-014](#f-014) | ninja で組んだあと direct で組むと、ヘッダの変更が見落とされる | 実装 | [#41](https://github.com/sabas0ba/dowel/issues/41) | 修正済み |
+| [F-015](#f-015) | `--target` がツールチェーンを選ばない | 実装 | [#42](https://github.com/sabas0ba/dowel/issues/42) | 修正済み |
 | [F-016](#f-016) | `ar` を宣言できず、記録された入力にもなっていない | 要望 | [#50](https://github.com/sabas0ba/dowel/issues/50) | 未修正 |
+| [F-017](#f-017) | `migrate import` が CMake の構成のフラグを無条件の `flags` へ写す | 実装 | [#54](https://github.com/sabas0ba/dowel/issues/54) | 未修正 |
 
 ---
 
@@ -1017,7 +1018,7 @@ error: no installed version matches `tag:v0.9.0`; `dowelup list` shows what is i
 **ninja で組んだあと direct 実行器で組むと、ヘッダの変更が見落とされ、
 古い成果物が黙って残る。**
 
-種別: 実装。未修正（`95daf9f`）。本一覧のうち最も影響が大きい。
+種別: 実装。修正済み（`3e84cbd`）。本一覧のうち最も影響が大きかった。
 
 ### 観測
 
@@ -1070,11 +1071,21 @@ direct は `.d` を読むため、ninja のあとは**依存情報が1件も無�
 **部分的に共有されていること**が原因であり、全部が共有されていなければ
 全部組み直すのでこの形は現れなかった。
 
+### 修正
+
+実行器を跨いでも依存の記録を失わなくなった。4通りの組み合わせすべてで
+ヘッダの変更が反映される。
+
 ### 検査
 
-`projects/05-incremental` の
-`a header edit is seen after building with ninja then direct`
-（known_issue F-014）。残る3通りの組み合わせは通常の検査である。
+`projects/05-incremental` の実行器の組み合わせ4通り。いずれも通常の検査である。
+
+- `a header edit is seen after building with ninja then direct`
+- `a header edit is seen after building with direct then ninja`
+- `a header edit is seen after building with ninja then ninja`
+- `a header edit is seen after building with direct then direct`
+
+`crossing/` は専用のパッケージである。
 
 `crossing/` は専用のパッケージである。`core` の検査は両側が同じ定数を使う形で
 あり、双方が古いままなら食い違いが打ち消し合ってテストが通ってしまう。
@@ -1087,7 +1098,7 @@ direct は `.d` を読むため、ninja のあとは**依存情報が1件も無�
 
 **`--target` が構成識別子を変えるだけで、ツールチェーンを選ばない。**
 
-種別: 実装。未修正（`95daf9f`）。
+種別: 実装。修正済み（`3e84cbd`）。
 
 ### 観測
 
@@ -1133,12 +1144,35 @@ test result: FAILED. 0 passed; 1 failed
 `[runner.<triple>]` の検査も、記録だけを行うラッパで組める。
 その形ではアーキテクチャの不一致は現れない。
 
+### 修正
+
+`[toolchain.<triple>]` が入り、`[runner.<triple>]` と同じ形になった。
+提案どおり、**宣言の無いトリプルへ `--target` を渡すと組む前に拒まれる**。
+
+```
+error[missing-toolchain]: no toolchain is declared for target `aarch64-unknown-linux-gnu`
+  = note: building with the host toolchain would produce artifacts for the
+          wrong architecture under this target's name
+  = note: declare one, for example `[toolchain.aarch64-unknown-linux-gnu]`
+          with `c = "..."` in dowel.toml
+```
+
+素の `[toolchain]` は host 向けの宣言であり、他のトリプルには決して
+適用されない。C++ を含む場合はそのトリプルの `cxx` も要る。
+
 ### 検査
 
-`projects/11-cross` の以下 3 件。いずれも known_issue F-015 である。
+`projects/11-cross` の以下。いずれも通常の検査である。
 
-- `an artifact filed under a triple is built for that triple`
-- `the mismatch is caught before the artifact is started`
+- `building for a triple with no toolchain declared is refused`
+- `the refusal carries the missing-toolchain code`
+- `the mismatch is caught before anything is built`
+- `declaring the host compiler for another triple is allowed`
+- `and it produces a host artifact, which readelf shows plainly`
+
+最後の2件は、宣言の中身までは止められないことの記録である。利用者が
+ホストのコンパイラをトリプルの宣言として書くことは止まらないが、
+そのとき成果物がホスト向けになることは `readelf` で観測できる。
 
 逆向き（クロスのツールチェーンでホスト向けの構成を組む場合）は検査にしていない。起動できるかどうかが機械の設定で決まるためである。
 `qemu-user-static` を入れた環境では binfmt_misc に登録され、別アーキテクチャの
@@ -1218,6 +1252,109 @@ GNU 形式の ELF 書庫を作れないため、より直接に効く。
 
 - `the archiver can be declared like the compilers`
 - `changing the archiver rebuilds the archive`
+
+---
+
+## F-017
+
+報告先: [sabas0ba/dowel#54](https://github.com/sabas0ba/dowel/issues/54)
+
+**`migrate import` が CMake の構成（`CMAKE_BUILD_TYPE`）のフラグを、下書きの
+無条件の `flags` へ写す。dowel の構成が加えるものの後ろに並ぶため、後勝ちで
+`--config` の指定が効かなくなる。**
+
+種別: 実装。未修正（`3e84cbd`）。
+
+### 観測
+
+`CMAKE_BUILD_TYPE=Release` で構成した木を取り込むと、下書きはこうなる。
+
+```toml
+[lib.greet.private]
+includes = [dir("include")]
+defines  = { GREET_SCALE = 3 }
+flags    = ["-O2", "-DNDEBUG"]      # 構成のフラグが無条件で入る
+```
+
+`flags` は構成に依らない。したがってこの下書きを `--config=debug` で組むと、
+dowel の `-g -O0` の後ろに `-O2 -DNDEBUG` が並ぶ。
+
+| 取り込み元 | 組んだ構成 | 実際の引数 | 成果物が名乗るもの |
+|---|---|---|---|
+| Debug | debug | `-g -O0 -g -O0` | assertions / unoptimized |
+| Debug | **release** | `-O2 -DNDEBUG -g -O0` | ndebug / **unoptimized** |
+| Release | **debug** | `-g -O0 -O2 -DNDEBUG` | **ndebug** / optimized |
+
+構成ごとの `CMAKE_C_FLAGS_<TYPE>` は次のとおり写る（CMake 3.28 の既定）。
+
+| `CMAKE_BUILD_TYPE` | 下書きの `flags` |
+|---|---|
+| 未設定 | 無し |
+| `Debug` | `["-g"]` |
+| `Release` | `["-O3", "-DNDEBUG"]` |
+| `RelWithDebInfo` | `["-O2", "-g", "-DNDEBUG"]` |
+| `MinSizeRel` | `["-Os", "-DNDEBUG"]` |
+
+同じ理由で、`import` が自分で指している `verify` の手順も通らない。移行元の
+構成フラグを dowel と同じ（`-g -O0` / `-O2 -DNDEBUG`）に揃えてもなお、
+写されたぶんが重複として残る。
+
+```console
+$ dowel migrate import ../bd-debug
+$ dowel migrate verify ../bd-debug/compile_commands.json
+0 equivalent, 4 differing, 0 not ported, 0 only in dowel
+
+  .../src/greet.c
+    + -O0   (in dowel, not in the reference)
+    + -g    (in dowel, not in the reference)
+```
+
+構成を揃えない場合は、`CMAKE_BUILD_TYPE`（未設定 / Debug / Release /
+RelWithDebInfo / MinSizeRel）と `--config`（debug / release）の 10 通り
+すべてで `0 equivalent` になる。
+
+一方、`flags` を持たない下書き（構成未設定の木から取り込んだもの）を、
+揃えた Debug の参照に掛けると `4 equivalent, rc=0` になる。正規化そのものは
+正しく働いており、原因は写されたフラグの側にある。
+
+### 期待
+
+構成が決めるものを無条件の `flags` へ入れない。採りうる形は3つある。
+
+1. dowel の構成の語彙が既に覆うもの（`-g` `-O0` `-O1` `-O2` `-O3` `-Os`
+   `-DNDEBUG`）を落とす
+2. `match cfg.opt { ... }` の腕へ振り分ける
+3. 少なくとも下書きの冒頭で「どの構成から写したか」「`flags` は構成に
+   依らない」ことを名指しする
+
+根拠は本体の `docs/30-model.md`。`--config` は debug と release で異なる
+翻訳を与えることを約束しており、下書きがそれを無効化するなら、それは
+移行の結果ではなく移行の欠陥である。
+
+`import` の出力が `verify` を指している以上、「`import` の出力をそのまま
+`verify` に掛けると何も報せない」ことがこの機能の外側の期待値になる。
+
+### なぜ内側から見つからないか
+
+`import` を単体で見ると、CMake が言ったフラグを写すのは正しい動作に見える。
+誤りが現れるのは **`import` の出力を `build --config` に食わせたとき**で
+あり、2つのコマンドを跨ぐ。本体の層は片方ずつを受け持っている。
+
+`verify` を `import` の出力に掛けるという結び付けも、本体の側では
+「移行の手順」であって検査の対象になっていない。
+
+### 検査
+
+`projects/16-migrate` の以下 3 件。いずれも known_issue F-017 である。
+
+- `the drafted release build is actually optimized`
+- `the drafted debug build keeps assertions`
+- `the workflow that import prints verifies clean`
+
+対照として `the drafted debug build of a debug import is unoptimized` を
+通常の検査として置いてある。Debug から取り込んで debug で組む限り写された
+フラグは dowel が足すものと同じであり、害が見えない。この1件だけが通る
+ことが、原因が「写したこと」そのものであることを示している。
 
 ---
 

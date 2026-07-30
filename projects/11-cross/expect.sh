@@ -14,13 +14,24 @@ SUBJECT=$PWD/subject
 TRIPLE=aarch64-unknown-linux-gnu
 CROSS_CC=aarch64-linux-gnu-gcc
 
+# ホスト向けの宣言だけ。別のトリプルへは組めない。
 host_toml() {
     printf '[package]\nname    = "subject"\nversion = "0.1.0"\nedition = "2026"\n' \
         > "$SUBJECT/dowel.toml"
 }
+
+# トリプルごとの宣言。`[toolchain]` は host 向けであり、他のトリプルには
+# 決して適用されない（#42 の修正）。
 cross_toml() {
-    printf '[package]\nname    = "subject"\nversion = "0.1.0"\nedition = "2026"\n\n[toolchain]\nc = "%s"\n' \
-        "$CROSS_CC" > "$SUBJECT/dowel.toml"
+    printf '[package]\nname    = "subject"\nversion = "0.1.0"\nedition = "2026"\n\n[toolchain.%s]\nc = "%s"\n' \
+        "$TRIPLE" "$CROSS_CC" > "$SUBJECT/dowel.toml"
+}
+
+# ホストのコンパイラを、別のトリプルの宣言として書いた場合。
+# 宣言はできるが、出てくる成果物はホスト向けである。
+host_cc_for_triple_toml() {
+    printf '[package]\nname    = "subject"\nversion = "0.1.0"\nedition = "2026"\n\n[toolchain.%s]\nc = "cc"\n' \
+        "$TRIPLE" > "$SUBJECT/dowel.toml"
 }
 
 # machine <ビルドディレクトリの接頭辞> — 成果物の ELF machine。
@@ -89,26 +100,39 @@ fact $v "the host build is not confused by the cross build"
 n=$(ran_for --target=$TRIPLE); [ "$n" = 0 ]; v=$?; detail "ran $n actions"
 fact $v "and the cross build is still up to date afterwards"
 
-# ------------------------------------------------------- 宣言とトリプルの食い違い
+# ------------------------------------------------------- 宣言の無いトリプル
 #
-# `--target` は構成識別子を変えるが、ツールチェーンは選ばない
-# （docs/10-findings.md F-015）。`[toolchain]` はトリプルごとに分かれていない。
+# `[toolchain]` は host 向けの宣言であり、他のトリプルには決して適用されない。
+# 宣言の無いトリプルへ `--target` を渡すと、**組む前に**拒まれる
+# （docs/10-findings.md F-015）。
+#
+# ホストのコンパイラで組んで別のトリプルの名前で置くと、誤りは起動して
+# 初めて `Invalid ELF image` として現れる。06-runner が「起動の前に拒む」
+# ことを約束として見ているのと同じ形が1段あとに戻ってくる。それを避ける。
 
 host_toml
 rm -rf "$SUBJECT/.dowel"
-ok "building for another triple with the host toolchain still reports success" \
+fails "building for a triple with no toolchain declared is refused" \
+    -C subject build --target=$TRIPLE
+diag missing-toolchain "the refusal carries the missing-toolchain code" \
+    -C subject build --target=$TRIPLE
+out_lacks "Invalid ELF image" \
+    "the mismatch is caught before anything is built" -C subject test --target=$TRIPLE
+
+# 拒むのは別のトリプルだけである。ホスト向けは宣言が無くても組める。
+ok "the host build still needs no declaration" -C subject build
+
+# 宣言はできるが中身がホストのコンパイラ、という書き方は止められない。
+# 止まらないこと自体は正しい（利用者がそう書いたのだから）。ここで見るのは、
+# その場合に成果物がホスト向けになることを利用者が観測できることである。
+host_cc_for_triple_toml
+rm -rf "$SUBJECT/.dowel"
+ok "declaring the host compiler for another triple is allowed" \
     -C subject build --target=$TRIPLE
 got=$(machine aarch64)
-case $got in *AArch64*) v=0 ;; *) v=1 ;; esac
+case $got in *X86-64*) v=0 ;; *) v=1 ;; esac
 detail "machine = $got"
-known_issue F-015
-fact $v "an artifact filed under a triple is built for that triple"
-
-# 起動して初めて分かる、という形になっている。06-runner が「起動の前に拒む」
-# ことを約束として見ているのと同じ誤りが、1段あとに戻ってきている。
-known_issue F-015
-out_lacks "Invalid ELF image" \
-    "the mismatch is caught before the artifact is started" -C subject test --target=$TRIPLE
+fact $v "and it produces a host artifact, which readelf shows plainly"
 
 # 逆向き（クロスのツールチェーンでホスト向けの構成を組む）は検査にしない。
 # 起動できるかどうかが機械の設定で決まるためである。qemu-user-static を

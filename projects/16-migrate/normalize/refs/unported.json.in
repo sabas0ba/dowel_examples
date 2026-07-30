@@ -1,0 +1,7 @@
+[
+  {
+    "directory": "@ROOT@",
+    "arguments": ["cc", "-g", "-O0", "-c", "@ROOT@/src/legacy.c"],
+    "file": "@ROOT@/src/legacy.c"
+  }
+]

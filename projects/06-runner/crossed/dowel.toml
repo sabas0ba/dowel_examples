@@ -2,3 +2,10 @@
 name    = "crossed"
 version = "0.1.0"
 edition = "2026"
+
+# 別のトリプル向けに組むには、そのトリプルのツールチェーンが要る
+# （#42 の修正。宣言の無いトリプルは missing-toolchain で拒まれる）。
+# ここで見たいのは起動の仕方であって翻訳ではないが、翻訳できなければ
+# 起動する対象も無い。
+[toolchain.aarch64-unknown-linux-gnu]
+c = "aarch64-linux-gnu-gcc"

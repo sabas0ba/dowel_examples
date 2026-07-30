@@ -10,5 +10,5 @@ if [ "$1" = "--transfer" ]; then
     cp "$1" "${dst#*:}"
 else
     printf 'argv=%s\n' "$*" > launch-argv.txt
-    eval exec "\${$#}"
+    eval exec qemu-aarch64-static "\${$#}"
 fi

@@ -102,12 +102,15 @@ jobs:
         # コンパイラ（C と C++ の両方）と qemu-user を入れる。
         # `cc` だけでは、実際に検査されるのがその機械の既定のコンパイラ
         # 1つだけになる。
+        #
+        # cmake は 16-migrate が移行元を構成するために使う。
         run: |
           sudo apt-get update -qq
-          sudo apt-get install -y -qq ninja-build jq gcc g++ clang \
+          sudo apt-get install -y -qq ninja-build jq cmake gcc g++ clang \
               gcc-aarch64-linux-gnu g++-aarch64-linux-gnu qemu-user-static
           ninja --version
           jq --version
+          cmake --version | head -1
           gcc --version | head -1
           clang --version | head -1
           g++ --version | head -1

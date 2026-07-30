@@ -130,13 +130,13 @@ ok "a full run passes again" test
 # ninja が無ければ direct へ落ちる）。利用者から見れば「同じものを別の方法で
 # 実行するだけ」であり、片方で組んでから他方に渡すのは自然な操作である。
 #
-# ところが依存の記録は共有されていない。ninja は depfile を読むと `.d` を
-# 消して `.ninja_deps` に畳むため、そのあと direct へ渡ると
-# ヘッダの依存情報が1件も無い状態で最新性を判定することになる
+# かつて依存の記録は共有されていなかった。ninja は depfile を読むと `.d` を
+# 消して `.ninja_deps` に畳むため、そのあと direct へ渡るとヘッダの依存情報が
+# 1件も無い状態で最新性を判定し、黙って古い成果物を残していた
 # （docs/10-findings.md F-014）。
 #
-# コマンドの記録は共有されているため、目的物は実行器をまたいで再利用される。
-# 全部が共有されていなければ全部組み直すので、この形は現れなかった。
+# コマンドの記録は共有されていたため目的物は再利用され、**部分的に
+# 共有されていること**が原因になっていた。4通りすべてを見る。
 #
 # 別のパッケージを使う。core の検査は「両側が同じ定数を使う」形であり、
 # 双方が古いままなら food違いが打ち消し合ってテストが通ってしまう。
@@ -166,8 +166,6 @@ for pair in "ninja direct" "direct ninja" "ninja ninja" "direct direct"; do
 
     got=$(built_value)
     [ "$got" = 7 ]; verdict=$?
-    # known_issue は判定の直前に置く。間に何か挟むと $? がそちらの結果になる。
-    if [ "$first" = ninja ] && [ "$second" = direct ]; then known_issue F-014; fi
     fact "$verdict" "a header edit is seen after building with $first then $second"
 done
 

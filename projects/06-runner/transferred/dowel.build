@@ -11,6 +11,11 @@
 [test.remote_test]
 sources = glob("tests/*.c")
 
+# 静的リンクにする。qemu-user に対象の動的ローダの場所を教える必要が無くなり、
+# 検査が sysroot の置き場所に依存しなくなる。
+[test.remote_test.private]
+link_flags = ["-static"]
+
 [runner.aarch64-unknown-linux-gnu]
 host       = "board.local"
 transfer   = ["sh", "tools/wire.sh", "--transfer"]

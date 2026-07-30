@@ -10,6 +10,11 @@ sources = glob("src/*.c")
 [test.status_test]
 sources = glob("tests/*.c")
 
+# 静的リンクにする。qemu-user に対象の動的ローダの場所を教える必要が無くなり、
+# 検査が sysroot の置き場所に依存しなくなる。
+[test.status_test.private]
+link_flags = ["-static"]
+
 # command と args だけを持つ形。転送は伴わない（qemu-user がこれにあたる）。
 # パスは相対で書ける。ランナーはパッケージルートを作業ディレクトリとして
 # 起動されるため、tools/ を指せる。
