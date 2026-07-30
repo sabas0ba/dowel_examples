@@ -1,19 +1,19 @@
 {
- "run_id": "30469437328",
+ "run_id": "30502623380",
  "run_attempt": "1",
- "run_url": "https://github.com/sabas0ba/dowel_examples/actions/runs/30469437328",
- "commit": "c77f4253144a001d43870101c48f5265029eb69b",
+ "run_url": "https://github.com/sabas0ba/dowel_examples/actions/runs/30502623380",
+ "commit": "658861eadf3aa241ebb117fbda83ed64e5e3040e",
  "branch": "main",
- "started_at": "2026-07-29T16:10:49Z",
+ "started_at": "2026-07-30T00:26:10Z",
  "dowel_version": "dowel 0.0.1",
- "dowel_ref": "95daf9ff8dac60310d2ff5c427a53804d2870890",
- "dowel_commit": "95daf9ff8dac60310d2ff5c427a53804d2870890",
+ "dowel_ref": "9ed13f4847032003bc87a80cb8018544edec5106",
+ "dowel_commit": "9ed13f4847032003bc87a80cb8018544edec5106",
  "cc": "cc (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0",
  "ninja": "1.13.2",
  "projects": [
   {
    "name": "01-minimal",
-   "duration_ms": 275,
+   "duration_ms": 250,
    "counts": {
     "pass": 10,
     "fail": 0,
@@ -70,7 +70,7 @@
   },
   {
    "name": "02-config",
-   "duration_ms": 946,
+   "duration_ms": 863,
    "counts": {
     "pass": 21,
     "fail": 0,
@@ -172,7 +172,7 @@
   },
   {
    "name": "03-features",
-   "duration_ms": 272,
+   "duration_ms": 266,
    "counts": {
     "pass": 17,
     "fail": 0,
@@ -261,14 +261,14 @@
   },
   {
    "name": "04-diagnostics",
-   "duration_ms": 354,
+   "duration_ms": 319,
    "counts": {
-    "pass": 70,
+    "pass": 66,
     "fail": 0,
     "xfail": 0,
     "xpass": 0
    },
-   "total": 70,
+   "total": 66,
    "ok": true,
    "checks": [
     {
@@ -369,14 +369,6 @@
     },
     {
      "status": "pass",
-     "desc": "check reports unsupported-language"
-    },
-    {
-     "status": "pass",
-     "desc": "check exits non-zero on unsupported-language"
-    },
-    {
-     "status": "pass",
      "desc": "check reports invalid-source"
     },
     {
@@ -449,10 +441,6 @@
     },
     {
      "status": "pass",
-     "desc": "a C++ source never reaches the linker"
-    },
-    {
-     "status": "pass",
      "desc": "a missing toolchain never reaches the shell"
     },
     {
@@ -502,10 +490,6 @@
     {
      "status": "pass",
      "desc": "missing-toolchain points at the offending source"
-    },
-    {
-     "status": "pass",
-     "desc": "unsupported-language points at the offending source"
     },
     {
      "status": "pass",
@@ -573,13 +557,12 @@
     "cases/unknown-kind",
     "cases/unknown-property",
     "cases/unknown-target",
-    "cases/unresolved-path",
-    "cases/unsupported-language"
+    "cases/unresolved-path"
    ]
   },
   {
    "name": "05-incremental",
-   "duration_ms": 1705,
+   "duration_ms": 1620,
    "counts": {
     "pass": 47,
     "fail": 0,
@@ -790,7 +773,7 @@
   },
   {
    "name": "06-runner",
-   "duration_ms": 251,
+   "duration_ms": 247,
    "counts": {
     "pass": 17,
     "fail": 0,
@@ -877,7 +860,7 @@
   },
   {
    "name": "07-robustness",
-   "duration_ms": 1325,
+   "duration_ms": 1268,
    "counts": {
     "pass": 145,
     "fail": 0,
@@ -1474,7 +1457,7 @@
   },
   {
    "name": "08-lsp",
-   "duration_ms": 10920,
+   "duration_ms": 10904,
    "counts": {
     "pass": 97,
     "fail": 0,
@@ -1879,7 +1862,7 @@
   },
   {
    "name": "09-acquisition",
-   "duration_ms": 15749,
+   "duration_ms": 15600,
    "counts": {
     "pass": 66,
     "fail": 0,
@@ -2162,7 +2145,7 @@
   },
   {
    "name": "10-toolchain",
-   "duration_ms": 2081,
+   "duration_ms": 2069,
    "counts": {
     "pass": 31,
     "fail": 0,
@@ -2303,7 +2286,7 @@
   },
   {
    "name": "11-cross",
-   "duration_ms": 1006,
+   "duration_ms": 993,
    "counts": {
     "pass": 12,
     "fail": 0,
@@ -2376,7 +2359,7 @@
   },
   {
    "name": "12-store",
-   "duration_ms": 212,
+   "duration_ms": 202,
    "counts": {
     "pass": 29,
     "fail": 0,
@@ -2509,7 +2492,7 @@
   },
   {
    "name": "13-parallel",
-   "duration_ms": 10745,
+   "duration_ms": 10778,
    "counts": {
     "pass": 18,
     "fail": 0,
@@ -2598,7 +2581,7 @@
   },
   {
    "name": "14-scale",
-   "duration_ms": 6087,
+   "duration_ms": 6021,
    "counts": {
     "pass": 17,
     "fail": 0,
@@ -2680,6 +2663,166 @@
    "packages": []
   },
   {
+   "name": "15-cpp",
+   "duration_ms": 2167,
+   "counts": {
+    "pass": 35,
+    "fail": 0,
+    "xfail": 0,
+    "xpass": 0
+   },
+   "total": 35,
+   "ok": true,
+   "checks": [
+    {
+     "status": "pass",
+     "desc": "a package of mixed extensions passes check"
+    },
+    {
+     "status": "pass",
+     "desc": "a .cc source is compiled by the C++ driver"
+    },
+    {
+     "status": "pass",
+     "desc": "a .cp source is compiled by the C++ driver"
+    },
+    {
+     "status": "pass",
+     "desc": "a .cpp source is compiled by the C++ driver"
+    },
+    {
+     "status": "pass",
+     "desc": "a .cxx source is compiled by the C++ driver"
+    },
+    {
+     "status": "pass",
+     "desc": "a .c++ source is compiled by the C++ driver"
+    },
+    {
+     "status": "pass",
+     "desc": "a .CPP source is compiled by the C++ driver"
+    },
+    {
+     "status": "pass",
+     "desc": "a .C source is compiled by the C++ driver"
+    },
+    {
+     "status": "pass",
+     "desc": "a .c source is still compiled by the C driver"
+    },
+    {
+     "status": "pass",
+     "desc": "a C++ library passes check"
+    },
+    {
+     "status": "pass",
+     "desc": "a C++ library builds"
+    },
+    {
+     "status": "pass",
+     "desc": "the C++ source of the library uses the C++ driver"
+    },
+    {
+     "status": "pass",
+     "desc": "a C binary that depends on a C++ library passes check"
+    },
+    {
+     "status": "pass",
+     "desc": "its own source is compiled by the C driver"
+    },
+    {
+     "status": "pass",
+     "desc": "but the link uses the C++ driver because a dependency is C++"
+    },
+    {
+     "status": "pass",
+     "desc": "the binary links and runs"
+    },
+    {
+     "status": "pass",
+     "desc": "a C test can call into the C++ library and pass"
+    },
+    {
+     "status": "pass",
+     "desc": "the link never fails the way F-008 did"
+    },
+    {
+     "status": "pass",
+     "desc": "a target holding both C and C++ sources passes check"
+    },
+    {
+     "status": "pass",
+     "desc": "the C source of a mixed target uses the C driver"
+    },
+    {
+     "status": "pass",
+     "desc": "the C++ source of a mixed target uses the C++ driver"
+    },
+    {
+     "status": "pass",
+     "desc": "a mixed target links with the C++ driver"
+    },
+    {
+     "status": "pass",
+     "desc": "the mixed binary agrees about which unit was compiled as what"
+    },
+    {
+     "status": "pass",
+     "desc": "the mixed binary runs and its C and C++ halves both behave"
+    },
+    {
+     "status": "pass",
+     "desc": "cxx defaults to c++ when nothing is declared"
+    },
+    {
+     "status": "pass",
+     "desc": "a declared cxx is what gets invoked"
+    },
+    {
+     "status": "pass",
+     "desc": "the library builds with the declared cxx"
+    },
+    {
+     "status": "pass",
+     "desc": "match on tc.cxx follows the declaration"
+    },
+    {
+     "status": "pass",
+     "desc": "and follows the default when nothing is declared"
+    },
+    {
+     "status": "pass",
+     "desc": "a C++ package with a missing cxx is refused"
+    },
+    {
+     "status": "pass",
+     "desc": "the refusal carries the missing-toolchain code"
+    },
+    {
+     "status": "pass",
+     "desc": "the refusal points at the declaration"
+    },
+    {
+     "status": "pass",
+     "desc": "the missing C++ compiler never reaches the shell"
+    },
+    {
+     "status": "pass",
+     "desc": "a package with no C++ sources ignores a broken cxx declaration"
+    },
+    {
+     "status": "pass",
+     "desc": "and still builds"
+    }
+   ],
+   "packages": [
+    "capp",
+    "cpplib",
+    "exts",
+    "mixed"
+   ]
+  },
+  {
    "name": "docs",
    "duration_ms": 53,
    "counts": {
@@ -2724,12 +2867,12 @@
   }
  ],
  "totals": {
-  "pass": 604,
+  "pass": 635,
   "fail": 0,
   "xfail": 4,
   "xpass": 0
  },
- "total": 608,
+ "total": 639,
  "ok": true,
  "attention": [],
  "known_issues": [
