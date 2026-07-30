@@ -1,0 +1,5 @@
+[lib.cpplib]
+sources = glob("src/*.cpp")
+
+[lib.cpplib.public]
+includes = [dir("include")]

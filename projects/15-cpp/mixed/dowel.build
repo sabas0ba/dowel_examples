@@ -1,0 +1,7 @@
+# 同じターゲットに C と C++ の翻訳単位が混ざる。コンパイラはソースごとに
+# 拡張子で選ばれ、リンクは C++ の driver で行われる。
+[bin.mixed]
+sources = glob("src/*")
+
+[bin.mixed.private]
+includes = [dir("include")]

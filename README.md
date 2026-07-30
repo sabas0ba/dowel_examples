@@ -10,7 +10,7 @@ dowel 本体は自分自身を内側から検査している（`crates/*/tests/`
 仕様と実装の食い違いを仕様の側から見つけられる。
 
 見つけたものは [docs/10-findings.md](docs/10-findings.md) に記録し、本体へ報告する。
-これまでに 15 件を報告し、12 件が修正された。
+これまでに 15 件を報告し、13 件が修正された。
 
 ## 走らせる
 
@@ -63,7 +63,7 @@ DOWELUP=/path/to/dowelup DOWEL_SRC=/path/to/dowel ./run.sh
   ok   the cross tests run under the emulator and pass
   xfail an artifact filed under a triple is built for that triple  [F-015]
 
-total 608 checks: 604 passed, 0 failed, 4 known, 0 fixed
+total 639 checks: 635 passed, 0 failed, 4 known, 0 fixed
 ```
 
 検査名は英語で書く。実装の中身ではなく、何が固定されているかを1行で読ませる
@@ -87,6 +87,7 @@ total 608 checks: 604 passed, 0 failed, 4 known, 0 fixed
 | [12-store](projects/12-store/) | プロセスを跨いだ復元。変更の検出、壊れたストアが答を変えないこと |
 | [13-parallel](projects/13-parallel/) | `--test-jobs`。既定が逐次であること、表示順、失敗の扱い |
 | [14-scale](projects/14-scale/) | 規模。増分の費用が木の大きさではなく変更の大きさに比例すること |
+| [15-cpp](projects/15-cpp/) | C++。拡張子による選択と、依存の閉包で決まるリンク |
 
 プロジェクトのほかに `docs` の段がある。文書が引用する検査名が実在するか、
 リンクが解決するか、索引が中身と一致するかを機械的に見る。文書の不整合は
