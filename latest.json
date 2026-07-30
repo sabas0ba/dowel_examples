@@ -1,19 +1,19 @@
 {
- "run_id": "30512562330",
+ "run_id": "30561364548",
  "run_attempt": "1",
- "run_url": "https://github.com/sabas0ba/dowel_examples/actions/runs/30512562330",
- "commit": "314500155dc907364346f51ead2c25d4bec406ef",
+ "run_url": "https://github.com/sabas0ba/dowel_examples/actions/runs/30561364548",
+ "commit": "49808ac5de0a0cdb024a56caec73244f9031c8ca",
  "branch": "main",
- "started_at": "2026-07-30T03:58:37Z",
+ "started_at": "2026-07-30T16:25:58Z",
  "dowel_version": "dowel 0.0.1",
- "dowel_ref": "9ed13f4847032003bc87a80cb8018544edec5106",
- "dowel_commit": "9ed13f4847032003bc87a80cb8018544edec5106",
+ "dowel_ref": "3e84cbdddb7248dc621c4be0105781b410dcd683",
+ "dowel_commit": "3e84cbdddb7248dc621c4be0105781b410dcd683",
  "cc": "cc (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0",
  "ninja": "1.13.2",
  "projects": [
   {
    "name": "01-minimal",
-   "duration_ms": 248,
+   "duration_ms": 225,
    "counts": {
     "pass": 10,
     "fail": 0,
@@ -70,7 +70,7 @@
   },
   {
    "name": "02-config",
-   "duration_ms": 7339,
+   "duration_ms": 4333,
    "counts": {
     "pass": 21,
     "fail": 0,
@@ -172,7 +172,7 @@
   },
   {
    "name": "03-features",
-   "duration_ms": 268,
+   "duration_ms": 237,
    "counts": {
     "pass": 17,
     "fail": 0,
@@ -261,7 +261,7 @@
   },
   {
    "name": "04-diagnostics",
-   "duration_ms": 327,
+   "duration_ms": 283,
    "counts": {
     "pass": 66,
     "fail": 0,
@@ -562,11 +562,11 @@
   },
   {
    "name": "05-incremental",
-   "duration_ms": 1661,
+   "duration_ms": 1529,
    "counts": {
-    "pass": 47,
+    "pass": 48,
     "fail": 0,
-    "xfail": 1,
+    "xfail": 0,
     "xpass": 0
    },
    "total": 48,
@@ -749,8 +749,8 @@
      "desc": "a full run passes again"
     },
     {
-     "status": "xfail",
-     "desc": "a header edit is seen after building with ninja then direct  [F-014]"
+     "status": "pass",
+     "desc": "a header edit is seen after building with ninja then direct"
     },
     {
      "status": "pass",
@@ -773,7 +773,7 @@
   },
   {
    "name": "06-runner",
-   "duration_ms": 240,
+   "duration_ms": 329,
    "counts": {
     "pass": 17,
     "fail": 0,
@@ -860,7 +860,7 @@
   },
   {
    "name": "07-robustness",
-   "duration_ms": 1291,
+   "duration_ms": 1220,
    "counts": {
     "pass": 145,
     "fail": 0,
@@ -1457,7 +1457,7 @@
   },
   {
    "name": "08-lsp",
-   "duration_ms": 10915,
+   "duration_ms": 10924,
    "counts": {
     "pass": 97,
     "fail": 0,
@@ -1862,7 +1862,7 @@
   },
   {
    "name": "09-acquisition",
-   "duration_ms": 15830,
+   "duration_ms": 18401,
    "counts": {
     "pass": 66,
     "fail": 0,
@@ -2145,7 +2145,7 @@
   },
   {
    "name": "10-toolchain",
-   "duration_ms": 2828,
+   "duration_ms": 1861,
    "counts": {
     "pass": 31,
     "fail": 0,
@@ -2286,14 +2286,14 @@
   },
   {
    "name": "11-cross",
-   "duration_ms": 1134,
+   "duration_ms": 959,
    "counts": {
-    "pass": 12,
+    "pass": 17,
     "fail": 0,
-    "xfail": 2,
+    "xfail": 0,
     "xpass": 0
    },
-   "total": 14,
+   "total": 17,
    "ok": true,
    "checks": [
     {
@@ -2342,15 +2342,27 @@
     },
     {
      "status": "pass",
-     "desc": "building for another triple with the host toolchain still reports success"
+     "desc": "building for a triple with no toolchain declared is refused"
     },
     {
-     "status": "xfail",
-     "desc": "an artifact filed under a triple is built for that triple  [F-015]"
+     "status": "pass",
+     "desc": "the refusal carries the missing-toolchain code"
     },
     {
-     "status": "xfail",
-     "desc": "the mismatch is caught before the artifact is started  [F-015]"
+     "status": "pass",
+     "desc": "the mismatch is caught before anything is built"
+    },
+    {
+     "status": "pass",
+     "desc": "the host build still needs no declaration"
+    },
+    {
+     "status": "pass",
+     "desc": "declaring the host compiler for another triple is allowed"
+    },
+    {
+     "status": "pass",
+     "desc": "and it produces a host artifact, which readelf shows plainly"
     }
    ],
    "packages": [
@@ -2359,7 +2371,7 @@
   },
   {
    "name": "12-store",
-   "duration_ms": 203,
+   "duration_ms": 183,
    "counts": {
     "pass": 29,
     "fail": 0,
@@ -2492,7 +2504,7 @@
   },
   {
    "name": "13-parallel",
-   "duration_ms": 10747,
+   "duration_ms": 10758,
    "counts": {
     "pass": 18,
     "fail": 0,
@@ -2581,7 +2593,7 @@
   },
   {
    "name": "14-scale",
-   "duration_ms": 6088,
+   "duration_ms": 5545,
    "counts": {
     "pass": 17,
     "fail": 0,
@@ -2664,7 +2676,7 @@
   },
   {
    "name": "15-cpp",
-   "duration_ms": 6759,
+   "duration_ms": 4928,
    "counts": {
     "pass": 70,
     "fail": 0,
@@ -2978,8 +2990,221 @@
    ]
   },
   {
+   "name": "16-migrate",
+   "duration_ms": 1312,
+   "counts": {
+    "pass": 46,
+    "fail": 0,
+    "xfail": 3,
+    "xpass": 0
+   },
+   "total": 49,
+   "ok": true,
+   "checks": [
+    {
+     "status": "pass",
+     "desc": "cmake writes a compile database for the reference build"
+    },
+    {
+     "status": "pass",
+     "desc": "import drafts a manifest pair from the CMake File API"
+    },
+    {
+     "status": "pass",
+     "desc": "import writes a package manifest"
+    },
+    {
+     "status": "pass",
+     "desc": "import writes a build manifest"
+    },
+    {
+     "status": "pass",
+     "desc": "the package manifest is marked as an unverified draft"
+    },
+    {
+     "status": "pass",
+     "desc": "the build manifest is marked as an unverified draft"
+    },
+    {
+     "status": "pass",
+     "desc": "import points at the verify step that checks its own output"
+    },
+    {
+     "status": "pass",
+     "desc": "the package takes its name from the CMake project"
+    },
+    {
+     "status": "pass",
+     "desc": "an executable becomes a bin target"
+    },
+    {
+     "status": "pass",
+     "desc": "a static library becomes a lib target"
+    },
+    {
+     "status": "pass",
+     "desc": "sources are listed one by one"
+    },
+    {
+     "status": "pass",
+     "desc": "globbing is not used for the imported sources"
+    },
+    {
+     "status": "pass",
+     "desc": "an in-project link becomes a target() dependency"
+    },
+    {
+     "status": "pass",
+     "desc": "includes and defines land in a private block"
+    },
+    {
+     "status": "pass",
+     "desc": "nothing is drafted as public"
+    },
+    {
+     "status": "pass",
+     "desc": "the drafted manifests pass check"
+    },
+    {
+     "status": "pass",
+     "desc": "the drafted manifests build"
+    },
+    {
+     "status": "pass",
+     "desc": "the binary built from the draft runs and agrees with the CMake build"
+    },
+    {
+     "status": "pass",
+     "desc": "import refuses to overwrite manifests that are already there"
+    },
+    {
+     "status": "pass",
+     "desc": "the refusal leaves the existing manifest untouched"
+    },
+    {
+     "status": "pass",
+     "desc": "the refusal says the manifests are already there"
+    },
+    {
+     "status": "pass",
+     "desc": "a build directory with no File API reply is refused"
+    },
+    {
+     "status": "pass",
+     "desc": "the refusal says how to produce the reply"
+    },
+    {
+     "status": "pass",
+     "desc": "every buildable target kind is imported"
+    },
+    {
+     "status": "pass",
+     "desc": "an object library becomes a lib target"
+    },
+    {
+     "status": "pass",
+     "desc": "a shared library becomes a lib target too"
+    },
+    {
+     "status": "pass",
+     "desc": "the draft says out loud that a shared library became a static one"
+    },
+    {
+     "status": "pass",
+     "desc": "an interface library does not become a target of its own"
+    },
+    {
+     "status": "pass",
+     "desc": "what an interface library handed to its users survives"
+    },
+    {
+     "status": "pass",
+     "desc": "a system library becomes a link flag"
+    },
+    {
+     "status": "pass",
+     "desc": "verify compares plans, so it needs no build of its own"
+    },
+    {
+     "status": "pass",
+     "desc": "the compiler name, -c, -o and the -MD family are not differences"
+    },
+    {
+     "status": "pass",
+     "desc": "-DA, -D A=1 and -DA=1 are the same define"
+    },
+    {
+     "status": "pass",
+     "desc": "a relative include is resolved against the entry's directory"
+    },
+    {
+     "status": "pass",
+     "desc": "the order of the arguments is not a difference"
+    },
+    {
+     "status": "pass",
+     "desc": "a genuine difference is still reported"
+    },
+    {
+     "status": "pass",
+     "desc": "the difference names both what the reference had and what dowel has"
+    },
+    {
+     "status": "pass",
+     "desc": "a differing entry makes the comparison fail"
+    },
+    {
+     "status": "pass",
+     "desc": "a file only dowel builds is counted apart, and does not fail"
+    },
+    {
+     "status": "pass",
+     "desc": "a file the reference builds and dowel does not is counted as not ported"
+    },
+    {
+     "status": "pass",
+     "desc": "the text form reports the same four buckets as the json form"
+    },
+    {
+     "status": "pass",
+     "desc": "a reference that is not there is refused"
+    },
+    {
+     "status": "pass",
+     "desc": "a reference that is not JSON is refused"
+    },
+    {
+     "status": "pass",
+     "desc": "an empty reference is refused"
+    },
+    {
+     "status": "pass",
+     "desc": "a release build directory is imported the same way"
+    },
+    {
+     "status": "pass",
+     "desc": "the drafted debug build of a debug import is unoptimized"
+    },
+    {
+     "status": "xfail",
+     "desc": "the drafted release build is actually optimized  [F-017]"
+    },
+    {
+     "status": "xfail",
+     "desc": "the drafted debug build keeps assertions  [F-017]"
+    },
+    {
+     "status": "xfail",
+     "desc": "the workflow that import prints verifies clean  [F-017]"
+    }
+   ],
+   "packages": [
+    "normalize"
+   ]
+  },
+  {
    "name": "docs",
-   "duration_ms": 52,
+   "duration_ms": 48,
    "counts": {
     "pass": 7,
     "fail": 0,
@@ -3022,34 +3247,19 @@
   }
  ],
  "totals": {
-  "pass": 670,
+  "pass": 722,
   "fail": 0,
   "xfail": 6,
   "xpass": 0
  },
- "total": 676,
+ "total": 728,
  "ok": true,
  "attention": [],
  "known_issues": [
   {
    "status": "xfail",
-   "project": "05-incremental",
-   "desc": "a header edit is seen after building with ninja then direct  [F-014]"
-  },
-  {
-   "status": "xfail",
    "project": "09-acquisition",
    "desc": "a pin file with a UTF-8 BOM is read  [F-011]"
-  },
-  {
-   "status": "xfail",
-   "project": "11-cross",
-   "desc": "an artifact filed under a triple is built for that triple  [F-015]"
-  },
-  {
-   "status": "xfail",
-   "project": "11-cross",
-   "desc": "the mismatch is caught before the artifact is started  [F-015]"
   },
   {
    "status": "xfail",
@@ -3060,6 +3270,21 @@
    "status": "xfail",
    "project": "15-cpp",
    "desc": "changing the archiver rebuilds the archive  [F-016]"
+  },
+  {
+   "status": "xfail",
+   "project": "16-migrate",
+   "desc": "the drafted release build is actually optimized  [F-017]"
+  },
+  {
+   "status": "xfail",
+   "project": "16-migrate",
+   "desc": "the drafted debug build keeps assertions  [F-017]"
+  },
+  {
+   "status": "xfail",
+   "project": "16-migrate",
+   "desc": "the workflow that import prints verifies clean  [F-017]"
   }
  ]
 }
