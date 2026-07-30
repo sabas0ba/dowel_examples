@@ -1,0 +1,7 @@
+[
+  {
+    "directory": "@ROOT@",
+    "arguments": ["cc", "-g", "-O0", "-Wall", "-Wextra", "-I@ROOT@/include", "-DA=1", "-c", "@ROOT@/src/one.c"],
+    "file": "@ROOT@/src/one.c"
+  }
+]

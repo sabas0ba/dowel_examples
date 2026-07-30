@@ -1,0 +1,16 @@
+# `migrate verify` の正規化だけを見るためのパッケージ。移行の産物ではなく
+# 手で書いてある。取り込みの側が変わっても、この節の期待値は動かない。
+#
+# 比べるのは「翻訳を決めるもの」だけである。コンパイラの名前、-c、-o、
+# 依存ファイルの生成（-MD の一族）は翻訳の内容を変えないため対象外になる。
+
+[bin.normalize]
+sources = [
+    file("src/one.c"),
+    file("src/two.c"),
+]
+
+[bin.normalize.private]
+includes = [dir("include")]
+defines  = { A = 1 }
+flags    = ["-Wall", "-Wextra"]

@@ -1,0 +1,12 @@
+[
+  {
+    "directory": "@ROOT@",
+    "command": "/usr/bin/gcc -g -O0 -Wall -Wextra -I@ROOT@/include -DA=1 -MD -MMD -MP -MF one.d -c @ROOT@/src/one.c -o one.o",
+    "file": "@ROOT@/src/one.c"
+  },
+  {
+    "directory": "@ROOT@",
+    "command": "/usr/bin/gcc -g -O0 -Wall -Wextra -I@ROOT@/include -DA=1 -MD -MMD -MP -MF two.d -c @ROOT@/src/two.c -o two.o",
+    "file": "@ROOT@/src/two.c"
+  }
+]

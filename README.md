@@ -10,7 +10,7 @@ dowel 本体は自分自身を内側から検査している（`crates/*/tests/`
 仕様と実装の食い違いを仕様の側から見つけられる。
 
 見つけたものは [docs/10-findings.md](docs/10-findings.md) に記録し、本体へ報告する。
-これまでに 16 件を報告し、13 件が修正された。
+これまでに 17 件を報告し、13 件が修正された。
 
 ## 走らせる
 
@@ -31,7 +31,8 @@ bash 4 以降。
 
 C++ とクロスの層は `g++` / `clang++` / `aarch64-linux-gnu-g++` /
 `qemu-aarch64-static` も要る。`cc` だけで走らせると、実際に検査されるのは
-その機械の既定のコンパイラ1つだけになる。
+その機械の既定のコンパイラ1つだけになる。移行の層（`16-migrate`）は
+移行元を組み立てるために `cmake` を使う。
 
 `09-acquisition` は `dowelup` と dowel の**作業木**も要る。取得を検査する層で
 あり、上流にあたる git リポジトリを手元へ複製して相手にするためである
@@ -52,8 +53,7 @@ DOWELUP=/path/to/dowelup DOWEL_SRC=/path/to/dowel ./run.sh
 1 検査 1 行。本体が直していない事項に対する検査は `xfail` として登録する。
 本体側が直ると `XPASS` になって落ち、宣言を外すべきことが分かる。現在は 6 件で、
 [F-011](docs/10-findings.md#f-011) の残っている側、
-[F-014](docs/10-findings.md#f-014)、[F-015](docs/10-findings.md#f-015)、
-[F-016](docs/10-findings.md#f-016) に対応する。
+[F-016](docs/10-findings.md#f-016)、[F-017](docs/10-findings.md#f-017) に対応する。
 
 ```
 02-config
@@ -66,9 +66,13 @@ DOWELUP=/path/to/dowelup DOWEL_SRC=/path/to/dowel ./run.sh
 
 11-cross
   ok   the cross tests run under the emulator and pass
-  xfail an artifact filed under a triple is built for that triple  [F-015]
+  ok   an artifact filed under a triple is built for that triple
 
-total 676 checks: 670 passed, 0 failed, 6 known, 0 fixed
+16-migrate
+  ok   a genuine difference is still reported
+  xfail the workflow that import prints verifies clean  [F-017]
+
+total 728 checks: 722 passed, 0 failed, 6 known, 0 fixed
 ```
 
 検査名は英語で書く。実装の中身ではなく、何が固定されているかを1行で読ませる
@@ -93,6 +97,7 @@ total 676 checks: 670 passed, 0 failed, 6 known, 0 fixed
 | [13-parallel](projects/13-parallel/) | `--test-jobs`。既定が逐次であること、表示順、失敗の扱い |
 | [14-scale](projects/14-scale/) | 規模。増分の費用が木の大きさではなく変更の大きさに比例すること |
 | [15-cpp](projects/15-cpp/) | C++。拡張子による選択、依存の閉包で決まるリンク、実行時が本当に繋がること |
+| [16-migrate](projects/16-migrate/) | 既存のビルドからの移行。下書きに何が写るか、写した結果が同じ翻訳になるか |
 
 プロジェクトのほかに `docs` の段がある。文書が引用する検査名が実在するか、
 リンクが解決するか、索引が中身と一致するかを機械的に見る。文書の不整合は

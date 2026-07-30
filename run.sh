@@ -104,24 +104,27 @@ export DOWELUP DOWEL_SRC
 # 10-toolchain は gcc と clang の双方を、11-cross と 15-cpp は本物のクロス
 # コンパイラ（C と C++ の両方）と qemu-user を使う。`cc` だけで走らせると、
 # 実際に検査されるのはその機械の既定のコンパイラ1つだけになる。
+# 16-migrate は移行元として本物の CMake プロジェクトを構成する。
 #
 # 揃っていなければ始めない。環境によって走る検査が変わると、結果を過去の
 # 実行と比べられなくなる。
-for tool in cc ninja jq git gcc g++ clang clang++ \
+for tool in cc ninja jq git cmake gcc g++ clang clang++ \
              aarch64-linux-gnu-gcc aarch64-linux-gnu-g++ qemu-aarch64-static; do
     command -v "$tool" >/dev/null 2>&1 || {
         printf '%s is missing.\n\n' "$tool" >&2
         cat >&2 <<'EOF'
-required: cc ninja jq git python3 cargo, and for the toolchain and cross layers
+required: cc ninja jq git python3 cargo, and for the toolchain, cross and
+migration layers
 
   gcc g++ clang clang++        10-toolchain and 15-cpp build with both families
   aarch64-linux-gnu-gcc        11-cross compiles for another architecture
   aarch64-linux-gnu-g++        15-cpp cross compiles C++ as well
   qemu-aarch64-static          11-cross and 15-cpp run what they compiled
+  cmake                        16-migrate imports from a real CMake build
 
 on debian and ubuntu:
 
-  apt-get install -y ninja-build jq gcc g++ clang \
+  apt-get install -y ninja-build jq cmake gcc g++ clang \
       gcc-aarch64-linux-gnu g++-aarch64-linux-gnu qemu-user-static
 EOF
         exit 2
