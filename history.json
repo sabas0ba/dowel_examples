@@ -2089,5 +2089,302 @@
   "total": 639,
   "ok": true,
   "attention": []
+ },
+ {
+  "run_id": "30511956221",
+  "run_attempt": "1",
+  "run_url": "https://github.com/sabas0ba/dowel_examples/actions/runs/30511956221",
+  "commit": "4546a243874a648a19abe52f3f68574746483166",
+  "branch": "main",
+  "started_at": "2026-07-30T03:44:54Z",
+  "dowel_version": "dowel 0.0.1",
+  "dowel_ref": "9ed13f4847032003bc87a80cb8018544edec5106",
+  "dowel_commit": "9ed13f4847032003bc87a80cb8018544edec5106",
+  "cc": "cc (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0",
+  "ninja": "1.13.2",
+  "projects": [
+   {
+    "name": "01-minimal",
+    "duration_ms": 1368,
+    "counts": {
+     "pass": 10,
+     "fail": 0,
+     "xfail": 0,
+     "xpass": 0
+    },
+    "total": 10,
+    "ok": true,
+    "packages": [
+     "hello"
+    ]
+   },
+   {
+    "name": "02-config",
+    "duration_ms": 6947,
+    "counts": {
+     "pass": 21,
+     "fail": 0,
+     "xfail": 0,
+     "xpass": 0
+    },
+    "total": 21,
+    "ok": true,
+    "packages": [
+     "app",
+     "probe"
+    ]
+   },
+   {
+    "name": "03-features",
+    "duration_ms": 305,
+    "counts": {
+     "pass": 17,
+     "fail": 0,
+     "xfail": 0,
+     "xpass": 0
+    },
+    "total": 17,
+    "ok": true,
+    "packages": [
+     "app",
+     "json",
+     "missing-optional",
+     "undeclared",
+     "xml"
+    ]
+   },
+   {
+    "name": "04-diagnostics",
+    "duration_ms": 388,
+    "counts": {
+     "pass": 66,
+     "fail": 0,
+     "xfail": 0,
+     "xpass": 0
+    },
+    "total": 66,
+    "ok": true,
+    "packages": [
+     "cases/abi-mismatch/app",
+     "cases/abi-mismatch/lib",
+     "cases/dependency-cycle",
+     "cases/empty-glob",
+     "cases/incomplete-runner",
+     "cases/invalid-source",
+     "cases/merge-conflict/app",
+     "cases/merge-conflict/lib",
+     "cases/missing-field",
+     "cases/missing-manifest",
+     "cases/missing-toolchain",
+     "cases/non-exhaustive-match",
+     "cases/type-mismatch",
+     "cases/undeclared-dependency",
+     "cases/unknown-cfg-key",
+     "cases/unknown-feature",
+     "cases/unknown-function",
+     "cases/unknown-kind",
+     "cases/unknown-property",
+     "cases/unknown-target",
+     "cases/unresolved-path"
+    ]
+   },
+   {
+    "name": "05-incremental",
+    "duration_ms": 1862,
+    "counts": {
+     "pass": 47,
+     "fail": 0,
+     "xfail": 1,
+     "xpass": 0
+    },
+    "total": 48,
+    "ok": true,
+    "packages": [
+     "app",
+     "core",
+     "crossing"
+    ]
+   },
+   {
+    "name": "06-runner",
+    "duration_ms": 285,
+    "counts": {
+     "pass": 17,
+     "fail": 0,
+     "xfail": 0,
+     "xpass": 0
+    },
+    "total": 17,
+    "ok": true,
+    "packages": [
+     "crossed",
+     "plain",
+     "transferred"
+    ]
+   },
+   {
+    "name": "07-robustness",
+    "duration_ms": 1414,
+    "counts": {
+     "pass": 145,
+     "fail": 0,
+     "xfail": 0,
+     "xpass": 0
+    },
+    "total": 145,
+    "ok": true,
+    "packages": [
+     "subject"
+    ]
+   },
+   {
+    "name": "08-lsp",
+    "duration_ms": 10937,
+    "counts": {
+     "pass": 97,
+     "fail": 0,
+     "xfail": 0,
+     "xpass": 0
+    },
+    "total": 97,
+    "ok": true,
+    "packages": [
+     "subject"
+    ]
+   },
+   {
+    "name": "09-acquisition",
+    "duration_ms": 17024,
+    "counts": {
+     "pass": 66,
+     "fail": 0,
+     "xfail": 1,
+     "xpass": 0
+    },
+    "total": 67,
+    "ok": true,
+    "packages": []
+   },
+   {
+    "name": "10-toolchain",
+    "duration_ms": 2447,
+    "counts": {
+     "pass": 31,
+     "fail": 0,
+     "xfail": 0,
+     "xpass": 0
+    },
+    "total": 31,
+    "ok": true,
+    "packages": [
+     "subject"
+    ]
+   },
+   {
+    "name": "11-cross",
+    "duration_ms": 1235,
+    "counts": {
+     "pass": 12,
+     "fail": 0,
+     "xfail": 2,
+     "xpass": 0
+    },
+    "total": 14,
+    "ok": true,
+    "packages": [
+     "subject"
+    ]
+   },
+   {
+    "name": "12-store",
+    "duration_ms": 222,
+    "counts": {
+     "pass": 29,
+     "fail": 0,
+     "xfail": 0,
+     "xpass": 0
+    },
+    "total": 29,
+    "ok": true,
+    "packages": [
+     "subject"
+    ]
+   },
+   {
+    "name": "13-parallel",
+    "duration_ms": 10968,
+    "counts": {
+     "pass": 18,
+     "fail": 0,
+     "xfail": 0,
+     "xpass": 0
+    },
+    "total": 18,
+    "ok": true,
+    "packages": [
+     "subject"
+    ]
+   },
+   {
+    "name": "14-scale",
+    "duration_ms": 6831,
+    "counts": {
+     "pass": 17,
+     "fail": 0,
+     "xfail": 0,
+     "xpass": 0
+    },
+    "total": 17,
+    "ok": true,
+    "packages": []
+   },
+   {
+    "name": "15-cpp",
+    "duration_ms": 6295,
+    "counts": {
+     "pass": 70,
+     "fail": 0,
+     "xfail": 0,
+     "xpass": 0
+    },
+    "total": 70,
+    "ok": true,
+    "packages": [
+     "capp",
+     "chain/deep",
+     "chain/mid",
+     "chain/topc",
+     "cpplib",
+     "cross/xapp",
+     "cross/xlib",
+     "exts",
+     "mixed",
+     "reverse/clib",
+     "reverse/cxxapp"
+    ]
+   },
+   {
+    "name": "docs",
+    "duration_ms": 56,
+    "counts": {
+     "pass": 7,
+     "fail": 0,
+     "xfail": 0,
+     "xpass": 0
+    },
+    "total": 7,
+    "ok": true,
+    "packages": []
+   }
+  ],
+  "totals": {
+   "pass": 670,
+   "fail": 0,
+   "xfail": 4,
+   "xpass": 0
+  },
+  "total": 674,
+  "ok": true,
+  "attention": []
  }
 ]
