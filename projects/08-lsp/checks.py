@@ -308,6 +308,86 @@ def toml_agreement():
                    "the language server reports %s in dowel.toml" % code, issue)
 
 
+# ------------------------------------------------------- 3.1. 計画段との一致
+#
+# 上の一致は、開いた本文だけで決まる誤りを見ている。ここで見るのは
+# **ファイルシステムを走査しないと分からない誤り**である。glob の展開、
+# パスの解決、ツールチェーンの実在がそれにあたる。
+#
+# かつてこれらは言語サーバから出ず、`dowel_lsp::UNSUPPORTED` に理由つきで
+# 並んでいた。エディタが黙る誤りは、利用者にとって存在しない誤りになる。
+# `check` と同じ深さで出るようになったことを、同じ本文への答が一致するか
+# どうかで見る（`docs/91-implementation-status.md`）。
+
+PLAN_STAGE = [
+    # (期待する安定コード, 本文, 未修正の所見)
+    ("empty-glob", '[bin.subject]\nsources = glob("nowhere/*.c")\n', ""),
+    ("no-sources", "[bin.subject]\nsources = []\n", ""),
+    # 実在するが翻訳できないもの。ディレクトリを file() で指した場合。
+    ("invalid-source", '[bin.subject]\nsources = [file("src")]\n', ""),
+    # 実在しないもの。ビルドツールの「no known rule」より前に捕まえる。
+    ("unresolved-path", '[bin.subject]\nsources = [file("src/nowhere.c")]\n', ""),
+]
+
+
+def plan_agreement():
+    with session() as s:
+        s.open(BUILD_URI, VALID)
+        s.diagnostics(BUILD_URI)
+        version = 1
+        for code, text, issue in PLAN_STAGE:
+            in_cli = code in cli_codes(text)
+            s.settle()
+            version += 1
+            s.change(BUILD_URI, text, version)
+            got = s.codes(BUILD_URI, timeout=8) or []
+            report(in_cli, "dowel check still reports %s" % code)
+            report(code in got,
+                   "the language server scans the file system for %s" % code, issue)
+
+    # ツールチェーンの実在は dowel.toml 側の宣言で決まる。走査ではなく
+    # PATH の探索だが、同じく「開いた本文だけでは決まらない」側である。
+    text = VALID_TOML + '\n[toolchain]\nc = "no-such-compiler-xyz"\n'
+    with session() as s:
+        in_cli = "missing-toolchain" in cli_codes(text, "dowel.toml")
+        s.settle()
+        s.open(TOML_URI, text, language="toml")
+        got = s.codes(TOML_URI, timeout=8) or []
+        s.settle()
+        s.close_doc(TOML_URI)
+        report(in_cli, "dowel check still reports missing-toolchain")
+        report("missing-toolchain" in got,
+               "the language server looks for the declared compiler too")
+
+
+# --------------------------------------------- 3.2. 出さないと決めてあるもの
+#
+# 出さないものは残っている。エディタの会期は**読むだけ**であり、取得も
+# しなければ外部のプロセスも起こさない（ADR-0015）。境界は空にするのが
+# 目標だが、空でない間は「出ないこと」自体を固定する。出ないと決めたものが
+# うっかり出るようになると、エディタが副作用を持つ。
+
+def unsupported_boundary():
+    # システムパッケージの解決は pkg-config を起こす。CLI は拒むが、
+    # 言語サーバは何も言わない。
+    text = VALID_TOML + ('\n[[dependencies]]\nname    = "nosuchmodule-xyz"\n'
+                         'version = "1.0"\n')
+    in_cli = "unsatisfied-dependency" in cli_codes(text, "dowel.toml")
+    with session() as s:
+        s.settle()
+        s.open(TOML_URI, text, language="toml")
+        got = s.codes(TOML_URI, timeout=8) or []
+        s.settle()
+        s.close_doc(TOML_URI)
+    report(in_cli, "dowel check refuses an unresolvable system package")
+    report("unsatisfied-dependency" not in got,
+           "the language server does not run pkg-config to resolve it")
+    # 記録の突き合わせも解決に付随する。会期が lock を書くと、エディタで
+    # 開いただけで版管理に差分が出る。
+    report(not os.path.exists(os.path.join(ROOT, "dowel.lock")),
+           "opening a manifest never writes dowel.lock")
+
+
 # --------------------------------------------------------------- 4. ホバー
 #
 # ホバーはスキーマそのものを説明にする（`docs/30-devexp.md` 3.2 節）。
@@ -419,7 +499,8 @@ def robustness():
 
 def main():
     for stage in (protocol, rpc_robustness, diagnostic_shape, utf16_columns,
-                  utf16_positions, agreement, toml_agreement, hover, robustness):
+                  utf16_positions, agreement, toml_agreement, plan_agreement,
+                  unsupported_boundary, hover, robustness):
         try:
             stage()
         except Exception as e:  # 段が落ちても残りは走らせる

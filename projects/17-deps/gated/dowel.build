@@ -1,0 +1,5 @@
+[bin.gated]
+sources = [file("src/main.c")]
+
+[bin.gated.private]
+deps = [dep("quiet") when feature.quiet]

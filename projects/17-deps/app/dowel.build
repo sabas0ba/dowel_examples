@@ -1,0 +1,5 @@
+[bin.app]
+sources = [file("src/main.c")]
+
+[bin.app.private]
+deps = [dep("demokit")]

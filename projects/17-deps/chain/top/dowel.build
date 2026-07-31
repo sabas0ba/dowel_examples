@@ -1,0 +1,5 @@
+[bin.top]
+sources = [file("src/main.c")]
+
+[bin.top.private]
+deps = [dep("mid")]

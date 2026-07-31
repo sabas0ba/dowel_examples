@@ -1,0 +1,7 @@
+# リンクフラグを持たないモジュール。--libs が空でも解決できること、
+# および漂流の検査に使う。
+prefix=${pcfiledir}
+Name: quiet
+Description: a fixture module with no link flags
+Version: 1.0.0
+Cflags: -I${prefix}/include -DQUIET=1
