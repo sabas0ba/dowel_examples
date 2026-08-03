@@ -1,19 +1,19 @@
 {
- "run_id": "30773914200",
+ "run_id": "30782936180",
  "run_attempt": "1",
- "run_url": "https://github.com/sabas0ba/dowel_examples/actions/runs/30773914200",
- "commit": "9bb5ceb209d1187fdfde5b70c63b79be99fe1324",
+ "run_url": "https://github.com/sabas0ba/dowel_examples/actions/runs/30782936180",
+ "commit": "8fb90df15f929a9332e460575137bf85b10548bf",
  "branch": "main",
- "started_at": "2026-08-03T00:12:52Z",
+ "started_at": "2026-08-03T03:54:38Z",
  "dowel_version": "dowel 0.0.1",
- "dowel_ref": "2e99fc718f45bb7bfa80d933cf1ee5b4d01421d9",
- "dowel_commit": "2e99fc718f45bb7bfa80d933cf1ee5b4d01421d9",
+ "dowel_ref": "a9c16191bb0fc6072029325c9e89e1bb537dd028",
+ "dowel_commit": "a9c16191bb0fc6072029325c9e89e1bb537dd028",
  "cc": "cc (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0",
  "ninja": "1.13.2",
  "projects": [
   {
    "name": "01-minimal",
-   "duration_ms": 1307,
+   "duration_ms": 253,
    "counts": {
     "pass": 10,
     "fail": 0,
@@ -70,7 +70,7 @@
   },
   {
    "name": "02-config",
-   "duration_ms": 6026,
+   "duration_ms": 4947,
    "counts": {
     "pass": 21,
     "fail": 0,
@@ -172,7 +172,7 @@
   },
   {
    "name": "03-features",
-   "duration_ms": 266,
+   "duration_ms": 305,
    "counts": {
     "pass": 17,
     "fail": 0,
@@ -261,7 +261,7 @@
   },
   {
    "name": "04-diagnostics",
-   "duration_ms": 328,
+   "duration_ms": 369,
    "counts": {
     "pass": 66,
     "fail": 0,
@@ -562,7 +562,7 @@
   },
   {
    "name": "05-incremental",
-   "duration_ms": 1671,
+   "duration_ms": 1994,
    "counts": {
     "pass": 48,
     "fail": 0,
@@ -773,7 +773,7 @@
   },
   {
    "name": "06-runner",
-   "duration_ms": 358,
+   "duration_ms": 421,
    "counts": {
     "pass": 17,
     "fail": 0,
@@ -860,7 +860,7 @@
   },
   {
    "name": "07-robustness",
-   "duration_ms": 1286,
+   "duration_ms": 1459,
    "counts": {
     "pass": 145,
     "fail": 0,
@@ -1457,7 +1457,7 @@
   },
   {
    "name": "08-lsp",
-   "duration_ms": 12802,
+   "duration_ms": 12791,
    "counts": {
     "pass": 110,
     "fail": 0,
@@ -1914,7 +1914,7 @@
   },
   {
    "name": "09-acquisition",
-   "duration_ms": 17591,
+   "duration_ms": 19225,
    "counts": {
     "pass": 66,
     "fail": 0,
@@ -2197,7 +2197,7 @@
   },
   {
    "name": "10-toolchain",
-   "duration_ms": 2096,
+   "duration_ms": 2128,
    "counts": {
     "pass": 31,
     "fail": 0,
@@ -2338,7 +2338,7 @@
   },
   {
    "name": "11-cross",
-   "duration_ms": 1102,
+   "duration_ms": 1247,
    "counts": {
     "pass": 17,
     "fail": 0,
@@ -2423,7 +2423,7 @@
   },
   {
    "name": "12-store",
-   "duration_ms": 202,
+   "duration_ms": 230,
    "counts": {
     "pass": 29,
     "fail": 0,
@@ -2556,7 +2556,7 @@
   },
   {
    "name": "13-parallel",
-   "duration_ms": 10905,
+   "duration_ms": 10773,
    "counts": {
     "pass": 18,
     "fail": 0,
@@ -2645,7 +2645,7 @@
   },
   {
    "name": "14-scale",
-   "duration_ms": 6050,
+   "duration_ms": 7241,
    "counts": {
     "pass": 17,
     "fail": 0,
@@ -2728,14 +2728,14 @@
   },
   {
    "name": "15-cpp",
-   "duration_ms": 5725,
+   "duration_ms": 4389,
    "counts": {
     "pass": 70,
     "fail": 0,
-    "xfail": 2,
+    "xfail": 0,
     "xpass": 0
    },
-   "total": 72,
+   "total": 70,
    "ok": true,
    "checks": [
     {
@@ -3017,14 +3017,6 @@
     {
      "status": "pass",
      "desc": "the cross C++ test runs under the emulator and passes"
-    },
-    {
-     "status": "xfail",
-     "desc": "the archiver can be declared like the compilers  [F-016]"
-    },
-    {
-     "status": "xfail",
-     "desc": "changing the archiver rebuilds the archive  [F-016]"
     }
    ],
    "packages": [
@@ -3043,14 +3035,14 @@
   },
   {
    "name": "16-migrate",
-   "duration_ms": 1525,
+   "duration_ms": 1677,
    "counts": {
-    "pass": 46,
+    "pass": 53,
     "fail": 0,
-    "xfail": 3,
+    "xfail": 1,
     "xpass": 0
    },
-   "total": 49,
+   "total": 54,
    "ok": true,
    "checks": [
     {
@@ -3235,19 +3227,39 @@
     },
     {
      "status": "pass",
+     "desc": "the draft carries no optimization flag from the CMake build type"
+    },
+    {
+     "status": "pass",
+     "desc": "the CMake build type does not become a define in the draft"
+    },
+    {
+     "status": "xfail",
+     "desc": "the draft carries no NDEBUG from a release CMake build type  [F-021]"
+    },
+    {
+     "status": "pass",
      "desc": "the drafted debug build of a debug import is unoptimized"
     },
     {
-     "status": "xfail",
-     "desc": "the drafted release build is actually optimized  [F-017]"
+     "status": "pass",
+     "desc": "the drafted release build is actually optimized"
     },
     {
-     "status": "xfail",
-     "desc": "the drafted debug build keeps assertions  [F-017]"
+     "status": "pass",
+     "desc": "the drafted debug build keeps assertions"
     },
     {
-     "status": "xfail",
-     "desc": "the workflow that import prints verifies clean  [F-017]"
+     "status": "pass",
+     "desc": "the drafted release build of a release import is optimized"
+    },
+    {
+     "status": "pass",
+     "desc": "the workflow that import prints verifies clean"
+    },
+    {
+     "status": "pass",
+     "desc": "verify ignores the build type on both sides, so any pairing is clean"
     }
    ],
    "packages": [
@@ -3256,7 +3268,7 @@
   },
   {
    "name": "17-deps",
-   "duration_ms": 738,
+   "duration_ms": 814,
    "counts": {
     "pass": 48,
     "fail": 0,
@@ -3475,8 +3487,160 @@
    ]
   },
   {
+   "name": "18-tools",
+   "duration_ms": 549,
+   "counts": {
+    "pass": 27,
+    "fail": 0,
+    "xfail": 6,
+    "xpass": 0
+   },
+   "total": 33,
+   "ok": true,
+   "checks": [
+    {
+     "status": "pass",
+     "desc": "the archiver defaults to ar when nothing is declared"
+    },
+    {
+     "status": "pass",
+     "desc": "the C compiler defaults to cc, as it always has"
+    },
+    {
+     "status": "pass",
+     "desc": "a declared archiver is the one that runs"
+    },
+    {
+     "status": "pass",
+     "desc": "declaring the archiver leaves the compiler alone"
+    },
+    {
+     "status": "pass",
+     "desc": "the package builds with the declared archiver"
+    },
+    {
+     "status": "pass",
+     "desc": "match on tc.ar follows the declaration"
+    },
+    {
+     "status": "pass",
+     "desc": "and falls to the default arm when nothing is declared"
+    },
+    {
+     "status": "pass",
+     "desc": "a tc.* key that is not a declared tool is refused"
+    },
+    {
+     "status": "pass",
+     "desc": "the refusal names the key that was written"
+    },
+    {
+     "status": "pass",
+     "desc": "an archiver that is not on PATH is refused"
+    },
+    {
+     "status": "pass",
+     "desc": "the refusal carries the missing-toolchain code"
+    },
+    {
+     "status": "pass",
+     "desc": "the refusal says it is the archiver, not the compiler"
+    },
+    {
+     "status": "pass",
+     "desc": "the missing archiver never reaches the shell"
+    },
+    {
+     "status": "pass",
+     "desc": "a target that produces no archive ignores a broken archiver"
+    },
+    {
+     "status": "pass",
+     "desc": "a rebuild with the same archiver runs nothing"
+    },
+    {
+     "status": "pass",
+     "desc": "changing the declared archiver rebuilds"
+    },
+    {
+     "status": "pass",
+     "desc": "the archive is what gets rebuilt"
+    },
+    {
+     "status": "pass",
+     "desc": "the objects are not recompiled for a different archiver"
+    },
+    {
+     "status": "pass",
+     "desc": "the record is the tool's name, so swapping what the name resolves to does not rebuild"
+    },
+    {
+     "status": "pass",
+     "desc": "a cross build uses the archiver declared for that triple"
+    },
+    {
+     "status": "pass",
+     "desc": "and the compiler declared for the same triple"
+    },
+    {
+     "status": "pass",
+     "desc": "the host build still uses the host archiver"
+    },
+    {
+     "status": "pass",
+     "desc": "the cross build passes check"
+    },
+    {
+     "status": "pass",
+     "desc": "the cross build produces an archive"
+    },
+    {
+     "status": "pass",
+     "desc": "the objects inside the cross archive are for the target architecture"
+    },
+    {
+     "status": "pass",
+     "desc": "the cross binary links against that archive and runs under the emulator"
+    },
+    {
+     "status": "xfail",
+     "desc": "a misspelled toolchain key is refused  [F-019]"
+    },
+    {
+     "status": "xfail",
+     "desc": "the refusal suggests the tool that was meant  [F-019]"
+    },
+    {
+     "status": "xfail",
+     "desc": "a misspelled cross archiver does not silently fall back to the host tool  [F-019]"
+    },
+    {
+     "status": "pass",
+     "desc": "spelling the key correctly does select the cross archiver"
+    },
+    {
+     "status": "xfail",
+     "desc": "a transform tool can be declared alongside the archiver  [F-020]"
+    },
+    {
+     "status": "xfail",
+     "desc": "an inspection tool can be declared alongside the archiver  [F-020]"
+    },
+    {
+     "status": "xfail",
+     "desc": "a bin target can produce a raw binary image  [F-020]"
+    }
+   ],
+   "packages": [
+    "cross",
+    "host",
+    "typo",
+    "vocab"
+   ]
+  },
+  {
    "name": "docs",
-   "duration_ms": 55,
+   "duration_ms": 61,
    "counts": {
     "pass": 7,
     "fail": 0,
@@ -3519,12 +3683,12 @@
   }
  ],
  "totals": {
-  "pass": 783,
+  "pass": 817,
   "fail": 0,
-  "xfail": 8,
+  "xfail": 10,
   "xpass": 0
  },
- "total": 791,
+ "total": 827,
  "ok": true,
  "attention": [],
  "known_issues": [
@@ -3535,28 +3699,8 @@
   },
   {
    "status": "xfail",
-   "project": "15-cpp",
-   "desc": "the archiver can be declared like the compilers  [F-016]"
-  },
-  {
-   "status": "xfail",
-   "project": "15-cpp",
-   "desc": "changing the archiver rebuilds the archive  [F-016]"
-  },
-  {
-   "status": "xfail",
    "project": "16-migrate",
-   "desc": "the drafted release build is actually optimized  [F-017]"
-  },
-  {
-   "status": "xfail",
-   "project": "16-migrate",
-   "desc": "the drafted debug build keeps assertions  [F-017]"
-  },
-  {
-   "status": "xfail",
-   "project": "16-migrate",
-   "desc": "the workflow that import prints verifies clean  [F-017]"
+   "desc": "the draft carries no NDEBUG from a release CMake build type  [F-021]"
   },
   {
    "status": "xfail",
@@ -3567,6 +3711,36 @@
    "status": "xfail",
    "project": "17-deps",
    "desc": "a library that keeps a system dependency private still links its dependent  [F-018]"
+  },
+  {
+   "status": "xfail",
+   "project": "18-tools",
+   "desc": "a misspelled toolchain key is refused  [F-019]"
+  },
+  {
+   "status": "xfail",
+   "project": "18-tools",
+   "desc": "the refusal suggests the tool that was meant  [F-019]"
+  },
+  {
+   "status": "xfail",
+   "project": "18-tools",
+   "desc": "a misspelled cross archiver does not silently fall back to the host tool  [F-019]"
+  },
+  {
+   "status": "xfail",
+   "project": "18-tools",
+   "desc": "a transform tool can be declared alongside the archiver  [F-020]"
+  },
+  {
+   "status": "xfail",
+   "project": "18-tools",
+   "desc": "an inspection tool can be declared alongside the archiver  [F-020]"
+  },
+  {
+   "status": "xfail",
+   "project": "18-tools",
+   "desc": "a bin target can produce a raw binary image  [F-020]"
   }
  ]
 }
