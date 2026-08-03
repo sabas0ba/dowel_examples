@@ -1,0 +1,9 @@
+[package]
+name    = "typo"
+version = "0.0.0"
+
+# `ar` の綴り間違い。既定の `ar`（ホストの道具）へ黙って後退する
+# （docs/10-findings.md F-019）。expect.sh がこの行を書き換えて両側を見る。
+[toolchain.aarch64-unknown-linux-gnu]
+c   = "aarch64-linux-gnu-gcc"
+ar_ = "aarch64-linux-gnu-ar"

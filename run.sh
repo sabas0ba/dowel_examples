@@ -109,7 +109,7 @@ export DOWELUP DOWEL_SRC
 #
 # 揃っていなければ始めない。環境によって走る検査が変わると、結果を過去の
 # 実行と比べられなくなる。
-for tool in cc ninja jq git cmake pkg-config gcc g++ clang clang++ \
+for tool in cc ninja jq git cmake pkg-config gcc gcc-ar g++ clang clang++ \
              aarch64-linux-gnu-gcc aarch64-linux-gnu-g++ qemu-aarch64-static; do
     command -v "$tool" >/dev/null 2>&1 || {
         printf '%s is missing.\n\n' "$tool" >&2
@@ -118,6 +118,7 @@ required: cc ninja jq git python3 cargo, and for the toolchain, cross and
 migration layers
 
   gcc g++ clang clang++        10-toolchain and 15-cpp build with both families
+  gcc-ar                       18-tools needs a second archiver to declare
   aarch64-linux-gnu-gcc        11-cross compiles for another architecture
   aarch64-linux-gnu-g++        15-cpp cross compiles C++ as well
   qemu-aarch64-static          11-cross and 15-cpp run what they compiled

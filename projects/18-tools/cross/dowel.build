@@ -1,0 +1,8 @@
+[lib.part]
+sources = [file("src/part.c")]
+
+[bin.image]
+sources = [file("src/image.c")]
+
+[bin.image.private]
+deps = [target("part")]
