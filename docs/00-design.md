@@ -56,6 +56,7 @@ dowel 本体の検証（`docs/51-testing.md`）は層ごとに責務を割り当
 | どの言語として翻訳されたか | `15-cpp`。C 側の `__cplusplus` と、リンクの driver |
 | 移行で何が写り何が落ちたか | `16-migrate`。本物の CMake から取り込み、`migrate verify` で答合わせをする |
 | 環境が決める依存の扱い | `17-deps`。`.pc` を持ち込んで pkg-config に引かせる。実際のシステムには触れない |
+| 道具の宣言が本当に届いたか | `18-tools`。`graph --kind=action` のコマンド先頭と、出来上がった書庫の中身 |
 
 **C から観測できるものは C に書く。** dowel 本体の
 `tests/projects/README.md` と同じ規約である。利用者が実際に踏む経路と

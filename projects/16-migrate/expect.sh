@@ -261,38 +261,51 @@ fails "an empty reference is refused" \
 
 cd .. || exit 1
 
-# ------------------------------------------------------------ 構成のフラグ (F-017)
+# ------------------------------------------------------------ 構成が決めるもの
 #
-# import は CMake の構成（CMAKE_BUILD_TYPE）のフラグを、下書きの無条件の
-# flags へ写している。dowel の構成が加える -g -O0 / -O2 -DNDEBUG の後ろに
-# 並ぶため、後勝ちで構成の指定が効かなくなる。
+# 最適化・デバッグ情報・NDEBUG は dowel の `--config` が決める。CMake 側では
+# CMAKE_BUILD_TYPE が決める。**両方が同じことを別々に決める**ため、これらを
+# 下書きへ写すと後勝ちで `--config` が効かなくなり、突き合わせでは常に差に
+# なる。取り込みにも比較にも持ち込まないのが正しい（F-017）。
 #
-# 移行元は dowel と同じ構成フラグを使うよう揃えてある（cmake-project/
-# CMakeLists.txt）。したがってここに残る差は、移行そのものの差である。
+# 移行元は構成のフラグを CMake の既定のままにしてある。dowel の debug とも
+# release とも一致しないため、持ち込まれていればここで必ず差が出る。
 
 ok "a release build directory is imported the same way" migrate import bd-release
 
-# 対照。debug から取り込んで debug で組む限り、写ったフラグは dowel が
-# 足すものと同じであり、害が見えない。
+# 翻訳の側。#54 の修正はここに効いている。
+absent 'flags    = ["-O' from-release/dowel.build \
+    "the draft carries no optimization flag from the CMake build type"
+absent 'defines  = { NDEBUG' from-release/dowel.build \
+    "the CMake build type does not become a define in the draft"
+
+# リンクの側。同じ集合が link_flags には残っている（F-021）。下書きの
+# 見出しは「写していない」と述べているため、中身と食い違っている。
+known_issue F-021
+absent 'NDEBUG' from-release/dowel.build \
+    "the draft carries no NDEBUG from a release CMake build type"
+
+# 構成は dowel の側だけが決める。取り込み元がどちらでも、組んだ構成が
+# そのまま出る。
 reports $'assertions\nunoptimized' from-debug debug \
     "the drafted debug build of a debug import is unoptimized"
-
-# release で組むと、写った -g -O0 が dowel の -O2 の後ろに並ぶ。
-known_issue F-017
 reports $'ndebug\noptimized' from-debug release \
     "the drafted release build is actually optimized"
-
-# 逆向き。release から取り込んで debug で組むと NDEBUG が残る。
-known_issue F-017
 reports $'assertions\nunoptimized' from-release debug \
     "the drafted debug build keeps assertions"
+reports $'ndebug\noptimized' from-release release \
+    "the drafted release build of a release import is optimized"
 
 # import 自身が最後に指している手順。下書きが元と同じ翻訳を出すなら、
-# これは何も報せずに終わるはずである。
+# これは何も報せずに終わる。
 cd from-debug || exit 1
 counts "$PWD/../bd-debug/compile_commands.json"
 [ "$RC" = 0 ] && [ "$DIFF" = 0 ]
-verdict=$?
-known_issue F-017
-fact $verdict "the workflow that import prints verifies clean"
+fact $? "the workflow that import prints verifies clean"
+
+# 構成が決めるものは比較の両側から落ちる。したがって取り込み元の構成と
+# 組む構成が食い違っていても、移行の忠実さの判定は変わらない。
+counts "$PWD/../bd-release/compile_commands.json"
+[ "$RC" = 0 ] && [ "$DIFF" = 0 ]
+fact $? "verify ignores the build type on both sides, so any pairing is clean"
 cd .. || exit 1

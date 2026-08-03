@@ -1,0 +1,10 @@
+[package]
+name    = "cross"
+version = "0.0.0"
+
+# 組み込みの構成では、ベンダが配る toolchain がコンパイラ・リンカ・書庫の
+# 道具を一組で配り、混ぜることを想定していない。三つ揃えて初めて宣言が
+# 揃う（dowel#50）。
+[toolchain.aarch64-unknown-linux-gnu]
+c  = "aarch64-linux-gnu-gcc"
+ar = "aarch64-linux-gnu-ar"

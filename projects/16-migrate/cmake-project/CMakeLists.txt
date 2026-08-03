@@ -1,15 +1,13 @@
 # 移行元。File API から下書きを起こし、compile_commands.json と突き合わせる。
 #
-# 構成のフラグを dowel の暗黙の構成フラグに揃えてある。debug が -g -O0、
-# release が -O2 -DNDEBUG である。揃えないと全ソースに差が出て、
-# `migrate verify` が「移行の誤り」と「構成の食い違い」のどちらを報せて
-# いるのか読めなくなる。ここでの関心は前者だけである。
+# 構成のフラグ（CMAKE_C_FLAGS_DEBUG など）はあえて CMake の既定のままに
+# してある。dowel の debug（-g -O0）とも release（-O2 -DNDEBUG）とも一致
+# しないため、「構成が決めるフラグを取り込みにも突き合わせにも持ち込まない」
+# ことが働いていなければ、全ソースに差が出る（docs/10-findings.md F-017）。
 cmake_minimum_required(VERSION 3.16)
 project(demo C)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
-set(CMAKE_C_FLAGS_DEBUG   "-g -O0")
-set(CMAKE_C_FLAGS_RELEASE "-O2 -DNDEBUG")
 
 add_library(greet STATIC src/greet.c src/extra.c)
 target_include_directories(greet PUBLIC include)

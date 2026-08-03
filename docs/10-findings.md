@@ -3,13 +3,13 @@
 本スイートが外側から見つけたもの。
 
 F-001 から F-009 までの 9 件は `07f16ec` で、F-010 / F-012 / F-013 は
-`95daf9f` で、F-014 / F-015 は `3e84cbd` で修正された。F-008 はさらに
-`9ed13f4` で二段目の決着を見ている。記録は残す。
+`95daf9f` で、F-014 / F-015 は `3e84cbd` で、F-016 / F-017 は `a9c1619` で
+修正された。F-008 はさらに `9ed13f4` で二段目の決着を見ている。記録は残す。
 何を見てどう報告したかが、次に同種のものを見つけるときの型になるためである。
 対応する検査は `known_issue` を外し、通常の検査として残してある。直った
 ものを消すと、退行したときに気づけない。
 
-未修正は F-016 / F-017 / F-018、および F-011 の残っている側である。対応する検査は
+未修正は F-018 / F-019 / F-020 / F-021、および F-011 の残っている側である。対応する検査は
 `known_issue` を付けてあり、本体が直すと `XPASS` になって落ちる。
 
 各項目は次の形で記録する。
@@ -39,9 +39,12 @@ F-001 から F-009 までの 9 件は `07f16ec` で、F-010 / F-012 / F-013 は
 | [F-013](#f-013) | install に使った指定子で `dowel +<指定子>` が選べない | 実装 | [#39](https://github.com/sabas0ba/dowel/issues/39) | 修正済み |
 | [F-014](#f-014) | ninja で組んだあと direct で組むと、ヘッダの変更が見落とされる | 実装 | [#41](https://github.com/sabas0ba/dowel/issues/41) | 修正済み |
 | [F-015](#f-015) | `--target` がツールチェーンを選ばない | 実装 | [#42](https://github.com/sabas0ba/dowel/issues/42) | 修正済み |
-| [F-016](#f-016) | `ar` を宣言できず、記録された入力にもなっていない | 要望 | [#50](https://github.com/sabas0ba/dowel/issues/50) | 未修正 |
-| [F-017](#f-017) | `migrate import` が CMake の構成のフラグを無条件の `flags` へ写す | 実装 | [#54](https://github.com/sabas0ba/dowel/issues/54) | 未修正 |
+| [F-016](#f-016) | `ar` を宣言できず、記録された入力にもなっていない | 要望 | [#50](https://github.com/sabas0ba/dowel/issues/50) | 修正済み |
+| [F-017](#f-017) | `migrate import` が CMake の構成のフラグを無条件の `flags` へ写す | 実装 | [#54](https://github.com/sabas0ba/dowel/issues/54) | 一部修正 |
 | [F-018](#f-018) | `lib` の `private` な `link_flags` がリンクの閉包に乗らない | 実装 | [#56](https://github.com/sabas0ba/dowel/issues/56) | 未修正 |
+| [F-019](#f-019) | `[toolchain]` の未知のキーが黙って受理され、道具が既定値へ後退する | 実装 | [#59](https://github.com/sabas0ba/dowel/issues/59) | 未修正 |
+| [F-020](#f-020) | 生成物を変換・検査する道具を宣言できず、後処理の場所も無い | 要望 | [#60](https://github.com/sabas0ba/dowel/issues/60) | 未修正 |
+| [F-021](#f-021) | 構成レベルのフラグが `link_flags` には残り、下書きの見出しと食い違う | 実装 | [#61](https://github.com/sabas0ba/dowel/issues/61) | 未修正 |
 
 ---
 
@@ -1193,8 +1196,7 @@ error[missing-toolchain]: no toolchain is declared for target `aarch64-unknown-l
 **書庫の作成に使う `ar` を `[toolchain]` で宣言できない。しかもどの `ar` を
 使ったかが記録された入力になっていない。**
 
-種別: 要望。未修正（`9ed13f4`）。手元でも CI でも現状のまま通るが、
-組み込みの構成では課題になりうる。
+種別: 要望。修正済み（`a9c1619`）。
 
 ### 観測
 
@@ -1247,12 +1249,37 @@ GNU 形式の ELF 書庫を作れないため、より直接に効く。
 `missing-toolchain` の検査も `c` と `cxx` を対象にしており、宣言できない
 ものは網羅の対象にならない。**宣言できない道具は、宣言の検査から漏れる。**
 
+### 修正
+
+`[toolchain] ar`（既定 `ar`、`[toolchain.<triple>]` にも書ける、構成キーは
+`tc.ar`）が入った。実在は書庫を作るときだけ確かめられ、名前がアクションの
+コマンド行に載るため、差し替えると書庫が作り直される。
+
+同時に、道具の集合が表（`dowel_eval::config::TOOLS`）へ集約された。
+`[toolchain]` のキー・`tc.*` の語彙・既定値・宣言の写し・`toolchain-mismatch`
+の比較は全てこの表から回る。以後、道具を増やすのは表1行と、それを使う計画の
+箇所だけになる。
+
+なお、記録されているのは**道具の名前**であって、その名前が指す実体ではない。
+同じ `ar` の裏で別の実体に差し替えても組み直されない。報告では「それがどの
+実体を指すかは記録の外にある」と書いたが、これは `c` も `cxx` も同じであり、
+道具ごとの差ではなく記録の粒度である。粒度そのものを上げる話は別件と考え、
+現状を1件の検査として固定するに留めた。
+
 ### 検査
 
-`projects/15-cpp` の以下 2 件。いずれも known_issue F-016 である。
+`projects/18-tools`。表に載ることで得られる5つの性質を1つずつ見る。
 
-- `the archiver can be declared like the compilers`
-- `changing the archiver rebuilds the archive`
+- `a declared archiver is the one that runs`
+- `match on tc.ar follows the declaration`
+- `an archiver that is not on PATH is refused`
+- `a target that produces no archive ignores a broken archiver`
+- `changing the declared archiver rebuilds`
+- `a cross build uses the archiver declared for that triple`
+- `the objects inside the cross archive are for the target architecture`
+
+記録の粒度は
+`the record is the tool's name, so swapping what the name resolves to does not rebuild`。
 
 ---
 
@@ -1264,7 +1291,9 @@ GNU 形式の ELF 書庫を作れないため、より直接に効く。
 無条件の `flags` へ写す。dowel の構成が加えるものの後ろに並ぶため、後勝ちで
 `--config` の指定が効かなくなる。**
 
-種別: 実装。未修正（`3e84cbd`）。
+種別: 実装。**一部修正**（`a9c1619`）。翻訳の側は直り、リンクの側
+（`link_flags`）に残っている。追加の報告先は
+[#61](https://github.com/sabas0ba/dowel/issues/61)。
 
 ### 観測
 
@@ -1344,18 +1373,45 @@ RelWithDebInfo / MinSizeRel）と `--config`（debug / release）の 10 通り
 `verify` を `import` の出力に掛けるという結び付けも、本体の側では
 「移行の手順」であって検査の対象になっていない。
 
+### 修正
+
+構成レベルのフラグは `flags` へ写されなくなり、`migrate verify` の比較でも
+**両側から**落とされるようになった。dowel の `cfg.opt` と参照の build type が
+同じことを別々に決めるため、その差は移行の忠実さについて何も語らない。
+
+移行元の `CMakeLists.txt` から構成フラグを dowel に揃える細工を外した。
+揃っていない木でも `4 equivalent, rc=0` になり、CMake の build type と
+`--config` のどの組み合わせでも clean になる。
+
+### 残っているもの（[#61](https://github.com/sabas0ba/dowel/issues/61)）
+
+同じ集合が `link_flags` には残っている。下書きの見出しは
+
+```
+# Configuration-level flags (-O / -g / -DNDEBUG from the CMake build type)
+# were NOT copied: dowel's own debug/release configuration supplies them.
+```
+
+と述べているが、同じファイルの下に `link_flags = ["-O3", "-DNDEBUG"]` が並ぶ。
+**下書きが自分自身について嘘をつく。**
+
+`lib` に出ないのは書庫の作成がリンクを伴わないためで、`bin` と `test` にだけ
+現れる。`-DNDEBUG` はリンク行では意味を持たないが、`-flto` を使う構成では
+`-O3` が効く。`migrate verify` は翻訳の引数だけを比べるため、**verify が
+clean でも残る**。
+
 ### 検査
 
-`projects/16-migrate` の以下 3 件。いずれも known_issue F-017 である。
+`projects/16-migrate`。翻訳の側は通常の検査。
 
+- `the draft carries no optimization flag from the CMake build type`
 - `the drafted release build is actually optimized`
 - `the drafted debug build keeps assertions`
 - `the workflow that import prints verifies clean`
+- `verify ignores the build type on both sides, so any pairing is clean`
 
-対照として `the drafted debug build of a debug import is unoptimized` を
-通常の検査として置いてある。Debug から取り込んで debug で組む限り写された
-フラグは dowel が足すものと同じであり、害が見えない。この1件だけが通る
-ことが、原因が「写したこと」そのものであることを示している。
+リンクの側は known_issue F-021 として
+`the draft carries no NDEBUG from a release CMake build type`。
 
 ---
 
@@ -1469,6 +1525,238 @@ ADR-0015 以前は `zlib` が解決されなかったため露見しなかった
 
 2つ目は `xfail` の2件と**同時に**通ることが期待値である。片方だけを満たす
 直し方（全部 public 扱いにする）を通さないための組である。
+
+---
+
+## F-019
+
+報告先: [sabas0ba/dowel#59](https://github.com/sabas0ba/dowel/issues/59)
+
+**`[toolchain]` の未知のキーが診断されず、道具の綴り間違いが既定値への無言の
+後退になる。**
+
+種別: 実装。未修正（`a9c1619`）。
+
+### 観測
+
+```toml
+[toolchain]
+cx = "clang++"          # cxx の綴り間違い
+```
+
+```console
+$ dowel check
+check passed: 1 packages, 1 targets
+```
+
+C++ のソースは既定の `c++` で翻訳される。`--message-format=json` にも1件も
+出ない。試した綴り（`cx` / `C` / `ar_` / `archiver` / `objcopy` / `nosuchkey`）
+は全て同じであった。
+
+同じ「未知のキー」が、目標の非公開ブロックと `[runner.<triple>]` では
+`unknown-property` として候補つきで拒まれる。構成の語彙も閉じており、
+`tc.objcopy` は `unknown-cfg-key` になる。**同じ `objcopy` という名前が、
+`tc.objcopy` としては拒まれ、`[toolchain] objcopy` としては受理される。**
+
+実害が出るのはクロスの構成である。
+
+```toml
+[toolchain.aarch64-unknown-linux-gnu]
+c   = "aarch64-linux-gnu-gcc"
+ar_ = "aarch64-linux-gnu-ar"      # ar の綴り間違い
+```
+
+`check passed` となり、aarch64 向けの書庫がホストの `ar` で作られる。
+F-016 で報告した状態そのものであり、`[toolchain] ar` はまさにそれを防ぐために
+入った。宣言できるようになった一方で、**宣言が効いているかどうかは利用者に
+見えない。**
+
+`c` が同じ経路で消えれば翻訳が動かないのですぐ分かる。archiver は既定の `ar`
+が ELF に対して総称的に動いてしまうため、**壊れるのはホストと目標で書庫形式が
+違うときだけ**である。llvm-ar と GNU ar、macOS をホストに ELF へクロスする
+場合、ベンダ配布の toolchain。いずれも手元では通り、別の環境で壊れる。
+
+### 期待
+
+`[toolchain]` および `[toolchain.<triple>]` の未知のキーを `unknown-property`
+で拒む。候補は `TOOLS` の表から編集距離で出す。
+
+根拠は3点。
+
+- `docs/91-implementation-status.md` は編集距離による候補提示を診断の性質として
+  挙げており、`[runner.*]` と目標のブロックでは実際にそう働いている。
+  `[toolchain]` だけが外れている
+- `docs/00-overview.md` 2節「再現性 — ツールチェーンを含めてロックし、
+  **記録されない入力を排除する**」。綴り間違いで既定値へ後退した道具は、
+  宣言したつもりの利用者から見て記録されていない入力である
+- `9d16a44` が `TOOLS` を単一の表にしたことで、受理すべきキーの集合は既に
+  1か所にある。`tc.*` の語彙との一致は単体テストで強制されているため、
+  `[toolchain]` の側だけが表を参照していない
+
+`[package]` の未知のキーも同じく無診断であった。こちらは既定値への後退という
+害が無いため、優先度は下と考える。
+
+### なぜ内側から見つからないか
+
+道具ごとの検査は「宣言したキーが効くこと」を確かめる。**宣言していないキー**は
+入力として現れない。表駆動化で「表にある名前が全て回ること」は強制されたが、
+「表に無い名前が拒まれること」は表の反対側であり、同じ検査からは出てこない。
+
+`tc.*` の側だけが閉じているのも、語彙の検査が構成キーの解決経路にあり、
+マニフェストの読み取り経路には無いためと思われる。
+
+### 検査
+
+`projects/18-tools` の以下 3 件。いずれも known_issue F-019 である。
+
+- `a misspelled toolchain key is refused`
+- `the refusal suggests the tool that was meant`
+- `a misspelled cross archiver does not silently fall back to the host tool`
+
+対照として `spelling the key correctly does select the cross archiver` を通常の
+検査として置いてある。3件が見ているのは「宣言が効かないこと」ではなく、
+**効かないことが知らされないこと**である。
+
+---
+
+## F-020
+
+報告先: [sabas0ba/dowel#60](https://github.com/sabas0ba/dowel/issues/60)
+
+**生成物を変換・検査する道具（objcopy / size / objdump など）を宣言できず、
+生成物に対して何かを走らせる場所も無い。**
+
+種別: 要望。未修正（`a9c1619`）。F-016 と同じ形の要望である。
+
+### 観測
+
+`[toolchain]` が受け付けるのは `c` / `cxx` / `ar` の3つ。目標の種類は
+`lib` / `bin` / `test`（`bench` は未実装）で、リンク後に何かを走らせる場所は
+無い。
+
+`[runner.<triple>]` は**実行**の側の抽象であり、`dowel test` が組み上がった
+実行ファイルを起動するときに通る。生成物から別の形を作る側に対応するものが無い。
+
+### 組み込みで実際に要るもの
+
+性質の違う2種類がある。
+
+| | 例 | 何のため |
+|---|---|---|
+| 変換 | `objcopy -O binary` / `-O ihex` | 書き込み用のイメージ |
+| 変換 | `strip` した別の ELF | 配布用。デバッグ情報つきは手元に残す |
+| 検査 | `size` | flash / RAM の予算。**超えたら落ちてほしい** |
+| 検査 | `objdump -d` / `readelf -S` / `nm` | 配置と記号を読む |
+
+変換は**ビルドの成果物**であるためグラフに乗る必要がある。検査は成果物を
+作らないが、`size` だけは判定になりうる。手元では通り実機に載らないという
+失敗は、ビルドの時点で落とせるはずのものである。
+
+### 期待
+
+満たされてほしい性質は4つ。取り込みの構文は問わない。
+
+1. 変換の出力が `dowel build` の成果物であること（作り忘れない）
+2. 元の成果物が変わらなければ再実行しないこと（増分に乗る）
+3. 道具がトリプルごとに選べること（ホストの objcopy が走らない）
+4. 道具の名前が記録された入力であること（差し替えたら作り直す）
+
+根拠。
+
+- `docs/30-devexp.md` は `[runner.<triple>]` の想定される実体として
+  「シリアルポート経由の書き込みと実行」を挙げ、実機を宣言可能にすることが
+  組み込みの用途を覆うとしている。**書き込む対象のイメージを作る側**が同じ
+  文書に無く、実行の側だけが揃っている
+- `docs/00-overview.md` 2節「記録されない入力を排除する」。dowel の外で
+  objcopy を叩く限り、その道具は記録の外である。F-016 と同じ理屈がそのまま
+  当てはまる
+- `9d16a44` のコミットメッセージが `objcopy` を名指しで将来の追加先として
+  挙げている。表の側は既に用意されており、要望はその使い道の方である
+
+### なぜ内側から見つからないか
+
+本体の検査は「宣言できる道具が正しく回ること」を確かめる。**まだ無い道具**は
+入力として現れない。用途の側から見て初めて「無い」ことが分かる種類の欠落で
+あり、実装の内側からは形が見えない。
+
+### 検査
+
+`projects/18-tools` の以下 3 件。いずれも known_issue F-020 である。
+
+- `a transform tool can be declared alongside the archiver`
+- `an inspection tool can be declared alongside the archiver`
+- `a bin target can produce a raw binary image`
+
+前2件は `tc.objcopy` / `tc.size` が構成の語彙から引けるかどうかで見る。
+実装がどの構文を採っても通る観測である。3件目だけは提案した形を書いており、
+実装が別の形を採れば書き換わる。**変換がグラフに乗る**という期待そのものは
+変わらない。
+
+---
+
+## F-021
+
+報告先: [sabas0ba/dowel#61](https://github.com/sabas0ba/dowel/issues/61)
+
+**構成レベルのフラグが `link_flags` には残っており、下書きの見出しが
+「写していない」と述べる内容と食い違う。**
+
+種別: 実装。未修正（`a9c1619`）。F-017 の続きである。
+
+### 観測
+
+`CMAKE_BUILD_TYPE=Release` から取り込んだ下書き。
+
+```
+# Configuration-level flags (-O / -g / -DNDEBUG from the CMake build type)
+# were NOT copied: dowel's own debug/release configuration supplies them.
+#
+
+[bin.demo.private]
+includes = [dir("include")]
+defines  = { DEMO_MODE = 1 }
+link_flags = ["-O3", "-DNDEBUG"]      ← 残っている
+```
+
+`lib` に出ないのは書庫の作成がリンクを伴わないためで、`bin` と `test` にだけ
+現れる。build type ごとの内容は F-017 の表と同じである。
+
+### 期待
+
+`link_flags` からも同じ集合を落とす。`flags` に適用している判定をリンクの側にも
+通せば済むと思われる。現在の見出しの文言はそのままで正しくなる。
+
+問題は3点。
+
+1. **下書きが自分自身について嘘をつく。** 見出しを読んだ利用者は「構成の
+   フラグは無い」と判断してそのまま使う。F-017 で直したのは静かな失敗であり、
+   見出しと中身の食い違いは同じ種類の静かさである
+2. **LTO を使う構成では効く。** `-flto` は構成レベルではないため `flags` に
+   写る。その状態でリンク行に `-O3` が無条件で載ると、`--config=debug` でも
+   リンク時最適化が `-O3` で回る
+3. `-DNDEBUG` はリンク行では意味を持たない
+
+### なぜ内側から見つからないか
+
+`flags` と `link_flags` は File API の別のフィールド（`compileGroups` と
+`link.commandFragments`）から来るため、写す経路も別である。F-017 の修正が
+翻訳側の経路に入り、リンク側は通らなかったと思われる。
+
+検査の側から見ると、「構成のフラグが `flags` に無いこと」を確かめる検査は
+`link_flags` を見ない。**同じ性質を2か所で確かめる必要がある**ことは、片方を
+直した時点では見えない。
+
+`migrate verify` は翻訳の引数だけを比べるため、この差は報告されない。
+**verify が clean でも残っている**という点も、見つけにくさに寄与している。
+
+### 検査
+
+`projects/16-migrate` の
+`the draft carries no NDEBUG from a release CMake build type`。
+known_issue F-021 である。
+
+翻訳の側（`the draft carries no optimization flag from the CMake build type`
+ほか）は通常の検査として通っており、F-017 の修正が効いていることを示している。
 
 ---
 

@@ -1,0 +1,14 @@
+# 書庫を作る目標と、作らない目標。道具の要不要は「使う箇所が決める」ため、
+# 同じパッケージに両方が要る。
+[lib.shelf]
+sources = [file("src/shelf.c")]
+
+[bin.user]
+sources = [file("src/user.c")]
+
+[bin.user.private]
+deps = [target("shelf")]
+
+# 書庫を一切作らない目標。archiver が壊れていても組めるはずである。
+[bin.lone]
+sources = [file("src/lone.c")]
