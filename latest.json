@@ -1,19 +1,19 @@
 {
- "run_id": "30561364548",
+ "run_id": "30773914200",
  "run_attempt": "1",
- "run_url": "https://github.com/sabas0ba/dowel_examples/actions/runs/30561364548",
- "commit": "49808ac5de0a0cdb024a56caec73244f9031c8ca",
+ "run_url": "https://github.com/sabas0ba/dowel_examples/actions/runs/30773914200",
+ "commit": "9bb5ceb209d1187fdfde5b70c63b79be99fe1324",
  "branch": "main",
- "started_at": "2026-07-30T16:25:58Z",
+ "started_at": "2026-08-03T00:12:52Z",
  "dowel_version": "dowel 0.0.1",
- "dowel_ref": "3e84cbdddb7248dc621c4be0105781b410dcd683",
- "dowel_commit": "3e84cbdddb7248dc621c4be0105781b410dcd683",
+ "dowel_ref": "2e99fc718f45bb7bfa80d933cf1ee5b4d01421d9",
+ "dowel_commit": "2e99fc718f45bb7bfa80d933cf1ee5b4d01421d9",
  "cc": "cc (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0",
  "ninja": "1.13.2",
  "projects": [
   {
    "name": "01-minimal",
-   "duration_ms": 225,
+   "duration_ms": 1307,
    "counts": {
     "pass": 10,
     "fail": 0,
@@ -70,7 +70,7 @@
   },
   {
    "name": "02-config",
-   "duration_ms": 4333,
+   "duration_ms": 6026,
    "counts": {
     "pass": 21,
     "fail": 0,
@@ -172,7 +172,7 @@
   },
   {
    "name": "03-features",
-   "duration_ms": 237,
+   "duration_ms": 266,
    "counts": {
     "pass": 17,
     "fail": 0,
@@ -261,7 +261,7 @@
   },
   {
    "name": "04-diagnostics",
-   "duration_ms": 283,
+   "duration_ms": 328,
    "counts": {
     "pass": 66,
     "fail": 0,
@@ -562,7 +562,7 @@
   },
   {
    "name": "05-incremental",
-   "duration_ms": 1529,
+   "duration_ms": 1671,
    "counts": {
     "pass": 48,
     "fail": 0,
@@ -773,7 +773,7 @@
   },
   {
    "name": "06-runner",
-   "duration_ms": 329,
+   "duration_ms": 358,
    "counts": {
     "pass": 17,
     "fail": 0,
@@ -860,7 +860,7 @@
   },
   {
    "name": "07-robustness",
-   "duration_ms": 1220,
+   "duration_ms": 1286,
    "counts": {
     "pass": 145,
     "fail": 0,
@@ -1457,14 +1457,14 @@
   },
   {
    "name": "08-lsp",
-   "duration_ms": 10924,
+   "duration_ms": 12802,
    "counts": {
-    "pass": 97,
+    "pass": 110,
     "fail": 0,
     "xfail": 0,
     "xpass": 0
    },
-   "total": 97,
+   "total": 110,
    "ok": true,
    "checks": [
     {
@@ -1761,6 +1761,58 @@
     },
     {
      "status": "pass",
+     "desc": "dowel check still reports empty-glob"
+    },
+    {
+     "status": "pass",
+     "desc": "the language server scans the file system for empty-glob"
+    },
+    {
+     "status": "pass",
+     "desc": "dowel check still reports no-sources"
+    },
+    {
+     "status": "pass",
+     "desc": "the language server scans the file system for no-sources"
+    },
+    {
+     "status": "pass",
+     "desc": "dowel check still reports invalid-source"
+    },
+    {
+     "status": "pass",
+     "desc": "the language server scans the file system for invalid-source"
+    },
+    {
+     "status": "pass",
+     "desc": "dowel check still reports unresolved-path"
+    },
+    {
+     "status": "pass",
+     "desc": "the language server scans the file system for unresolved-path"
+    },
+    {
+     "status": "pass",
+     "desc": "dowel check still reports missing-toolchain"
+    },
+    {
+     "status": "pass",
+     "desc": "the language server looks for the declared compiler too"
+    },
+    {
+     "status": "pass",
+     "desc": "dowel check refuses an unresolvable system package"
+    },
+    {
+     "status": "pass",
+     "desc": "the language server does not run pkg-config to resolve it"
+    },
+    {
+     "status": "pass",
+     "desc": "opening a manifest never writes dowel.lock"
+    },
+    {
+     "status": "pass",
      "desc": "hover on a property gives its type and merge rule"
     },
     {
@@ -1862,7 +1914,7 @@
   },
   {
    "name": "09-acquisition",
-   "duration_ms": 18401,
+   "duration_ms": 17591,
    "counts": {
     "pass": 66,
     "fail": 0,
@@ -2145,7 +2197,7 @@
   },
   {
    "name": "10-toolchain",
-   "duration_ms": 1861,
+   "duration_ms": 2096,
    "counts": {
     "pass": 31,
     "fail": 0,
@@ -2286,7 +2338,7 @@
   },
   {
    "name": "11-cross",
-   "duration_ms": 959,
+   "duration_ms": 1102,
    "counts": {
     "pass": 17,
     "fail": 0,
@@ -2371,7 +2423,7 @@
   },
   {
    "name": "12-store",
-   "duration_ms": 183,
+   "duration_ms": 202,
    "counts": {
     "pass": 29,
     "fail": 0,
@@ -2504,7 +2556,7 @@
   },
   {
    "name": "13-parallel",
-   "duration_ms": 10758,
+   "duration_ms": 10905,
    "counts": {
     "pass": 18,
     "fail": 0,
@@ -2593,7 +2645,7 @@
   },
   {
    "name": "14-scale",
-   "duration_ms": 5545,
+   "duration_ms": 6050,
    "counts": {
     "pass": 17,
     "fail": 0,
@@ -2676,7 +2728,7 @@
   },
   {
    "name": "15-cpp",
-   "duration_ms": 4928,
+   "duration_ms": 5725,
    "counts": {
     "pass": 70,
     "fail": 0,
@@ -2991,7 +3043,7 @@
   },
   {
    "name": "16-migrate",
-   "duration_ms": 1312,
+   "duration_ms": 1525,
    "counts": {
     "pass": 46,
     "fail": 0,
@@ -3203,8 +3255,228 @@
    ]
   },
   {
+   "name": "17-deps",
+   "duration_ms": 738,
+   "counts": {
+    "pass": 48,
+    "fail": 0,
+    "xfail": 2,
+    "xpass": 0
+   },
+   "total": 50,
+   "ok": true,
+   "checks": [
+    {
+     "status": "pass",
+     "desc": "a version dependency resolves through pkg-config"
+    },
+    {
+     "status": "pass",
+     "desc": "the resolved module enters the graph as a package"
+    },
+    {
+     "status": "pass",
+     "desc": "a package with a resolved system dependency builds"
+    },
+    {
+     "status": "pass",
+     "desc": "the module's cflags and libs both reach the build"
+    },
+    {
+     "status": "pass",
+     "desc": "the module's --cflags become compile flags"
+    },
+    {
+     "status": "pass",
+     "desc": "the module's --libs become link flags"
+    },
+    {
+     "status": "pass",
+     "desc": "a version equal to what the system has is satisfied"
+    },
+    {
+     "status": "pass",
+     "desc": "a version below what the system has is satisfied"
+    },
+    {
+     "status": "pass",
+     "desc": "a version above what the system has is refused"
+    },
+    {
+     "status": "pass",
+     "desc": "the refusal carries the unsatisfied-dependency code"
+    },
+    {
+     "status": "pass",
+     "desc": "the refusal names the constraint that was not met"
+    },
+    {
+     "status": "pass",
+     "desc": "the refusal says the constraint is a minimum"
+    },
+    {
+     "status": "pass",
+     "desc": "the refusal points at the declaration in dowel.toml"
+    },
+    {
+     "status": "pass",
+     "desc": "the refusal spans the declaration, not the whole file"
+    },
+    {
+     "status": "pass",
+     "desc": "a module the system does not have is refused"
+    },
+    {
+     "status": "pass",
+     "desc": "an unknown module is refused with the same code as a version mismatch"
+    },
+    {
+     "status": "pass",
+     "desc": "the refusal names path and git as the way out"
+    },
+    {
+     "status": "pass",
+     "desc": "putting the module name back makes it resolve again"
+    },
+    {
+     "status": "pass",
+     "desc": "a version dependency is refused when pkg-config cannot be run"
+    },
+    {
+     "status": "pass",
+     "desc": "the refusal says that pkg-config itself could not be run"
+    },
+    {
+     "status": "pass",
+     "desc": "the resolution is recorded in dowel.lock"
+    },
+    {
+     "status": "pass",
+     "desc": "the lock records the version that was resolved, not the one declared"
+    },
+    {
+     "status": "pass",
+     "desc": "the lock names where the resolution came from"
+    },
+    {
+     "status": "pass",
+     "desc": "the lock says it detects a change rather than restoring one"
+    },
+    {
+     "status": "pass",
+     "desc": "a second check with a matching lock passes"
+    },
+    {
+     "status": "pass",
+     "desc": "a matching lock is left byte for byte alone"
+    },
+    {
+     "status": "pass",
+     "desc": "a matching lock says nothing"
+    },
+    {
+     "status": "pass",
+     "desc": "a lock that disagrees with the system warns"
+    },
+    {
+     "status": "pass",
+     "desc": "the drift is a warning, not an error"
+    },
+    {
+     "status": "pass",
+     "desc": "the warning names both the resolved version and the recorded one"
+    },
+    {
+     "status": "pass",
+     "desc": "the warning says how to accept the new resolution"
+    },
+    {
+     "status": "pass",
+     "desc": "a drifted lock does not fail the build"
+    },
+    {
+     "status": "pass",
+     "desc": "a drifted lock is never rewritten on its own"
+    },
+    {
+     "status": "pass",
+     "desc": "removing the entry lets the resolution be recorded again"
+    },
+    {
+     "status": "pass",
+     "desc": "the freshly recorded entry holds what the system has"
+    },
+    {
+     "status": "pass",
+     "desc": "and the drift warning is gone"
+    },
+    {
+     "status": "pass",
+     "desc": "an unrelated entry does not disturb the check"
+    },
+    {
+     "status": "pass",
+     "desc": "an unrelated entry in the lock is kept"
+    },
+    {
+     "status": "pass",
+     "desc": "an inactive optional version dependency is not resolved at all"
+    },
+    {
+     "status": "pass",
+     "desc": "an inactive optional version dependency is not recorded either"
+    },
+    {
+     "status": "pass",
+     "desc": "enabling the feature resolves the optional module"
+    },
+    {
+     "status": "pass",
+     "desc": "and then it is recorded"
+    },
+    {
+     "status": "pass",
+     "desc": "a module with no link flags builds all the same"
+    },
+    {
+     "status": "pass",
+     "desc": "the archive of a private system dependency reaches the final link"
+    },
+    {
+     "status": "pass",
+     "desc": "keeping a system dependency private does not leak its includes"
+    },
+    {
+     "status": "xfail",
+     "desc": "the link flags of a private system dependency reach the final link  [F-018]"
+    },
+    {
+     "status": "xfail",
+     "desc": "a library that keeps a system dependency private still links its dependent  [F-018]"
+    },
+    {
+     "status": "pass",
+     "desc": "declaring the same dependency public does link"
+    },
+    {
+     "status": "pass",
+     "desc": "a public system dependency puts its link flags on the final link"
+    },
+    {
+     "status": "pass",
+     "desc": "but a public system dependency also hands its defines to the dependent"
+    }
+   ],
+   "packages": [
+    "app",
+    "chain/mid",
+    "chain/top",
+    "gated"
+   ]
+  },
+  {
    "name": "docs",
-   "duration_ms": 48,
+   "duration_ms": 55,
    "counts": {
     "pass": 7,
     "fail": 0,
@@ -3247,12 +3519,12 @@
   }
  ],
  "totals": {
-  "pass": 722,
+  "pass": 783,
   "fail": 0,
-  "xfail": 6,
+  "xfail": 8,
   "xpass": 0
  },
- "total": 728,
+ "total": 791,
  "ok": true,
  "attention": [],
  "known_issues": [
@@ -3285,6 +3557,16 @@
    "status": "xfail",
    "project": "16-migrate",
    "desc": "the workflow that import prints verifies clean  [F-017]"
+  },
+  {
+   "status": "xfail",
+   "project": "17-deps",
+   "desc": "the link flags of a private system dependency reach the final link  [F-018]"
+  },
+  {
+   "status": "xfail",
+   "project": "17-deps",
+   "desc": "a library that keeps a system dependency private still links its dependent  [F-018]"
   }
  ]
 }
