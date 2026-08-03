@@ -114,6 +114,7 @@ jobs:
           cmake --version | head -1
           pkg-config --version
           gcc --version | head -1
+          gcc-ar --version | head -1
           clang --version | head -1
           g++ --version | head -1
           aarch64-linux-gnu-gcc --version | head -1

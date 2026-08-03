@@ -63,8 +63,8 @@ ran() {
 tool_is ar host ar "the archiver defaults to ar when nothing is declared"
 tool_is cc host cc "the C compiler defaults to cc, as it always has"
 
-declare_toolchain host 'ar = "llvm-ar"'
-tool_is llvm-ar host ar "a declared archiver is the one that runs"
+declare_toolchain host 'ar = "gcc-ar"'
+tool_is gcc-ar host ar "a declared archiver is the one that runs"
 
 # 道具ごとに独立していること。archiver を宣言してもコンパイラは動かない。
 tool_is cc host cc "declaring the archiver leaves the compiler alone"
@@ -82,7 +82,7 @@ ar_define() {
         tr ' ' '\n' | grep -E '^-DAR_IS' | head -1
 }
 
-declare_toolchain vocab 'ar = "llvm-ar"'
+declare_toolchain vocab 'ar = "gcc-ar"'
 got=$(ar_define)
 [ "$got" = "-DAR_IS=2" ]
 v=$?; RC=0; _last_cmd="graph --kind=action | grep -DAR_IS"; OUT="got: ${got:-(none)}"
@@ -134,7 +134,7 @@ n=$(ran host --no-compdb)
 v=$?; RC=0; _last_cmd="dowel -C host build --executor=direct"; OUT="ran ${n:-?} actions"
 fact $v "a rebuild with the same archiver runs nothing"
 
-declare_toolchain host 'ar = "llvm-ar"'
+declare_toolchain host 'ar = "gcc-ar"'
 build_direct -C host --no-compdb
 n=$(_ran_actions)
 [ "${n:-0}" -gt 0 ]
@@ -152,7 +152,7 @@ declare_toolchain host
 # 道具ごとの差ではなく記録の粒度である（docs/10-findings.md F-016）。
 SHIM=$PWD/shim
 rm -rf "$SHIM"; mkdir -p "$SHIM"
-ln -sf "$(command -v llvm-ar)" "$SHIM/ar"
+ln -sf "$(command -v gcc-ar)" "$SHIM/ar"
 ln -sf "$(command -v clang)" "$SHIM/cc"
 rm -rf host/.dowel
 "$DOWEL" -C host build --no-compdb >/dev/null 2>&1
@@ -166,7 +166,7 @@ fact $v "the record is the tool's name, so swapping what the name resolves to do
 #
 # ここが `ar` を宣言できるようにした理由である。クロスの構成で書庫の作成
 # だけがホストの道具に落ちると、ホストと目標で書庫の形式が違う場合に
-# 壊れる。llvm-ar と GNU ar、macOS をホストに ELF へクロスする場合、
+# 壊れる。gcc-ar と GNU ar、macOS をホストに ELF へクロスする場合、
 # ベンダ配布の toolchain。いずれも手元では通り、別の環境で壊れる。
 
 tool_is aarch64-linux-gnu-ar cross ar \

@@ -8,4 +8,4 @@
 sources = [file("src/vocab.c")]
 
 [lib.vocab.private]
-defines = { AR_IS = match tc.ar { "llvm-ar" => 2, _ => 1 } }
+defines = { AR_IS = match tc.ar { "gcc-ar" => 2, _ => 1 } }
