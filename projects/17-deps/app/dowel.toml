@@ -1,0 +1,9 @@
+[package]
+name    = "app"
+version = "0.0.0"
+
+# version 依存は pkg-config のモジュール名で引かれ、宣言した版は下限として
+# 扱われる（ADR-0015）。2.0 は system/demokit.pc の 2.4.0 に満たされる。
+[[dependencies]]
+name    = "demokit"
+version = "2.0"

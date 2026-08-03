@@ -1,0 +1,10 @@
+# 「システムに入っている」ことにするモジュール。実際のシステムには触れない。
+#
+# ${pcfiledir} は .pc 自身の置かれた場所に展開される。複製先の絶対パスを
+# 知らずに済むため、雛形の差し替えが要らない。
+prefix=${pcfiledir}
+Name: demokit
+Description: a fixture module for the suite
+Version: 2.4.0
+Cflags: -I${prefix}/include -DDEMOKIT=1
+Libs: -lm

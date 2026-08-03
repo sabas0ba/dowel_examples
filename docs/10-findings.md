@@ -9,7 +9,7 @@ F-001 から F-009 までの 9 件は `07f16ec` で、F-010 / F-012 / F-013 は
 対応する検査は `known_issue` を外し、通常の検査として残してある。直った
 ものを消すと、退行したときに気づけない。
 
-未修正は F-016 と F-017、および F-011 の残っている側である。対応する検査は
+未修正は F-016 / F-017 / F-018、および F-011 の残っている側である。対応する検査は
 `known_issue` を付けてあり、本体が直すと `XPASS` になって落ちる。
 
 各項目は次の形で記録する。
@@ -41,6 +41,7 @@ F-001 から F-009 までの 9 件は `07f16ec` で、F-010 / F-012 / F-013 は
 | [F-015](#f-015) | `--target` がツールチェーンを選ばない | 実装 | [#42](https://github.com/sabas0ba/dowel/issues/42) | 修正済み |
 | [F-016](#f-016) | `ar` を宣言できず、記録された入力にもなっていない | 要望 | [#50](https://github.com/sabas0ba/dowel/issues/50) | 未修正 |
 | [F-017](#f-017) | `migrate import` が CMake の構成のフラグを無条件の `flags` へ写す | 実装 | [#54](https://github.com/sabas0ba/dowel/issues/54) | 未修正 |
+| [F-018](#f-018) | `lib` の `private` な `link_flags` がリンクの閉包に乗らない | 実装 | [#56](https://github.com/sabas0ba/dowel/issues/56) | 未修正 |
 
 ---
 
@@ -1355,6 +1356,119 @@ RelWithDebInfo / MinSizeRel）と `--config`（debug / release）の 10 通り
 通常の検査として置いてある。Debug から取り込んで debug で組む限り写された
 フラグは dowel が足すものと同じであり、害が見えない。この1件だけが通る
 ことが、原因が「写したこと」そのものであることを示している。
+
+---
+
+## F-018
+
+報告先: [sabas0ba/dowel#56](https://github.com/sabas0ba/dowel/issues/56)
+
+**`lib` が `private` ブロックで持つ `link_flags`（および `private` な依存が
+持ち込む `--libs`）が、依存元の最終リンクに乗らない。静的な書庫は自分の
+リンク要件を運べないため、依存元が `undefined reference` で落ちる。**
+
+種別: 実装。未修正（`2e99fc7`）。ADR-0015 の `version` 依存を試していて
+見つけた。
+
+### 観測
+
+`mid`（`lib`）が `demokit` を `private` で使い、`top`（`bin`）が `mid` に
+依存する形。`demokit.pc` の `Libs:` は `-lm`。
+
+```
+# mid/dowel.build
+[lib.mid]
+sources = [file("src/mid.c")]
+
+[lib.mid.private]
+deps = [dep("demokit")]
+```
+
+```console
+$ dowel build            # top で
+cc .../src_main.c.o .../libmid.a .../libdemokit.a -o .../bin/top
+/usr/bin/ld: libmid.a(src_mid.c.o): in function `mid_value':
+mid/src/mid.c:5: undefined reference to `sqrt'
+```
+
+リンク行に `-lm` が無い。`libdemokit.a`（要素0の合成書庫）は乗っている。
+
+`public` に変えると通るが、今度は `-I.../include` と `-DDEMOKIT=1` が
+`top` の翻訳にも届く。
+
+| `mid` の宣言 | `top` のリンク | `top` の翻訳に届くもの |
+|---|---|---|
+| `private` | **失敗** | 何も届かない（正しい） |
+| `public` | 成功 | `-I.../include` `-DDEMOKIT=1`（漏れている） |
+
+**「ヘッダを漏らさない」と「リンクできる」を同時に選べない。**
+
+pkg-config とは無関係でも同じである。`[lib.mid.private] link_flags = ["-lm"]`
+と直に書いても `top` のリンクに現れず、診断も出ない。`lib` に対する
+`private link_flags` は現状**黙って無視される**プロパティになっている
+（書庫の作成は `ar` であり、リンクは行われないため）。
+
+さらに、`top` → `mid` → `leaf` と繋ぎ `mid` が `leaf` を `private` で持つと、
+`libleaf.a` は `private` を2段跨いで最終リンクに乗る。**閉包を辿る機構は
+既にあり、`link_flags` がそこに載っていないだけ**である。
+
+### 期待
+
+`private` な `link_flags` も、リンクの閉包に沿って最終リンクへ届く。翻訳の
+プロパティ（`includes` / `defines` / `flags`）は従来どおり伝播しない。
+
+根拠は本体の文書。`docs/13-semantics.md` は「**The linker follows the
+closure**」と述べ、リンクを「own objects, dependency archives in graph
+order, `link_flags`」と定義している。書庫が閉包を辿るなら、その書庫が要求
+するリンクフラグも同じ閉包を辿らなければ、書庫だけがあってシンボルが解けない
+状態になる。
+
+`docs/12-build-reference.md` の例は、まさにこの形を載せている。
+
+```toml
+[lib.foo.private]
+includes = [dir("src")]
+deps     = [dep("zlib") when feature.zlib]
+```
+
+ADR-0015 以前は `zlib` が解決されなかったため露見しなかった。解決される
+ようになった今、この例のとおりに書くと `libfoo.a` を使う側がリンクできない。
+
+静的リンクでは書庫が自分の依存を運べないため、CMake が `$<LINK_ONLY:...>`
+で扱っている領域にあたる（`target_link_libraries(mid PRIVATE m)` は STATIC
+ライブラリでも最終実行ファイルの行に `m` を残す）。
+
+「`lib` の `private link_flags` は意図的に無意味である」という設計であれば、
+少なくとも黙って落とさず診断を出すべきである。現状は書けてしまい、`check`
+も `build` も何も言わないまま、リンカの出力だけが利用者に届く。F-008 で
+`invalid-source` / `unresolved-path` を足したときと同じ形である。
+
+### なぜ内側から見つからないか
+
+- 本体のフィクスチャに、`private` ブロックへ `link_flags` を置き、かつ
+  **その記号が実際に必要**な例が無い。`-lm` のような「無くても書庫は作れるが
+  リンクで初めて落ちる」形が要る
+- `version` 依存は入ったばかりで、`--libs` が空でないモジュールを `private`
+  で使う例がまだ無い。`Libs:` が空なら差は出ない
+- 2パッケージ以上（`bin` → `lib`）でないと現れない。単一パッケージの `bin`
+  では `private link_flags` は自分自身のリンクに乗るため正しく動く
+
+### 検査
+
+`projects/17-deps` の以下 2 件。いずれも known_issue F-018 である。
+
+- `the link flags of a private system dependency reach the final link`
+- `a library that keeps a system dependency private still links its dependent`
+
+対照として次の2件を通常の検査として置いてある。
+
+- `the archive of a private system dependency reaches the final link`
+  — 閉包を辿る機構が既にあることを示す
+- `keeping a system dependency private does not leak its includes`
+  — `private` が翻訳に対しては正しく働いていることを示す
+
+2つ目は `xfail` の2件と**同時に**通ることが期待値である。片方だけを満たす
+直し方（全部 public 扱いにする）を通さないための組である。
 
 ---
 

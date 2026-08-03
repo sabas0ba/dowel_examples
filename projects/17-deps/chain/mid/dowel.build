@@ -1,0 +1,8 @@
+# 依存の宣言は private である。demokit の見出しは mid の実装の都合であり、
+# mid を使う側に見せるものではない。expect.sh がここを public に差し替えて
+# 両方の側を見る。
+[lib.mid]
+sources = [file("src/mid.c")]
+
+[lib.mid.private]
+deps = [dep("demokit")]
