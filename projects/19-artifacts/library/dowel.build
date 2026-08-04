@@ -1,0 +1,8 @@
+# ライブラリ側の派生。組み込みでは objcopy 済みの形が納品物になることが
+# ある。expect.sh が bin.user を出し入れして両側を見る
+# （docs/10-findings.md F-022）。
+[lib.part]
+sources = [file("src/part.c")]
+
+[lib.part.artifacts]
+stripped = { tool = "objcopy", args = ["--strip-all"] }

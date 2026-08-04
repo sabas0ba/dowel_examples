@@ -115,6 +115,8 @@ jobs:
           pkg-config --version
           gcc --version | head -1
           gcc-ar --version | head -1
+          objcopy --version | head -1
+          aarch64-linux-gnu-objcopy --version | head -1
           clang --version | head -1
           g++ --version | head -1
           aarch64-linux-gnu-gcc --version | head -1

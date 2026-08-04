@@ -1,0 +1,5 @@
+[bin.image]
+sources = [file("src/image.c")]
+
+[bin.image.artifacts]
+bin = { tool = "objcopy", args = ["-O", "binary"] }

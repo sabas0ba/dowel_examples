@@ -3,8 +3,8 @@
 # `[toolchain]` が名指しできる道具は表（`dowel_eval::config::TOOLS`）で
 # 決まっている。現在は C コンパイラ・C++ コンパイラ・archiver の3つ。
 #
-# 表に載ることで得られる性質は4つあり、`ar` はその全部を備えているはず
-# である（dowel#50）。ここで固定するのはその4つと、**表に無い名前の扱い**。
+# 表に載ることで得られる性質は5つあり、`ar` はその全部を備えているはず
+# である（dowel#50）。ここで固定するのはその5つと、**表に無い名前の扱い**。
 #
 #   1. 宣言すればそれが起動される。宣言しなければ既定値
 #   2. 構成の語彙（`tc.<名前>`）から引ける
@@ -166,7 +166,7 @@ fact $v "the record is the tool's name, so swapping what the name resolves to do
 #
 # ここが `ar` を宣言できるようにした理由である。クロスの構成で書庫の作成
 # だけがホストの道具に落ちると、ホストと目標で書庫の形式が違う場合に
-# 壊れる。gcc-ar と GNU ar、macOS をホストに ELF へクロスする場合、
+# 壊れる。llvm-ar と GNU ar、macOS をホストに ELF へクロスする場合、
 # ベンダ配布の toolchain。いずれも手元では通り、別の環境で壊れる。
 
 tool_is aarch64-linux-gnu-ar cross ar \
@@ -197,17 +197,17 @@ assert "the cross binary links against that archive and runs under the emulator"
     qemu-aarch64-static -L /usr/aarch64-linux-gnu \
     "$PWD/$(find cross/.dowel/build -type f -path "*$TRIPLE*/bin/image" | head -1)"
 
-# ------------------------------------------------------------ 6. 綴り間違い (F-019)
+# ------------------------------------------------------------ 6. 綴り間違い
 #
-# 表に無いキーは黙って受理され、その道具は既定値へ後退する。クロスの宣言で
-# archiver のキーを打ち間違えると、aarch64 の書庫がホストの `ar` で作られる。
-# #50 が防ごうとした状態が、綴り間違いで戻る。
+# かつて表に無いキーは黙って受理され、その道具は既定値へ後退していた
+# （docs/10-findings.md F-019）。クロスの宣言で archiver のキーを打ち間違える
+# と、aarch64 の書庫がホストの `ar` で作られ、#50 が防ごうとした状態が
+# 綴り間違いで戻っていた。
 #
 # `c` が同じ経路で消えれば翻訳が動かないのですぐ分かる。archiver は既定の
 # `ar` が ELF に対して総称的に動いてしまうため、**壊れるのはホストと目標で
-# 書庫形式が違うときだけ**である。
+# 書庫形式が違うときだけ**であった。
 
-known_issue F-019
 fails "a misspelled toolchain key is refused" -C typo check --target=$TRIPLE
 
 said=$(json_diags -C typo check --target=$TRIPLE)
@@ -215,19 +215,16 @@ _last_cmd="dowel -C typo check --message-format=json --target=$TRIPLE"
 OUT=$said; RC=0
 printf '%s' "$said" | jq -e 'select(.code == "unknown-property")
     | .suggestions | length > 0' >/dev/null 2>&1
-v=$?
-known_issue F-019
-fact $v "the refusal suggests the tool that was meant"
+fact $? "the refusal suggests the tool that was meant"
 
-got=$(tool_of typo ar --target=$TRIPLE)
-[ "$got" = "aarch64-linux-gnu-ar" ]
-v=$?; RC=0; _last_cmd="dowel -C typo graph --kind=action --target=$TRIPLE"
-OUT="archiver = ${got:-(none)}"
-known_issue F-019
-fact $v "a misspelled cross archiver does not silently fall back to the host tool"
+# 拒むのは計画の前である。書庫がホストの道具で作られてから気づくのでは遅い。
+_last_cmd="dowel -C typo build --target=$TRIPLE"
+OUT=$("$DOWEL" -C typo build --no-compdb --target=$TRIPLE 2>&1)
+RC=0
+[ ! -d typo/.dowel/build ]
+fact $? "the misspelled declaration is caught before anything is built"
 
-# 綴りを直せば効く。上の3件は「宣言が効かないこと」ではなく
-# 「効かないことが知らされないこと」を見ている。
+# 綴りを直せば効く。
 sed -i 's/^ar_ =/ar  =/' typo/dowel.toml
 tool_is aarch64-linux-gnu-ar typo ar \
     "spelling the key correctly does select the cross archiver" --target=$TRIPLE
@@ -258,30 +255,15 @@ probe_vocabulary() {
 }
 
 probe_vocabulary objcopy; v=$?
-known_issue F-020
 fact $v "a transform tool can be declared alongside the archiver"
 
+# 検査の道具（size / nm / objdump）はまだ表に無い。ファイルを作らないため、
+# 「報せる場所」が要る（dowel#60）。
 probe_vocabulary size; v=$?
 known_issue F-020
 fact $v "an inspection tool can be declared alongside the archiver"
 
-# 変換の出力がビルドの成果物であること。提案した形の1つを書いてみる。
-# 実装が別の形を採ればここは書き換わるが、**変換がグラフに乗る**という
-# 期待そのものは変わらない。
-cp "$BUILD_BAK" host/dowel.build
-declare_toolchain host 'objcopy = "objcopy"'
-cat >>host/dowel.build <<'EOF'
-
-[bin.user.artifacts]
-bin = { tool = "objcopy", args = ["-O", "binary"] }
-EOF
-"$DOWEL" -C host build --no-compdb >/dev/null 2>&1
-img=$(find host/.dowel/build -type f -name 'user.bin' 2>/dev/null | head -1)
-[ -n "$img" ]
-v=$?; RC=0; _last_cmd="dowel -C host build  # with an artifacts block"
-OUT="raw image: ${img:-(not produced)}"
-known_issue F-020
-fact $v "a bin target can produce a raw binary image"
-
+# 変換がグラフに乗ることそのものは 19-artifacts が見る。ここで確かめるのは
+# 「道具として宣言できる」ところまでである。
 cp "$BUILD_BAK" host/dowel.build
 declare_toolchain host

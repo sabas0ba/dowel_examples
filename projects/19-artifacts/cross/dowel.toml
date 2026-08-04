@@ -1,0 +1,10 @@
+[package]
+name    = "cross"
+version = "0.0.0"
+
+# 道具は三つ揃えて宣言する。生成物を変換する道具がホストのものに落ちると、
+# 別アーキテクチャの ELF をホストの objcopy が扱うことになる。
+[toolchain.aarch64-unknown-linux-gnu]
+c       = "aarch64-linux-gnu-gcc"
+ar      = "aarch64-linux-gnu-ar"
+objcopy = "aarch64-linux-gnu-objcopy"

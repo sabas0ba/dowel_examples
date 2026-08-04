@@ -279,11 +279,14 @@ absent 'flags    = ["-O' from-release/dowel.build \
 absent 'defines  = { NDEBUG' from-release/dowel.build \
     "the CMake build type does not become a define in the draft"
 
-# リンクの側。同じ集合が link_flags には残っている（F-021）。下書きの
-# 見出しは「写していない」と述べているため、中身と食い違っている。
-known_issue F-021
-absent 'NDEBUG' from-release/dowel.build \
-    "the draft carries no NDEBUG from a release CMake build type"
+# リンクの側。かつて同じ集合が link_flags に残っており、下書きの見出しが
+# 述べる内容と食い違っていた（F-021）。見出しは NDEBUG に言及するため、
+# 注釈の行は数えない。
+_last_cmd="grep -v '^#' from-release/dowel.build | grep -F NDEBUG"
+OUT=$(grep -v '^#' from-release/dowel.build | grep -nF -- 'NDEBUG' 2>&1)
+RC=0
+[ -z "$OUT" ]
+fact $? "the draft carries no NDEBUG from a release CMake build type"
 
 # 構成は dowel の側だけが決める。取り込み元がどちらでも、組んだ構成が
 # そのまま出る。
