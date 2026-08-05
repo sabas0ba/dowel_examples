@@ -1,10 +1,10 @@
 {
- "run_id": "30973666748",
+ "run_id": "30997661771",
  "run_attempt": "1",
- "run_url": "https://github.com/sabas0ba/dowel_examples/actions/runs/30973666748",
- "commit": "878cdb8a2075f127714bd0e2c4ded9ea68dfa487",
+ "run_url": "https://github.com/sabas0ba/dowel_examples/actions/runs/30997661771",
+ "commit": "cf2888d5f0d953da7fa15da0c11cfe7c6569e758",
  "branch": "main",
- "started_at": "2026-08-05T03:57:00Z",
+ "started_at": "2026-08-05T10:30:54Z",
  "dowel_version": "dowel 0.0.1",
  "dowel_ref": "af7d391f1e223680b9a61af9dbe0ee73efd890b2",
  "dowel_commit": "af7d391f1e223680b9a61af9dbe0ee73efd890b2",
@@ -13,7 +13,8 @@
  "projects": [
   {
    "name": "01-minimal",
-   "duration_ms": 144,
+   "root": "projects",
+   "duration_ms": 166,
    "counts": {
     "pass": 10,
     "fail": 0,
@@ -70,7 +71,8 @@
   },
   {
    "name": "02-config",
-   "duration_ms": 883,
+   "root": "projects",
+   "duration_ms": 414,
    "counts": {
     "pass": 21,
     "fail": 0,
@@ -172,7 +174,8 @@
   },
   {
    "name": "03-features",
-   "duration_ms": 243,
+   "root": "projects",
+   "duration_ms": 201,
    "counts": {
     "pass": 17,
     "fail": 0,
@@ -261,7 +264,8 @@
   },
   {
    "name": "04-diagnostics",
-   "duration_ms": 218,
+   "root": "projects",
+   "duration_ms": 290,
    "counts": {
     "pass": 66,
     "fail": 0,
@@ -562,7 +566,8 @@
   },
   {
    "name": "05-incremental",
-   "duration_ms": 1054,
+   "root": "projects",
+   "duration_ms": 1522,
    "counts": {
     "pass": 48,
     "fail": 0,
@@ -773,7 +778,8 @@
   },
   {
    "name": "06-runner",
-   "duration_ms": 229,
+   "root": "projects",
+   "duration_ms": 285,
    "counts": {
     "pass": 17,
     "fail": 0,
@@ -860,7 +866,8 @@
   },
   {
    "name": "07-robustness",
-   "duration_ms": 960,
+   "root": "projects",
+   "duration_ms": 1196,
    "counts": {
     "pass": 145,
     "fail": 0,
@@ -1457,7 +1464,8 @@
   },
   {
    "name": "08-lsp",
-   "duration_ms": 13694,
+   "root": "projects",
+   "duration_ms": 12626,
    "counts": {
     "pass": 110,
     "fail": 0,
@@ -1914,7 +1922,8 @@
   },
   {
    "name": "09-acquisition",
-   "duration_ms": 13895,
+   "root": "projects",
+   "duration_ms": 17158,
    "counts": {
     "pass": 66,
     "fail": 0,
@@ -2197,7 +2206,8 @@
   },
   {
    "name": "10-toolchain",
-   "duration_ms": 565,
+   "root": "projects",
+   "duration_ms": 692,
    "counts": {
     "pass": 31,
     "fail": 0,
@@ -2338,7 +2348,8 @@
   },
   {
    "name": "11-cross",
-   "duration_ms": 453,
+   "root": "projects",
+   "duration_ms": 478,
    "counts": {
     "pass": 17,
     "fail": 0,
@@ -2423,7 +2434,8 @@
   },
   {
    "name": "12-store",
-   "duration_ms": 148,
+   "root": "projects",
+   "duration_ms": 182,
    "counts": {
     "pass": 29,
     "fail": 0,
@@ -2556,7 +2568,8 @@
   },
   {
    "name": "13-parallel",
-   "duration_ms": 10644,
+   "root": "projects",
+   "duration_ms": 10686,
    "counts": {
     "pass": 18,
     "fail": 0,
@@ -2645,7 +2658,8 @@
   },
   {
    "name": "14-scale",
-   "duration_ms": 5069,
+   "root": "projects",
+   "duration_ms": 4932,
    "counts": {
     "pass": 17,
     "fail": 0,
@@ -2728,7 +2742,8 @@
   },
   {
    "name": "15-cpp",
-   "duration_ms": 3771,
+   "root": "projects",
+   "duration_ms": 2896,
    "counts": {
     "pass": 70,
     "fail": 0,
@@ -3035,7 +3050,8 @@
   },
   {
    "name": "16-migrate",
-   "duration_ms": 1234,
+   "root": "projects",
+   "duration_ms": 1085,
    "counts": {
     "pass": 54,
     "fail": 0,
@@ -3268,7 +3284,8 @@
   },
   {
    "name": "17-deps",
-   "duration_ms": 946,
+   "root": "projects",
+   "duration_ms": 594,
    "counts": {
     "pass": 51,
     "fail": 0,
@@ -3492,7 +3509,8 @@
   },
   {
    "name": "18-tools",
-   "duration_ms": 695,
+   "root": "projects",
+   "duration_ms": 379,
    "counts": {
     "pass": 31,
     "fail": 0,
@@ -3640,7 +3658,8 @@
   },
   {
    "name": "19-artifacts",
-   "duration_ms": 962,
+   "root": "projects",
+   "duration_ms": 503,
    "counts": {
     "pass": 34,
     "fail": 0,
@@ -3798,15 +3817,277 @@
    ]
   },
   {
-   "name": "docs",
-   "duration_ms": 35,
+   "name": "httpd",
+   "root": "apps",
+   "duration_ms": 520,
    "counts": {
-    "pass": 7,
+    "pass": 26,
     "fail": 0,
     "xfail": 0,
     "xpass": 0
    },
-   "total": 7,
+   "total": 26,
+   "ok": true,
+   "checks": [
+    {
+     "status": "pass",
+     "desc": "the package passes check"
+    },
+    {
+     "status": "pass",
+     "desc": "it builds"
+    },
+    {
+     "status": "pass",
+     "desc": "the default build asks for nothing beyond the standard library"
+    },
+    {
+     "status": "pass",
+     "desc": "the default configuration compiles the portable waiter"
+    },
+    {
+     "status": "pass",
+     "desc": "and does not compile the one it did not choose"
+    },
+    {
+     "status": "pass",
+     "desc": "choosing the other feature compiles the other waiter"
+    },
+    {
+     "status": "pass",
+     "desc": "and drops the first one"
+    },
+    {
+     "status": "pass",
+     "desc": "the epoll configuration builds"
+    },
+    {
+     "status": "pass",
+     "desc": "the default artifact says it is the portable waiter"
+    },
+    {
+     "status": "pass",
+     "desc": "the epoll artifact says so too"
+    },
+    {
+     "status": "pass",
+     "desc": "the threaded configuration asks the linker for threads"
+    },
+    {
+     "status": "pass",
+     "desc": "the threaded configuration builds"
+    },
+    {
+     "status": "pass",
+     "desc": "and its artifact says it is threaded"
+    },
+    {
+     "status": "pass",
+     "desc": "the default configuration builds"
+    },
+    {
+     "status": "pass",
+     "desc": "a request for a file that exists is answered with 200"
+    },
+    {
+     "status": "pass",
+     "desc": "the response carries the media type the path implies"
+    },
+    {
+     "status": "pass",
+     "desc": "and the body is what the file holds"
+    },
+    {
+     "status": "pass",
+     "desc": "a request for a file that does not exist is answered with 404"
+    },
+    {
+     "status": "pass",
+     "desc": "a path that climbs out of the root is refused"
+    },
+    {
+     "status": "pass",
+     "desc": "the epoll build answers the same request the same way"
+    },
+    {
+     "status": "pass",
+     "desc": "the unit tests pass"
+    },
+    {
+     "status": "pass",
+     "desc": "and pass under the other waiter too"
+    },
+    {
+     "status": "pass",
+     "desc": "a rebuild of the same configuration is a no-op"
+    },
+    {
+     "status": "pass",
+     "desc": "nothing runs when nothing changed"
+    },
+    {
+     "status": "pass",
+     "desc": "editing the chosen waiter recompiles it"
+    },
+    {
+     "status": "pass",
+     "desc": "and leaves the rest of the library alone"
+    }
+   ],
+   "packages": [
+    "."
+   ]
+  },
+  {
+   "name": "jsonfmt",
+   "root": "apps",
+   "duration_ms": 765,
+   "counts": {
+    "pass": 27,
+    "fail": 0,
+    "xfail": 3,
+    "xpass": 0
+   },
+   "total": 30,
+   "ok": true,
+   "checks": [
+    {
+     "status": "pass",
+     "desc": "the library package passes check"
+    },
+    {
+     "status": "pass",
+     "desc": "the application package passes check"
+    },
+    {
+     "status": "pass",
+     "desc": "the application builds"
+    },
+    {
+     "status": "pass",
+     "desc": "nothing outside the standard library is linked in"
+    },
+    {
+     "status": "pass",
+     "desc": "the public include directory of the library reaches the application"
+    },
+    {
+     "status": "pass",
+     "desc": "but its private one does not, so the internals stay internal"
+    },
+    {
+     "status": "pass",
+     "desc": "including a private header of the library does not compile"
+    },
+    {
+     "status": "pass",
+     "desc": "and removing it builds again"
+    },
+    {
+     "status": "pass",
+     "desc": "an object is laid out over lines with two spaces"
+    },
+    {
+     "status": "pass",
+     "desc": "-c lays the same object out on one line"
+    },
+    {
+     "status": "pass",
+     "desc": "nesting indents by depth"
+    },
+    {
+     "status": "pass",
+     "desc": "surrounding space is dropped"
+    },
+    {
+     "status": "pass",
+     "desc": "an escaped quote inside a string survives"
+    },
+    {
+     "status": "pass",
+     "desc": "an empty array stays on one line"
+    },
+    {
+     "status": "pass",
+     "desc": "-i sets the width"
+    },
+    {
+     "status": "pass",
+     "desc": "a syntax error is refused with its byte offset"
+    },
+    {
+     "status": "pass",
+     "desc": "the tests of both packages run and pass"
+    },
+    {
+     "status": "pass",
+     "desc": "both test targets are collected from one invocation"
+    },
+    {
+     "status": "pass",
+     "desc": "the test sources live outside the packages that declare them"
+    },
+    {
+     "status": "pass",
+     "desc": "building with a forwarded feature passes"
+    },
+    {
+     "status": "pass",
+     "desc": "the default build has the ordinary depth limit"
+    },
+    {
+     "status": "pass",
+     "desc": "a feature forwarded to a dependency reaches it"
+    },
+    {
+     "status": "xfail",
+     "desc": "a forwarded feature does not split the build directory in two  [F-023]"
+    },
+    {
+     "status": "pass",
+     "desc": "the application builds in release"
+    },
+    {
+     "status": "pass",
+     "desc": "a second build of the same configuration runs nothing"
+    },
+    {
+     "status": "pass",
+     "desc": "editing one source recompiles it"
+    },
+    {
+     "status": "pass",
+     "desc": "and does not recompile its neighbours"
+    },
+    {
+     "status": "xfail",
+     "desc": "running the tests does not make the next build redo work  [F-024]"
+    },
+    {
+     "status": "pass",
+     "desc": "and a full build leaves nothing for the tests to redo"
+    },
+    {
+     "status": "xfail",
+     "desc": "building one target does not make the next full build redo work  [F-024]"
+    }
+   ],
+   "packages": [
+    "cli",
+    "core"
+   ]
+  },
+  {
+   "name": "docs",
+   "root": "projects",
+   "duration_ms": 46,
+   "counts": {
+    "pass": 8,
+    "fail": 0,
+    "xfail": 0,
+    "xpass": 0
+   },
+   "total": 8,
    "ok": true,
    "checks": [
     {
@@ -3816,6 +4097,10 @@
     {
      "status": "pass",
      "desc": "the project table in README.md matches projects/"
+    },
+    {
+     "status": "pass",
+     "desc": "the application table in README.md matches apps/"
     },
     {
      "status": "pass",
@@ -3842,12 +4127,12 @@
   }
  ],
  "totals": {
-  "pass": 859,
+  "pass": 913,
   "fail": 0,
-  "xfail": 3,
+  "xfail": 6,
   "xpass": 0
  },
- "total": 862,
+ "total": 919,
  "ok": true,
  "attention": [],
  "known_issues": [
@@ -3865,6 +4150,21 @@
    "status": "xfail",
    "project": "19-artifacts",
    "desc": "a library keeps producing its derived file when a binary depends on it  [F-022]"
+  },
+  {
+   "status": "xfail",
+   "project": "jsonfmt",
+   "desc": "a forwarded feature does not split the build directory in two  [F-023]"
+  },
+  {
+   "status": "xfail",
+   "project": "jsonfmt",
+   "desc": "running the tests does not make the next build redo work  [F-024]"
+  },
+  {
+   "status": "xfail",
+   "project": "jsonfmt",
+   "desc": "building one target does not make the next full build redo work  [F-024]"
   }
  ]
 }
