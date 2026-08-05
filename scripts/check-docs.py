@@ -47,7 +47,7 @@ def markdown_files():
                 yield os.path.join(ROOT, name)
         return
     # git が使えない場合の退避。既知の置き場だけを見る。
-    for sub in ("", "docs", "projects"):
+    for sub in ("", "docs", "projects", "apps"):
         base = os.path.join(ROOT, sub)
         for cur, dirs, names in os.walk(base):
             dirs[:] = [d for d in dirs if not d.startswith(".") and d != "__pycache__"]
@@ -82,18 +82,21 @@ def check_links(report):
 
 
 def check_project_index(report):
-    """README のプロジェクト表が `projects/` の中身と一致すること。"""
-    on_disk = sorted(
-        d for d in os.listdir(os.path.join(ROOT, "projects"))
-        if os.path.isdir(os.path.join(ROOT, "projects", d))
-    )
-    with open(os.path.join(ROOT, "README.md"), encoding="utf-8") as f:
-        listed = sorted(set(re.findall(r"\]\(projects/([^/)]+)/\)", f.read())))
-    report(
-        on_disk == listed,
-        "the project table in README.md matches projects/",
-        [f"on disk: {on_disk}", f"listed:  {listed}"],
-    )
+    """README の表が `projects/` と `apps/` の中身と一致すること。
+
+    探索の根は2つあり、目的が違う（`projects/` は性質の検査、`apps/` は
+    実アプリ）。どちらも README に並べ、抜けを機械的に見る。
+    """
+    for root, label in (("projects", "the project table in README.md matches projects/"),
+                        ("apps", "the application table in README.md matches apps/")):
+        base = os.path.join(ROOT, root)
+        on_disk = sorted(
+            d for d in os.listdir(base) if os.path.isdir(os.path.join(base, d))
+        ) if os.path.isdir(base) else []
+        with open(os.path.join(ROOT, "README.md"), encoding="utf-8") as f:
+            listed = sorted(set(re.findall(r"\]\(" + root + r"/([^/)]+)/\)", f.read())))
+        report(on_disk == listed, label,
+               [f"on disk: {on_disk}", f"listed:  {listed}"])
 
 
 def check_doc_index(report):
@@ -135,10 +138,14 @@ def check_finding_ids(report):
     """`known_issue` が指す所見が `10-findings.md` に存在すること。"""
     declared = set(re.findall(r"^## (F-\d{3})$", _read("docs/10-findings.md"), re.M))
     used = set()
-    for base, dirs, names in os.walk(os.path.join(ROOT, "projects")):
-        for n in names:
-            if n == "expect.sh":
-                used |= set(re.findall(r"known_issue\s+(F-\d{3})", _read_abs(os.path.join(base, n))))
+    for root in ("projects", "apps"):
+        if not os.path.isdir(os.path.join(ROOT, root)):
+            continue
+        for base, dirs, names in os.walk(os.path.join(ROOT, root)):
+            for n in names:
+                if n == "expect.sh":
+                    used |= set(re.findall(
+                        r"known_issue\s+(F-\d{3})", _read_abs(os.path.join(base, n))))
     unknown = sorted(used - declared)
     report(
         not unknown,

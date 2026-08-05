@@ -72,7 +72,7 @@ def collect(work):
     checks = read_tsv(os.path.join(work, "results.tsv"), ["status", "project", "desc"])
     raw = read_tsv(
         os.path.join(work, "projects.tsv"),
-        ["name", "duration_ms", "pass", "fail", "xfail", "xpass"],
+        ["name", "duration_ms", "pass", "fail", "xfail", "xpass", "root"],
     )
     pkgs = read_tsv(os.path.join(work, "packages.tsv"), ["project", "path"])
 
@@ -82,6 +82,9 @@ def collect(work):
         projects.append(
             {
                 "name": r["name"],
+                # 実体の置き場所。projects/ は性質の検査、apps/ は実アプリ。
+                # 古い履歴には無いため projects/ を既定にする。
+                "root": r.get("root") or "projects",
                 "duration_ms": int(r["duration_ms"]),
                 "counts": counts,
                 "total": sum(counts.values()),
@@ -415,7 +418,8 @@ def render_site(history, latest=None):
         out.append(
             "<tr><td>{}</td><td class='{}'>{}</td><td class='n'>{}</td>{}<td class='n'>{:.1f}s</td></tr>".format(
                 '<a href="{}">{}</a>'.format(
-                    suite_tree(latest, "projects/" + p["name"]), html.escape(p["name"])
+                    suite_tree(latest, p.get("root", "projects") + "/" + p["name"]),
+                    html.escape(p.get("root", "projects") + "/" + p["name"]),
                 ),
                 "ok" if p["ok"] else "ng",
                 "ok" if p["ok"] else "FAILED",
@@ -440,7 +444,8 @@ def render_site(history, latest=None):
         )
         for p in latest["projects"]:
             opened = "" if p["ok"] and not p["counts"]["xfail"] else " open"
-            tree = suite_tree(latest, "projects/" + p["name"])
+            root = p.get("root", "projects")
+            tree = suite_tree(latest, root + "/" + p["name"])
             out.append("<details{}>".format(opened))
             out.append(
                 "<summary><span class='{}'>{}</span> "
@@ -450,7 +455,7 @@ def render_site(history, latest=None):
                     "ok" if p["ok"] else "ng",
                     "ok" if p["ok"] else "FAILED",
                     tree,
-                    html.escape(p["name"]),
+                    html.escape(root + "/" + p["name"]),
                     p["total"],
                     p["counts"]["pass"], p["counts"]["fail"],
                     p["counts"]["xfail"], p["counts"]["xpass"],
@@ -458,7 +463,7 @@ def render_site(history, latest=None):
             )
             src = [
                 '<a href="{}">README</a>'.format(
-                    suite_blob(latest, "projects/{}/README.md".format(p["name"]))
+                    suite_blob(latest, "{}/{}/README.md".format(root, p["name"]))
                 )
             ]
             src += [
