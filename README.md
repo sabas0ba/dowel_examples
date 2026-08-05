@@ -10,7 +10,7 @@ dowel 本体は自分自身を内側から検査している（`crates/*/tests/`
 仕様と実装の食い違いを仕様の側から見つけられる。
 
 見つけたものは [docs/10-findings.md](docs/10-findings.md) に記録し、本体へ報告する。
-これまでに 24 件を報告し、19 件が修正された。
+これまでに 26 件を報告し、19 件が修正された。
 
 ## 走らせる
 
@@ -53,11 +53,12 @@ DOWELUP=/path/to/dowelup DOWEL_SRC=/path/to/dowel ./run.sh
 ## 出力
 
 1 検査 1 行。本体が直していない事項に対する検査は `xfail` として登録する。
-本体側が直ると `XPASS` になって落ち、宣言を外すべきことが分かる。現在は 6 件で、
+本体側が直ると `XPASS` になって落ち、宣言を外すべきことが分かる。現在は 8 件で、
 [F-011](docs/10-findings.md#f-011) の残っている側、
 [F-020](docs/10-findings.md#f-020) の残っている側（検査の道具）、
 [F-022](docs/10-findings.md#f-022)、[F-023](docs/10-findings.md#f-023)、
-[F-024](docs/10-findings.md#f-024) に対応する。
+[F-024](docs/10-findings.md#f-024)、[F-025](docs/10-findings.md#f-025)、
+[F-026](docs/10-findings.md#f-026) に対応する。
 
 ```
 02-config
@@ -76,7 +77,7 @@ apps/jsonfmt
   ok   including a private header of the library does not compile
   xfail running the tests does not make the next build redo work  [F-024]
 
-total 919 checks: 913 passed, 0 failed, 6 known, 0 fixed
+total 945 checks: 937 passed, 0 failed, 8 known, 0 fixed
 ```
 
 検査名は英語で書く。実装の中身ではなく、何が固定されているかを1行で読ませる
@@ -116,6 +117,7 @@ total 919 checks: 913 passed, 0 failed, 6 known, 0 fixed
 |---|---|---|
 | [jsonfmt](apps/jsonfmt/) | 依存を持たない CLI。解析と整形 | 無し |
 | [httpd](apps/httpd/) | システムプログラミング。ソケット、シグナル、待ち方の選択 | 無し（libc のみ） |
+| [blink](apps/blink/) | 組み込み。freestanding、ベクタ表、書き込み用の像 | 無し（libc を使わない） |
 
 ここで見つかるものは、最小の構成では現れない。実際、
 [F-023](docs/10-findings.md#f-023) はパッケージを跨いだ機能名を使って初めて、

@@ -1,0 +1,41 @@
+# 周辺機器を叩くだけの層。libc は使わない。
+[lib.bl]
+sources = [
+    file("src/gpio.c"),
+    file("src/delay.c"),
+]
+
+[lib.bl.public]
+includes = [dir("include")]
+abi      = "freestanding"
+
+[lib.bl.private]
+flags = [
+    "-ffreestanding",       # 標準ライブラリの存在を仮定しない
+    "-fno-builtin",         # memcpy 等への置き換えを禁じる
+    "-nostdinc",            # 系の見出しを探しに行かせない
+    "-std=gnu11", "-Wall", "-Wextra",
+]
+
+# 実体。ベクタ表と入口を持つ。
+[bin.firmware]
+sources = [
+    file("src/vectors.c"),
+    file("src/main.c"),
+]
+
+[bin.firmware.private]
+deps  = [target("bl")]
+flags = ["-ffreestanding", "-fno-builtin", "-nostdinc", "-std=gnu11", "-Wall", "-Wextra"]
+abi   = "freestanding"
+link_flags = [
+    "-nostdlib",            # 起動コードも libc も付けない
+    "-static",
+    "-Wl,--build-id=none",
+    "-Wl,-e,_reset",        # 入口はベクタ表の先の _reset
+]
+
+# 書き込み用の像。ELF のままでは書き込み器が読めない。
+[bin.firmware.artifacts]
+bin = { tool = "objcopy", args = ["-O", "binary"] }
+hex = { tool = "objcopy", args = ["-O", "ihex"] }

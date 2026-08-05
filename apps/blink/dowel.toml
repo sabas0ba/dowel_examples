@@ -1,0 +1,13 @@
+[package]
+name    = "blink"
+version = "0.1.0"
+edition = "2026"
+
+# freestanding の対象。libc を持たず、リンカスクリプトが記憶の配置を決める。
+#
+# 道具は三つ揃えて宣言する。objcopy がホストのものに落ちると、別アーキ
+# テクチャの ELF をホストの道具が扱うことになる。
+[toolchain.aarch64-unknown-linux-gnu]
+c       = "aarch64-linux-gnu-gcc"
+ar      = "aarch64-linux-gnu-ar"
+objcopy = "aarch64-linux-gnu-objcopy"
