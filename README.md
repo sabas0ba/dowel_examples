@@ -76,7 +76,7 @@ apps/jsonfmt
   ok   including a private header of the library does not compile
   xfail running the tests does not make the next build redo work  [F-024]
 
-total 893 checks: 887 passed, 0 failed, 6 known, 0 fixed
+total 919 checks: 913 passed, 0 failed, 6 known, 0 fixed
 ```
 
 検査名は英語で書く。実装の中身ではなく、何が固定されているかを1行で読ませる
@@ -115,6 +115,7 @@ total 893 checks: 887 passed, 0 failed, 6 known, 0 fixed
 | アプリ | 分野 | 外部依存 |
 |---|---|---|
 | [jsonfmt](apps/jsonfmt/) | 依存を持たない CLI。解析と整形 | 無し |
+| [httpd](apps/httpd/) | システムプログラミング。ソケット、シグナル、待ち方の選択 | 無し（libc のみ） |
 
 ここで見つかるものは、最小の構成では現れない。実際、
 [F-023](docs/10-findings.md#f-023) はパッケージを跨いだ機能名を使って初めて、
