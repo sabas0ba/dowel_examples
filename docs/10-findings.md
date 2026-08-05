@@ -3,13 +3,15 @@
 本スイートが外側から見つけたもの。
 
 F-001 から F-009 までの 9 件は `07f16ec` で、F-010 / F-012 / F-013 は
-`95daf9f` で、F-014 / F-015 は `3e84cbd` で、F-016 / F-017 は `a9c1619` で
-修正された。F-008 はさらに `9ed13f4` で二段目の決着を見ている。記録は残す。
+`95daf9f` で、F-014 / F-015 は `3e84cbd` で、F-016 / F-017 は `a9c1619` で、
+F-018 / F-019 / F-021 は `af7d391` で修正された。F-008 はさらに `9ed13f4` で
+二段目の決着を見ている。記録は残す。
 何を見てどう報告したかが、次に同種のものを見つけるときの型になるためである。
 対応する検査は `known_issue` を外し、通常の検査として残してある。直った
 ものを消すと、退行したときに気づけない。
 
-未修正は F-018 / F-019 / F-020 / F-021、および F-011 の残っている側である。対応する検査は
+未修正は F-020 の残っている側（検査の道具）と F-022、および F-011 の
+残っている側である。対応する検査は
 `known_issue` を付けてあり、本体が直すと `XPASS` になって落ちる。
 
 各項目は次の形で記録する。
@@ -41,10 +43,11 @@ F-001 から F-009 までの 9 件は `07f16ec` で、F-010 / F-012 / F-013 は
 | [F-015](#f-015) | `--target` がツールチェーンを選ばない | 実装 | [#42](https://github.com/sabas0ba/dowel/issues/42) | 修正済み |
 | [F-016](#f-016) | `ar` を宣言できず、記録された入力にもなっていない | 要望 | [#50](https://github.com/sabas0ba/dowel/issues/50) | 修正済み |
 | [F-017](#f-017) | `migrate import` が CMake の構成のフラグを無条件の `flags` へ写す | 実装 | [#54](https://github.com/sabas0ba/dowel/issues/54) | 一部修正 |
-| [F-018](#f-018) | `lib` の `private` な `link_flags` がリンクの閉包に乗らない | 実装 | [#56](https://github.com/sabas0ba/dowel/issues/56) | 未修正 |
-| [F-019](#f-019) | `[toolchain]` の未知のキーが黙って受理され、道具が既定値へ後退する | 実装 | [#59](https://github.com/sabas0ba/dowel/issues/59) | 未修正 |
-| [F-020](#f-020) | 生成物を変換・検査する道具を宣言できず、後処理の場所も無い | 要望 | [#60](https://github.com/sabas0ba/dowel/issues/60) | 未修正 |
-| [F-021](#f-021) | 構成レベルのフラグが `link_flags` には残り、下書きの見出しと食い違う | 実装 | [#61](https://github.com/sabas0ba/dowel/issues/61) | 未修正 |
+| [F-018](#f-018) | `lib` の `private` な `link_flags` がリンクの閉包に乗らない | 実装 | [#56](https://github.com/sabas0ba/dowel/issues/56) | 修正済み |
+| [F-019](#f-019) | `[toolchain]` の未知のキーが黙って受理され、道具が既定値へ後退する | 実装 | [#59](https://github.com/sabas0ba/dowel/issues/59) | 修正済み |
+| [F-020](#f-020) | 生成物を変換・検査する道具を宣言できず、後処理の場所も無い | 要望 | [#60](https://github.com/sabas0ba/dowel/issues/60) | 一部修正 |
+| [F-021](#f-021) | 構成レベルのフラグが `link_flags` には残り、下書きの見出しと食い違う | 実装 | [#61](https://github.com/sabas0ba/dowel/issues/61) | 修正済み |
+| [F-022](#f-022) | `lib` の `artifacts` が、依存する `bin` を足すと作られなくなる | 実装 | [#64](https://github.com/sabas0ba/dowel/issues/64) | 未修正 |
 
 ---
 
@@ -1423,7 +1426,7 @@ clean でも残る**。
 持ち込む `--libs`）が、依存元の最終リンクに乗らない。静的な書庫は自分の
 リンク要件を運べないため、依存元が `undefined reference` で落ちる。**
 
-種別: 実装。未修正（`2e99fc7`）。ADR-0015 の `version` 依存を試していて
+種別: 実装。修正済み（`af7d391`）。ADR-0015 の `version` 依存を試していて
 見つけた。
 
 ### 観測
@@ -1509,22 +1512,22 @@ ADR-0015 以前は `zlib` が解決されなかったため露見しなかった
 - 2パッケージ以上（`bin` → `lib`）でないと現れない。単一パッケージの `bin`
   では `private link_flags` は自分自身のリンクに乗るため正しく動く
 
+### 修正
+
+`link_flags` がリンクの閉包を辿るようになった。`docs/13-semantics.md` に
+「**`link_flags` ride the link closure**, `private` included」として、
+public/private が制御するのは**翻訳**の伝播でありリンクの到達可能性では
+ない、と明記された。
+
 ### 検査
 
-`projects/17-deps` の以下 2 件。いずれも known_issue F-018 である。
-
-- `the link flags of a private system dependency reach the final link`
-- `a library that keeps a system dependency private still links its dependent`
-
-対照として次の2件を通常の検査として置いてある。
+`projects/17-deps` の以下 4 件。同時に通ることが期待値であり、片方だけを
+満たす直し方（全部 public 扱いにする）は通らない。
 
 - `the archive of a private system dependency reaches the final link`
-  — 閉包を辿る機構が既にあることを示す
-- `keeping a system dependency private does not leak its includes`
-  — `private` が翻訳に対しては正しく働いていることを示す
-
-2つ目は `xfail` の2件と**同時に**通ることが期待値である。片方だけを満たす
-直し方（全部 public 扱いにする）を通さないための組である。
+- `the link flags of a private system dependency reach the final link`
+- `a library that keeps a system dependency private still links its dependent`
+- `and its includes are still not leaked to the dependent`
 
 ---
 
@@ -1535,7 +1538,7 @@ ADR-0015 以前は `zlib` が解決されなかったため露見しなかった
 **`[toolchain]` の未知のキーが診断されず、道具の綴り間違いが既定値への無言の
 後退になる。**
 
-種別: 実装。未修正（`a9c1619`）。
+種別: 実装。修正済み（`af7d391`）。
 
 ### 観測
 
@@ -1605,17 +1608,22 @@ F-016 で報告した状態そのものであり、`[toolchain] ar` はまさに
 `tc.*` の側だけが閉じているのも、語彙の検査が構成キーの解決経路にあり、
 マニフェストの読み取り経路には無いためと思われる。
 
+### 修正
+
+`unknown-property` で拒まれるようになった。`docs/11-toml-reference.md` にも
+「a misspelled tool would otherwise silently fall back to its default, which
+for a cross archiver means the host's `ar` quietly builds the archives」と
+理由が書かれた。
+
 ### 検査
 
-`projects/18-tools` の以下 3 件。いずれも known_issue F-019 である。
+`projects/18-tools` の以下 3 件。
 
 - `a misspelled toolchain key is refused`
 - `the refusal suggests the tool that was meant`
-- `a misspelled cross archiver does not silently fall back to the host tool`
+- `the misspelled declaration is caught before anything is built`
 
-対照として `spelling the key correctly does select the cross archiver` を通常の
-検査として置いてある。3件が見ているのは「宣言が効かないこと」ではなく、
-**効かないことが知らされないこと**である。
+3件目は、書庫がホストの道具で作られてから気づくのでは遅いためである。
 
 ---
 
@@ -1626,7 +1634,7 @@ F-016 で報告した状態そのものであり、`[toolchain] ar` はまさに
 **生成物を変換・検査する道具（objcopy / size / objdump など）を宣言できず、
 生成物に対して何かを走らせる場所も無い。**
 
-種別: 要望。未修正（`a9c1619`）。F-016 と同じ形の要望である。
+種別: 要望。**一部修正**（`af7d391`）。変換の側は入り、検査の側は残っている。
 
 ### 観測
 
@@ -1679,18 +1687,38 @@ F-016 で報告した状態そのものであり、`[toolchain] ar` はまさに
 入力として現れない。用途の側から見て初めて「無い」ことが分かる種類の欠落で
 あり、実装の内側からは形が見えない。
 
+### 修正
+
+`objcopy` が表に入り、`[<kind>.<name>.artifacts]` が足された。挙げた4つの
+性質はいずれも満たされている。構文は提案した案 A がほぼそのまま採られた。
+
+```toml
+[bin.firmware.artifacts]
+bin = { tool = "objcopy", args = ["-O", "binary"] }
+```
+
+`tool` はコマンドではなく**道具の名前**であり、具体的なコマンドは
+`[toolchain.<triple>]` から来る。入力と出力は実装が末尾に付ける
+（ADR-0008 と同じ規約）。
+
+### 残っているもの
+
+ファイルを作らない道具（`size` / `nm` / `objdump`）は宣言できない。
+`docs/12-build-reference.md` も「they need a place that reports rather than
+builds」として保留を明記している。`size` は flash / RAM の予算を超えたら
+ビルドを落とすという使い方があり、「作る」のではなく「判定する」側の機構に
+なる。
+
 ### 検査
 
-`projects/18-tools` の以下 3 件。いずれも known_issue F-020 である。
+変換の側は `projects/19-artifacts` が全面的に見る（35 件）。
+道具として宣言できることは `projects/18-tools` の
+`a transform tool can be declared alongside the archiver`。
 
-- `a transform tool can be declared alongside the archiver`
-- `an inspection tool can be declared alongside the archiver`
-- `a bin target can produce a raw binary image`
-
-前2件は `tc.objcopy` / `tc.size` が構成の語彙から引けるかどうかで見る。
-実装がどの構文を採っても通る観測である。3件目だけは提案した形を書いており、
-実装が別の形を採れば書き換わる。**変換がグラフに乗る**という期待そのものは
-変わらない。
+検査の側は `projects/18-tools` の
+`an inspection tool can be declared alongside the archiver`。
+known_issue F-020 である。`tc.size` が構成の語彙から引けるかどうかで見る。
+実装がどの構文を採っても通る観測である。
 
 ---
 
@@ -1701,7 +1729,7 @@ F-016 で報告した状態そのものであり、`[toolchain] ar` はまさに
 **構成レベルのフラグが `link_flags` には残っており、下書きの見出しが
 「写していない」と述べる内容と食い違う。**
 
-種別: 実装。未修正（`a9c1619`）。F-017 の続きである。
+種別: 実装。修正済み（`af7d391`）。F-017 の続きである。
 
 ### 観測
 
@@ -1749,14 +1777,98 @@ link_flags = ["-O3", "-DNDEBUG"]      ← 残っている
 `migrate verify` は翻訳の引数だけを比べるため、この差は報告されない。
 **verify が clean でも残っている**という点も、見つけにくさに寄与している。
 
+### 修正
+
+`link_flags` からも落とされるようになった。下書きの見出しの文言はそのままで
+正しくなった。
+
 ### 検査
 
 `projects/16-migrate` の
 `the draft carries no NDEBUG from a release CMake build type`。
-known_issue F-021 である。
 
-翻訳の側（`the draft carries no optimization flag from the CMake build type`
-ほか）は通常の検査として通っており、F-017 の修正が効いていることを示している。
+見出しのコメントは NDEBUG に言及するため、注釈の行を数えない形にしてある。
+「写していないと述べる文」と「写したもの」を取り違えないための細工である。
+
+---
+
+## F-022
+
+報告先: [sabas0ba/dowel#64](https://github.com/sabas0ba/dowel/issues/64)
+
+**`[lib.<name>.artifacts]` が作る派生ファイルは、そのライブラリに依存する
+`bin` を1つ足すと作られなくなる。** マニフェストの当該部分は何も変えて
+いない。
+
+種別: 実装。未修正（`af7d391`）。F-020 で入った `artifacts` を試していて
+見つけた。
+
+### 観測
+
+同じ `[lib.part.artifacts]` を持つ木で、`bin` の有無だけを変えた。
+いずれも `dowel build`（引数なし）である。
+
+| 構成 | 作られるもの |
+|---|---|
+| **A.** ライブラリだけ | `libpart.a` `libpart.stripped` |
+| **B.** A に依存する `bin` を足す | **`libpart.a` のみ** |
+| **C.** B で `dowel build part` と名指し | `libpart.a` `libpart.stripped` |
+| **D.** 依存しない `bin` を足す | ライブラリごと作られない |
+
+B が問題である。`libpart.a` は作られるのに `libpart.stripped` は作られない。
+どちらも同じターゲットの宣言された出力である。
+
+D は `docs/60-cli.md` の「With no targets named, builds every `bin` and
+`test`」どおりであり、仕様と読める。A は `bin` が1つも無いためライブラリが
+根として組まれたものと思われる。
+
+### 期待
+
+**派生が作られるかどうかは、そのターゲット自身の宣言で決まる。** 別の
+ターゲットが自分に依存しているかどうかで変わってはならない。
+
+利用者から見た経路はこうなる。
+
+1. ライブラリを書き、`[lib.foo.artifacts]` で配布用の派生を宣言する。出る
+2. あとで同じパッケージに、そのライブラリを使う実行ファイルを足す
+3. 派生ファイルが出なくなる。**診断も警告も無い**
+
+2 は `[lib.foo.artifacts]` とは無関係な追加である。組み込みでは、ライブラリ
+側の objcopy 済みの形が納品物になることがあり、それが黙って消える。
+
+根拠は `docs/12-build-reference.md`。
+
+> Declaring it here puts that step **inside** the build graph, so it is
+> produced by `dowel build`
+
+条件を付けていない。A と C で作られることからも、意図はこちら側だったと
+読める。
+
+「要求されたターゲットの `artifacts` だけを作る」と決めるなら A も作らない
+ようにして揃える必要があり、その場合でも**同じターゲットの `libpart.a` は
+作られて `libpart.stripped` は作られない**という食い違いは残る。
+
+### なぜ内側から見つからないか
+
+`artifacts` の検査は、宣言した派生が作られることを確かめれば足りる。その際に
+置くフィクスチャは `bin` に付けるか、ライブラリ単体（A の形）になりやすい。
+**ライブラリに `artifacts` を付け、かつ同じパッケージにそれを使う `bin` が
+ある**という組み合わせが、両方を1つのフィクスチャに入れないと現れない。
+
+B と C の差が「名指ししたかどうか」であることも、内側からは正常な最適化に
+見える。外から見ると、同じ宣言が別の結果を出しているだけである。
+
+### 検査
+
+`projects/19-artifacts` の
+`a library keeps producing its derived file when a binary depends on it`。
+known_issue F-022 である。
+
+対照として A と C にあたる場合を通常の検査として置いてある。
+
+- `a standalone library produces its derived file`
+- `the library archive is still produced as a dependency`
+- `and then the derived file appears`（名指しした場合）
 
 ---
 

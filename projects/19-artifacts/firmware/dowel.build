@@ -1,0 +1,18 @@
+# リンクの後の1段。ELF を書き込み用の形へ変える。
+#
+# 鍵は**作られるファイルの拡張子**である。`image` から `image.bin` と
+# `image.hex` が同じ場所に出る。
+#
+# `tool` はコマンドではなくツールチェーンの道具の名前である。具体的な
+# コマンドは `[toolchain]` が決めるため、クロスの木でマニフェストを
+# 書き換えずに済む。
+[bin.image]
+sources = [file("src/image.c")]
+
+[bin.image.artifacts]
+bin = { tool = "objcopy", args = ["-O", "binary"] }
+hex = { tool = "objcopy", args = ["-O", "ihex"] }
+
+# 派生を持たない目標。objcopy が壊れていても組めるはずである。
+[bin.plain]
+sources = [file("src/plain.c")]

@@ -224,12 +224,15 @@ lock_has gated 'name    = "quiet"' "and then it is recorded"
 ok "a module with no link flags builds all the same" \
     -C gated build --features=quiet --no-compdb
 
-# ------------------------------------------------------------ 6. リンクの閉包 (F-018)
+# ------------------------------------------------------------ 6. リンクの閉包
 #
 # 静的な書庫は自分のリンク要件を運べない。したがって lib が private に持つ
 # リンク要件も、依存元の最終リンクへ届かなければ解けない。
 #
-# 書庫の側は既に閉包を辿っている。届いていないのは link_flags だけである。
+# かつては書庫だけが閉包を辿り、link_flags は落ちていた（F-018）。
+# public/private が制御するのは**翻訳**の伝播であり、リンクの到達可能性では
+# ない。ライブラリはシステム依存の見出しを private に保ったまま、なお
+# リンクできなければならない。
 
 # 前提。private のままでも、demokit の書庫は top のリンク行に現れる。
 printf '%s' "$(link_command chain/top)" | grep -q 'libdemokit.a'
@@ -246,17 +249,24 @@ fact $? "keeping a system dependency private does not leak its includes"
 
 # だが、リンクフラグも一緒に落ちる。
 printf '%s' "$(link_command chain/top)" | grep -q -- '-lm'
-verdict=$?
-known_issue F-018
-fact $verdict "the link flags of a private system dependency reach the final link"
+fact $? "the link flags of a private system dependency reach the final link"
 
 built=$("$DOWEL" -C chain/top build --no-compdb 2>&1)
 case $built in *"undefined reference"*) v=1 ;; *) v=0 ;; esac
 _last_cmd="dowel -C chain/top build"
 OUT=$built
 RC=0
-known_issue F-018
 fact $v "a library that keeps a system dependency private still links its dependent"
+
+# 翻訳の側は従来どおり private のままである。両方を同時に満たすことが
+# 期待値であり、片方だけを満たす直し方（全部 public 扱いにする）は通らない。
+cxx=$("$DOWEL" -C chain/top graph --kind=action --format=json 2>/dev/null |
+      jq -r '.actions[] | select(.kind == "cc" and .target == "top:top") | .command | join(" ")')
+_last_cmd="cc_args top:top"
+OUT=$cxx
+RC=0
+! printf '%s' "$cxx" | grep -q 'DEMOKIT'
+fact $? "and its includes are still not leaked to the dependent"
 
 # public にすると通る。ただし見出しも一緒に届く。両立できないことが
 # この所見の中身である。

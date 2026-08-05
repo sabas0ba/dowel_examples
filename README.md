@@ -10,7 +10,7 @@ dowel 本体は自分自身を内側から検査している（`crates/*/tests/`
 仕様と実装の食い違いを仕様の側から見つけられる。
 
 見つけたものは [docs/10-findings.md](docs/10-findings.md) に記録し、本体へ報告する。
-これまでに 21 件を報告し、15 件が修正された。
+これまでに 22 件を報告し、19 件が修正された。
 
 ## 走らせる
 
@@ -33,7 +33,8 @@ C++ とクロスの層は `g++` / `clang++` / `aarch64-linux-gnu-g++` /
 `qemu-aarch64-static` も要る。`cc` だけで走らせると、実際に検査されるのは
 その機械の既定のコンパイラ1つだけになる。移行の層（`16-migrate`）は移行元を
 組み立てるために `cmake` を、依存の層（`17-deps`）はシステムパッケージの解決先
-として `pkg-config` を使う。
+として `pkg-config` を、道具の層（`18-tools` / `19-artifacts`）は `gcc-ar` と
+`objcopy`（クロスの側も）を使う。
 
 `09-acquisition` は `dowelup` と dowel の**作業木**も要る。取得を検査する層で
 あり、上流にあたる git リポジトリを手元へ複製して相手にするためである
@@ -52,10 +53,10 @@ DOWELUP=/path/to/dowelup DOWEL_SRC=/path/to/dowel ./run.sh
 ## 出力
 
 1 検査 1 行。本体が直していない事項に対する検査は `xfail` として登録する。
-本体側が直ると `XPASS` になって落ち、宣言を外すべきことが分かる。現在は 10 件で、
+本体側が直ると `XPASS` になって落ち、宣言を外すべきことが分かる。現在は 3 件で、
 [F-011](docs/10-findings.md#f-011) の残っている側、
-[F-018](docs/10-findings.md#f-018)、[F-019](docs/10-findings.md#f-019)、
-[F-020](docs/10-findings.md#f-020)、[F-021](docs/10-findings.md#f-021) に対応する。
+[F-020](docs/10-findings.md#f-020) の残っている側（検査の道具）、
+[F-022](docs/10-findings.md#f-022) に対応する。
 
 ```
 02-config
@@ -70,11 +71,11 @@ DOWELUP=/path/to/dowelup DOWEL_SRC=/path/to/dowel ./run.sh
   ok   the cross tests run under the emulator and pass
   ok   an artifact filed under a triple is built for that triple
 
-18-tools
-  ok   the objects inside the cross archive are for the target architecture
-  xfail a misspelled cross archiver does not silently fall back to the host tool  [F-019]
+19-artifacts
+  ok   a standalone library produces its derived file
+  xfail a library keeps producing its derived file when a binary depends on it  [F-022]
 
-total 827 checks: 817 passed, 0 failed, 10 known, 0 fixed
+total 862 checks: 859 passed, 0 failed, 3 known, 0 fixed
 ```
 
 検査名は英語で書く。実装の中身ではなく、何が固定されているかを1行で読ませる
@@ -102,6 +103,7 @@ total 827 checks: 817 passed, 0 failed, 10 known, 0 fixed
 | [16-migrate](projects/16-migrate/) | 既存のビルドからの移行。下書きに何が写るか、写した結果が同じ翻訳になるか |
 | [17-deps](projects/17-deps/) | システムパッケージへの依存。pkg-config への委譲、版の下限、`dowel.lock` の漂流検出 |
 | [18-tools](projects/18-tools/) | ツールチェーンの道具。宣言・語彙・実在確認・記録・トリプルごとの選択 |
+| [19-artifacts](projects/19-artifacts/) | 成果物から別の成果物を作る。生イメージと HEX、命令の形、増分、クロス |
 
 プロジェクトのほかに `docs` の段がある。文書が引用する検査名が実在するか、
 リンクが解決するか、索引が中身と一致するかを機械的に見る。文書の不整合は
