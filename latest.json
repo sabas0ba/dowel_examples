@@ -1,19 +1,19 @@
 {
- "run_id": "30782936180",
+ "run_id": "30973666748",
  "run_attempt": "1",
- "run_url": "https://github.com/sabas0ba/dowel_examples/actions/runs/30782936180",
- "commit": "8fb90df15f929a9332e460575137bf85b10548bf",
+ "run_url": "https://github.com/sabas0ba/dowel_examples/actions/runs/30973666748",
+ "commit": "878cdb8a2075f127714bd0e2c4ded9ea68dfa487",
  "branch": "main",
- "started_at": "2026-08-03T03:54:38Z",
+ "started_at": "2026-08-05T03:57:00Z",
  "dowel_version": "dowel 0.0.1",
- "dowel_ref": "a9c16191bb0fc6072029325c9e89e1bb537dd028",
- "dowel_commit": "a9c16191bb0fc6072029325c9e89e1bb537dd028",
+ "dowel_ref": "af7d391f1e223680b9a61af9dbe0ee73efd890b2",
+ "dowel_commit": "af7d391f1e223680b9a61af9dbe0ee73efd890b2",
  "cc": "cc (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0",
  "ninja": "1.13.2",
  "projects": [
   {
    "name": "01-minimal",
-   "duration_ms": 253,
+   "duration_ms": 144,
    "counts": {
     "pass": 10,
     "fail": 0,
@@ -70,7 +70,7 @@
   },
   {
    "name": "02-config",
-   "duration_ms": 4947,
+   "duration_ms": 883,
    "counts": {
     "pass": 21,
     "fail": 0,
@@ -172,7 +172,7 @@
   },
   {
    "name": "03-features",
-   "duration_ms": 305,
+   "duration_ms": 243,
    "counts": {
     "pass": 17,
     "fail": 0,
@@ -261,7 +261,7 @@
   },
   {
    "name": "04-diagnostics",
-   "duration_ms": 369,
+   "duration_ms": 218,
    "counts": {
     "pass": 66,
     "fail": 0,
@@ -562,7 +562,7 @@
   },
   {
    "name": "05-incremental",
-   "duration_ms": 1994,
+   "duration_ms": 1054,
    "counts": {
     "pass": 48,
     "fail": 0,
@@ -773,7 +773,7 @@
   },
   {
    "name": "06-runner",
-   "duration_ms": 421,
+   "duration_ms": 229,
    "counts": {
     "pass": 17,
     "fail": 0,
@@ -860,7 +860,7 @@
   },
   {
    "name": "07-robustness",
-   "duration_ms": 1459,
+   "duration_ms": 960,
    "counts": {
     "pass": 145,
     "fail": 0,
@@ -1457,7 +1457,7 @@
   },
   {
    "name": "08-lsp",
-   "duration_ms": 12791,
+   "duration_ms": 13694,
    "counts": {
     "pass": 110,
     "fail": 0,
@@ -1914,7 +1914,7 @@
   },
   {
    "name": "09-acquisition",
-   "duration_ms": 19225,
+   "duration_ms": 13895,
    "counts": {
     "pass": 66,
     "fail": 0,
@@ -2197,7 +2197,7 @@
   },
   {
    "name": "10-toolchain",
-   "duration_ms": 2128,
+   "duration_ms": 565,
    "counts": {
     "pass": 31,
     "fail": 0,
@@ -2338,7 +2338,7 @@
   },
   {
    "name": "11-cross",
-   "duration_ms": 1247,
+   "duration_ms": 453,
    "counts": {
     "pass": 17,
     "fail": 0,
@@ -2423,7 +2423,7 @@
   },
   {
    "name": "12-store",
-   "duration_ms": 230,
+   "duration_ms": 148,
    "counts": {
     "pass": 29,
     "fail": 0,
@@ -2556,7 +2556,7 @@
   },
   {
    "name": "13-parallel",
-   "duration_ms": 10773,
+   "duration_ms": 10644,
    "counts": {
     "pass": 18,
     "fail": 0,
@@ -2645,7 +2645,7 @@
   },
   {
    "name": "14-scale",
-   "duration_ms": 7241,
+   "duration_ms": 5069,
    "counts": {
     "pass": 17,
     "fail": 0,
@@ -2728,7 +2728,7 @@
   },
   {
    "name": "15-cpp",
-   "duration_ms": 4389,
+   "duration_ms": 3771,
    "counts": {
     "pass": 70,
     "fail": 0,
@@ -3035,11 +3035,11 @@
   },
   {
    "name": "16-migrate",
-   "duration_ms": 1677,
+   "duration_ms": 1234,
    "counts": {
-    "pass": 53,
+    "pass": 54,
     "fail": 0,
-    "xfail": 1,
+    "xfail": 0,
     "xpass": 0
    },
    "total": 54,
@@ -3234,8 +3234,8 @@
      "desc": "the CMake build type does not become a define in the draft"
     },
     {
-     "status": "xfail",
-     "desc": "the draft carries no NDEBUG from a release CMake build type  [F-021]"
+     "status": "pass",
+     "desc": "the draft carries no NDEBUG from a release CMake build type"
     },
     {
      "status": "pass",
@@ -3268,14 +3268,14 @@
   },
   {
    "name": "17-deps",
-   "duration_ms": 814,
+   "duration_ms": 946,
    "counts": {
-    "pass": 48,
+    "pass": 51,
     "fail": 0,
-    "xfail": 2,
+    "xfail": 0,
     "xpass": 0
    },
-   "total": 50,
+   "total": 51,
    "ok": true,
    "checks": [
     {
@@ -3459,12 +3459,16 @@
      "desc": "keeping a system dependency private does not leak its includes"
     },
     {
-     "status": "xfail",
-     "desc": "the link flags of a private system dependency reach the final link  [F-018]"
+     "status": "pass",
+     "desc": "the link flags of a private system dependency reach the final link"
     },
     {
-     "status": "xfail",
-     "desc": "a library that keeps a system dependency private still links its dependent  [F-018]"
+     "status": "pass",
+     "desc": "a library that keeps a system dependency private still links its dependent"
+    },
+    {
+     "status": "pass",
+     "desc": "and its includes are still not leaked to the dependent"
     },
     {
      "status": "pass",
@@ -3488,14 +3492,14 @@
   },
   {
    "name": "18-tools",
-   "duration_ms": 549,
+   "duration_ms": 695,
    "counts": {
-    "pass": 27,
+    "pass": 31,
     "fail": 0,
-    "xfail": 6,
+    "xfail": 1,
     "xpass": 0
    },
-   "total": 33,
+   "total": 32,
    "ok": true,
    "checks": [
     {
@@ -3603,32 +3607,28 @@
      "desc": "the cross binary links against that archive and runs under the emulator"
     },
     {
-     "status": "xfail",
-     "desc": "a misspelled toolchain key is refused  [F-019]"
+     "status": "pass",
+     "desc": "a misspelled toolchain key is refused"
     },
     {
-     "status": "xfail",
-     "desc": "the refusal suggests the tool that was meant  [F-019]"
+     "status": "pass",
+     "desc": "the refusal suggests the tool that was meant"
     },
     {
-     "status": "xfail",
-     "desc": "a misspelled cross archiver does not silently fall back to the host tool  [F-019]"
+     "status": "pass",
+     "desc": "the misspelled declaration is caught before anything is built"
     },
     {
      "status": "pass",
      "desc": "spelling the key correctly does select the cross archiver"
     },
     {
-     "status": "xfail",
-     "desc": "a transform tool can be declared alongside the archiver  [F-020]"
+     "status": "pass",
+     "desc": "a transform tool can be declared alongside the archiver"
     },
     {
      "status": "xfail",
      "desc": "an inspection tool can be declared alongside the archiver  [F-020]"
-    },
-    {
-     "status": "xfail",
-     "desc": "a bin target can produce a raw binary image  [F-020]"
     }
    ],
    "packages": [
@@ -3639,8 +3639,167 @@
    ]
   },
   {
+   "name": "19-artifacts",
+   "duration_ms": 962,
+   "counts": {
+    "pass": 34,
+    "fail": 0,
+    "xfail": 1,
+    "xpass": 0
+   },
+   "total": 35,
+   "ok": true,
+   "checks": [
+    {
+     "status": "pass",
+     "desc": "a package with an artifacts block passes check"
+    },
+    {
+     "status": "pass",
+     "desc": "and builds"
+    },
+    {
+     "status": "pass",
+     "desc": "an artifacts entry produces its derived file"
+    },
+    {
+     "status": "pass",
+     "desc": "a second entry produces a second file"
+    },
+    {
+     "status": "pass",
+     "desc": "the artifact it derives from is still there"
+    },
+    {
+     "status": "pass",
+     "desc": "the raw image is not an ELF, so the transform really ran"
+    },
+    {
+     "status": "pass",
+     "desc": "the raw image carries what the source put in the artifact"
+    },
+    {
+     "status": "pass",
+     "desc": "the hex image is in the format the second entry asked for"
+    },
+    {
+     "status": "pass",
+     "desc": "the command is the tool, then the args, then the input and the output"
+    },
+    {
+     "status": "pass",
+     "desc": "a declared objcopy that is not on PATH is refused"
+    },
+    {
+     "status": "pass",
+     "desc": "the refusal carries the missing-toolchain code"
+    },
+    {
+     "status": "pass",
+     "desc": "the refusal names the object copier"
+    },
+    {
+     "status": "pass",
+     "desc": "a package with no artifacts block ignores a broken objcopy"
+    },
+    {
+     "status": "pass",
+     "desc": "a tool outside the toolchain table is refused"
+    },
+    {
+     "status": "pass",
+     "desc": "the refusal lists the tools that can be named"
+    },
+    {
+     "status": "pass",
+     "desc": "the refusal says the concrete command comes from the toolchain"
+    },
+    {
+     "status": "pass",
+     "desc": "an entry with no tool is refused"
+    },
+    {
+     "status": "pass",
+     "desc": "an entry that is not a table is refused"
+    },
+    {
+     "status": "pass",
+     "desc": "restoring the block makes it pass again"
+    },
+    {
+     "status": "pass",
+     "desc": "a second build re-runs no transform"
+    },
+    {
+     "status": "pass",
+     "desc": "editing the source re-makes the derived file"
+    },
+    {
+     "status": "pass",
+     "desc": "changing the args re-makes the derived file"
+    },
+    {
+     "status": "pass",
+     "desc": "and does not recompile anything"
+    },
+    {
+     "status": "pass",
+     "desc": "a cross build transforms with the objcopy declared for that triple"
+    },
+    {
+     "status": "pass",
+     "desc": "the artifacts block never names the cross tool itself"
+    },
+    {
+     "status": "pass",
+     "desc": "the cross build produces its image"
+    },
+    {
+     "status": "pass",
+     "desc": "the derived file of a cross build is produced too"
+    },
+    {
+     "status": "pass",
+     "desc": "and the same manifest uses the host objcopy for a host build"
+    },
+    {
+     "status": "pass",
+     "desc": "a library with an artifacts block builds on its own"
+    },
+    {
+     "status": "pass",
+     "desc": "a standalone library produces its derived file"
+    },
+    {
+     "status": "pass",
+     "desc": "adding a binary that uses it still builds"
+    },
+    {
+     "status": "pass",
+     "desc": "the library archive is still produced as a dependency"
+    },
+    {
+     "status": "xfail",
+     "desc": "a library keeps producing its derived file when a binary depends on it  [F-022]"
+    },
+    {
+     "status": "pass",
+     "desc": "naming the library explicitly builds it"
+    },
+    {
+     "status": "pass",
+     "desc": "and then the derived file appears"
+    }
+   ],
+   "packages": [
+    "cross",
+    "firmware",
+    "library"
+   ]
+  },
+  {
    "name": "docs",
-   "duration_ms": 61,
+   "duration_ms": 35,
    "counts": {
     "pass": 7,
     "fail": 0,
@@ -3683,12 +3842,12 @@
   }
  ],
  "totals": {
-  "pass": 817,
+  "pass": 859,
   "fail": 0,
-  "xfail": 10,
+  "xfail": 3,
   "xpass": 0
  },
- "total": 827,
+ "total": 862,
  "ok": true,
  "attention": [],
  "known_issues": [
@@ -3699,48 +3858,13 @@
   },
   {
    "status": "xfail",
-   "project": "16-migrate",
-   "desc": "the draft carries no NDEBUG from a release CMake build type  [F-021]"
-  },
-  {
-   "status": "xfail",
-   "project": "17-deps",
-   "desc": "the link flags of a private system dependency reach the final link  [F-018]"
-  },
-  {
-   "status": "xfail",
-   "project": "17-deps",
-   "desc": "a library that keeps a system dependency private still links its dependent  [F-018]"
-  },
-  {
-   "status": "xfail",
-   "project": "18-tools",
-   "desc": "a misspelled toolchain key is refused  [F-019]"
-  },
-  {
-   "status": "xfail",
-   "project": "18-tools",
-   "desc": "the refusal suggests the tool that was meant  [F-019]"
-  },
-  {
-   "status": "xfail",
-   "project": "18-tools",
-   "desc": "a misspelled cross archiver does not silently fall back to the host tool  [F-019]"
-  },
-  {
-   "status": "xfail",
-   "project": "18-tools",
-   "desc": "a transform tool can be declared alongside the archiver  [F-020]"
-  },
-  {
-   "status": "xfail",
    "project": "18-tools",
    "desc": "an inspection tool can be declared alongside the archiver  [F-020]"
   },
   {
    "status": "xfail",
-   "project": "18-tools",
-   "desc": "a bin target can produce a raw binary image  [F-020]"
+   "project": "19-artifacts",
+   "desc": "a library keeps producing its derived file when a binary depends on it  [F-022]"
   }
  ]
 }
