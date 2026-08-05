@@ -19,7 +19,7 @@ set -uo pipefail
 SUITE_ROOT=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 WORK="$SUITE_ROOT/.work"
 RESULTS="$WORK/results.tsv"     # 1 検査 1 行: status \t project \t desc
-PROJECTS="$WORK/projects.tsv"   # 1 プロジェクト 1 行: name \t ms \t pass \t fail \t xfail \t xpass
+PROJECTS="$WORK/projects.tsv"   # 1 件 1 行: name \t ms \t pass \t fail \t xfail \t xpass \t root
 PACKAGES="$WORK/packages.tsv"   # 1 パッケージ 1 行: project \t パッケージの相対パス
 META="$WORK/meta.tsv"           # key \t value
 
@@ -139,8 +139,25 @@ done
 
 # ------------------------------------------------------------ 対象の決定
 
+# 探索の根は2つある。目的が違う。
+#
+#   projects/  性質を1つずつ固定する検査。最小の構成で1点を見る
+#   apps/      実際に書くであろう形のアプリケーション。分野ごとに1つ
+#
+# 後者は「使えるか」を見る。前者が個々の約束を守っているかを見るのに対し、
+# こちらは**それらを組み合わせて本物を書けるか**を見る（docs/00-design.md 8節）。
 cd "$SUITE_ROOT"
-mapfile -t all < <(find projects -mindepth 1 -maxdepth 1 -type d -printf '%f\n' | sort)
+ROOTS=(projects apps)
+
+all=()
+declare -A ROOT_OF=()
+for root in "${ROOTS[@]}"; do
+    [ -d "$root" ] || continue
+    while IFS= read -r name; do
+        all+=("$name")
+        ROOT_OF[$name]=$root
+    done < <(find "$root" -mindepth 1 -maxdepth 1 -type d -printf '%f\n' | sort)
+done
 
 selected=()
 if [ $# -eq 0 ]; then
@@ -167,8 +184,9 @@ _record_project() {
     f=$(printf '%s\n'  "$slice" | grep -c '^fail$')
     xf=$(printf '%s\n' "$slice" | grep -c '^xfail$')
     xp=$(printf '%s\n' "$slice" | grep -c '^xpass$')
-    printf '%s\t%s\t%s\t%s\t%s\t%s\n' \
-        "$name" "$(( $(now_ms) - started ))" "$p" "$f" "$xf" "$xp" >>"$PROJECTS"
+    printf '%s\t%s\t%s\t%s\t%s\t%s\t%s\n' \
+        "$name" "$(( $(now_ms) - started ))" "$p" "$f" "$xf" "$xp" \
+        "${ROOT_OF[$name]:-projects}" >>"$PROJECTS"
 }
 
 rm -rf "$WORK"
@@ -193,9 +211,9 @@ printf 'dowel: %s (%s)\n' "$DOWEL" "$dowel_version"
 printf 'cc:    %s\n\n' "$cc_version"
 
 for name in "${selected[@]}"; do
-    src="$SUITE_ROOT/projects/$name"
+    src="$SUITE_ROOT/${ROOT_OF[$name]}/$name"
     dst="$WORK/$name"
-    printf '%s\n' "$name"
+    printf '%s/%s\n' "${ROOT_OF[$name]}" "$name"
 
     before=$(wc -l <"$RESULTS")
     started=$(now_ms)

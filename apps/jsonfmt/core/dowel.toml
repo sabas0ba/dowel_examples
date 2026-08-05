@@ -1,0 +1,9 @@
+[package]
+name    = "jsonfmt-core"
+version = "0.2.0"
+edition = "2026"
+
+[features]
+default = []
+# 深さの上限を切り上げる。実運用では入力の素性で選ぶ。
+deep    = []

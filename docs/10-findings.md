@@ -10,8 +10,8 @@ F-018 / F-019 / F-021 は `af7d391` で修正された。F-008 はさらに `9ed
 対応する検査は `known_issue` を外し、通常の検査として残してある。直った
 ものを消すと、退行したときに気づけない。
 
-未修正は F-020 の残っている側（検査の道具）と F-022、および F-011 の
-残っている側である。対応する検査は
+未修正は F-020 の残っている側（検査の道具）、F-022 / F-023 / F-024、
+および F-011 の残っている側である。対応する検査は
 `known_issue` を付けてあり、本体が直すと `XPASS` になって落ちる。
 
 各項目は次の形で記録する。
@@ -48,6 +48,8 @@ F-018 / F-019 / F-021 は `af7d391` で修正された。F-008 はさらに `9ed
 | [F-020](#f-020) | 生成物を変換・検査する道具を宣言できず、後処理の場所も無い | 要望 | [#60](https://github.com/sabas0ba/dowel/issues/60) | 一部修正 |
 | [F-021](#f-021) | 構成レベルのフラグが `link_flags` には残り、下書きの見出しと食い違う | 実装 | [#61](https://github.com/sabas0ba/dowel/issues/61) | 修正済み |
 | [F-022](#f-022) | `lib` の `artifacts` が、依存する `bin` を足すと作られなくなる | 実装 | [#64](https://github.com/sabas0ba/dowel/issues/64) | 未修正 |
+| [F-023](#f-023) | 転送した機能名の `/` がビルドディレクトリを2階層に割る | 実装 | [#68](https://github.com/sabas0ba/dowel/issues/68) | 未修正 |
+| [F-024](#f-024) | 狭い呼び出しが記録を上書きし、次の広い呼び出しがやり直す | 実装 | [#69](https://github.com/sabas0ba/dowel/issues/69) | 未修正 |
 
 ---
 
@@ -1869,6 +1871,127 @@ known_issue F-022 である。
 - `a standalone library produces its derived file`
 - `the library archive is still produced as a dependency`
 - `and then the derived file appears`（名指しした場合）
+
+---
+
+## F-023
+
+報告先: [sabas0ba/dowel#68](https://github.com/sabas0ba/dowel/issues/68)
+
+**転送した機能名 `<パッケージ>/<機能>` が構成の識別子に入り、`/` がパス
+区切りとして展開される。1つの構成が2階層のディレクトリになる。**
+
+種別: 実装。未修正（`af7d391`）。`apps/jsonfmt` を組んでいて踏んだ。
+
+### 観測
+
+```toml
+# cli/dowel.toml
+[features]
+deep = ["jsonfmt-core/deep"]
+```
+
+```console
+$ dowel build --features=deep
+built: .../.dowel/build/x86_64-unknown-linux-gnu-debug-deep+jsonfmt-core/deep/bin/jsonfmt
+
+$ find .dowel/build -mindepth 1 -maxdepth 1
+.dowel/build/x86_64-unknown-linux-gnu-debug
+.dowel/build/x86_64-unknown-linux-gnu-debug-deep+jsonfmt-core   ← 名前が切れている
+```
+
+機能の**転送そのものは正しく働く**。組んだ実行ファイルは下位の機能が効いた
+値を返す（上限が 256 → 4096）。壊れているのは置き場所の名前だけである。
+
+### 期待
+
+構成の識別子に入れる前に、パスとして使えない文字を潰す。同じ機能集合が同じ
+識別子になり、違う機能集合が違う識別子になることだけが要件であり、可逆で
+ある必要は無い。ただし潰し方が衝突を生まないことは要る。
+
+根拠は `docs/13-semantics.md` の「one build directory per configuration」。
+`.dowel/build/<構成>` が1ディレクトリであるという前提の上に、掃除・成果物の
+収集・CI の成果物アップロードが乗っている。
+
+### なぜ内側から見つからないか
+
+機能の転送を使い、**かつ組み上がった置き場所を見る**必要がある。転送の検査は
+「依存先で機能が有効になったか」を見れば足り、そのときビルドディレクトリの
+名前は関心の外である。単一パッケージの機能名に `/` は現れない。
+
+### 検査
+
+`apps/jsonfmt` の `a forwarded feature does not split the build directory in two`。
+known_issue F-023 である。
+
+転送そのものが働くことは `a feature forwarded to a dependency reaches it` として
+通常の検査に置いてある。
+
+---
+
+## F-024
+
+報告先: [sabas0ba/dowel#69](https://github.com/sabas0ba/dowel/issues/69)
+
+**記録したコマンドが今回計画した分だけで上書きされる。`dowel test` や
+`dowel build <target>` のような狭い呼び出しのあとに全体を組むと、何も編集して
+いないのにやり直しが走る。**
+
+種別: 実装。未修正（`af7d391`）。`apps/jsonfmt` を組んでいて踏んだ。
+
+### 観測
+
+パッケージ2つ、目標4つ、全体で 10 アクション。
+
+```console
+$ dowel build --log-level=debug     # planned 10, ran 10
+$ dowel build --log-level=debug     # planned 10, loaded 10, ran 0
+$ dowel test  --log-level=debug     # planned  8, loaded 10, ran 0
+$ dowel build --log-level=debug     # planned 10, loaded  8, ran 2   ← 減っている
+$ dowel build --log-level=debug     # planned 10, loaded 10, ran 0
+```
+
+`test` に限らない。`dowel build <target>` でも同じで、こちらは**交互にする
+限り永久に繰り返す**。
+
+```
+  build jsonfmt    loaded 10, ran 0 actions (skipped 6)
+  build 全部       loaded 6,  ran 4 actions (skipped 6)
+  build jsonfmt    loaded 10, ran 0 actions (skipped 6)
+  build 全部       loaded 6,  ran 4 actions (skipped 6)
+```
+
+一方向は無害である。全体を組んだあとの `test` は 0 件で済む。広い方が狭い方を
+含むためで、**壊れるのは狭い→広いの向きだけ**である。
+
+### 期待
+
+記録を**併合**する。今回計画しなかったアクションの記録は残す。記録の役目は
+「この成果物が今もそのコマンドの産物か」を言うことであり、計画に無かったものの
+記録を捨てる理由は無い。
+
+根拠は `docs/00-overview.md` 2節の「増分の費用は変更の大きさに比例する」。
+ここで比例しているのは変更の大きさではなく、**直前の呼び出しが何を計画したか**
+である。
+
+### なぜ内側から見つからないか
+
+増分の検査は、たいてい同じ呼び出しを2回繰り返して「2回目は 0 件」を見る。
+その形では現れない。現れるのは**呼び出しの形を変えたとき**であり、しかも
+狭い→広いの順でだけである。`build` → `test` の順で検査すると通る。
+
+本スイートの `05-incremental` と `14-scale` も同じ形（同じ呼び出しの反復）で
+あり、この見落としを共有していた。実アプリの層を足して初めて出た。
+
+### 検査
+
+`apps/jsonfmt` の以下 2 件。いずれも known_issue F-024 である。
+
+- `running the tests does not make the next build redo work`
+- `building one target does not make the next full build redo work`
+
+対照として `and a full build leaves nothing for the tests to redo` を通常の
+検査として置いてある。壊れているのが向きであることを示す。
 
 ---
 

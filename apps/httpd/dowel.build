@@ -1,0 +1,41 @@
+# 静的ファイルを返す HTTP サーバ。libc 以外に依存しない。
+#
+# 待ち方（epoll / poll）は機能フラグで選ぶ。選ばれなかった実装の翻訳単位は
+# ソースの一覧から落ちる。`#ifdef` で1つのファイルに詰め込むと、落ちた側は
+# 二度と翻訳されず、壊れても気づけない。
+[lib.hd]
+sources = [
+    file("src/http.c"),
+    file("src/mime.c"),
+    file("src/serve.c"),
+    file("src/wait_epoll.c") when feature.epoll,
+    file("src/wait_poll.c")  when feature.poll,
+]
+
+[lib.hd.public]
+includes = [dir("include")]
+abi      = "gnu11"
+
+[lib.hd.private]
+includes = [dir("src")]
+flags    = ["-std=gnu11", "-D_GNU_SOURCE", "-Wall", "-Wextra"]
+defines  = { HD_HAVE_THREADS = 1 } when feature.threads
+
+[bin.httpd]
+sources = [file("src/main.c")]
+
+[bin.httpd.private]
+deps  = [target("hd")]
+flags = ["-std=gnu11", "-D_GNU_SOURCE", "-Wall", "-Wextra"]
+abi   = "gnu11"
+# 接続ごとのスレッドを使う版だけがスレッドライブラリを要る。
+link_flags = ["-pthread"] when feature.threads
+
+[test.unit]
+sources = glob("tests/*.c")
+
+[test.unit.private]
+deps     = [target("hd")]
+includes = [dir("src")]
+flags    = ["-std=gnu11", "-D_GNU_SOURCE"]
+abi      = "gnu11"

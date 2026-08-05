@@ -1,0 +1,21 @@
+# 解析と整形の本体。実行ファイルからは見出しだけが見える。
+[lib.json]
+sources = glob("src/*.c")
+
+[lib.json.public]
+# 使う側が要るのは include/ だけ。src/ の内部見出しは渡さない。
+includes = [dir("include")]
+abi      = "gnu11"
+
+[lib.json.private]
+includes = [dir("src")]
+flags    = ["-std=gnu11", "-Wall", "-Wextra", "-Werror=implicit-function-declaration"]
+defines  = { JSON_MAX_DEPTH = match feature.deep { true => 4096, false => 256 } }
+
+[test.parse]
+sources = [file("../tests/parse.c")]
+
+[test.parse.private]
+deps     = [target("json")]
+includes = [dir("src")]
+flags    = ["-std=gnu11"]

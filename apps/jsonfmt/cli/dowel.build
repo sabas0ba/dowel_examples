@@ -1,0 +1,15 @@
+[bin.jsonfmt]
+sources = glob("src/*.c")
+
+[bin.jsonfmt.private]
+deps  = [dep("jsonfmt-core")]
+flags = ["-std=gnu11", "-Wall", "-Wextra"]
+abi   = "gnu11"
+
+[test.cli]
+sources = [file("../tests/cli.c")]
+
+[test.cli.private]
+deps  = [dep("jsonfmt-core")]
+flags = ["-std=gnu11"]
+abi   = "gnu11"

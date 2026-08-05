@@ -1,0 +1,13 @@
+[package]
+name    = "httpd"
+version = "0.3.0"
+edition = "2026"
+
+[features]
+default = ["poll"]
+# 待ち方の実装を選ぶ。epoll は Linux 固有、poll はどこでも動く。
+# 実アプリでは「同じ見出しの裏で実装を差し替える」形が普通に要る。
+epoll   = []
+poll    = []
+# 接続ごとにスレッドを起こす。pthread が要る。
+threads = []
