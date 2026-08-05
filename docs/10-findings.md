@@ -2053,12 +2053,15 @@ link_flags = ["-nostdlib", "-T", file("ld/app.ld")]
 
 ### 実害の大きさ
 
-配置を決めないと、`objcopy -O binary` は最初と最後の節の間をすべて埋める。
+配置を決めないと、既定のリンカスクリプトが選んだ番地に載る。
 
-| | 生イメージ |
+| | 最初の LOAD |
 |---|---|
-| スクリプトあり | 数百バイト |
-| スクリプトなし | 130 KB 超 |
+| スクリプトあり | `0x08000000`（この部品の flash の先頭） |
+| スクリプトなし | `0x00008000`（flash の無い番地） |
+
+書き込み器はこの像を flash へ置けない。ベクタ表も flash の先頭に来ないため、
+リセット時に読まれる2語が正しくない。
 
 ### なぜ内側から見つからないか
 
@@ -2075,10 +2078,15 @@ known_issue F-025 である。
 
 対照として次を通常の検査に置いてある。
 
+- `without a script the image is placed where the part has no flash`
 - `the linker says it cannot open the script, so the path never resolved`
 - `the same script does work when named by an absolute path`
-- `and the layout it describes is what the artifact gets`
-- `without a script the raw image is more than ten times larger`
+- `and then the image lands at the start of flash, where it can be programmed`
+
+スクリプトが効いたときは、生イメージの先頭2語を直に読んで確かめている。
+`the first word of the image is the initial stack pointer` と
+`and the second is a reset handler inside flash`。リセット時に CPU が読むのは
+その2語であり、配置が正しいかどうかはそこに現れる。
 
 ---
 
@@ -2087,24 +2095,38 @@ known_issue F-025 である。
 報告先: [sabas0ba/dowel#71](https://github.com/sabas0ba/dowel/issues/71)
 
 **パッケージが対象とする triple を宣言できない。`[toolchain.<triple>]` だけを
-宣言した木でも、`--target` を付けなければホストの既定で組み上がる。**
+宣言した木でも、`--target` を付けなければホスト向けの計画が立つ。**
 
 種別: 要望。未修正（`af7d391`）。F-025 と同じ層で踏んだ。
 
 ### 観測
 
+そこから先は、フラグがホストのコンパイラに通るかどうかで結果が変わる。
+どちらの形でも dowel は何も言わない。
+
+**その1 — 通らない場合（`apps/blink` はこちら）。**
+
 ```console
 $ dowel build                      # --target を付け忘れた
-built: .../x86_64-unknown-linux-gnu-debug/bin/firmware
-built: .../x86_64-unknown-linux-gnu-debug/bin/firmware.bin
-built: .../x86_64-unknown-linux-gnu-debug/bin/firmware.hex
+cc: error: unrecognized command-line option '-mthumb'
 
-$ readelf -h .../bin/firmware | grep Machine
-  Machine: Advanced Micro Devices X86-64
+$ dowel build --message-format=json | jq -r '.code'
+                                   # 何も出ない
 ```
 
-x86-64 の「ファームウェア像」が出る。名前も置き場所の形も本物と同じで、違うのは
-triple の接頭辞だけである。`artifacts` の派生まで、ホストの `objcopy` で作られる。
+落ちること自体は良いが、利用者が見るのは**フラグについての苦情**である。
+「この木はホスト向けではない」とはどこにも書かれていない。
+
+**その2 — 通る場合（対象が `aarch64-unknown-linux-gnu` など）。**
+
+```console
+$ dowel build
+built: .../x86_64-unknown-linux-gnu-debug/bin/firmware
+built: .../x86_64-unknown-linux-gnu-debug/bin/firmware.bin
+```
+
+x86-64 の「ファームウェア像」が出る。`artifacts` の派生まで、ホストの
+`objcopy` で作られる。
 
 これは `docs/11-toml-reference.md` の記述どおりの動作である（`c` はホストでは
 `cc` を既定とする）。F-015 で入った拒否は**ホスト以外の** triple に対するもの
@@ -2144,9 +2166,9 @@ known_issue F-026 である。
 
 現状の挙動は通常の検査として記録してある。
 
-- `leaving out --target still builds, because the host has defaults`
-- `and what it builds is a host binary, not firmware`
-- `the raw image is derived for the host too, with nothing to say so`
+- `leaving out --target is refused, but by the host compiler`
+- `the message is about a flag, not about the package's targets`
+- `and dowel emits no diagnostic of its own about the target`
 
 ---
 

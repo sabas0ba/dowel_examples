@@ -1,4 +1,11 @@
-# 周辺機器を叩くだけの層。libc は使わない。
+# Cortex-M4F 向けのファームウェア。
+#
+# 対象ごとに変わるのは cpu と ABI の指定だけである。対象を増やすときは、
+# それらを `match cfg.target` の腕にする（README を見よ）。
+#
+# なお現状、対象そのものを宣言する手段が無い。--target を付け忘れると
+# ホストの既定で組み上がる（docs/10-findings.md F-026）。
+
 [lib.bl]
 sources = [
     file("src/gpio.c"),
@@ -7,10 +14,12 @@ sources = [
 
 [lib.bl.public]
 includes = [dir("include")]
-abi      = "freestanding"
+abi      = "thumbv7em-hard"
 
 [lib.bl.private]
+# 対象を増やすときは、この4つを `match cfg.target` の腕にする。
 flags = [
+    "-mcpu=cortex-m4", "-mthumb", "-mfloat-abi=hard", "-mfpu=fpv4-sp-d16",
     "-ffreestanding",       # 標準ライブラリの存在を仮定しない
     "-fno-builtin",         # memcpy 等への置き換えを禁じる
     "-nostdinc",            # 系の見出しを探しに行かせない
@@ -26,13 +35,18 @@ sources = [
 
 [bin.firmware.private]
 deps  = [target("bl")]
-flags = ["-ffreestanding", "-fno-builtin", "-nostdinc", "-std=gnu11", "-Wall", "-Wextra"]
-abi   = "freestanding"
+flags = [
+    "-mcpu=cortex-m4", "-mthumb", "-mfloat-abi=hard", "-mfpu=fpv4-sp-d16",
+    "-ffreestanding", "-fno-builtin", "-nostdinc",
+    "-std=gnu11", "-Wall", "-Wextra",
+]
+abi   = "thumbv7em-hard"
 link_flags = [
+    "-mcpu=cortex-m4", "-mthumb", "-mfloat-abi=hard", "-mfpu=fpv4-sp-d16",
     "-nostdlib",            # 起動コードも libc も付けない
     "-static",
     "-Wl,--build-id=none",
-    "-Wl,-e,_reset",        # 入口はベクタ表の先の _reset
+    "-Wl,-e,_reset",        # 入口はベクタ表の [1] が指す先
 ]
 
 # 書き込み用の像。ELF のままでは書き込み器が読めない。

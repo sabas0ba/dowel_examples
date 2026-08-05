@@ -111,6 +111,7 @@ export DOWELUP DOWEL_SRC
 # 実行と比べられなくなる。
 for tool in cc ninja jq git cmake pkg-config gcc gcc-ar objcopy readelf g++ clang clang++ \
              aarch64-linux-gnu-gcc aarch64-linux-gnu-g++ aarch64-linux-gnu-objcopy \
+             arm-none-eabi-gcc arm-none-eabi-objcopy \
              qemu-aarch64-static; do
     command -v "$tool" >/dev/null 2>&1 || {
         printf '%s is missing.\n\n' "$tool" >&2
@@ -124,6 +125,7 @@ migration layers
   aarch64-linux-gnu-gcc        11-cross compiles for another architecture
   aarch64-linux-gnu-g++        15-cpp cross compiles C++ as well
   aarch64-linux-gnu-objcopy    19-artifacts derives a cross image
+  arm-none-eabi-gcc            apps/blink builds bare metal for Cortex-M
   qemu-aarch64-static          11-cross and 15-cpp run what they compiled
   cmake                        16-migrate imports from a real CMake build
   pkg-config                   17-deps resolves system packages through it
@@ -131,7 +133,8 @@ migration layers
 on debian and ubuntu:
 
   apt-get install -y ninja-build jq cmake pkg-config gcc g++ clang \
-      gcc-aarch64-linux-gnu g++-aarch64-linux-gnu qemu-user-static
+      gcc-aarch64-linux-gnu g++-aarch64-linux-gnu qemu-user-static \
+      gcc-arm-none-eabi
 EOF
         exit 2
     }

@@ -4,24 +4,29 @@ libc も起動コードも持たない対象。入口はベクタ表の先の `_
 記憶の配置はリンカスクリプトが決める。
 
 ```console
-$ dowel build --target=aarch64-unknown-linux-gnu
+$ dowel build --target=thumbv7em-none-eabihf
 built: .../bin/firmware
 built: .../bin/firmware.bin
 built: .../bin/firmware.hex
+
+$ arm-none-eabi-size .../bin/firmware
+   text	   data	    bss	    dec	    hex
+    320	      0	     16	    336	    150
 ```
 
-## なぜ aarch64 なのか
+対象は **Cortex-M4F**（`thumbv7em-none-eabihf`）。OS を持たない triple であり、
+ツールチェーンは `arm-none-eabi-*` である。
 
-Cortex-M ではなく aarch64 の freestanding にしてある。本スイートが既に要求して
-いる道具立てで足り、`gcc-arm-none-eabi` を足さずに済むためである。
+## 対象を増やす
 
-dowel に効かせる性質は変わらない。
+RISC-V などを足すときに変わるのは3つだけである。
 
-- `-ffreestanding -nostdinc -nostdlib` が届くこと
-- ベクタ表が誰にも参照されないまま成果物に残ること
-- 入口が libc の起動処理ではないこと
-- `artifacts` が書き込み用の像を作ること
-- 道具（`c` / `ar` / `objcopy`）が triple ごとに選ばれること
+1. `dowel.toml` に `[toolchain.<triple>]` を1つ足す
+2. `ld/<triple>.ld` を置く
+3. cpu と ABI の指定を `match cfg.target` の腕にする
+
+ソースは触らない。`bl_gpio_*` も `bl_delay` も番地と回数しか扱わないため、
+対象に依存する部分はマニフェスト側に寄せてある。
 
 ## 「組めた」では足りない
 
@@ -40,51 +45,66 @@ freestanding は、組めたかどうかではなく**何が混ざらなかっ�
 
 ### リンカスクリプトを指せない（[F-025](../../docs/10-findings.md#f-025)）
 
-`ld/app.ld` は木の中に置いてあるが、マニフェストから指す方法が無い。
+`ld/thumbv7em-none-eabihf.ld` は木の中に置いてあるが、マニフェストから指す
+方法が無い。
 
 ```
-link_flags = ["-T", "ld/app.ld"]      → cannot open linker script file
-link_flags = ["-Wl,-T,ld/app.ld"]     → 同じ
-link_flags = ["-Lld", "-Tapp.ld"]     → 同じ（-L も同じ基準で解決される）
-link_flags = [file("ld/app.ld")]      → type-mismatch（List<Str> である）
+link_flags = ["-T", "ld/....ld"]      → cannot open linker script file
+link_flags = ["-Wl,-T,ld/....ld"]     → 同じ
+link_flags = ["-Lld", "-T....ld"]     → 同じ（-L も同じ基準で解決される）
+link_flags = [file("ld/....ld")]      → type-mismatch（List<Str> である）
 ```
 
-絶対パスなら通り、配置も効く（FLASH の `0x08000000` に載る）。**足りないのは
-道の書き方だけ**である。`expect.sh` はそこまで確かめている。
+絶対パスなら通り、配置も効く。**足りないのは道の書き方だけ**である。
+`expect.sh` はそこまで確かめている。
 
-配置を決めないことには実害がある。`objcopy -O binary` は最初と最後の節の間を
-すべて埋めるため、既定の配置では像が桁違いに膨らむ。
+配置を決めないことの実害は、大きさではなく**番地**に出る。
 
-| | 生イメージの大きさ |
+| | 最初の LOAD |
 |---|---|
-| スクリプトあり | 数百バイト |
-| スクリプトなし | 130 KB 超 |
+| スクリプトあり | `0x08000000`（この部品の flash の先頭） |
+| スクリプトなし | `0x00008000`（既定のスクリプトが選ぶ番地。flash は無い） |
 
-その比を検査にしてある。
+書き込み器はこの像を flash へ置けない。ベクタ表も flash の先頭に来ないため、
+リセット時に読まれる2語が正しくない。
+
+スクリプトが効いたときは、生イメージの先頭2語を直に読んで確かめている。
+
+| | |
+|---|---|
+| `[0]` | `0x20010000` — SRAM の末尾。初期スタックポインタ |
+| `[1]` | flash 内の番地 — リセットハンドラ |
 
 ### 対象の triple を宣言できない（[F-026](../../docs/10-findings.md#f-026)）
 
-`--target` を付け忘れると、**ホストの既定のツールチェーンで組み上がる**。
-診断も警告も無い。
+`--target` を付け忘れても、ホストには既定があるため計画が立つ。
 
 ```console
 $ dowel build                      # --target を忘れた
-built: .../x86_64-unknown-linux-gnu-debug/bin/firmware
-built: .../x86_64-unknown-linux-gnu-debug/bin/firmware.bin
+cc: error: unrecognized command-line option '-mthumb'
+
+$ dowel build --message-format=json | jq -r '.code'
+                                   # 何も出ない
 ```
 
-x86-64 の「ファームウェア像」が出る。名前も置き場所の形も本物と同じで、違うのは
-triple の接頭辞だけである。ベアメタルの木にホストの構成は存在しないので、
-出来上がるものに意味は無い。
+落ちること自体は良いが、**利用者が見るのはフラグについての苦情**である。
+「この木はホスト向けではない」とはどこにも書かれておらず、`--target` の
+付け忘れだと気づく手がかりが無い。
 
-`expect.sh` はこれが**起きること**を通常の検査として記録し、パッケージが対象を
-宣言できることを `xfail` として置いてある。
+フラグがたまたまホストのコンパイラにも通る木（対象が
+`aarch64-unknown-linux-gnu` など）では、**黙って x86-64 の「ファームウェア像」が
+出来上がる**。書き込み器に食わせるつもりのファイルが、ホストの objcopy が
+作った別物になる。どちらの形も dowel は何も言わない。
+
+`expect.sh` は前者を通常の検査として記録し、パッケージが対象を宣言できることを
+`xfail` として置いてある。
 
 ## 何を dowel に効かせているか
 
 | | |
 |---|---|
 | freestanding のフラグ | 成果物から libc の不在を読む |
+| triple との整合 | `hf` の triple に hard-float ABI の成果物が対応すること |
 | 節の配置 | `__attribute__((section(".vectors")))` が残ること |
 | `artifacts` | `.bin` と `.hex`。作るのはクロスの objcopy |
 | 道具の選択 | `c` / `ar` / `objcopy` を triple ごとに |

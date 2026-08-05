@@ -34,7 +34,8 @@ C++ とクロスの層は `g++` / `clang++` / `aarch64-linux-gnu-g++` /
 その機械の既定のコンパイラ1つだけになる。移行の層（`16-migrate`）は移行元を
 組み立てるために `cmake` を、依存の層（`17-deps`）はシステムパッケージの解決先
 として `pkg-config` を、道具の層（`18-tools` / `19-artifacts`）は `gcc-ar` と
-`objcopy`（クロスの側も）を使う。
+`objcopy`（クロスの側も）を使う。組み込みの層（`apps/blink`）は
+`arm-none-eabi-gcc` でベアメタルを組む。
 
 `09-acquisition` は `dowelup` と dowel の**作業木**も要る。取得を検査する層で
 あり、上流にあたる git リポジトリを手元へ複製して相手にするためである
@@ -77,7 +78,7 @@ apps/jsonfmt
   ok   including a private header of the library does not compile
   xfail running the tests does not make the next build redo work  [F-024]
 
-total 945 checks: 937 passed, 0 failed, 8 known, 0 fixed
+total 947 checks: 939 passed, 0 failed, 8 known, 0 fixed
 ```
 
 検査名は英語で書く。実装の中身ではなく、何が固定されているかを1行で読ませる
@@ -117,7 +118,7 @@ total 945 checks: 937 passed, 0 failed, 8 known, 0 fixed
 |---|---|---|
 | [jsonfmt](apps/jsonfmt/) | 依存を持たない CLI。解析と整形 | 無し |
 | [httpd](apps/httpd/) | システムプログラミング。ソケット、シグナル、待ち方の選択 | 無し（libc のみ） |
-| [blink](apps/blink/) | 組み込み。freestanding、ベクタ表、書き込み用の像 | 無し（libc を使わない） |
+| [blink](apps/blink/) | 組み込み。Cortex-M4F のベアメタル、ベクタ表、書き込み用の像 | 無し（`arm-none-eabi`） |
 
 ここで見つかるものは、最小の構成では現れない。実際、
 [F-023](docs/10-findings.md#f-023) はパッケージを跨いだ機能名を使って初めて、
