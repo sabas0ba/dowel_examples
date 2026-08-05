@@ -9,7 +9,7 @@
 # トリプルごとの選択）はどちらでも同じである。
 #
 # **リンカスクリプトはこの木から指せない**（docs/10-findings.md F-025）。
-# バレメタルでは省略できないものなので、そこが組み込みの最初の関門になる。
+# ベアメタルでは省略できないものなので、そこが組み込みの最初の関門になる。
 
 TRIPLE=aarch64-unknown-linux-gnu
 B=".dowel/build/$TRIPLE-debug/bin"
@@ -38,7 +38,7 @@ ok "and builds"                            build --no-compdb --target=$TRIPLE
 
 # 道具は3つとも宣言してあるが、宣言してあるのは1つの triple に対してだけ
 # である。ホストには既定があるため、`--target` を付け忘れると**ホスト向けに
-# 組み上がる**。バレメタルの木にホストの構成は存在しないので、出来上がる
+# 組み上がる**。ベアメタルの木にホストの構成は存在しないので、出来上がる
 # ものに意味は無い（docs/10-findings.md F-026）。
 ok "leaving out --target still builds, because the host has defaults" \
     build --no-compdb
@@ -136,7 +136,7 @@ fact $v "the image is made by the objcopy declared for the triple"
 
 # ------------------------------------------------------------ 4. リンカスクリプト (F-025)
 #
-# バレメタルでは記憶の配置を自分で決める。`ld/app.ld` を木の中に置いてあるが、
+# ベアメタルでは記憶の配置を自分で決める。`ld/app.ld` を木の中に置いてあるが、
 # `link_flags` は List<Str> であり file() を受けない。フラグの中の相対パスは
 # ビルドディレクトリ基準で解決されるため、どう書いても届かない。
 
