@@ -1,10 +1,10 @@
 {
- "run_id": "30997661771",
+ "run_id": "31101638469",
  "run_attempt": "1",
- "run_url": "https://github.com/sabas0ba/dowel_examples/actions/runs/30997661771",
- "commit": "cf2888d5f0d953da7fa15da0c11cfe7c6569e758",
+ "run_url": "https://github.com/sabas0ba/dowel_examples/actions/runs/31101638469",
+ "commit": "fb4d394e090c025a719b212f89067a76385d7874",
  "branch": "main",
- "started_at": "2026-08-05T10:30:54Z",
+ "started_at": "2026-08-06T12:30:58Z",
  "dowel_version": "dowel 0.0.1",
  "dowel_ref": "af7d391f1e223680b9a61af9dbe0ee73efd890b2",
  "dowel_commit": "af7d391f1e223680b9a61af9dbe0ee73efd890b2",
@@ -14,7 +14,7 @@
   {
    "name": "01-minimal",
    "root": "projects",
-   "duration_ms": 166,
+   "duration_ms": 245,
    "counts": {
     "pass": 10,
     "fail": 0,
@@ -72,7 +72,7 @@
   {
    "name": "02-config",
    "root": "projects",
-   "duration_ms": 414,
+   "duration_ms": 922,
    "counts": {
     "pass": 21,
     "fail": 0,
@@ -175,7 +175,7 @@
   {
    "name": "03-features",
    "root": "projects",
-   "duration_ms": 201,
+   "duration_ms": 268,
    "counts": {
     "pass": 17,
     "fail": 0,
@@ -265,7 +265,7 @@
   {
    "name": "04-diagnostics",
    "root": "projects",
-   "duration_ms": 290,
+   "duration_ms": 322,
    "counts": {
     "pass": 66,
     "fail": 0,
@@ -567,7 +567,7 @@
   {
    "name": "05-incremental",
    "root": "projects",
-   "duration_ms": 1522,
+   "duration_ms": 1675,
    "counts": {
     "pass": 48,
     "fail": 0,
@@ -779,7 +779,7 @@
   {
    "name": "06-runner",
    "root": "projects",
-   "duration_ms": 285,
+   "duration_ms": 360,
    "counts": {
     "pass": 17,
     "fail": 0,
@@ -867,7 +867,7 @@
   {
    "name": "07-robustness",
    "root": "projects",
-   "duration_ms": 1196,
+   "duration_ms": 1286,
    "counts": {
     "pass": 145,
     "fail": 0,
@@ -1465,7 +1465,7 @@
   {
    "name": "08-lsp",
    "root": "projects",
-   "duration_ms": 12626,
+   "duration_ms": 12788,
    "counts": {
     "pass": 110,
     "fail": 0,
@@ -1923,7 +1923,7 @@
   {
    "name": "09-acquisition",
    "root": "projects",
-   "duration_ms": 17158,
+   "duration_ms": 18191,
    "counts": {
     "pass": 66,
     "fail": 0,
@@ -2207,7 +2207,7 @@
   {
    "name": "10-toolchain",
    "root": "projects",
-   "duration_ms": 692,
+   "duration_ms": 5591,
    "counts": {
     "pass": 31,
     "fail": 0,
@@ -2349,7 +2349,7 @@
   {
    "name": "11-cross",
    "root": "projects",
-   "duration_ms": 478,
+   "duration_ms": 1169,
    "counts": {
     "pass": 17,
     "fail": 0,
@@ -2435,7 +2435,7 @@
   {
    "name": "12-store",
    "root": "projects",
-   "duration_ms": 182,
+   "duration_ms": 205,
    "counts": {
     "pass": 29,
     "fail": 0,
@@ -2569,7 +2569,7 @@
   {
    "name": "13-parallel",
    "root": "projects",
-   "duration_ms": 10686,
+   "duration_ms": 10750,
    "counts": {
     "pass": 18,
     "fail": 0,
@@ -2659,7 +2659,7 @@
   {
    "name": "14-scale",
    "root": "projects",
-   "duration_ms": 4932,
+   "duration_ms": 6075,
    "counts": {
     "pass": 17,
     "fail": 0,
@@ -2743,7 +2743,7 @@
   {
    "name": "15-cpp",
    "root": "projects",
-   "duration_ms": 2896,
+   "duration_ms": 7677,
    "counts": {
     "pass": 70,
     "fail": 0,
@@ -3051,7 +3051,7 @@
   {
    "name": "16-migrate",
    "root": "projects",
-   "duration_ms": 1085,
+   "duration_ms": 3148,
    "counts": {
     "pass": 54,
     "fail": 0,
@@ -3285,7 +3285,7 @@
   {
    "name": "17-deps",
    "root": "projects",
-   "duration_ms": 594,
+   "duration_ms": 740,
    "counts": {
     "pass": 51,
     "fail": 0,
@@ -3510,7 +3510,7 @@
   {
    "name": "18-tools",
    "root": "projects",
-   "duration_ms": 379,
+   "duration_ms": 482,
    "counts": {
     "pass": 31,
     "fail": 0,
@@ -3659,7 +3659,7 @@
   {
    "name": "19-artifacts",
    "root": "projects",
-   "duration_ms": 503,
+   "duration_ms": 625,
    "counts": {
     "pass": 34,
     "fail": 0,
@@ -3817,16 +3817,178 @@
    ]
   },
   {
+   "name": "blink",
+   "root": "apps",
+   "duration_ms": 2660,
+   "counts": {
+    "pass": 32,
+    "fail": 0,
+    "xfail": 4,
+    "xpass": 0
+   },
+   "total": 36,
+   "ok": true,
+   "checks": [
+    {
+     "status": "pass",
+     "desc": "the bare-metal package passes check"
+    },
+    {
+     "status": "pass",
+     "desc": "and builds"
+    },
+    {
+     "status": "pass",
+     "desc": "the artifact needs no shared library at run time"
+    },
+    {
+     "status": "pass",
+     "desc": "and carries no symbol from the standard library or its start-up"
+    },
+    {
+     "status": "pass",
+     "desc": "the artifact is for the target architecture"
+    },
+    {
+     "status": "pass",
+     "desc": "and its float ABI agrees with the hf in the triple"
+    },
+    {
+     "status": "pass",
+     "desc": "the entry point is the reset handler, not a libc start-up routine"
+    },
+    {
+     "status": "pass",
+     "desc": "the vector table survives into the artifact although nothing calls it"
+    },
+    {
+     "status": "pass",
+     "desc": "leaving out --target is refused, but by the host compiler"
+    },
+    {
+     "status": "pass",
+     "desc": "the message is about a flag, not about the package's targets"
+    },
+    {
+     "status": "pass",
+     "desc": "and dowel emits no diagnostic of its own about the target"
+    },
+    {
+     "status": "xfail",
+     "desc": "a package can say which targets it is for  [F-026]"
+    },
+    {
+     "status": "pass",
+     "desc": "a raw image is produced"
+    },
+    {
+     "status": "pass",
+     "desc": "an Intel HEX is produced"
+    },
+    {
+     "status": "pass",
+     "desc": "the raw image is no longer an ELF"
+    },
+    {
+     "status": "pass",
+     "desc": "the hex image is in the format the entry asked for"
+    },
+    {
+     "status": "pass",
+     "desc": "the image is made by the objcopy declared for the triple"
+    },
+    {
+     "status": "pass",
+     "desc": "without a script the image is placed where the vector table cannot be"
+    },
+    {
+     "status": "xfail",
+     "desc": "the firmware runs on emulated hardware  [F-025]"
+    },
+    {
+     "status": "pass",
+     "desc": "instead the processor locks up at reset, having read no vector table"
+    },
+    {
+     "status": "xfail",
+     "desc": "a linker script inside the package can be named from the manifest  [F-025]"
+    },
+    {
+     "status": "pass",
+     "desc": "the linker says it cannot open the script, so the path never resolved"
+    },
+    {
+     "status": "pass",
+     "desc": "the same script does work when named by an absolute path"
+    },
+    {
+     "status": "pass",
+     "desc": "and then the image lands at the start of flash, where it can be programmed"
+    },
+    {
+     "status": "pass",
+     "desc": "and the firmware runs on emulated hardware and its test passes"
+    },
+    {
+     "status": "pass",
+     "desc": "the firmware reports through semihosting, so the result comes from the device"
+    },
+    {
+     "status": "pass",
+     "desc": "the first word of the image is the initial stack pointer"
+    },
+    {
+     "status": "pass",
+     "desc": "and the second is a reset handler inside flash"
+    },
+    {
+     "status": "pass",
+     "desc": "the runner ends its args with -kernel, and dowel appends the artifact"
+    },
+    {
+     "status": "xfail",
+     "desc": "a runner written into dowel.toml is not silently ignored  [F-027]"
+    },
+    {
+     "status": "pass",
+     "desc": "and the failure claims no runner is declared, though one is"
+    },
+    {
+     "status": "pass",
+     "desc": "putting the runner back where it belongs makes the tests run again"
+    },
+    {
+     "status": "pass",
+     "desc": "a second build changes nothing"
+    },
+    {
+     "status": "pass",
+     "desc": "editing a peripheral source recompiles it"
+    },
+    {
+     "status": "pass",
+     "desc": "and the image is derived again"
+    },
+    {
+     "status": "pass",
+     "desc": "while its neighbour is left alone"
+    }
+   ],
+   "packages": [
+    "."
+   ]
+  },
+  {
    "name": "httpd",
    "root": "apps",
-   "duration_ms": 520,
+   "duration_ms": 5270,
    "counts": {
-    "pass": 26,
+    "pass": 33,
     "fail": 0,
     "xfail": 0,
     "xpass": 0
    },
-   "total": 26,
+   "total": 33,
    "ok": true,
    "checks": [
     {
@@ -3932,6 +4094,34 @@
     {
      "status": "pass",
      "desc": "and leaves the rest of the library alone"
+    },
+    {
+     "status": "pass",
+     "desc": "the instrumented configuration passes check"
+    },
+    {
+     "status": "pass",
+     "desc": "and builds"
+    },
+    {
+     "status": "pass",
+     "desc": "the instrumentation the library asks for reaches the link of the server"
+    },
+    {
+     "status": "pass",
+     "desc": "the unit tests pass with the instrumentation on"
+    },
+    {
+     "status": "pass",
+     "desc": "a malformed request is answered or refused, never crashes the server"
+    },
+    {
+     "status": "pass",
+     "desc": "the epoll configuration builds instrumented too"
+    },
+    {
+     "status": "pass",
+     "desc": "and the other waiter survives the same requests"
     }
    ],
    "packages": [
@@ -3941,14 +4131,14 @@
   {
    "name": "jsonfmt",
    "root": "apps",
-   "duration_ms": 765,
+   "duration_ms": 1917,
    "counts": {
-    "pass": 27,
+    "pass": 34,
     "fail": 0,
     "xfail": 3,
     "xpass": 0
    },
-   "total": 30,
+   "total": 37,
    "ok": true,
    "checks": [
     {
@@ -4070,6 +4260,34 @@
     {
      "status": "xfail",
      "desc": "building one target does not make the next full build redo work  [F-024]"
+    },
+    {
+     "status": "pass",
+     "desc": "the instrumented configuration passes check"
+    },
+    {
+     "status": "pass",
+     "desc": "and builds"
+    },
+    {
+     "status": "pass",
+     "desc": "the instrumentation the library asks for reaches the link of the application"
+    },
+    {
+     "status": "pass",
+     "desc": "the tests pass with the instrumentation on"
+    },
+    {
+     "status": "pass",
+     "desc": "hostile input is refused rather than crashing the instrumented build"
+    },
+    {
+     "status": "pass",
+     "desc": "the deep configuration builds with the instrumentation too"
+    },
+    {
+     "status": "pass",
+     "desc": "nesting past the raised limit is refused, not met with a stack overflow"
     }
    ],
    "packages": [
@@ -4080,7 +4298,7 @@
   {
    "name": "docs",
    "root": "projects",
-   "duration_ms": 46,
+   "duration_ms": 60,
    "counts": {
     "pass": 8,
     "fail": 0,
@@ -4127,12 +4345,12 @@
   }
  ],
  "totals": {
-  "pass": 913,
+  "pass": 959,
   "fail": 0,
-  "xfail": 6,
+  "xfail": 10,
   "xpass": 0
  },
- "total": 919,
+ "total": 969,
  "ok": true,
  "attention": [],
  "known_issues": [
@@ -4150,6 +4368,26 @@
    "status": "xfail",
    "project": "19-artifacts",
    "desc": "a library keeps producing its derived file when a binary depends on it  [F-022]"
+  },
+  {
+   "status": "xfail",
+   "project": "blink",
+   "desc": "a package can say which targets it is for  [F-026]"
+  },
+  {
+   "status": "xfail",
+   "project": "blink",
+   "desc": "the firmware runs on emulated hardware  [F-025]"
+  },
+  {
+   "status": "xfail",
+   "project": "blink",
+   "desc": "a linker script inside the package can be named from the manifest  [F-025]"
+  },
+  {
+   "status": "xfail",
+   "project": "blink",
+   "desc": "a runner written into dowel.toml is not silently ignored  [F-027]"
   },
   {
    "status": "xfail",
