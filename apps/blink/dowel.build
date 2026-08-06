@@ -1,0 +1,86 @@
+# Cortex-M4F 向けのファームウェア。対象は MPS2-AN386。
+#
+# 対象を増やす（RISC-V など）ときに変わるのは3つだけである。
+#
+#   1. `dowel.toml` に `[toolchain.<triple>]` を1つ足す
+#   2. `ld/<triple>.ld` を置く
+#   3. cpu と ABI の指定を `match cfg.target` の腕にする
+#
+# なお現状、対象そのものを宣言する手段が無い。--target を付け忘れると
+# ホスト向けの計画が立つ（docs/10-findings.md F-026）。
+
+[lib.bl]
+sources = [
+    file("src/gpio.c"),
+    file("src/delay.c"),
+    file("src/semihost.c"),
+]
+
+[lib.bl.public]
+includes = [dir("include")]
+abi      = "thumbv7em-hard"
+
+[lib.bl.private]
+# 対象を増やすときは、この4つを `match cfg.target` の腕にする。
+flags = [
+    "-mcpu=cortex-m4", "-mthumb", "-mfloat-abi=hard", "-mfpu=fpv4-sp-d16",
+    "-ffreestanding",       # 標準ライブラリの存在を仮定しない
+    "-fno-builtin",         # memcpy 等への置き換えを禁じる
+    "-nostdinc",            # 系の見出しを探しに行かせない
+    "-std=gnu11", "-Wall", "-Wextra",
+]
+
+# 実体。ベクタ表と入口を持ち、止まらずに回り続ける。
+[bin.firmware]
+sources = [
+    file("src/vectors.c"),
+    file("src/main.c"),
+]
+
+[bin.firmware.private]
+deps  = [target("bl")]
+flags = [
+    "-mcpu=cortex-m4", "-mthumb", "-mfloat-abi=hard", "-mfpu=fpv4-sp-d16",
+    "-ffreestanding", "-fno-builtin", "-nostdinc",
+    "-std=gnu11", "-Wall", "-Wextra",
+]
+abi   = "thumbv7em-hard"
+link_flags = [
+    "-mcpu=cortex-m4", "-mthumb", "-mfloat-abi=hard", "-mfpu=fpv4-sp-d16",
+    "-nostdlib",            # 起動コードも libc も付けない
+    "-static",
+    "-Wl,--build-id=none",
+    "-Wl,-e,_reset",        # 入口はベクタ表の [1] が指す先
+]
+
+# 書き込み用の像。ELF のままでは書き込み器が読めない。
+[bin.firmware.artifacts]
+bin = { tool = "objcopy", args = ["-O", "binary"] }
+hex = { tool = "objcopy", args = ["-O", "ihex"] }
+
+# 実機（の代わりの qemu）で走るテスト。結果は semihosting で返す。
+# ホスト向けに組んだものを走らせても、周辺機器の番地も命令集合も違う。
+[test.onhw]
+sources = [file("tests/onhw.c")]
+
+[test.onhw.private]
+deps  = [target("bl")]
+flags = [
+    "-mcpu=cortex-m4", "-mthumb", "-mfloat-abi=hard", "-mfpu=fpv4-sp-d16",
+    "-ffreestanding", "-fno-builtin", "-nostdinc",
+    "-std=gnu11", "-Wall", "-Wextra",
+]
+abi   = "thumbv7em-hard"
+link_flags = [
+    "-mcpu=cortex-m4", "-mthumb", "-mfloat-abi=hard", "-mfpu=fpv4-sp-d16",
+    "-nostdlib", "-static", "-Wl,--build-id=none", "-Wl,-e,_reset",
+]
+
+# 実行の仕方。`[runner.<triple>]` は **dowel.build** の表である
+# （dowel.toml へ書くと黙って無視される。docs/10-findings.md F-027）。
+#
+# 成果物の道は実装が末尾に付ける（ADR-0008）。したがって `-kernel` を
+# args の最後に置けば `qemu-system-arm ... -kernel <artifact>` になる。
+[runner.thumbv7em-none-eabihf]
+command = "qemu-system-arm"
+args    = ["-M", "mps2-an386", "-nographic", "-semihosting", "-kernel"]

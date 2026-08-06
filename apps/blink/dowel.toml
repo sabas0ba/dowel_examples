@@ -1,0 +1,13 @@
+[package]
+name    = "blink"
+version = "0.1.0"
+edition = "2026"
+
+# ベアメタルの対象。OS を持たない triple であり、libc も起動コードも無い。
+#
+# 対象を増やすときは、この表を1つ足し、`ld/<triple>.ld` を置き、
+# `dowel.build` の flags を `match cfg.target` にする（README を見よ）。
+[toolchain.thumbv7em-none-eabihf]
+c       = "arm-none-eabi-gcc"
+ar      = "arm-none-eabi-ar"
+objcopy = "arm-none-eabi-objcopy"

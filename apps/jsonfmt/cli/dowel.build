@@ -3,7 +3,10 @@ sources = glob("src/*.c")
 
 [bin.jsonfmt.private]
 deps  = [dep("jsonfmt-core")]
-flags = ["-std=gnu11", "-Wall", "-Wextra"]
+flags = [
+    "-std=gnu11", "-Wall", "-Wextra",
+    "-fsanitize=address,undefined" when feature.sanitize,
+]
 abi   = "gnu11"
 
 [test.cli]
@@ -11,5 +14,8 @@ sources = [file("../tests/cli.c")]
 
 [test.cli.private]
 deps  = [dep("jsonfmt-core")]
-flags = ["-std=gnu11"]
+flags = [
+    "-std=gnu11",
+    "-fsanitize=address,undefined" when feature.sanitize,
+]
 abi   = "gnu11"

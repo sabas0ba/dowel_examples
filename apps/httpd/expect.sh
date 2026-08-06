@@ -10,6 +10,7 @@
 #     二度と翻訳されず、壊れても気づけない
 #   - 機能フラグがリンクの要求まで動かす（`threads` のときだけ -pthread）
 #   - 実際に接続して応答を読む。組めたことは、繋がることを意味しない
+#   - **壊れた要求で落ちないこと**。計装した版を組んで実際に食わせる（7節）
 
 # ------------------------------------------------------------ 道具立て
 
@@ -202,3 +203,132 @@ printf '\n/* touched */\n' >>src/wait_poll.c
 build_direct --no-compdb
 rebuilt "wait_poll.c" "editing the chosen waiter recompiles it"
 not_rebuilt "mime.c" "and leaves the rest of the library alone"
+
+# ------------------------------------------------------------ 7. 壊れた要求で落ちないこと
+#
+# サーバは要求を選べない。網の向こうから来るものは、切り詰められていたり、
+# 終端が無かったり、そもそも HTTP ですらなかったりする。正しい要求に正しく
+# 答えることは、実アプリの条件としては半分でしかない。
+#
+# ここで見るのは2つある。
+#
+#   1. **アプリ側** — 壊れた要求で落ちないか、未定義動作を踏まないか、
+#      接続ごとに漏らしていないか（計装は終了時に漏れも数える）
+#   2. **dowel 側** — 計装のような「翻訳とリンクの両方に乗せる必要があり、
+#      かつライブラリ側にも同じものを乗せないと意味が無い」フラグを、
+#      マニフェストの語彙だけで書き切れるか
+
+ok "the instrumented configuration passes check" check --features=sanitize
+ok "and builds"                                  build --no-compdb --features=sanitize
+
+# 計装は翻訳だけでは効かない。ライブラリの private な link_flags が、
+# それを使う側のリンクにも乗ること（F-018 で入った性質）を実地で使う。
+_last_cmd="graph --features=sanitize | select(.kind==\"link\")"
+OUT=$(link_args --features=sanitize)
+RC=0
+printf '%s' "$OUT" | grep -q 'fsanitize'
+fact $? "the instrumentation the library asks for reaches the link of the server"
+
+ok "the unit tests pass with the instrumentation on" test --features=sanitize
+
+# 壊れた要求を実際に送る。サーバは 1 接続で終える（-1）ため、抜けたあとに
+# 計装が漏れを数える。終了状態が 0 でなければ、そこで何かを踏んでいる。
+survives() {
+    local bin; bin=$(built "$1")
+    HTTPD="${bin:-/nonexistent}" python3 - <<'PY' 2>&1
+import os, re, socket, subprocess, sys, time
+
+bin = os.path.abspath(os.environ["HTTPD"])
+cases = {
+    "a request with no CRLF":       b"GET /index.html HTTP/1.0",
+    "an empty request":             b"",
+    "bare CRLFs":                   b"\r\n\r\n",
+    "an 8k request line":           b"GET /" + b"a" * 8192 + b" HTTP/1.0\r\n\r\n",
+    "a 64k path":                   b"GET /" + b"b" * 65536 + b" HTTP/1.0\r\n\r\n",
+    "a request with no method":     b"/index.html HTTP/1.0\r\n\r\n",
+    "1k of binary garbage":         bytes(range(256)) * 4,
+    "a NUL inside the path":        b"GET /ind\x00ex.html HTTP/1.0\r\n\r\n",
+    "2000 dot-dot segments":        b"GET /" + b"../" * 2000 + b"etc/passwd HTTP/1.0\r\n\r\n",
+    "1000 headers":                 b"GET /index.html HTTP/1.0\r\n" + b"X-h: v\r\n" * 1000 + b"\r\n",
+    "a lone CR":                    b"GET /index.html HTTP/1.0\r",
+    "spaces only":                  b"   \r\n\r\n",
+    "a 70k method":                 b"X" * 70000 + b" / HTTP/1.0\r\n\r\n",
+    "percent-encoded dot-dots":     b"GET /%2e%2e%2f%2e%2e%2fdowel.toml HTTP/1.0\r\n\r\n",
+    "a path that is not ASCII":     "GET /éè中.html HTTP/1.0\r\n\r\n".encode(),
+    "a connection closed at once":  None,
+}
+
+bad = []
+for name, req in cases.items():
+    log = open(".fuzz.log", "wb+")
+    p = subprocess.Popen([bin, "-r", "www", "-1"], stdout=log, stderr=subprocess.STDOUT)
+    port = None
+    for _ in range(60):
+        log.seek(0)
+        m = re.search(rb"^listening (\d+)", log.read(), re.M)
+        if m:
+            port = int(m.group(1))
+            break
+        time.sleep(0.1)
+    if port is None:
+        p.kill()
+        bad.append("%s: the server never announced a port" % name)
+        continue
+    try:
+        s = socket.create_connection(("127.0.0.1", port), timeout=5)
+        if req is None:
+            s.close()
+        else:
+            s.sendall(req)
+            s.shutdown(socket.SHUT_WR)
+            s.settimeout(5)
+            try:
+                while s.recv(65536):
+                    pass
+            except socket.timeout:
+                pass
+            s.close()
+    except OSError:
+        pass                                    # 拒まれること自体は落ちていない
+    try:
+        rc = p.wait(timeout=15)
+    except subprocess.TimeoutExpired:
+        p.kill()
+        bad.append("%s: the server never came back" % name)
+        continue
+    log.seek(0)
+    out = log.read()
+    why = []
+    if rc < 0:
+        why.append("killed by signal %d" % -rc)
+    elif rc != 0:
+        why.append("exit %d" % rc)
+    if b"runtime error" in out or b"Sanitizer" in out:
+        why.append(out.decode("utf-8", "replace").strip().splitlines()[0])
+    if why:
+        bad.append("%s: %s" % (name, "; ".join(why)))
+
+print("\n".join(bad) if bad else "%d requests, the server survived them all" % len(cases))
+PY
+}
+
+report=$(survives '-debug-poll+sanitize')
+printf '%s' "$report" | grep -q 'survived them all'
+v=$?
+RC=0; _last_cmd="send 16 malformed requests to the instrumented server"
+OUT="$report"
+fact $v "a malformed request is answered or refused, never crashes the server"
+
+# 待ち方を差し替えた側でも同じである。差し替えたのは待ち方だけであり、
+# 要求の読み方は共有している——が、それは確かめて初めて言える。
+ok "the epoll configuration builds instrumented too" \
+    build --no-compdb --no-default-features --features=epoll,sanitize
+
+report=$(survives '-debug-epoll+sanitize')
+printf '%s' "$report" | grep -q 'survived them all'
+v=$?
+RC=0; _last_cmd="the same 16 requests against the epoll build"
+OUT="$report"
+fact $v "and the other waiter survives the same requests"
+
+rm -f .fuzz.log
