@@ -1,0 +1,8 @@
+# C の利用者。ライブラリと同じ言語であり、ここは素直に通る。
+[bin.hashsum]
+sources = [file("src/main.c")]
+
+[bin.hashsum.private]
+deps  = [dep("hashx")]
+flags = ["-std=gnu11", "-Wall", "-Wextra"]
+abi   = "gnu11"

@@ -10,7 +10,7 @@ dowel 本体は自分自身を内側から検査している（`crates/*/tests/`
 仕様と実装の食い違いを仕様の側から見つけられる。
 
 見つけたものは [docs/10-findings.md](docs/10-findings.md) に記録し、本体へ報告する。
-これまでに 27 件を報告し、19 件が修正された。
+これまでに 30 件を報告し、19 件が修正された。
 
 ## 走らせる
 
@@ -55,13 +55,14 @@ DOWELUP=/path/to/dowelup DOWEL_SRC=/path/to/dowel ./run.sh
 ## 出力
 
 1 検査 1 行。本体が直していない事項に対する検査は `xfail` として登録する。
-本体側が直ると `XPASS` になって落ち、宣言を外すべきことが分かる。現在は 10 件で、
+本体側が直ると `XPASS` になって落ち、宣言を外すべきことが分かる。現在は 14 件で、
 [F-011](docs/10-findings.md#f-011) の残っている側、
 [F-020](docs/10-findings.md#f-020) の残っている側（検査の道具）、
 [F-022](docs/10-findings.md#f-022)、[F-023](docs/10-findings.md#f-023)、
 [F-024](docs/10-findings.md#f-024)、[F-025](docs/10-findings.md#f-025)、
-[F-026](docs/10-findings.md#f-026)、[F-027](docs/10-findings.md#f-027)
-に対応する。
+[F-026](docs/10-findings.md#f-026)、[F-027](docs/10-findings.md#f-027)、
+[F-028](docs/10-findings.md#f-028)、[F-029](docs/10-findings.md#f-029)、
+[F-030](docs/10-findings.md#f-030) に対応する。
 
 ```
 02-config
@@ -83,7 +84,11 @@ apps/jsonfmt
 apps/blink
   ok   and the firmware runs on emulated hardware and its test passes
 
-total 969 checks: 959 passed, 0 failed, 10 known, 0 fixed
+apps/hashx
+  ok   the archive exports exactly the names the header marks as the API
+  xfail a dependency entry that names two sources is refused  [F-029]
+
+total 1007 checks: 993 passed, 0 failed, 14 known, 0 fixed
 ```
 
 検査名は英語で書く。実装の中身ではなく、何が固定されているかを1行で読ませる
@@ -124,6 +129,7 @@ total 969 checks: 959 passed, 0 failed, 10 known, 0 fixed
 | [jsonfmt](apps/jsonfmt/) | 依存を持たない CLI。解析と整形 | 無し |
 | [httpd](apps/httpd/) | システムプログラミング。ソケット、シグナル、待ち方の選択 | 無し（libc のみ） |
 | [blink](apps/blink/) | 組み込み。Cortex-M4F のベアメタル、ベクタ表、書き込み用の像、qemu 上での実行 | 無し（`arm-none-eabi`） |
+| [hashx](apps/hashx/) | ライブラリ。配る側。面の可視性、C と C++ の双方の利用者、出所の切り替え | 無し |
 
 どれも**組めたことでは終わらせない**。整形結果は文字単位で見て、サーバには
 本物のソケットで接続し、ファームウェアは qemu の上で走らせる。加えて、
@@ -134,7 +140,8 @@ total 969 checks: 959 passed, 0 failed, 10 known, 0 fixed
 [F-023](docs/10-findings.md#f-023) はパッケージを跨いだ機能名を使って初めて、
 [F-024](docs/10-findings.md#f-024) は `test` と `build` を交互に打って初めて、
 [F-027](docs/10-findings.md#f-027) は `[toolchain]` と `[runner]` を続けて
-書いて初めて出た。
+書いて初めて、[F-028](docs/10-findings.md#f-028) は C のライブラリを C++ から
+呼んで初めて出た。
 
 プロジェクトのほかに `docs` の段がある。文書が引用する検査名が実在するか、
 リンクが解決するか、索引が中身と一致するかを機械的に見る。文書の不整合は

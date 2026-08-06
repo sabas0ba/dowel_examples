@@ -1,0 +1,9 @@
+[package]
+name    = "hashx"
+version = "0.4.0"
+edition = "2026"
+
+[features]
+default = []
+# 表を実行時に組み立てる版。記憶の小さい対象向け。
+small   = []
