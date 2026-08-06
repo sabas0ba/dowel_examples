@@ -11,8 +11,8 @@ F-018 / F-019 / F-021 は `af7d391` で修正された。F-008 はさらに `9ed
 ものを消すと、退行したときに気づけない。
 
 未修正は F-020 の残っている側（検査の道具）、F-022 / F-023 / F-024 /
-F-025 / F-026 / F-027 / F-028 / F-029 / F-030、および F-011 の残っている
-側である。対応する検査は
+F-025 / F-026 / F-027 / F-028 / F-029 / F-030 / F-031、および F-011 の
+残っている側である。対応する検査は
 `known_issue` を付けてあり、本体が直すと `XPASS` になって落ちる。
 
 各項目は次の形で記録する。
@@ -57,6 +57,7 @@ F-025 / F-026 / F-027 / F-028 / F-029 / F-030、および F-011 の残ってい�
 | [F-028](#f-028) | `abi` の `must_equal` により、C のライブラリを C++ から使えない | 実装／設計 | [#78](https://github.com/sabas0ba/dowel/issues/78) | 未修正 |
 | [F-029](#f-029) | 依存が出所を2つ名乗っても無診断で受理され、黙って `path` が勝つ | 実装 | [#79](https://github.com/sabas0ba/dowel/issues/79) | 未修正 |
 | [F-030](#f-030) | パッケージの `version` を翻訳へ届ける手立てが無い | 要望 | [#80](https://github.com/sabas0ba/dowel/issues/80) | 未修正 |
+| [F-031](#f-031) | 排他な機能を宣言できず、`lib` では黙って片方の実装が勝つ | 要望 | [#82](https://github.com/sabas0ba/dowel/issues/82) | 未修正 |
 
 ---
 
@@ -2482,6 +2483,104 @@ known_issue F-030 である。
 - `the version in the manifest and the one in the header agree today`
   （本スイートが2か所を突き合わせている。本来は木の側で保証されてほしい）
 - `and the artifact keeps reporting the version written in the header`
+
+---
+
+## F-031
+
+報告先: [sabas0ba/dowel#82](https://github.com/sabas0ba/dowel/issues/82)
+
+**排他な機能を宣言できない。`when` を並べて実装を選ぶ木は、両方の機能が
+立つと両方を翻訳する。そこから先は目標の種別で分かれ、`bin` ではリンカが
+落とし、`lib` では黙って片方が勝つ。**
+
+種別: 要望。未修正（`af7d391`）。`apps/plot` で描画のバックエンドを選ぼうと
+して踏んだ。
+
+正しい書き方はある。`match feature.x { true => a, false => b }` なら選ばれる
+のは常に1つである。所見にしたのは、**間違えたときに何も言われない**ことと、
+その結果が目標の種別で2通りに分かれることについてである。
+
+### 観測
+
+```toml
+# B: when を2つ並べる（排他にならない）
+sources = [
+    file("src/shell_x11.c")      when feature.x11,
+    file("src/shell_headless.c") when feature.headless,
+]
+```
+
+機能は加算である。`--features=x11` は `default = ["headless"]` を落とさない
+ため、両方が立ち、両方が翻訳される。
+
+**`bin` に直に並べた場合** — `check` は通り、リンカが落とす。
+
+```console
+$ dowel check --features=x11
+check passed: 4 packages, 5 targets
+$ dowel build --features=x11
+/usr/bin/ld: multiple definition of `shell_show'
+```
+
+利用者が見るのはリンカの苦情であり、dowel からの診断は1件も出ない。
+
+**`lib` に入れた場合** — 組み上がる。
+
+```console
+$ dowel build --features=epoll        # default = ["poll"] を落とし忘れた
+built: .../debug-epoll+poll/bin/httpd
+$ ./httpd --waiter
+epoll sequential                      # poll の側は死んだ翻訳単位になった
+```
+
+両方の目的ファイルが同じ書庫に入り、リンカは記号を最初に満たした部材だけを
+引く。`sources` の並び順を入れ替えても結果は変わらないので、**どちらが
+生き残るかをマニフェスト側から決める手立ても無い。**
+
+組み上がり、テストも通り（片方しか走っていないだけである）、成果物だけが
+頼んだのと違うものになる。こちらの方が危ない。
+
+### 期待
+
+排他を宣言できるようにする。
+
+```toml
+[features]
+exclusive = [["headless", "x11"]]     # この2つは同時に立てない
+```
+
+あるいは最低限、`docs/12-build-reference.md` の `when` の説明に「実装の択一
+には `match` を使う。`when` を並べても排他にはならない」と書く。
+
+根拠は `docs/00-overview.md` 2節の「記録されない入力を排除する」。`lib` の
+場合、**どちらの実装が成果物に入ったかが記録のどこにも無い**。リンカの解決順
+という、マニフェストからは見えないものが決めている。
+
+### なぜ内側から見つからないか
+
+条件付きソースの検査は、その機能だけを立てて確かめる（`--no-default-features
+--features=x` の形）。それは正しい使い方であり、正しく動く。問題は正しくない
+使い方をしたときで、しかも `lib` の場合は**失敗として現れない**ため、検査
+項目として立てにくい。「組めたが中身が違う」を捕まえるには、成果物に実装を
+名乗らせる仕掛け（`--waiter` のような）が要る。
+
+### 検査
+
+`bin` の側は `apps/plot` の
+`a manifest that can select two exclusive backends at once is refused`、
+`lib` の側は `apps/httpd` の
+`and a package that ends up with two implementations of one interface says so`。
+どちらも known_issue F-031 である。
+
+現状は通常の検査として記録してある。
+
+- `with two whens, asking for one backend compiles both`
+- `instead the linker reports multiple definition, with nothing from dowel`
+- `written as a match, the same flag selects exactly one`
+- `forgetting to drop the defaults compiles both waiters`
+- `instead the build succeeds, because a static archive keeps only the first definition`
+- `and the artifact carries whichever the linker reached first`
 
 ---
 

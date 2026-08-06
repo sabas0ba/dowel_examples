@@ -1,0 +1,35 @@
+# 描画の本体。画素の並びを作るところまでを受け持ち、それを誰に見せるかは
+# 知らない。GUI で試験できる部分と、できない部分の境目はここに引く。
+[lib.plot]
+sources = [
+    file("src/canvas.c"),
+    file("src/render.c"),
+]
+
+[lib.plot.public]
+includes = [dir("include")]
+abi      = "gnu11"
+
+[lib.plot.private]
+includes = [dir("src")]
+# cairo は private な依存である。使う側は cairo の見出しを知らなくてよい。
+# それでもリンクの閉包には乗る（F-018 で入った性質）。
+deps     = [dep("cairo")]
+flags    = [
+    "-std=gnu11", "-Wall", "-Wextra",
+    "-fsanitize=address,undefined" when feature.sanitize,
+    "-fno-omit-frame-pointer"      when feature.sanitize,
+]
+link_flags = ["-fsanitize=address,undefined" when feature.sanitize]
+
+[test.unit]
+sources = [file("../tests/unit.c")]
+
+[test.unit.private]
+deps     = [target("plot")]
+includes = [dir("src")]
+flags    = [
+    "-std=gnu11",
+    "-fsanitize=address,undefined" when feature.sanitize,
+]
+abi      = "gnu11"

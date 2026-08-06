@@ -114,6 +114,37 @@ _last_cmd="graph ... --features=epoll"; OUT="$got"; RC=0
 case $got in *wait_epoll.c*) v=0 ;; *) v=1 ;; esac
 fact $v "choosing the other feature compiles the other waiter"
 
+# 既定を落とし忘れると、両方が立つ。機能は加算であり、`--features=epoll`
+# だけでは `default = ["poll"]` は消えない（docs/10-findings.md F-031）。
+#
+# ここは `lib` である。両方の翻訳単位が同じ書庫に入り、リンカは片方だけを
+# 引く。**組み上がってしまう。** `bin` に直に並べた場合（apps/plot）は
+# multiple definition で落ちるので、同じ書き方が目標の種別によって
+# 「落ちる」と「黙って選ばれる」に分かれる。
+got=$(sources_of --features=epoll)
+_last_cmd="graph ... --features=epoll   # --no-default-features を忘れた"
+OUT="$got"; RC=0
+case $got in *wait_epoll.c*wait_poll.c*|*wait_poll.c*wait_epoll.c*) v=0 ;; *) v=1 ;; esac
+fact $v "forgetting to drop the defaults compiles both waiters"
+
+OUT=$(json_diags check --features=epoll)
+RC=0
+printf '%s' "$OUT" | jq -e '.code' >/dev/null 2>&1
+verdict=$?
+_last_cmd="dowel check --features=epoll   # 両方の待ち方が立っている"
+known_issue F-031
+fact $verdict "and a package that ends up with two implementations of one interface says so"
+
+ok "instead the build succeeds, because a static archive keeps only the first definition" \
+    build --no-compdb --features=epoll
+
+got=$(waiter '-epoll+poll')
+_last_cmd="httpd --waiter   # 両方の待ち方を立てて組んだ"
+OUT="said: ${got:-(nothing)}"$'\n'"the manifest asked for both; one of them simply lost"
+RC=0
+[ -n "$got" ]
+fact $? "and the artifact carries whichever the linker reached first"
+
 case $got in *wait_poll.c*) v=1 ;; *) v=0 ;; esac
 _last_cmd="graph ... --features=epoll"; OUT="$got"; RC=0
 fact $v "and drops the first one"
