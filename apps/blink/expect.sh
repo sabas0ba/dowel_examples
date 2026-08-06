@@ -10,8 +10,12 @@
 #   2. `ld/<triple>.ld` を置く
 #   3. cpu と ABI の指定を `match cfg.target` の腕にする
 #
+# 対象は MPS2-AN386（Cortex-M4）。qemu-system-arm がこの機械を持つため、
+# **組んだものを実際に走らせられる**。結果は semihosting で返す。
+#
 # **リンカスクリプトはこの木から指せない**（docs/10-findings.md F-025）。
 # ベアメタルでは省略できないものなので、そこが組み込みの最初の関門になる。
+# しかもその実害は、置き場所ではなく**起動できないこと**に出る。
 
 TRIPLE=thumbv7em-none-eabihf
 B=".dowel/build/$TRIPLE-debug/bin"
@@ -40,6 +44,19 @@ says() {
     fact $v "$3"
 }
 
+# on_hardware — qemu の上でテストを走らせ、出力を SAID に、状態を RC に置く。
+#
+# `--nocapture` を付ける。付けないと、通ったときの出力は握り潰される。
+# ここで見たいのは合否ではなく**装置が何と言ったか**であり、それは
+# semihosting で返ってくる文字列でしかない。
+SAID=""
+on_hardware() {
+    SAID=$("$DOWEL" test --target=$TRIPLE --nocapture 2>&1)
+    RC=$?
+    _last_cmd="dowel test --target=$TRIPLE --nocapture   # qemu-system-arm 経由"
+    return 0
+}
+
 # with_script <道> — link_flags に -T を足す。空なら外す。
 with_script() {
     python3 - "${1:-}" <<'PY'
@@ -48,8 +65,9 @@ p = "dowel.build"
 t = open(p, encoding="utf-8").read()
 t = re.sub(r'\n *"-T", "[^"]*",', "", t)
 if sys.argv[1]:
-    t = t.replace('    "-Wl,-e,_reset",',
-                  '    "-Wl,-e,_reset",\n    "-T", "%s",' % sys.argv[1])
+    # bin と test の両方に効かせる。書き方が違うため綴りを短く取る。
+    t = t.replace('"-Wl,-e,_reset",',
+                  '"-Wl,-e,_reset",\n    "-T", "%s",' % sys.argv[1])
 open(p, "w", encoding="utf-8").write(t)
 PY
 }
@@ -173,8 +191,19 @@ fact $v "the image is made by the objcopy declared for the triple"
 addr=$(first_load)
 [ "$addr" = "0x00008000" ]
 v=$?; RC=0; _last_cmd="readelf -l $B/firmware | grep LOAD"
-OUT="first LOAD at: ${addr:-?}  (this part's flash starts at 0x08000000)"
-fact $v "without a script the image is placed where the part has no flash"
+OUT="first LOAD at: ${addr:-?}  (the vector table must sit at 0x00000000)"
+fact $v "without a script the image is placed where the vector table cannot be"
+
+# そして実際に起動しない。ここが実害である。
+on_hardware
+[ "$RC" -eq 0 ]
+verdict=$?
+OUT="$SAID"; RC=0
+known_issue F-025
+fact $verdict "the firmware runs on emulated hardware"
+
+printf '%s' "$SAID" | grep -q 'Lockup'
+fact $? "instead the processor locks up at reset, having read no vector table"
 
 with_script "$LD"
 run build --no-compdb --target=$TRIPLE
@@ -195,10 +224,19 @@ ok "the same script does work when named by an absolute path" \
     build --no-compdb --target=$TRIPLE
 
 addr=$(first_load)
-[ "$addr" = "0x08000000" ]
+[ "$addr" = "0x00000000" ]
 v=$?; RC=0; _last_cmd="readelf -l $B/firmware | grep LOAD"
 OUT="first LOAD at: ${addr:-?}"
 fact $v "and then the image lands at the start of flash, where it can be programmed"
+
+# そして走る。ベアメタルで「動く」を確かめる唯一の形である。
+on_hardware
+[ "$RC" -eq 0 ]
+v=$?; OUT="$SAID"; RC=0
+fact $v "and the firmware runs on emulated hardware and its test passes"
+
+printf '%s' "$SAID" | grep -q 'blink: ok'
+fact $? "the firmware reports through semihosting, so the result comes from the device"
 
 # ベクタ表が先頭に来ていること。[0] と [1] を実際に読む。
 sp=$(od -An -tx4 -N4 "$B/firmware.bin" 2>/dev/null | tr -d ' ')
@@ -206,19 +244,65 @@ pc=$(od -An -tx4 -j4 -N4 "$B/firmware.bin" 2>/dev/null | tr -d ' ')
 _last_cmd="od -tx4 -N8 $B/firmware.bin"
 OUT="[0] initial SP: 0x$sp"$'\n'"[1] reset:       0x$pc"
 RC=0
-[ "$sp" = "20010000" ]
+[ "$sp" = "20400000" ]
 fact $? "the first word of the image is the initial stack pointer"
 
-[ "$((0x$pc))" -ge "$((0x08000000))" ]
+[ "$((0x$pc))" -gt 0 ] && [ "$((0x$pc))" -lt "$((0x00400000))" ]
 v=$?; RC=0; _last_cmd="od -tx4 -j4 -N4 $B/firmware.bin"
 OUT="[1] reset: 0x$pc"
 fact $v "and the second is a reset handler inside flash"
 
-with_script ""
+# 以降はスクリプトを当てたまま進める。外すと立ち上がらないため、
+# 走らせる検査そのものが成り立たない。
+
+# ------------------------------------------------------------ 6. 実行の宣言 (F-027)
+#
+# `[runner.<triple>]` は dowel.build の表である。`[toolchain.<triple>]` は
+# dowel.toml の表であり、組み込みの構成ではこの2つを続けて書く。同じ triple を
+# 鍵に持ち名前も対になっているため、片方の隣にもう片方を書くのは自然な
+# 間違いである。
+
+# 成果物の道は実装が末尾に付ける（ADR-0008）。だから `-kernel` を args の
+# 最後に置くだけで `qemu-system-arm ... -kernel <artifact>` になる。
+_last_cmd="grep -A3 'runner\.' dowel.build"
+OUT=$(grep -A3 'runner\.' dowel.build)
+RC=0
+printf '%s' "$OUT" | grep -q '"-kernel"\]'
+fact $? "the runner ends its args with -kernel, and dowel appends the artifact"
+
+# dowel.toml へ移すと黙って無視され、宣言してあるのに missing-runner が出る。
+cp dowel.build dowel.build.keep
+cp dowel.toml  dowel.toml.keep
+python3 -c '
+p = "dowel.build"
+t = open(p, encoding="utf-8").read()
+# 表そのものを探す。同じ綴りが上の注釈にも出るため、行頭で取る。
+i = t.index("\n[runner.thumbv7em")
+open(p, "w", encoding="utf-8").write(t[:i] + "\n")
+open("dowel.toml", "a", encoding="utf-8").write("\n" + t[i:])
+'
+OUT=$(json_diags check --target=$TRIPLE)
+RC=0
+printf '%s' "$OUT" | jq -e '.code' >/dev/null 2>&1
+verdict=$?
+known_issue F-027
+fact $verdict "a runner written into dowel.toml is not silently ignored"
+
+run test --target=$TRIPLE
+said=$OUT
+printf '%s' "$said" | grep -q 'missing-runner'
+fact $? "and the failure claims no runner is declared, though one is"
+
+mv dowel.build.keep dowel.build
+mv dowel.toml.keep  dowel.toml
+ok "putting the runner back where it belongs makes the tests run again" \
+    test --target=$TRIPLE
+
+# ------------------------------------------------------------ 7. 増分
+
+# 直前に `test` を挟んでいるため、まず組み直してから測る。挟まないと
+# F-024 の分が乗って、ここが見たい性質と混ざる。
 "$DOWEL" build --no-compdb --target=$TRIPLE >/dev/null 2>&1
-
-# ------------------------------------------------------------ 6. 増分
-
 runs_actions 0 "a second build changes nothing" --target=$TRIPLE --no-compdb
 
 printf '\n/* touched */\n' >>src/gpio.c

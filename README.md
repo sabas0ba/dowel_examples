@@ -10,7 +10,7 @@ dowel 本体は自分自身を内側から検査している（`crates/*/tests/`
 仕様と実装の食い違いを仕様の側から見つけられる。
 
 見つけたものは [docs/10-findings.md](docs/10-findings.md) に記録し、本体へ報告する。
-これまでに 26 件を報告し、19 件が修正された。
+これまでに 27 件を報告し、19 件が修正された。
 
 ## 走らせる
 
@@ -35,7 +35,8 @@ C++ とクロスの層は `g++` / `clang++` / `aarch64-linux-gnu-g++` /
 組み立てるために `cmake` を、依存の層（`17-deps`）はシステムパッケージの解決先
 として `pkg-config` を、道具の層（`18-tools` / `19-artifacts`）は `gcc-ar` と
 `objcopy`（クロスの側も）を使う。組み込みの層（`apps/blink`）は
-`arm-none-eabi-gcc` でベアメタルを組む。
+`arm-none-eabi-gcc` でベアメタルを組み、`qemu-system-arm` で**それを実際に
+走らせる**。
 
 `09-acquisition` は `dowelup` と dowel の**作業木**も要る。取得を検査する層で
 あり、上流にあたる git リポジトリを手元へ複製して相手にするためである
@@ -54,12 +55,13 @@ DOWELUP=/path/to/dowelup DOWEL_SRC=/path/to/dowel ./run.sh
 ## 出力
 
 1 検査 1 行。本体が直していない事項に対する検査は `xfail` として登録する。
-本体側が直ると `XPASS` になって落ち、宣言を外すべきことが分かる。現在は 8 件で、
+本体側が直ると `XPASS` になって落ち、宣言を外すべきことが分かる。現在は 10 件で、
 [F-011](docs/10-findings.md#f-011) の残っている側、
 [F-020](docs/10-findings.md#f-020) の残っている側（検査の道具）、
 [F-022](docs/10-findings.md#f-022)、[F-023](docs/10-findings.md#f-023)、
 [F-024](docs/10-findings.md#f-024)、[F-025](docs/10-findings.md#f-025)、
-[F-026](docs/10-findings.md#f-026) に対応する。
+[F-026](docs/10-findings.md#f-026)、[F-027](docs/10-findings.md#f-027)
+に対応する。
 
 ```
 02-config
@@ -78,7 +80,10 @@ apps/jsonfmt
   ok   including a private header of the library does not compile
   xfail running the tests does not make the next build redo work  [F-024]
 
-total 947 checks: 939 passed, 0 failed, 8 known, 0 fixed
+apps/blink
+  ok   and the firmware runs on emulated hardware and its test passes
+
+total 969 checks: 959 passed, 0 failed, 10 known, 0 fixed
 ```
 
 検査名は英語で書く。実装の中身ではなく、何が固定されているかを1行で読ませる
@@ -118,11 +123,18 @@ total 947 checks: 939 passed, 0 failed, 8 known, 0 fixed
 |---|---|---|
 | [jsonfmt](apps/jsonfmt/) | 依存を持たない CLI。解析と整形 | 無し |
 | [httpd](apps/httpd/) | システムプログラミング。ソケット、シグナル、待ち方の選択 | 無し（libc のみ） |
-| [blink](apps/blink/) | 組み込み。Cortex-M4F のベアメタル、ベクタ表、書き込み用の像 | 無し（`arm-none-eabi`） |
+| [blink](apps/blink/) | 組み込み。Cortex-M4F のベアメタル、ベクタ表、書き込み用の像、qemu 上での実行 | 無し（`arm-none-eabi`） |
+
+どれも**組めたことでは終わらせない**。整形結果は文字単位で見て、サーバには
+本物のソケットで接続し、ファームウェアは qemu の上で走らせる。加えて、
+計装（ASan / UBSan）を機能フラグとして宣言した版を組み、壊れた入力と壊れた
+要求を実際に食わせて、落ちないことと未定義動作を踏まないことを見る。
 
 ここで見つかるものは、最小の構成では現れない。実際、
 [F-023](docs/10-findings.md#f-023) はパッケージを跨いだ機能名を使って初めて、
-[F-024](docs/10-findings.md#f-024) は `test` と `build` を交互に打って初めて出た。
+[F-024](docs/10-findings.md#f-024) は `test` と `build` を交互に打って初めて、
+[F-027](docs/10-findings.md#f-027) は `[toolchain]` と `[runner]` を続けて
+書いて初めて出た。
 
 プロジェクトのほかに `docs` の段がある。文書が引用する検査名が実在するか、
 リンクが解決するか、索引が中身と一致するかを機械的に見る。文書の不整合は

@@ -9,8 +9,16 @@ abi      = "gnu11"
 
 [lib.json.private]
 includes = [dir("src")]
-flags    = ["-std=gnu11", "-Wall", "-Wextra", "-Werror=implicit-function-declaration"]
+flags    = [
+    "-std=gnu11", "-Wall", "-Wextra", "-Werror=implicit-function-declaration",
+    # 計装は翻訳とリンクの両方に要る。片方だけでは繋がらない。
+    "-fsanitize=address,undefined" when feature.sanitize,
+    "-fno-omit-frame-pointer"      when feature.sanitize,
+]
 defines  = { JSON_MAX_DEPTH = match feature.deep { true => 4096, false => 256 } }
+# lib の private な link_flags は、依存する側のリンクにも乗る（F-018）。
+# 使う側が計装を知らなくても、繋がったものは計装されている。
+link_flags = ["-fsanitize=address,undefined" when feature.sanitize]
 
 [test.parse]
 sources = [file("../tests/parse.c")]
@@ -18,4 +26,7 @@ sources = [file("../tests/parse.c")]
 [test.parse.private]
 deps     = [target("json")]
 includes = [dir("src")]
-flags    = ["-std=gnu11"]
+flags    = [
+    "-std=gnu11",
+    "-fsanitize=address,undefined" when feature.sanitize,
+]

@@ -11,7 +11,7 @@ F-018 / F-019 / F-021 は `af7d391` で修正された。F-008 はさらに `9ed
 ものを消すと、退行したときに気づけない。
 
 未修正は F-020 の残っている側（検査の道具）、F-022 / F-023 / F-024 /
-F-025 / F-026、および F-011 の残っている側である。対応する検査は
+F-025 / F-026 / F-027、および F-011 の残っている側である。対応する検査は
 `known_issue` を付けてあり、本体が直すと `XPASS` になって落ちる。
 
 各項目は次の形で記録する。
@@ -52,6 +52,7 @@ F-025 / F-026、および F-011 の残っている側である。対応する検
 | [F-024](#f-024) | 狭い呼び出しが記録を上書きし、次の広い呼び出しがやり直す | 実装 | [#69](https://github.com/sabas0ba/dowel/issues/69) | 未修正 |
 | [F-025](#f-025) | `link_flags` からパッケージ相対のファイルを指せない | 実装 | [#70](https://github.com/sabas0ba/dowel/issues/70) | 未修正 |
 | [F-026](#f-026) | パッケージが対象とする triple を宣言できない | 要望 | [#71](https://github.com/sabas0ba/dowel/issues/71) | 未修正 |
+| [F-027](#f-027) | `dowel.toml` に置いた `[runner.<triple>]` が黙って無視される | 実装 | [#74](https://github.com/sabas0ba/dowel/issues/74) | 未修正 |
 
 ---
 
@@ -2024,7 +2025,7 @@ link_flags = ["-Lld", "-Tapp.ld"]        # -L も同じ基準で解決される
 error[type-mismatch]: `link_flags` is List<Str> but List<Path> was given
 ```
 
-絶対パスなら通り、配置も効く（FLASH の `0x08000000` に載る）。リンクの作業
+絶対パスなら通り、配置も効く（FLASH の先頭 `0x00000000` に載る）。リンクの作業
 ディレクトリはビルドディレクトリである（`-Wl,-Map=where.map` がそこに出る）。
 
 同じ木で `includes = [dir("ld")]` と書くと引数は**絶対パス**になる。パッケージ
@@ -2057,11 +2058,26 @@ link_flags = ["-nostdlib", "-T", file("ld/app.ld")]
 
 | | 最初の LOAD |
 |---|---|
-| スクリプトあり | `0x08000000`（この部品の flash の先頭） |
-| スクリプトなし | `0x00008000`（flash の無い番地） |
+| スクリプトあり | `0x00000000`（flash の先頭。ベクタ表はここに要る） |
+| スクリプトなし | `0x00008000`（何も割り当てられていない番地） |
 
-書き込み器はこの像を flash へ置けない。ベクタ表も flash の先頭に来ないため、
-リセット時に読まれる2語が正しくない。
+実害は像の大きさでも配置の見た目でもなく、**立ち上がらないこと**に出る。
+この木は `qemu-system-arm -M mps2-an386 -semihosting` で実際に走るため、
+そこまで確かめられる。
+
+```console
+$ dowel test --target=thumbv7em-none-eabihf     # スクリプトなし
+qemu: fatal: Lockup: can't escalate 3 to HardFault (current priority -1)
+test blink:onhw ... FAILED
+
+$ dowel test --target=thumbv7em-none-eabihf     # 絶対パスで -T を渡した
+blink: ok
+test blink:onhw ... ok (55ms)
+```
+
+リセット時、CPU は `0x00000000` から2語を読む。そこに何も無ければ、スタック
+ポインタも入口も不定のまま実行が始まり、最初の例外で lockup する。書き込み器に
+食わせる前の段階で、像は既に起動しない。
 
 ### なぜ内側から見つからないか
 
@@ -2076,12 +2092,18 @@ link_flags = ["-nostdlib", "-T", file("ld/app.ld")]
 `a linker script inside the package can be named from the manifest`。
 known_issue F-025 である。
 
+同じく known_issue F-025 として `the firmware runs on emulated hardware` を
+置いてある。スクリプトを指せないことの帰結——**起動しない**——を直接見る側で
+ある。
+
 対照として次を通常の検査に置いてある。
 
-- `without a script the image is placed where the part has no flash`
+- `without a script the image is placed where the vector table cannot be`
+- `instead the processor locks up at reset, having read no vector table`
 - `the linker says it cannot open the script, so the path never resolved`
 - `the same script does work when named by an absolute path`
 - `and then the image lands at the start of flash, where it can be programmed`
+- `and the firmware runs on emulated hardware and its test passes`
 
 スクリプトが効いたときは、生イメージの先頭2語を直に読んで確かめている。
 `the first word of the image is the initial stack pointer` と
@@ -2169,6 +2191,87 @@ known_issue F-026 である。
 - `leaving out --target is refused, but by the host compiler`
 - `the message is about a flag, not about the package's targets`
 - `and dowel emits no diagnostic of its own about the target`
+
+---
+
+## F-027
+
+報告先: [sabas0ba/dowel#74](https://github.com/sabas0ba/dowel/issues/74)
+
+**`[runner.<triple>]` を `dowel.toml` に書くと診断が1件も出ずに無視される。
+そのうえで `dowel test` が `missing-runner`（宣言が無い）と言う。宣言はして
+ある。置き場所が違うだけである。**
+
+種別: 実装。未修正（`af7d391`）。`apps/blink` を qemu で走らせようとして踏んだ。
+
+### 観測
+
+```toml
+# dowel.toml  ← 置き場所を間違えた
+[toolchain.thumbv7em-none-eabihf]
+c       = "arm-none-eabi-gcc"
+objcopy = "arm-none-eabi-objcopy"
+
+[runner.thumbv7em-none-eabihf]
+command = "qemu-system-arm"
+args    = ["-M", "mps2-an386", "-nographic", "-semihosting", "-kernel"]
+```
+
+```console
+$ dowel check --target=thumbv7em-none-eabihf
+check passed: 1 packages, 3 targets
+
+$ dowel check --message-format=json | jq -r '.code'
+                                   # 何も出ない
+
+$ dowel test --target=thumbv7em-none-eabihf
+error[missing-runner]: no runner is declared for `thumbv7em-none-eabihf`
+  = help: declare one, for example `[runner.<triple>]` with `command = "qemu-..."`
+```
+
+`dowel.build` へ移すとそのまま動く。
+
+### 期待
+
+`dowel.toml` の未知の最上位テーブルを拒む。名前が `dowel.build` 側の語彙に
+あるなら、置き場所を指摘する。
+
+```
+error[unknown-table]: `[runner.thumbv7em-none-eabihf]` does not belong in dowel.toml
+  = note: runners are declared in dowel.build
+```
+
+根拠は `docs/00-overview.md` 2節の「記録されない入力を排除する」。書いたつもりの
+宣言が読まれていない状態は、記録の外にある入力そのものである。F-019（#59）で
+`[toolchain]` の未知の**キー**は拒まれるようになった。未知の**テーブル**は
+まだ素通りする。同じ理屈が一段上にも要る、という形である。
+
+### なぜ踏みやすいか
+
+**`[toolchain.<triple>]` は `dowel.toml`、`[runner.<triple>]` は `dowel.build`**
+である。組み込みの構成では、この2つを続けて書く。同じ triple を鍵に持ち、名前も
+対になっているため、片方の隣にもう片方を書くのは自然な間違いである。
+
+そのうえ診断が、**まさに書いたはずのもの**が無いと言い、書けと勧める。利用者は
+自分の `dowel.toml` を見て、書いてあることを確かめ、途方に暮れる。
+
+### なぜ内側から見つからないか
+
+本体のフィクスチャは、正しい置き場所に書いたものを入力にする。**誤った場所に
+書いたマニフェスト**は入力として現れない。`missing-runner` の検査も「宣言が
+無いときに出ること」を確かめれば足り、「宣言はあるが読まれていないとき」は
+同じ入力にならないため、両者の区別が問われない。
+
+### 検査
+
+`apps/blink` の `a runner written into dowel.toml is not silently ignored`。
+known_issue F-027 である。
+
+現状の挙動と、正しく置いたときに動くことを通常の検査として置いてある。
+
+- `and the failure claims no runner is declared, though one is`
+- `putting the runner back where it belongs makes the tests run again`
+- `the runner ends its args with -kernel, and dowel appends the artifact`
 
 ---
 

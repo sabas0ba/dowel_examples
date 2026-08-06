@@ -6,22 +6,29 @@ typedef unsigned char      u8;
 typedef unsigned int       u32;
 typedef unsigned long long u64;
 
-/* 周辺機器の番地。STM32F4 の GPIOD。実機ではデータシートが決める。 */
-#define BL_GPIO_BASE  0x40020C00u
+/* 周辺機器の番地。MPS2-AN386 の GPIO。実機ではデータシートが決める。 */
+#define BL_GPIO_BASE  0x40010000u
 
-/* 出力の向きに設定する。 */
 void bl_gpio_output(u32 pin);
-
-/* 出力を反転する。 */
 void bl_gpio_toggle(u32 pin);
-
-/* 直近に書いた値。実機の代わりに、外から読めるようにしてある。 */
 u32  bl_gpio_state(void);
 
 /* おおよその待ち。時計を持たない層なので、回数で数える。 */
 void bl_delay(u32 ticks);
-
-/* 何回待ったか。 */
 u64  bl_delay_count(void);
+
+/* ---- ホストとの窓口（semihosting）
+ *
+ * デバッガ（あるいは qemu）が居るときだけ働く。`bkpt 0xAB` で止まり、
+ * r0 の操作番号を見た側が代わりに実行する。実機でもデバッガを繋いでいれば
+ * 同じものが動く。
+ *
+ * これが無いと、ベアメタルのテストは結果を伝える手段を持たない。 */
+
+/* ホストの端末へ書く。 */
+void bl_say(const char *s);
+
+/* 終了状態を返して止まる。走らせた側がこれを受け取る。 */
+void bl_exit(u32 code);
 
 #endif

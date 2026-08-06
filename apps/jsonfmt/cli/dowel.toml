@@ -4,9 +4,12 @@ version = "0.2.0"
 edition = "2026"
 
 [features]
-default = []
+default  = []
 # 深い入力を扱う版。core の同名の機能へそのまま渡す。
-deep    = ["jsonfmt-core/deep"]
+deep     = ["jsonfmt-core/deep"]
+# 実行時の誤りを検出する版。ライブラリ側も同じ計装で組む必要があるため、
+# こちらも転送する。片方だけを計装すると、境界を跨いだ誤りを取り逃がす。
+sanitize = ["jsonfmt-core/sanitize"]
 
 [[dependencies]]
 name = "jsonfmt-core"

@@ -13,7 +13,7 @@ void _reset(void);
 /* SRAM の末尾。ld/thumbv7em-none-eabihf.ld の RAM の ORIGIN + LENGTH と
  * 揃えてある。スクリプトの側で `_stack_top` を与える書き方もあるが、
  * スクリプトを使えない構成（F-025）でも組めるようにここへ置いている。 */
-#define STACK_TOP 0x20010000u
+#define STACK_TOP 0x20400000u
 
 static void hang(void)
 {

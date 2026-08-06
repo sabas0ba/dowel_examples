@@ -15,6 +15,7 @@
 #   - 機能フラグが依存先へ転送されること（cli の deep → core の deep）
 #   - テストがパッケージを跨いで置けること
 #   - 走らせて答が合うこと。整形結果は文字単位で見る
+#   - **敵対的な入力で落ちないこと**。計装した版を組んで実際に食わせる（8節）
 
 # ------------------------------------------------------------ 道具立て
 
@@ -205,3 +206,90 @@ RC=0; _last_cmd="dowel -C cli build; dowel -C cli build jsonfmt; dowel -C cli bu
 OUT="ran ${n:-?} actions after building one target"
 known_issue F-024
 fact $verdict "building one target does not make the next full build redo work"
+
+# ------------------------------------------------------------ 8. 実行時に落ちないこと
+#
+# 組めたことも、正しい入力で答が合うことも、実アプリの条件としては足りない。
+# 利用者が食わせるのは壊れた入力である。ここで見るのは2つある。
+#
+#   1. **アプリ側** — 敵対的な入力で落ちないか、未定義動作を踏まないか
+#   2. **dowel 側** — 計装のような「翻訳とリンクの両方に乗せる必要があり、
+#      かつ依存先にも同じものを乗せないと意味が無い」フラグを、
+#      マニフェストの語彙だけで書き切れるか
+#
+# 2 が成り立たなければ 1 は確かめられない。計装は `sanitize` 機能として
+# 宣言し、cli から core へ転送する。
+
+ok "the instrumented configuration passes check" -C cli check --features=sanitize
+ok "and builds"                                  -C cli build --no-compdb --features=sanitize
+
+# 計装は翻訳だけでは効かない。ライブラリの private な link_flags が、
+# それを使う側のリンクにも乗ること（F-018 で入った性質）を実地で使う。
+got=$("$DOWEL" -C cli graph --kind=action --format=json --features=sanitize 2>/dev/null |
+      jq -r '.actions[] | select(.kind == "link" and (.target | test("jsonfmt:jsonfmt")))
+             | .command | join(" ")')
+_last_cmd="graph --features=sanitize | select(.kind==\"link\")"; OUT="$got"; RC=0
+printf '%s' "$got" | grep -q 'fsanitize'
+fact $? "the instrumentation the library asks for reaches the link of the application"
+
+# 計装した版でテストが通る。答が合うことと、その途中で未定義動作を踏んで
+# いないことは別の事柄である。
+ok "the tests pass with the instrumentation on" -C cli test --features=sanitize
+
+# 敵対的な入力を食わせる。落ちてよいのは「文法の誤り」としてであり、
+# シグナルでも計装の報告でもない。
+sanbin=$(find cli/.dowel/build -type f -path '*sanitize*/bin/jsonfmt' | head -1)
+report=$(JSONFMT="${sanbin:-/nonexistent}" python3 - <<'PY' 2>&1
+import os, subprocess
+b = os.environ["JSONFMT"]
+cases = {
+    "an unterminated string":      b'{"a": "xxx',
+    "an unterminated object":      b'{"a": 1',
+    "an unterminated array":       b'[[[[',
+    "a trailing backslash":        b'"\\',
+    "empty input":                 b'',
+    "a lone quote":                b'"',
+    "a key with no value":         b'{"a":}',
+    "10k unclosed brackets":       b'[' * 10000,
+    "10k closed brackets":         b'[' * 10000 + b']' * 10000,
+    "control bytes in a value":    b'{"a":\x01\x02}',
+    "a 100k atom":                 b'a' * 100000,
+    "an object of 20k members":    b'{' + b','.join(b'"k%d":%d' % (i, i)
+                                                   for i in range(20000)) + b'}',
+    "bytes that are not UTF-8":    b'{"a":"\xff\xfe"}',
+    "50k escape sequences":        b'"' + b'\\n' * 50000,
+}
+bad = []
+for name, data in cases.items():
+    p = subprocess.run([b], input=data, capture_output=True)
+    why = []
+    if p.returncode < 0:
+        why.append("killed by signal %d" % -p.returncode)
+    elif p.returncode not in (0, 1):
+        why.append("exit %d" % p.returncode)
+    err = p.stderr
+    if b"runtime error" in err or b"Sanitizer" in err:
+        why.append(err.decode("utf-8", "replace").strip().splitlines()[0])
+    if why:
+        bad.append("%s: %s" % (name, "; ".join(why)))
+print("\n".join(bad) if bad else "%d inputs, none crashed" % len(cases))
+PY
+)
+printf '%s' "$report" | grep -q 'none crashed'
+v=$?
+RC=0; _last_cmd="feed 14 hostile inputs to the instrumented jsonfmt"
+OUT="$report"
+fact $v "hostile input is refused rather than crashing the instrumented build"
+
+# 深い入れ子は再帰の深さそのものである。上限で拒むのであって、
+# スタックを溢れさせて落ちるのではない。
+ok "the deep configuration builds with the instrumentation too" \
+    -C cli build --no-compdb --features=deep,sanitize
+
+deepbin=$(find cli/.dowel/build -type f -path '*deep*sanitize*/bin/jsonfmt' | head -1)
+said=$(python3 -c "import sys; sys.stdout.write('['*100000)" |
+       "${deepbin:-/nonexistent}" 2>&1 >/dev/null); rc=$?
+_last_cmd="printf '[' x100000 | jsonfmt   # --features=deep,sanitize"
+OUT="rc: $rc"$'\n'"said: $said"; RC=0
+[ "$rc" -eq 1 ] && printf '%s' "$said" | grep -q 'nesting too deep'
+fact $? "nesting past the raised limit is refused, not met with a stack overflow"
