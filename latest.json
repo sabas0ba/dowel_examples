@@ -1,10 +1,10 @@
 {
- "run_id": "31101638469",
+ "run_id": "31145409536",
  "run_attempt": "1",
- "run_url": "https://github.com/sabas0ba/dowel_examples/actions/runs/31101638469",
- "commit": "fb4d394e090c025a719b212f89067a76385d7874",
+ "run_url": "https://github.com/sabas0ba/dowel_examples/actions/runs/31145409536",
+ "commit": "7660d8f3dc1a52ccdce35f13423fac3a1ea114c8",
  "branch": "main",
- "started_at": "2026-08-06T12:30:58Z",
+ "started_at": "2026-08-07T03:48:35Z",
  "dowel_version": "dowel 0.0.1",
  "dowel_ref": "af7d391f1e223680b9a61af9dbe0ee73efd890b2",
  "dowel_commit": "af7d391f1e223680b9a61af9dbe0ee73efd890b2",
@@ -14,7 +14,7 @@
   {
    "name": "01-minimal",
    "root": "projects",
-   "duration_ms": 245,
+   "duration_ms": 1201,
    "counts": {
     "pass": 10,
     "fail": 0,
@@ -72,7 +72,7 @@
   {
    "name": "02-config",
    "root": "projects",
-   "duration_ms": 922,
+   "duration_ms": 5029,
    "counts": {
     "pass": 21,
     "fail": 0,
@@ -175,7 +175,7 @@
   {
    "name": "03-features",
    "root": "projects",
-   "duration_ms": 268,
+   "duration_ms": 295,
    "counts": {
     "pass": 17,
     "fail": 0,
@@ -265,7 +265,7 @@
   {
    "name": "04-diagnostics",
    "root": "projects",
-   "duration_ms": 322,
+   "duration_ms": 321,
    "counts": {
     "pass": 66,
     "fail": 0,
@@ -567,7 +567,7 @@
   {
    "name": "05-incremental",
    "root": "projects",
-   "duration_ms": 1675,
+   "duration_ms": 1688,
    "counts": {
     "pass": 48,
     "fail": 0,
@@ -867,7 +867,7 @@
   {
    "name": "07-robustness",
    "root": "projects",
-   "duration_ms": 1286,
+   "duration_ms": 1293,
    "counts": {
     "pass": 145,
     "fail": 0,
@@ -1465,7 +1465,7 @@
   {
    "name": "08-lsp",
    "root": "projects",
-   "duration_ms": 12788,
+   "duration_ms": 12663,
    "counts": {
     "pass": 110,
     "fail": 0,
@@ -1923,7 +1923,7 @@
   {
    "name": "09-acquisition",
    "root": "projects",
-   "duration_ms": 18191,
+   "duration_ms": 18420,
    "counts": {
     "pass": 66,
     "fail": 0,
@@ -2207,7 +2207,7 @@
   {
    "name": "10-toolchain",
    "root": "projects",
-   "duration_ms": 5591,
+   "duration_ms": 4562,
    "counts": {
     "pass": 31,
     "fail": 0,
@@ -2349,7 +2349,7 @@
   {
    "name": "11-cross",
    "root": "projects",
-   "duration_ms": 1169,
+   "duration_ms": 2382,
    "counts": {
     "pass": 17,
     "fail": 0,
@@ -2435,7 +2435,7 @@
   {
    "name": "12-store",
    "root": "projects",
-   "duration_ms": 205,
+   "duration_ms": 206,
    "counts": {
     "pass": 29,
     "fail": 0,
@@ -2569,7 +2569,7 @@
   {
    "name": "13-parallel",
    "root": "projects",
-   "duration_ms": 10750,
+   "duration_ms": 10910,
    "counts": {
     "pass": 18,
     "fail": 0,
@@ -2659,7 +2659,7 @@
   {
    "name": "14-scale",
    "root": "projects",
-   "duration_ms": 6075,
+   "duration_ms": 6115,
    "counts": {
     "pass": 17,
     "fail": 0,
@@ -2743,7 +2743,7 @@
   {
    "name": "15-cpp",
    "root": "projects",
-   "duration_ms": 7677,
+   "duration_ms": 7376,
    "counts": {
     "pass": 70,
     "fail": 0,
@@ -3051,7 +3051,7 @@
   {
    "name": "16-migrate",
    "root": "projects",
-   "duration_ms": 3148,
+   "duration_ms": 1557,
    "counts": {
     "pass": 54,
     "fail": 0,
@@ -3285,7 +3285,7 @@
   {
    "name": "17-deps",
    "root": "projects",
-   "duration_ms": 740,
+   "duration_ms": 748,
    "counts": {
     "pass": 51,
     "fail": 0,
@@ -3510,7 +3510,7 @@
   {
    "name": "18-tools",
    "root": "projects",
-   "duration_ms": 482,
+   "duration_ms": 475,
    "counts": {
     "pass": 31,
     "fail": 0,
@@ -3659,7 +3659,7 @@
   {
    "name": "19-artifacts",
    "root": "projects",
-   "duration_ms": 625,
+   "duration_ms": 631,
    "counts": {
     "pass": 34,
     "fail": 0,
@@ -3819,7 +3819,7 @@
   {
    "name": "blink",
    "root": "apps",
-   "duration_ms": 2660,
+   "duration_ms": 2947,
    "counts": {
     "pass": 32,
     "fail": 0,
@@ -3979,16 +3979,188 @@
    ]
   },
   {
-   "name": "httpd",
+   "name": "hashx",
    "root": "apps",
-   "duration_ms": 5270,
+   "duration_ms": 1487,
    "counts": {
-    "pass": 33,
+    "pass": 34,
     "fail": 0,
-    "xfail": 0,
+    "xfail": 4,
     "xpass": 0
    },
-   "total": 33,
+   "total": 38,
+   "ok": true,
+   "checks": [
+    {
+     "status": "pass",
+     "desc": "the library package passes check"
+    },
+    {
+     "status": "pass",
+     "desc": "and builds"
+    },
+    {
+     "status": "pass",
+     "desc": "its own tests pass"
+    },
+    {
+     "status": "pass",
+     "desc": "the artifact is a static archive"
+    },
+    {
+     "status": "pass",
+     "desc": "the C consumer builds against it"
+    },
+    {
+     "status": "pass",
+     "desc": "the C++ consumer builds against it"
+    },
+    {
+     "status": "pass",
+     "desc": "the archive exports exactly the names the header marks as the API"
+    },
+    {
+     "status": "pass",
+     "desc": "and nothing outside the library's own prefix is exported"
+    },
+    {
+     "status": "pass",
+     "desc": "an internal name that must cross translation units is hidden, not exported"
+    },
+    {
+     "status": "pass",
+     "desc": "a new global added without the API mark does not join the exported face"
+    },
+    {
+     "status": "pass",
+     "desc": "a consumer cannot include the library's internal header"
+    },
+    {
+     "status": "pass",
+     "desc": "and removing it builds again"
+    },
+    {
+     "status": "pass",
+     "desc": "the C consumer gets the known answer for the standard check value"
+    },
+    {
+     "status": "pass",
+     "desc": "and the C++ consumer gets the same answer from the same archive"
+    },
+    {
+     "status": "pass",
+     "desc": "the link of the C++ consumer runs through the C++ driver"
+    },
+    {
+     "status": "xfail",
+     "desc": "a C++ consumer can declare its own abi label and still use a C library  [F-028]"
+    },
+    {
+     "status": "pass",
+     "desc": "instead the two labels are compared and the build is refused"
+    },
+    {
+     "status": "pass",
+     "desc": "the refusal comes with a diagnostic code and both provenances"
+    },
+    {
+     "status": "pass",
+     "desc": "writing the library's label into the consumer builds again"
+    },
+    {
+     "status": "xfail",
+     "desc": "a dependency entry that names two sources is refused  [F-029]"
+    },
+    {
+     "status": "pass",
+     "desc": "instead the local path silently wins and the unreachable git source is never touched"
+    },
+    {
+     "status": "xfail",
+     "desc": "the same holds when the two sources are a path and a version  [F-029]"
+    },
+    {
+     "status": "pass",
+     "desc": "removing the second source leaves the package as it was"
+    },
+    {
+     "status": "pass",
+     "desc": "a dependency entry that names no source at all is refused"
+    },
+    {
+     "status": "pass",
+     "desc": "the version in the manifest and the one in the header agree today"
+    },
+    {
+     "status": "xfail",
+     "desc": "moving the manifest version alone is noticed  [F-030]"
+    },
+    {
+     "status": "pass",
+     "desc": "and the artifact keeps reporting the version written in the header"
+    },
+    {
+     "status": "pass",
+     "desc": "a shared library cannot be declared"
+    },
+    {
+     "status": "pass",
+     "desc": "and the kinds it does offer, which the diagnostic lists, hold nothing for one"
+    },
+    {
+     "status": "pass",
+     "desc": "what a build produces today is one static archive and nothing a foreign consumer could read"
+    },
+    {
+     "status": "pass",
+     "desc": "the small-table configuration builds"
+    },
+    {
+     "status": "pass",
+     "desc": "and its tests give the same answers"
+    },
+    {
+     "status": "pass",
+     "desc": "the answer a consumer sees does not depend on how the library was configured"
+    },
+    {
+     "status": "pass",
+     "desc": "a second build of the consumer runs nothing"
+    },
+    {
+     "status": "pass",
+     "desc": "editing a library source recompiles it for the consumer"
+    },
+    {
+     "status": "pass",
+     "desc": "and the consumer is linked again"
+    },
+    {
+     "status": "pass",
+     "desc": "while the library's other translation units are left alone"
+    },
+    {
+     "status": "pass",
+     "desc": "editing the public header recompiles the consumer that includes it"
+    }
+   ],
+   "packages": [
+    "ctool",
+    "cxxtool",
+    "lib"
+   ]
+  },
+  {
+   "name": "httpd",
+   "root": "apps",
+   "duration_ms": 5277,
+   "counts": {
+    "pass": 36,
+    "fail": 0,
+    "xfail": 1,
+    "xpass": 0
+   },
+   "total": 37,
    "ok": true,
    "checks": [
     {
@@ -4014,6 +4186,22 @@
     {
      "status": "pass",
      "desc": "choosing the other feature compiles the other waiter"
+    },
+    {
+     "status": "pass",
+     "desc": "forgetting to drop the defaults compiles both waiters"
+    },
+    {
+     "status": "xfail",
+     "desc": "and a package that ends up with two implementations of one interface says so  [F-031]"
+    },
+    {
+     "status": "pass",
+     "desc": "instead the build succeeds, because a static archive keeps only the first definition"
+    },
+    {
+     "status": "pass",
+     "desc": "and the artifact carries whichever the linker reached first"
     },
     {
      "status": "pass",
@@ -4131,7 +4319,7 @@
   {
    "name": "jsonfmt",
    "root": "apps",
-   "duration_ms": 1917,
+   "duration_ms": 1922,
    "counts": {
     "pass": 34,
     "fail": 0,
@@ -4296,9 +4484,196 @@
    ]
   },
   {
+   "name": "plot",
+   "root": "apps",
+   "duration_ms": 2079,
+   "counts": {
+    "pass": 41,
+    "fail": 0,
+    "xfail": 1,
+    "xpass": 0
+   },
+   "total": 42,
+   "ok": true,
+   "checks": [
+    {
+     "status": "pass",
+     "desc": "the drawing package passes check"
+    },
+    {
+     "status": "pass",
+     "desc": "and builds"
+    },
+    {
+     "status": "pass",
+     "desc": "its pixel tests pass"
+    },
+    {
+     "status": "pass",
+     "desc": "the default configuration of the shell builds"
+    },
+    {
+     "status": "pass",
+     "desc": "and so does the one that opens a window"
+    },
+    {
+     "status": "pass",
+     "desc": "the system library the drawing package uses reaches the link of the shell"
+    },
+    {
+     "status": "pass",
+     "desc": "but its headers do not, because the dependency was declared private"
+    },
+    {
+     "status": "pass",
+     "desc": "the resolution is written to a lock file"
+    },
+    {
+     "status": "pass",
+     "desc": "and the lock names the package that was resolved"
+    },
+    {
+     "status": "pass",
+     "desc": "with the mechanism that resolved it"
+    },
+    {
+     "status": "pass",
+     "desc": "the configuration that opens no window does not need X11 at run time"
+    },
+    {
+     "status": "pass",
+     "desc": "though it still needs the drawing library it actually uses"
+    },
+    {
+     "status": "pass",
+     "desc": "and the configuration that does open one needs X11"
+    },
+    {
+     "status": "pass",
+     "desc": "the optional dependency is absent from the plan, not merely unused"
+    },
+    {
+     "status": "pass",
+     "desc": "only the chosen shell is compiled"
+    },
+    {
+     "status": "pass",
+     "desc": "and choosing the other feature compiles the other one"
+    },
+    {
+     "status": "pass",
+     "desc": "the default artifact says which shell it carries"
+    },
+    {
+     "status": "pass",
+     "desc": "and the windowed artifact says the other one"
+    },
+    {
+     "status": "pass",
+     "desc": "with two whens, asking for one backend compiles both"
+    },
+    {
+     "status": "xfail",
+     "desc": "a manifest that can select two exclusive backends at once is refused  [F-031]"
+    },
+    {
+     "status": "pass",
+     "desc": "instead the linker reports multiple definition, with nothing from dowel"
+    },
+    {
+     "status": "pass",
+     "desc": "written as a match, the same flag selects exactly one"
+    },
+    {
+     "status": "pass",
+     "desc": "and the build that follows links"
+    },
+    {
+     "status": "pass",
+     "desc": "rendering to a file succeeds"
+    },
+    {
+     "status": "pass",
+     "desc": "the file carries the size that was asked for"
+    },
+    {
+     "status": "pass",
+     "desc": "and the first pixel is exactly the background colour the header declares"
+    },
+    {
+     "status": "pass",
+     "desc": "the body holds one pixel for each pixel of the canvas"
+    },
+    {
+     "status": "pass",
+     "desc": "the windowed build runs against a real X server"
+    },
+    {
+     "status": "pass",
+     "desc": "and it gets as far as putting the image on the window"
+    },
+    {
+     "status": "pass",
+     "desc": "without a display it exits with a status of its own, not a signal"
+    },
+    {
+     "status": "pass",
+     "desc": "and it says what is missing rather than dying inside the library"
+    },
+    {
+     "status": "pass",
+     "desc": "while the other configuration renders with no display at all"
+    },
+    {
+     "status": "pass",
+     "desc": "the instrumented configuration builds"
+    },
+    {
+     "status": "pass",
+     "desc": "and its tests pass"
+    },
+    {
+     "status": "pass",
+     "desc": "awkward sizes and values are refused or drawn, never crash the renderer"
+    },
+    {
+     "status": "pass",
+     "desc": "the windowed configuration builds instrumented too"
+    },
+    {
+     "status": "pass",
+     "desc": "and opening a real window under instrumentation reports nothing"
+    },
+    {
+     "status": "pass",
+     "desc": "the image handed to the server is not read past its own buffer"
+    },
+    {
+     "status": "pass",
+     "desc": "a second build of the same configuration runs nothing"
+    },
+    {
+     "status": "pass",
+     "desc": "editing the drawing source recompiles it"
+    },
+    {
+     "status": "pass",
+     "desc": "and the shell is linked again"
+    },
+    {
+     "status": "pass",
+     "desc": "while its neighbour is left alone"
+    }
+   ],
+   "packages": [
+    "core",
+    "ui"
+   ]
+  },
+  {
    "name": "docs",
    "root": "projects",
-   "duration_ms": 60,
+   "duration_ms": 62,
    "counts": {
     "pass": 8,
     "fail": 0,
@@ -4345,12 +4720,12 @@
   }
  ],
  "totals": {
-  "pass": 959,
+  "pass": 1037,
   "fail": 0,
-  "xfail": 10,
+  "xfail": 16,
   "xpass": 0
  },
- "total": 969,
+ "total": 1053,
  "ok": true,
  "attention": [],
  "known_issues": [
@@ -4391,6 +4766,31 @@
   },
   {
    "status": "xfail",
+   "project": "hashx",
+   "desc": "a C++ consumer can declare its own abi label and still use a C library  [F-028]"
+  },
+  {
+   "status": "xfail",
+   "project": "hashx",
+   "desc": "a dependency entry that names two sources is refused  [F-029]"
+  },
+  {
+   "status": "xfail",
+   "project": "hashx",
+   "desc": "the same holds when the two sources are a path and a version  [F-029]"
+  },
+  {
+   "status": "xfail",
+   "project": "hashx",
+   "desc": "moving the manifest version alone is noticed  [F-030]"
+  },
+  {
+   "status": "xfail",
+   "project": "httpd",
+   "desc": "and a package that ends up with two implementations of one interface says so  [F-031]"
+  },
+  {
+   "status": "xfail",
    "project": "jsonfmt",
    "desc": "a forwarded feature does not split the build directory in two  [F-023]"
   },
@@ -4403,6 +4803,11 @@
    "status": "xfail",
    "project": "jsonfmt",
    "desc": "building one target does not make the next full build redo work  [F-024]"
+  },
+  {
+   "status": "xfail",
+   "project": "plot",
+   "desc": "a manifest that can select two exclusive backends at once is refused  [F-031]"
   }
  ]
 }
