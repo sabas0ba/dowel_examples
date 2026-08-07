@@ -1,0 +1,34 @@
+# 見せる側。窓を開く実装とファイルへ書く実装があり、選ばれた側だけが
+# 翻訳される。`#ifdef` で1つのファイルに詰め込むと、選ばれなかった側は
+# 二度と翻訳されず、壊れても気づけない。
+#
+# 選び方は `match` である。`when` を2つ並べる書き方——
+#
+#     file("src/shell_x11.c")      when feature.x11,
+#     file("src/shell_headless.c") when feature.headless,
+#
+# ——は排他にならない。機能は加算であり、`--features=x11` は既定を落とさ
+# ないため、両方が立った瞬間に両方が翻訳される（docs/10-findings.md F-031）。
+# `match` なら、真偽どちらでも選ばれるのは1つだけである。
+#
+# GUI で機械にかけられるのは、ここより下（描画）である。ここから上は
+# 「窓が開いたか」であり、それは Xvfb の上で走らせて確かめる。
+[bin.plot]
+sources = [
+    file("src/main.c"),
+    match feature.x11 {
+        true  => file("src/shell_x11.c"),
+        false => file("src/shell_headless.c"),
+    },
+]
+
+[bin.plot.private]
+deps  = [
+    dep("plot-core"),
+    dep("x11") when feature.x11,
+]
+flags = [
+    "-std=gnu11", "-Wall", "-Wextra",
+    "-fsanitize=address,undefined" when feature.sanitize,
+]
+abi   = "gnu11"

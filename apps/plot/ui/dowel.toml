@@ -1,0 +1,22 @@
+[package]
+name    = "plot"
+version = "0.2.0"
+edition = "2026"
+
+[features]
+# 既定は窓を開かない。描いたものをファイルへ書く。
+default  = []
+# 窓を開く側。同名の optional 依存を有効にする。
+x11      = []
+# 検査用。ライブラリ側も同じ計装で組む必要があるため転送する。
+sanitize = ["plot-core/sanitize"]
+
+[[dependencies]]
+name = "plot-core"
+path = "../core"
+
+# 窓を開くときだけ要る。x11 の機能を立てたときに現れる。
+[[dependencies]]
+name     = "x11"
+version  = "1.6"
+optional = true

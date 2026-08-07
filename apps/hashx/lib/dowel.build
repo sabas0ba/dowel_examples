@@ -1,0 +1,32 @@
+# 配ることを前提にしたライブラリ。利用者は別のパッケージであり、C からも
+# C++ からも呼ぶ。したがって見出しは `extern "C"` を持ち、公開する名前は
+# `hashx_` で始まるものだけである。
+[lib.hashx]
+sources = [
+    file("src/fnv.c"),
+    file("src/crc32.c"),
+    file("src/version.c"),
+]
+
+[lib.hashx.public]
+includes = [dir("include")]
+abi      = "gnu11"
+
+[lib.hashx.private]
+includes = [dir("src")]
+# 既定で隠し、公開する名前にだけ属性で印を付ける。ライブラリの面を
+# 「書いたつもり」ではなく成果物の側で決めるための指定である。
+flags    = [
+    "-std=gnu11", "-Wall", "-Wextra", "-Werror=missing-prototypes",
+    "-fvisibility=hidden",
+]
+defines  = { HASHX_SMALL_TABLE = 1 } when feature.small
+
+[test.unit]
+sources = [file("../tests/unit.c")]
+
+[test.unit.private]
+deps     = [target("hashx")]
+includes = [dir("src")]
+flags    = ["-std=gnu11"]
+abi      = "gnu11"

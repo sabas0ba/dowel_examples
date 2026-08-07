@@ -11,7 +11,8 @@ F-018 / F-019 / F-021 は `af7d391` で修正された。F-008 はさらに `9ed
 ものを消すと、退行したときに気づけない。
 
 未修正は F-020 の残っている側（検査の道具）、F-022 / F-023 / F-024 /
-F-025 / F-026 / F-027、および F-011 の残っている側である。対応する検査は
+F-025 / F-026 / F-027 / F-028 / F-029 / F-030 / F-031、および F-011 の
+残っている側である。対応する検査は
 `known_issue` を付けてあり、本体が直すと `XPASS` になって落ちる。
 
 各項目は次の形で記録する。
@@ -53,6 +54,10 @@ F-025 / F-026 / F-027、および F-011 の残っている側である。対応�
 | [F-025](#f-025) | `link_flags` からパッケージ相対のファイルを指せない | 実装 | [#70](https://github.com/sabas0ba/dowel/issues/70) | 未修正 |
 | [F-026](#f-026) | パッケージが対象とする triple を宣言できない | 要望 | [#71](https://github.com/sabas0ba/dowel/issues/71) | 未修正 |
 | [F-027](#f-027) | `dowel.toml` に置いた `[runner.<triple>]` が黙って無視される | 実装 | [#74](https://github.com/sabas0ba/dowel/issues/74) | 未修正 |
+| [F-028](#f-028) | `abi` の `must_equal` により、C のライブラリを C++ から使えない | 実装／設計 | [#78](https://github.com/sabas0ba/dowel/issues/78) | 未修正 |
+| [F-029](#f-029) | 依存が出所を2つ名乗っても無診断で受理され、黙って `path` が勝つ | 実装 | [#79](https://github.com/sabas0ba/dowel/issues/79) | 未修正 |
+| [F-030](#f-030) | パッケージの `version` を翻訳へ届ける手立てが無い | 要望 | [#80](https://github.com/sabas0ba/dowel/issues/80) | 未修正 |
+| [F-031](#f-031) | 排他な機能を宣言できず、`lib` では黙って片方の実装が勝つ | 要望 | [#82](https://github.com/sabas0ba/dowel/issues/82) | 未修正 |
 
 ---
 
@@ -2275,6 +2280,310 @@ known_issue F-027 である。
 
 ---
 
+## F-028
+
+報告先: [sabas0ba/dowel#78](https://github.com/sabas0ba/dowel/issues/78)
+
+**`abi` の併合規則は `must_equal` である。C のライブラリと C++ の利用者は
+正しく書けば違う札になるが、違う札は拒まれる。C++ の利用者は自分の言語では
+なくライブラリの札を書き写すしかない。**
+
+種別: 実装／設計。未修正（`af7d391`）。`apps/hashx` を配ろうとして踏んだ。
+
+### 観測
+
+C のライブラリ（見出しは `extern "C"`）と、それを使う C++ の実行ファイル。
+
+```
+[lib.hashx.public]   abi = "gnu11"
+[bin.hashcxx.private] abi = "gnu++17"     # 本当の言語
+```
+
+```console
+$ dowel -C cxxtool build
+error[abi-mismatch]: `abi` does not match: "gnu++17" vs "gnu11"
+    = note: the merge rule of `abi` is must_equal. a mismatch fails instead of propagating
+```
+
+`abi = "gnu11"` と書き写せば通り、走る。C の利用者と C++ の利用者は同じ書庫
+から同じ答を得る。
+
+### 期待
+
+`extern "C"` の面しか持たないライブラリを、どの言語の利用者とも繋げられる
+ようにする。境界を指す札（`abi = "c"`）か、札に両立の規則を持たせるか。
+
+根拠は `docs/13-semantics.md`。
+
+> This is the whole ABI check today: `abi` labels are compared before
+> linking, turning a would-be runtime ODR breakage into a build failure
+
+ODR 違反は C++ の同じ実体が違う定義で現れることであり、**`extern "C"` の
+境界を跨いだ呼び出しには起きない**。多重定義もテンプレートも名前の飾りも
+無いためである。
+
+回避策が「利用者が札を書き写す」ことなので、**札が意味を失う**点が重い。
+`gnu11` と書いた C++ の目標が増えると、札は「本当の ABI」ではなく「この
+ライブラリを使う組」を表す名前に変わる。ABI 検査を中心に据える設計にとって
+それは看板の毀損である。
+
+配る側の視点ではもう一段厄介で、ライブラリの作者は利用者を知らない。札を
+1つ決めることは、**すべての利用者にその札を強制する**ことである。
+
+`docs/90-roadmap.md` 第6段の「ABI ラベルの計算」が入ったとき、C のライブラリと
+C++ の利用者が非互換と判定されないことが要る。今回の形はその最小の例である。
+
+### なぜ内側から見つからないか
+
+本体のフィクスチャで C と C++ が混ざるのは、同じパッケージの中か、札を
+揃えて書いた木である。揃えるのが自然な書き方なので、揃えない理由が生じない。
+
+揃えない理由は**ライブラリを配ること**から来る。作者は利用者の言語を知らず、
+利用者は自分の言語を書きたい。この非対称が入力に現れて初めて見える。
+
+### 検査
+
+`apps/hashx` の
+`a C++ consumer can declare its own abi label and still use a C library`。
+known_issue F-028 である。
+
+現状は通常の検査として記録してある。
+
+- `instead the two labels are compared and the build is refused`
+- `the refusal comes with a diagnostic code and both provenances`
+- `writing the library's label into the consumer builds again`
+- `and the C++ consumer gets the same answer from the same archive`
+
+---
+
+## F-029
+
+報告先: [sabas0ba/dowel#79](https://github.com/sabas0ba/dowel/issues/79)
+
+**`[[dependencies]]` の1つの項目が `path` と `git`（や `version`）の両方を
+名乗っても、診断が1件も出ない。実際には `path` が使われ、もう一方は読まれも
+しない。**
+
+種別: 実装。未修正（`af7d391`）。ライブラリの出所を切り替えていて踏んだ。
+
+### 観測
+
+```toml
+[[dependencies]]
+name = "hashx"
+path = "../lib"
+git  = "https://example.invalid/hashx"
+rev  = "<40 桁の sha>"
+```
+
+```console
+$ dowel check
+check passed: 2 packages, 3 targets     # 無診断
+$ dowel build
+built: .../bin/hashsum                  # ../lib から組まれている
+```
+
+`git` の宛先は解決できない TLD だが、取りに行かないため何も起きない。
+`path` + `version` も同じで、pkg-config は引かれず版の下限も見られない。
+
+`git` を単独で書いて `rev` を欠かすと `unpinned-dependency` で拒まれる。
+出所キーの検査そのものは在って、**組み合わせだけが見られていない**。
+
+### 期待
+
+2つ以上の出所を名乗る項目を拒む。`incomplete-dependency` の対である。
+`docs/11-toml-reference.md` は反対側にだけ規則を置いている。
+
+> An entry with none of `path` / `git` / `version` is `incomplete-dependency`.
+
+0個は拒み、2個は黙って受ける、という非対称になっている。
+
+根拠は `docs/00-overview.md` 2節の「記録されない入力を排除する」。書いた宣言
+のうち片方が読まれておらず、どちらが使われたのかがマニフェストから読めない。
+
+### なぜ踏みやすいか
+
+ライブラリの出所は開発の途中で変わる。手元で直しながら使う（`path`）から、
+固まって配る（`git` + `rev`）への切り替えは「片方を消してもう片方を書く」
+操作であり、消し忘れは普通に起きる。とくに path → git の向きでは、手元に
+その木があるので組めてしまう。**気づくのは、その木を持たない誰かが組んだとき**
+である。
+
+### なぜ内側から見つからないか
+
+本体のフィクスチャは出所を1つ書いたものを入力にする。0個が検査されているのは
+それが「書き忘れ」という自然な失敗だからで、2個は「切り替えの途中」という
+**時間のかかる失敗**である。単一の木を1回組む検査では、その途中が現れない。
+
+### 検査
+
+`apps/hashx` の `a dependency entry that names two sources is refused` と
+`the same holds when the two sources are a path and a version`。
+どちらも known_issue F-029 である。
+
+現状と、反対側の規則が在ることを通常の検査として置いてある。
+
+- `instead the local path silently wins and the unreachable git source is never touched`
+- `a dependency entry that names no source at all is refused`
+
+---
+
+## F-030
+
+報告先: [sabas0ba/dowel#80](https://github.com/sabas0ba/dowel/issues/80)
+
+**パッケージの `version` を翻訳へ届ける手立てが無い。ライブラリの版は
+`dowel.toml` と公開する見出しに別々に書かれ、一致は誰も見ていない。**
+
+種別: 要望。未修正（`af7d391`）。F-028 / F-029 と同じ層で踏んだ。
+
+### 観測
+
+```console
+$ sed -i 's/version = "0.4.0"/version = "9.9.9"/' dowel.toml
+$ dowel build --message-format=json | jq -r '.code'
+                                   # 何も出ない
+$ ./hashsum --version
+hashsum (hashx 0.4.0)              # 見出しの値のまま
+```
+
+利用者が `dowel.toml` を見て 9.9.9 だと判断し、実行時には 0.4.0 が返る、
+という食い違いが黙って成立する。
+
+`defines` に書こうにも参照できる語彙が無い（`docs/12-build-reference.md`
+3節）。`cfg.opt` / `cfg.target` / `host.*` / `feature.*` / `tc.*` のどれも
+パッケージの情報を持たない。文字列の連結が無いのは意図された設計
+（ADR-0004）なので、組み立てる回避もできない。
+
+### 期待
+
+パッケージの情報を `cfg` と同じ形で参照できるようにする。
+
+```toml
+defines = { HASHX_VERSION = pkg.version }
+```
+
+`version` は `dowel.toml` に既にあり、評価の前に確定している値である。
+根拠は `docs/00-overview.md` 2節の「記録されない入力を排除する」。今は同じ
+事実が2か所に別々に記録されていて、一致は誰も見ていない。
+
+### なぜ内側から見つからないか
+
+`[package] version` は依存の解決（pkg-config の下限、`dowel.lock`）で使われる
+が、**自分自身の版を自分の成果物へ埋める**用途は、ライブラリを配る側になって
+初めて生じる。利用する側の検査では、版はいつも「相手の版」である。
+
+### 検査
+
+`apps/hashx` の `moving the manifest version alone is noticed`。
+known_issue F-030 である。
+
+現状は通常の検査として記録してある。
+
+- `the version in the manifest and the one in the header agree today`
+  （本スイートが2か所を突き合わせている。本来は木の側で保証されてほしい）
+- `and the artifact keeps reporting the version written in the header`
+
+---
+
+## F-031
+
+報告先: [sabas0ba/dowel#82](https://github.com/sabas0ba/dowel/issues/82)
+
+**排他な機能を宣言できない。`when` を並べて実装を選ぶ木は、両方の機能が
+立つと両方を翻訳する。そこから先は目標の種別で分かれ、`bin` ではリンカが
+落とし、`lib` では黙って片方が勝つ。**
+
+種別: 要望。未修正（`af7d391`）。`apps/plot` で描画のバックエンドを選ぼうと
+して踏んだ。
+
+正しい書き方はある。`match feature.x { true => a, false => b }` なら選ばれる
+のは常に1つである。所見にしたのは、**間違えたときに何も言われない**ことと、
+その結果が目標の種別で2通りに分かれることについてである。
+
+### 観測
+
+```toml
+# B: when を2つ並べる（排他にならない）
+sources = [
+    file("src/shell_x11.c")      when feature.x11,
+    file("src/shell_headless.c") when feature.headless,
+]
+```
+
+機能は加算である。`--features=x11` は `default = ["headless"]` を落とさない
+ため、両方が立ち、両方が翻訳される。
+
+**`bin` に直に並べた場合** — `check` は通り、リンカが落とす。
+
+```console
+$ dowel check --features=x11
+check passed: 4 packages, 5 targets
+$ dowel build --features=x11
+/usr/bin/ld: multiple definition of `shell_show'
+```
+
+利用者が見るのはリンカの苦情であり、dowel からの診断は1件も出ない。
+
+**`lib` に入れた場合** — 組み上がる。
+
+```console
+$ dowel build --features=epoll        # default = ["poll"] を落とし忘れた
+built: .../debug-epoll+poll/bin/httpd
+$ ./httpd --waiter
+epoll sequential                      # poll の側は死んだ翻訳単位になった
+```
+
+両方の目的ファイルが同じ書庫に入り、リンカは記号を最初に満たした部材だけを
+引く。`sources` の並び順を入れ替えても結果は変わらないので、**どちらが
+生き残るかをマニフェスト側から決める手立ても無い。**
+
+組み上がり、テストも通り（片方しか走っていないだけである）、成果物だけが
+頼んだのと違うものになる。こちらの方が危ない。
+
+### 期待
+
+排他を宣言できるようにする。
+
+```toml
+[features]
+exclusive = [["headless", "x11"]]     # この2つは同時に立てない
+```
+
+あるいは最低限、`docs/12-build-reference.md` の `when` の説明に「実装の択一
+には `match` を使う。`when` を並べても排他にはならない」と書く。
+
+根拠は `docs/00-overview.md` 2節の「記録されない入力を排除する」。`lib` の
+場合、**どちらの実装が成果物に入ったかが記録のどこにも無い**。リンカの解決順
+という、マニフェストからは見えないものが決めている。
+
+### なぜ内側から見つからないか
+
+条件付きソースの検査は、その機能だけを立てて確かめる（`--no-default-features
+--features=x` の形）。それは正しい使い方であり、正しく動く。問題は正しくない
+使い方をしたときで、しかも `lib` の場合は**失敗として現れない**ため、検査
+項目として立てにくい。「組めたが中身が違う」を捕まえるには、成果物に実装を
+名乗らせる仕掛け（`--waiter` のような）が要る。
+
+### 検査
+
+`bin` の側は `apps/plot` の
+`a manifest that can select two exclusive backends at once is refused`、
+`lib` の側は `apps/httpd` の
+`and a package that ends up with two implementations of one interface says so`。
+どちらも known_issue F-031 である。
+
+現状は通常の検査として記録してある。
+
+- `with two whens, asking for one backend compiles both`
+- `instead the linker reports multiple definition, with nothing from dowel`
+- `written as a match, the same flag selects exactly one`
+- `forgetting to drop the defaults compiles both waiters`
+- `instead the build succeeds, because a static archive keeps only the first definition`
+- `and the artifact carries whichever the linker reached first`
+
+---
+
 ## 所見に至らなかったもの
 
 報告しないが、記録しておく。
@@ -2285,3 +2594,10 @@ known_issue F-027 である。
 - **`compile_commands.json` をパッケージ直下にも書く** — 言語サーバのための
   意図的な配置と読める。`.gitignore` への記載が要る点は利用者側の話であり、
   本体の欠陥ではない
+- **共有オブジェクトを作れず、dowel を使わない相手へ渡す形も出ない** —
+  `apps/hashx` で踏んだ。`lib` は静的な書庫だけであり、`.so` も `.pc` も
+  CMake の設定も出ない。ただし `docs/90-roadmap.md` は第3段に「CMake の
+  `find_package` 設定を出す」、第6段に「書き出し対象（C ABI / CPython
+  拡張ほか）」を既に載せている。報告しても重なるだけなので、現状の記録に
+  留めた（`what a build produces today is one static archive and nothing a
+  foreign consumer could read`）
