@@ -38,10 +38,10 @@ TOP=$PWD/tree/chain/top
 # 引き継がれない（docs/10-findings.md F-014）。
 RAN=0; SKIPPED=0
 counts() {
-    OUT=$("$DOWEL" -C "$1" build --executor=direct --log-level=debug 2>&1)
+    OUT=$("$DOWEL" -C "$1" build --backend=direct --log-level=debug 2>&1)
     RC=$?
-    _last_cmd="dowel -C $(basename "$1") build --executor=direct"
-    RAN=$(printf '%s' "$OUT" | sed -n 's/.*ran \([0-9]*\) actions.*/\1/p' | tail -1)
+    _last_cmd="dowel -C $(basename "$1") build --backend=direct"
+    RAN=$(printf '%s' "$OUT" | sed -n 's/.*ran \([0-9]*\) steps.*/\1/p' | tail -1)
     SKIPPED=$(printf '%s' "$OUT" | sed -n 's/.*skipped \([0-9]*\) already.*/\1/p' | tail -1)
     : "${RAN:=-1}" "${SKIPPED:=-1}"
 }

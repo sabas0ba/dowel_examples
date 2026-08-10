@@ -1,8 +1,7 @@
 # C++ の利用者。C のライブラリを配る以上、これが繋がらなければ意味が無い。
 #
-# `abi` は must_equal である。ここに本当の言語（"gnu++17"）を書くと
-# abi-mismatch で落ちるため、ライブラリ側の値をそのまま書き写している
-# （docs/10-findings.md F-028）。
+# 自分の言語を書く。ライブラリの面は `abi = "c"` を名乗っており、
+# C ABI の境界はどの札とも合う（docs/10-findings.md F-028）。
 [bin.hashcxx]
 sources = [file("src/main.cpp")]
 
@@ -10,4 +9,4 @@ sources = [file("src/main.cpp")]
 deps      = [dep("hashx")]
 flags     = ["-Wall", "-Wextra"]
 cxx_flags = ["-std=gnu++17"]
-abi       = "gnu11"
+abi       = "gnu++17"

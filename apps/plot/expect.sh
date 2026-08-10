@@ -39,14 +39,14 @@ needed() {
 # link_args [dowel args...] — plot のリンク引数。
 link_args() {
     "$DOWEL" -C ui graph --kind=action --format=json "$@" 2>/dev/null |
-        jq -r '.actions[] | select(.kind == "link" and (.target | test("plot:plot")))
-               | .command | join(" ")'
+        jq -r '.steps[] | select(.kind == "link" and (.target | test("plot:plot")))
+               | ([.program] + .arguments) | join(" ")'
 }
 
 # shells [dowel args...] — 翻訳された shell_*.c の名前。
 shells() {
     "$DOWEL" -C ui graph --kind=action --format=json "$@" 2>/dev/null |
-        jq -r '.actions[] | select(.kind == "cc") | .command[]' |
+        jq -r '.steps[] | select(.kind == "cc") | ([.program] + .arguments)[]' |
         grep -o 'shell_[a-z0-9]*\.c' | sort -u | paste -sd' ' -
 }
 
@@ -95,8 +95,8 @@ printf '%s' "$OUT" | grep -q -- '-lcairo'
 fact $? "the system library the drawing package uses reaches the link of the shell"
 
 got=$("$DOWEL" -C ui graph --kind=action --format=json 2>/dev/null |
-      jq -r '.actions[] | select(.kind == "cc" and (.target | test("plot:plot")))
-             | .command | join(" ")')
+      jq -r '.steps[] | select(.kind == "cc" and (.target | test("plot:plot")))
+             | ([.program] + .arguments) | join(" ")')
 _last_cmd="cc_args plot:plot"; OUT="$got"; RC=0
 ! printf '%s' "$got" | grep -q 'include/cairo'
 fact $? "but its headers do not, because the dependency was declared private"
@@ -120,8 +120,8 @@ fact $v "with the mechanism that resolved it"
 # それは配布先の前提を1つ増やしたということである。GUI のアプリでは、
 # 「表示の無い機械でも動く版」が要ることは珍しくない。
 
-hl=$(plot '-debug')
-x=$(plot '-debug-x11')
+hl=$(plot '-debug-plot--headless')
+x=$(plot '-debug-plot--x11')
 
 got=$(needed "$hl")
 ! printf '%s' "$got" | grep -q 'libX11'
@@ -172,68 +172,39 @@ got=$("$x" --shell 2>&1)
 v=$?; RC=0; _last_cmd="plot --shell   # --features=x11"; OUT="said: ${got:-(nothing)}"
 fact $v "and the windowed artifact says the other one"
 
-# ------------------------------------------------------------ 3.5 排他の書き方 (F-031)
+# ------------------------------------------------------------ 3.5 排他の宣言 (F-031)
 #
-# 実装を選ぶ書き方は2つある。同じことを言っているように見えて、片方は
-# 排他にならない。
+# 見せ方は択一である。機能は加算なので、`--features=x11` は既定の
+# `headless` を落とさない。両方立った木は組み上がってはならない。
 #
-#   match feature.x11 { true => a, false => b }              選ばれるのは常に1つ
-#   file(a) when feature.x11, file(b) when feature.headless  両方立てば両方
-#
-# 機能は加算である。`--features=x11` は既定の機能を落とさないため、後者では
-# **両方が翻訳される**状態が、ごく普通の打ち間違いから生じる。
+# 以前は宣言する場所が無く、`bin` ではリンカの `multiple definition`、
+# `lib` では**黙って片方が勝つ**という形で現れた。F-031 / #82 として報告し、
+# `exclusive` が入った。
 
-cp ui/dowel.build ui/dowel.build.keep
-cp ui/dowel.toml  ui/dowel.toml.keep
-python3 - <<'REWRITE'
-p = "ui/dowel.build"
-t = open(p, encoding="utf-8").read()
-t = t.replace("""    match feature.x11 {
-        true  => file("src/shell_x11.c"),
-        false => file("src/shell_headless.c"),
-    },""",
-"""    file("src/shell_x11.c")      when feature.x11,
-    file("src/shell_headless.c") when feature.headless,""")
-open(p, "w", encoding="utf-8").write(t)
-
-p = "ui/dowel.toml"
-t = open(p, encoding="utf-8").read()
-t = t.replace("default  = []", 'default  = ["headless"]\nheadless = []')
-open(p, "w", encoding="utf-8").write(t)
-REWRITE
-
-# `--features=x11` は既定を落とさない。両方が立つ。
-got=$(shells --features=x11)
-[ "$got" = "shell_headless.c shell_x11.c" ]
-v=$?; RC=0; _last_cmd="graph ... --features=x11   # when を2つ並べた書き方"
-OUT="compiled: ${got:-(none)}"
-fact $v "with two whens, asking for one backend compiles both"
-
-OUT=$(json_diags -C ui check --features=x11)
+_last_cmd="grep exclusive ui/dowel.toml"
+OUT=$(grep -n 'exclusive' ui/dowel.toml)
 RC=0
-printf '%s' "$OUT" | jq -e '.code' >/dev/null 2>&1
-verdict=$?
-_last_cmd="dowel -C ui check --features=x11   # when を2つ並べた書き方"
-known_issue F-031
-fact $verdict "a manifest that can select two exclusive backends at once is refused"
+[ -n "$OUT" ]
+fact $? "a package can declare which of its features are exclusive"
 
-run -C ui build --no-compdb --features=x11
+diag conflicting-features "and asking for both at once is refused" \
+    -C ui check --features=x11
+
+run -C ui check --features=x11
 said=$OUT
-_last_cmd="dowel -C ui build --features=x11"; OUT="$said"; RC=0
-printf '%s' "$said" | grep -q 'multiple definition'
-fact $? "instead the linker reports multiple definition, with nothing from dowel"
+_last_cmd="dowel -C ui check --features=x11"; OUT="$said"; RC=0
+printf '%s' "$said" | grep -q 'comes from `default`'
+fact $? "the diagnostic says the other one came from default, which is the usual cause"
 
-mv ui/dowel.build.keep ui/dowel.build
-mv ui/dowel.toml.keep  ui/dowel.toml
+ok "dropping the defaults and asking for one builds" \
+    -C ui check --no-default-features --features=x11
 
-# 正しい書き方では、旗をどちらに倒しても選ばれるのは1つである。
-got=$(shells --features=x11)
+# 択一が守られているので、翻訳される見せ方は常に1つである。
+got=$(shells --no-default-features --features=x11)
 [ "$got" = "shell_x11.c" ]
-v=$?; RC=0; _last_cmd="graph ... --features=x11   # match で書いた"
+v=$?; RC=0; _last_cmd="graph ... --no-default-features --features=x11"
 OUT="compiled: ${got:-(none)}"
-fact $v "written as a match, the same flag selects exactly one"
-
-ok "and the build that follows links" -C ui build --no-compdb --features=x11
+fact $v "and exactly one shell is compiled, whichever way the flag goes"
 
 # ------------------------------------------------------------ 4. 描いたものを読み返す
 #
@@ -317,7 +288,7 @@ rm -f headless.ppm
 ok "the instrumented configuration builds" -C ui build --no-compdb --features=sanitize
 ok "and its tests pass"                    -C core test --features=sanitize
 
-hs=$(plot 'sanitize')
+hs=$(plot 'plot--sanitize')
 report=$(PLOT="$hs" python3 - <<'PY' 2>&1
 import os, subprocess
 
@@ -363,7 +334,7 @@ fact $v "awkward sizes and values are refused or drawn, never crash the renderer
 ok "the windowed configuration builds instrumented too" \
     -C ui build --no-compdb --no-default-features --features=x11,sanitize
 
-xs=$(plot 'sanitize+x11')
+xs=$(plot 'plot--sanitize+plot--x11')
 on_display "$xs" --size 32x16
 said=$SAID
 [ "$RC" -eq 0 ]

@@ -6,25 +6,25 @@ sources = [file("tests/t1.c")]
 
 [test.t1.private]
 includes = [dir("include")]
-defines  = { RUN_DIR = "\"run\"" }
+defines  = { RUN_DIR = "run" }
 
 [test.t2]
 sources = [file("tests/t2.c")]
 
 [test.t2.private]
 includes = [dir("include")]
-defines  = { RUN_DIR = "\"run\"" }
+defines  = { RUN_DIR = "run" }
 
 [test.t3]
 sources = [file("tests/t3.c")]
 
 [test.t3.private]
 includes = [dir("include")]
-defines  = { RUN_DIR = "\"run\"" }
+defines  = { RUN_DIR = "run" }
 
 [test.t4]
 sources = [file("tests/t4.c")]
 
 [test.t4.private]
 includes = [dir("include")]
-defines  = { RUN_DIR = "\"run\"" }
+defines  = { RUN_DIR = "run" }

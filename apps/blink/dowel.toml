@@ -2,6 +2,9 @@
 name    = "blink"
 version = "0.1.0"
 edition = "2026"
+# この木はホスト向けではない。宣言しておくと、--target を付け忘れたときに
+# フラグについての苦情ではなく `unsupported-target` が返る。
+targets = ["thumbv7em-none-eabihf"]
 
 # ベアメタルの対象。OS を持たない triple であり、libc も起動コードも無い。
 #

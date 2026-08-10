@@ -57,17 +57,18 @@ on_hardware() {
     return 0
 }
 
-# with_script <道> — link_flags に -T を足す。空なら外す。
+# with_script <道> — link_flags の -T を張り替える。空なら外す。
+# 既定の木は指してある。外すのは「指さないと何が起きるか」を見るためだけ。
 with_script() {
     python3 - "${1:-}" <<'PY'
 import re, sys
 p = "dowel.build"
 t = open(p, encoding="utf-8").read()
-t = re.sub(r'\n *"-T", "[^"]*",', "", t)
+t = re.sub(r'\n *"-T", file\("[^"]*"\),', "", t)
 if sys.argv[1]:
     # bin と test の両方に効かせる。書き方が違うため綴りを短く取る。
     t = t.replace('"-Wl,-e,_reset",',
-                  '"-Wl,-e,_reset",\n    "-T", "%s",' % sys.argv[1])
+                  '"-Wl,-e,_reset",\n    "-T", file("%s"),' % sys.argv[1])
 open(p, "w", encoding="utf-8").write(t)
 PY
 }
@@ -122,38 +123,46 @@ fact $v "the vector table survives into the artifact although nothing calls it"
 
 # ------------------------------------------------------------ 3. 対象の宣言 (F-026)
 #
-# 道具は3つとも宣言してあるが、宣言してあるのは1つの triple に対してだけで
-# ある。ホストには既定があるため、`--target` を付け忘れてもホスト向けの
-# 計画が立つ。ベアメタルの木にホストの構成は存在しないので、そこから先は
-# 運任せになる。
+# ベアメタルの木にホストの構成は存在しない。`targets` を宣言しておくと、
+# `--target` を付け忘れたときに**パッケージの側が断る**。
 #
-#   - フラグがホストのコンパイラに通らなければ、翻訳の誤りとして落ちる。
-#     利用者が見るのは `unrecognized command-line option '-mthumb'` であり、
-#     「この木はホスト向けではない」とはどこにも書かれていない
-#   - フラグがたまたま通れば、**黙ってホストの成果物ができる**。像まで
-#     ホストの objcopy が作る（この形は #71 に記録した）
-#
-# どちらも dowel は何も言わない。
+# 宣言が無かった頃は、そこから先が運任せだった。フラグがホストのコンパイラに
+# 通らなければ翻訳の誤りとして落ち（利用者が見るのは `unrecognized
+# command-line option '-mthumb'` であり、この木がホスト向けでないとは
+# どこにも書かれていない）、たまたま通れば黙ってホストの成果物ができた。
+# F-026 / #71 として報告し、`targets` が入った。
+
+grep -q '^targets' dowel.toml
+v=$?
+RC=0; _last_cmd="grep '^targets' dowel.toml"; OUT="$(sed -n '1,10p' dowel.toml)"
+fact $v "a package can say which targets it is for"
 
 run build --no-compdb
 said=$OUT
 [ "$RC" -ne 0 ]
-fact $? "leaving out --target is refused, but by the host compiler"
+fact $? "and leaving out --target is refused"
+
+diag unsupported-target "by the package itself, with a diagnostic of its own" \
+    build --no-compdb
 
 _last_cmd="dowel build  # --target 無し"; OUT="$said"; RC=0
+printf '%s' "$said" | grep -q 'unsupported-target'
+fact $? "the message is about the package's targets, not about a flag"
+
+_last_cmd="dowel build  # --target 無し"; OUT="$said"; RC=0
+! printf '%s' "$said" | grep -q "unrecognized command-line option"
+fact $? "and the host compiler is never reached"
+
+# 宣言を外すと、以前の形に戻る。断っているのが `targets` であることを、
+# 外して確かめる。
+cp dowel.toml dowel.toml.keep
+sed -i '/^targets/d' dowel.toml
+run build --no-compdb
+said=$OUT
+_last_cmd="dowel build  # targets を外した"; OUT="$said"; RC=0
 printf '%s' "$said" | grep -q "unrecognized command-line option"
-fact $? "the message is about a flag, not about the package's targets"
-
-OUT=$(json_diags build --no-compdb)
-RC=0
-[ -z "$(printf '%s' "$OUT" | jq -r '.code' 2>/dev/null)" ]
-fact $? "and dowel emits no diagnostic of its own about the target"
-
-grep -q '^targets' dowel.toml
-verdict=$?
-RC=0; _last_cmd="grep '^targets' dowel.toml"; OUT="$(sed -n '1,12p' dowel.toml)"
-known_issue F-026
-fact $verdict "a package can say which targets it is for"
+fact $? "without the declaration the host compiler is what complains"
+mv dowel.toml.keep dowel.toml
 
 rm -rf .dowel/build/x86_64-unknown-linux-gnu-debug
 "$DOWEL" build --no-compdb --target=$TRIPLE >/dev/null 2>&1
@@ -174,7 +183,7 @@ head -1 "$B/firmware.hex" 2>/dev/null | grep -q '^:'
 fact $? "the hex image is in the format the entry asked for"
 
 cmd=$("$DOWEL" graph --kind=action --format=json --target=$TRIPLE 2>/dev/null |
-      jq -r '.actions[] | select(.kind == "transform") | .command[0]' | head -1)
+      jq -r '.steps[] | select(.kind == "transform") | .program' | head -1)
 [ "$cmd" = "arm-none-eabi-objcopy" ]
 v=$?; RC=0; _last_cmd="graph --kind=action | select(.kind==\"transform\")"
 OUT="tool: ${cmd:-(none)}"
@@ -182,52 +191,25 @@ fact $v "the image is made by the objcopy declared for the triple"
 
 # ------------------------------------------------------------ 5. リンカスクリプト (F-025)
 #
-# ベアメタルでは記憶の配置を自分で決める。`ld/<triple>.ld` を木の中に
-# 置いてあるが、`link_flags` は List<Str> であり file() を受けない。フラグの
-# 中の相対パスはビルドディレクトリ基準で解決されるため、どう書いても届かない。
+# ベアメタルでは記憶の配置を自分で決める。`link_flags` は `List<Str | Path>`
+# であり、`file()` の要素は絶対パスへ展開される。したがって木の中の
+# `ld/<triple>.ld` をそのまま指せる。
+#
+# 指せなかった頃は、この1点で組み込みの構成がマニフェストに書けなかった。
+# F-025 / #70 として報告し、`Path` を受けるようになった。実害が置き場所では
+# なく**起動しないこと**に出るのは、下で外して確かめている。
 
-# 配置を決めないと、既定のリンカスクリプトが選んだ番地に載る。
-# この部品の flash は 0x08000000 から始まるので、そこは flash ではない。
-addr=$(first_load)
-[ "$addr" = "0x00008000" ]
-v=$?; RC=0; _last_cmd="readelf -l $B/firmware | grep LOAD"
-OUT="first LOAD at: ${addr:-?}  (the vector table must sit at 0x00000000)"
-fact $v "without a script the image is placed where the vector table cannot be"
-
-# そして実際に起動しない。ここが実害である。
-on_hardware
-[ "$RC" -eq 0 ]
-verdict=$?
-OUT="$SAID"; RC=0
-known_issue F-025
-fact $verdict "the firmware runs on emulated hardware"
-
-printf '%s' "$SAID" | grep -q 'Lockup'
-fact $? "instead the processor locks up at reset, having read no vector table"
-
-with_script "$LD"
-run build --no-compdb --target=$TRIPLE
-said=$OUT
-[ "$RC" -eq 0 ]
-verdict=$?
-_last_cmd="dowel build  # link_flags に -T $LD を足した"
-OUT="$said"; RC=0
-known_issue F-025
-fact $verdict "a linker script inside the package can be named from the manifest"
-
-printf '%s' "$said" | grep -q 'cannot open linker script'
-fact $? "the linker says it cannot open the script, so the path never resolved"
-
-# 絶対パスなら通る。足りないのは道の書き方だけである。
-with_script "$PWD/$LD"
-ok "the same script does work when named by an absolute path" \
-    build --no-compdb --target=$TRIPLE
+grep -q 'file("ld/' dowel.build
+v=$?
+RC=0; _last_cmd="grep 'file(\"ld/' dowel.build"
+OUT="$(grep -n 'file("ld/' dowel.build)"
+fact $v "a linker script inside the package can be named from the manifest"
 
 addr=$(first_load)
 [ "$addr" = "0x00000000" ]
 v=$?; RC=0; _last_cmd="readelf -l $B/firmware | grep LOAD"
 OUT="first LOAD at: ${addr:-?}"
-fact $v "and then the image lands at the start of flash, where it can be programmed"
+fact $v "and the image lands at the start of flash, where it can be programmed"
 
 # そして走る。ベアメタルで「動く」を確かめる唯一の形である。
 on_hardware
@@ -237,6 +219,25 @@ fact $v "and the firmware runs on emulated hardware and its test passes"
 
 printf '%s' "$SAID" | grep -q 'blink: ok'
 fact $? "the firmware reports through semihosting, so the result comes from the device"
+
+# 配置を決めないと何が起きるかを、外して確かめる。既定のリンカスクリプトが
+# 選ぶ番地には何も割り当てられていない。
+with_script ""
+"$DOWEL" build --no-compdb --target=$TRIPLE >/dev/null 2>&1
+addr=$(first_load)
+[ "$addr" = "0x00008000" ]
+v=$?; RC=0; _last_cmd="readelf -l $B/firmware | grep LOAD   # -T を外した"
+OUT="first LOAD at: ${addr:-?}  (the vector table must sit at 0x00000000)"
+fact $v "without the script the image is placed where the vector table cannot be"
+
+on_hardware
+_last_cmd="dowel test --target=$TRIPLE   # -T を外した"
+OUT="$SAID"; RC=0
+printf '%s' "$SAID" | grep -q 'Lockup'
+fact $? "and then the processor locks up at reset, having read no vector table"
+
+with_script "$LD"
+"$DOWEL" build --no-compdb --target=$TRIPLE >/dev/null 2>&1
 
 # ベクタ表が先頭に来ていること。[0] と [1] を実際に読む。
 sp=$(od -An -tx4 -N4 "$B/firmware.bin" 2>/dev/null | tr -d ' ')
@@ -270,7 +271,9 @@ RC=0
 printf '%s' "$OUT" | grep -q '"-kernel"\]'
 fact $? "the runner ends its args with -kernel, and dowel appends the artifact"
 
-# dowel.toml へ移すと黙って無視され、宣言してあるのに missing-runner が出る。
+# dowel.toml へ移すと拒まれる。以前は黙って無視され、宣言してあるのに
+# `missing-runner`（宣言が無い）と言われた。F-027 / #74 として報告し、
+# `dowel.toml` の未知の最上位テーブルが拒まれるようになった。
 cp dowel.build dowel.build.keep
 cp dowel.toml  dowel.toml.keep
 python3 -c '
@@ -281,17 +284,14 @@ i = t.index("\n[runner.thumbv7em")
 open(p, "w", encoding="utf-8").write(t[:i] + "\n")
 open("dowel.toml", "a", encoding="utf-8").write("\n" + t[i:])
 '
-OUT=$(json_diags check --target=$TRIPLE)
-RC=0
-printf '%s' "$OUT" | jq -e '.code' >/dev/null 2>&1
-verdict=$?
-known_issue F-027
-fact $verdict "a runner written into dowel.toml is not silently ignored"
+diag unknown-table "a runner written into dowel.toml is not silently ignored" \
+    check --target=$TRIPLE
 
 run test --target=$TRIPLE
 said=$OUT
-printf '%s' "$said" | grep -q 'missing-runner'
-fact $? "and the failure claims no runner is declared, though one is"
+_last_cmd="dowel test  # runner を dowel.toml へ移した"; OUT="$said"; RC=0
+! printf '%s' "$said" | grep -q 'missing-runner'
+fact $? "and the failure is about the misplaced table, not about a missing declaration"
 
 mv dowel.build.keep dowel.build
 mv dowel.toml.keep  dowel.toml

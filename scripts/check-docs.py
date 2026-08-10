@@ -22,8 +22,19 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # 引用が検査名か、それ以外（パス、診断コード、識別子）かの区別。
 # 検査名は英語の文であり、必ず空白を含む。パスと診断コードは含まない。
+# 検査名は英語の一文である。同じ節にはマニフェストの断片も引用されるため
+# （`abi = "c"`、`[features] exclusive`、`List<Str | Path>`）、それらを
+# 検査名と読み違えないよう、名前には現れない字を持つものを除く。
+_NOT_IN_A_CHECK_NAME = set('<>[]{}="|=')
+
+
 def looks_like_a_check_name(s):
-    return " " in s and "/" not in s and not s.startswith("-")
+    return (
+        " " in s
+        and "/" not in s
+        and not s.startswith("-")
+        and not (_NOT_IN_A_CHECK_NAME & set(s))
+    )
 
 
 def markdown_files():

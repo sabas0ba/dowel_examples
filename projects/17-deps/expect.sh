@@ -44,7 +44,7 @@ shim_path() {
 # link_command <パッケージ> — その木の link アクションの引数（改行区切り）。
 link_command() {
     "$DOWEL" -C "$1" graph --kind=action --format=json 2>/dev/null |
-        jq -r '.actions[] | select(.kind == "link") | .command | join(" ")'
+        jq -r '.steps[] | select(.kind == "link") | ([.program] + .arguments) | join(" ")'
 }
 
 # ------------------------------------------------------------ 1. 解決
@@ -67,7 +67,7 @@ prints "42 42" "the module's cflags and libs both reach the build" \
 args_have_app() {
     _last_cmd="cc_args app:app | grep -F -- $1"
     OUT=$("$DOWEL" -C app graph --kind=action --format=json 2>/dev/null |
-          jq -r '.actions[] | select(.kind == "cc") | .command | join(" ")')
+          jq -r '.steps[] | select(.kind == "cc") | ([.program] + .arguments) | join(" ")')
     RC=0
     printf '%s' "$OUT" | grep -qF -- "$1"; _verdict $? "$2"
 }
@@ -240,7 +240,7 @@ fact $? "the archive of a private system dependency reaches the final link"
 
 # そして、private のままなら見出しは依存元へ漏れない。これは正しい。
 cxx=$("$DOWEL" -C chain/top graph --kind=action --format=json 2>/dev/null |
-      jq -r '.actions[] | select(.kind == "cc" and .target == "top:top") | .command | join(" ")')
+      jq -r '.steps[] | select(.kind == "cc" and .target == "top:top") | ([.program] + .arguments) | join(" ")')
 _last_cmd="cc_args top:top"
 OUT=$cxx
 RC=0
@@ -261,7 +261,7 @@ fact $v "a library that keeps a system dependency private still links its depend
 # 翻訳の側は従来どおり private のままである。両方を同時に満たすことが
 # 期待値であり、片方だけを満たす直し方（全部 public 扱いにする）は通らない。
 cxx=$("$DOWEL" -C chain/top graph --kind=action --format=json 2>/dev/null |
-      jq -r '.actions[] | select(.kind == "cc" and .target == "top:top") | .command | join(" ")')
+      jq -r '.steps[] | select(.kind == "cc" and .target == "top:top") | ([.program] + .arguments) | join(" ")')
 _last_cmd="cc_args top:top"
 OUT=$cxx
 RC=0
@@ -278,7 +278,7 @@ printf '%s' "$(link_command chain/top)" | grep -q -- '-lm'
 fact $? "a public system dependency puts its link flags on the final link"
 
 cxx=$("$DOWEL" -C chain/top graph --kind=action --format=json 2>/dev/null |
-      jq -r '.actions[] | select(.kind == "cc" and .target == "top:top") | .command | join(" ")')
+      jq -r '.steps[] | select(.kind == "cc" and .target == "top:top") | ([.program] + .arguments) | join(" ")')
 _last_cmd="cc_args top:top"
 OUT=$cxx
 RC=0

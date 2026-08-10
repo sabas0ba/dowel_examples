@@ -10,10 +10,13 @@ F-018 / F-019 / F-021 は `af7d391` で修正された。F-008 はさらに `9ed
 対応する検査は `known_issue` を外し、通常の検査として残してある。直った
 ものを消すと、退行したときに気づけない。
 
-未修正は F-020 の残っている側（検査の道具）、F-022 / F-023 / F-024 /
-F-025 / F-026 / F-027 / F-028 / F-029 / F-030 / F-031、および F-011 の
-残っている側である。対応する検査は
-`known_issue` を付けてあり、本体が直すと `XPASS` になって落ちる。
+F-020 の残っていた側（検査の道具）と F-022 から F-031 までは、`dowel-ref` を
+`17bd54e` へ進めた回でまとめて修正が入った。対応する検査は `known_issue` を
+外し、**新しい機構を実際に使う形へ書き換えて**通常の検査として残してある。
+書き換えないと、直ったことを確かめたことにならない。
+
+未修正は F-011 の残っている側だけである。対応する検査は `known_issue` を
+付けてあり、本体が直すと `XPASS` になって落ちる。
 
 各項目は次の形で記録する。
 
@@ -46,18 +49,18 @@ F-025 / F-026 / F-027 / F-028 / F-029 / F-030 / F-031、および F-011 の
 | [F-017](#f-017) | `migrate import` が CMake の構成のフラグを無条件の `flags` へ写す | 実装 | [#54](https://github.com/sabas0ba/dowel/issues/54) | 一部修正 |
 | [F-018](#f-018) | `lib` の `private` な `link_flags` がリンクの閉包に乗らない | 実装 | [#56](https://github.com/sabas0ba/dowel/issues/56) | 修正済み |
 | [F-019](#f-019) | `[toolchain]` の未知のキーが黙って受理され、道具が既定値へ後退する | 実装 | [#59](https://github.com/sabas0ba/dowel/issues/59) | 修正済み |
-| [F-020](#f-020) | 生成物を変換・検査する道具を宣言できず、後処理の場所も無い | 要望 | [#60](https://github.com/sabas0ba/dowel/issues/60) | 一部修正 |
+| [F-020](#f-020) | 生成物を変換・検査する道具を宣言できず、後処理の場所も無い | 要望 | [#60](https://github.com/sabas0ba/dowel/issues/60) | 修正済み |
 | [F-021](#f-021) | 構成レベルのフラグが `link_flags` には残り、下書きの見出しと食い違う | 実装 | [#61](https://github.com/sabas0ba/dowel/issues/61) | 修正済み |
-| [F-022](#f-022) | `lib` の `artifacts` が、依存する `bin` を足すと作られなくなる | 実装 | [#64](https://github.com/sabas0ba/dowel/issues/64) | 未修正 |
-| [F-023](#f-023) | 転送した機能名の `/` がビルドディレクトリを2階層に割る | 実装 | [#68](https://github.com/sabas0ba/dowel/issues/68) | 未修正 |
-| [F-024](#f-024) | 狭い呼び出しが記録を上書きし、次の広い呼び出しがやり直す | 実装 | [#69](https://github.com/sabas0ba/dowel/issues/69) | 未修正 |
-| [F-025](#f-025) | `link_flags` からパッケージ相対のファイルを指せない | 実装 | [#70](https://github.com/sabas0ba/dowel/issues/70) | 未修正 |
-| [F-026](#f-026) | パッケージが対象とする triple を宣言できない | 要望 | [#71](https://github.com/sabas0ba/dowel/issues/71) | 未修正 |
-| [F-027](#f-027) | `dowel.toml` に置いた `[runner.<triple>]` が黙って無視される | 実装 | [#74](https://github.com/sabas0ba/dowel/issues/74) | 未修正 |
-| [F-028](#f-028) | `abi` の `must_equal` により、C のライブラリを C++ から使えない | 実装／設計 | [#78](https://github.com/sabas0ba/dowel/issues/78) | 未修正 |
-| [F-029](#f-029) | 依存が出所を2つ名乗っても無診断で受理され、黙って `path` が勝つ | 実装 | [#79](https://github.com/sabas0ba/dowel/issues/79) | 未修正 |
-| [F-030](#f-030) | パッケージの `version` を翻訳へ届ける手立てが無い | 要望 | [#80](https://github.com/sabas0ba/dowel/issues/80) | 未修正 |
-| [F-031](#f-031) | 排他な機能を宣言できず、`lib` では黙って片方の実装が勝つ | 要望 | [#82](https://github.com/sabas0ba/dowel/issues/82) | 未修正 |
+| [F-022](#f-022) | `lib` の `artifacts` が、依存する `bin` を足すと作られなくなる | 実装 | [#64](https://github.com/sabas0ba/dowel/issues/64) | 修正済み |
+| [F-023](#f-023) | 転送した機能名の `/` がビルドディレクトリを2階層に割る | 実装 | [#68](https://github.com/sabas0ba/dowel/issues/68) | 修正済み |
+| [F-024](#f-024) | 狭い呼び出しが記録を上書きし、次の広い呼び出しがやり直す | 実装 | [#69](https://github.com/sabas0ba/dowel/issues/69) | 修正済み |
+| [F-025](#f-025) | `link_flags` からパッケージ相対のファイルを指せない | 実装 | [#70](https://github.com/sabas0ba/dowel/issues/70) | 修正済み |
+| [F-026](#f-026) | パッケージが対象とする triple を宣言できない | 要望 | [#71](https://github.com/sabas0ba/dowel/issues/71) | 修正済み |
+| [F-027](#f-027) | `dowel.toml` に置いた `[runner.<triple>]` が黙って無視される | 実装 | [#74](https://github.com/sabas0ba/dowel/issues/74) | 修正済み |
+| [F-028](#f-028) | `abi` の `must_equal` により、C のライブラリを C++ から使えない | 実装／設計 | [#78](https://github.com/sabas0ba/dowel/issues/78) | 修正済み |
+| [F-029](#f-029) | 依存が出所を2つ名乗っても無診断で受理され、黙って `path` が勝つ | 実装 | [#79](https://github.com/sabas0ba/dowel/issues/79) | 修正済み |
+| [F-030](#f-030) | パッケージの `version` を翻訳へ届ける手立てが無い | 要望 | [#80](https://github.com/sabas0ba/dowel/issues/80) | 修正済み |
+| [F-031](#f-031) | 排他な機能を宣言できず、`lib` では黙って片方の実装が勝つ | 要望 | [#82](https://github.com/sabas0ba/dowel/issues/82) | 修正済み |
 
 ---
 
@@ -1725,10 +1728,9 @@ builds」として保留を明記している。`size` は flash / RAM の予算
 道具として宣言できることは `projects/18-tools` の
 `a transform tool can be declared alongside the archiver`。
 
-検査の側は `projects/18-tools` の
-`an inspection tool can be declared alongside the archiver`。
-known_issue F-020 である。`tc.size` が構成の語彙から引けるかどうかで見る。
-実装がどの構文を採っても通る観測である。
+検査の側も `projects/18-tools` の
+`an inspection tool can be declared alongside the archiver`。`17bd54e` で
+`[<kind>.<name>.inspect]` が入り、報せる場所ができた。
 
 ---
 
@@ -1872,9 +1874,9 @@ B と C の差が「名指ししたかどうか」であることも、内側か
 
 `projects/19-artifacts` の
 `a library keeps producing its derived file when a binary depends on it`。
-known_issue F-022 である。
+`17bd54e` で修正された。
 
-対照として A と C にあたる場合を通常の検査として置いてある。
+対照として A と C にあたる場合も通常の検査として置いてある。
 
 - `a standalone library produces its derived file`
 - `the library archive is still produced as a dependency`
@@ -1930,7 +1932,7 @@ $ find .dowel/build -mindepth 1 -maxdepth 1
 ### 検査
 
 `apps/jsonfmt` の `a forwarded feature does not split the build directory in two`。
-known_issue F-023 である。
+`17bd54e` で構成の識別子が1階層に畳まれ、`<パッケージ>--<機能>` になった。
 
 転送そのものが働くことは `a feature forwarded to a dependency reaches it` として
 通常の検査に置いてある。
@@ -1993,7 +1995,7 @@ $ dowel build --log-level=debug     # planned 10, loaded 10, ran 0
 
 ### 検査
 
-`apps/jsonfmt` の以下 2 件。いずれも known_issue F-024 である。
+`apps/jsonfmt` の以下 2 件。いずれも `17bd54e` で修正された。
 
 - `running the tests does not make the next build redo work`
 - `building one target does not make the next full build redo work`
@@ -2097,18 +2099,19 @@ test blink:onhw ... ok (55ms)
 `a linker script inside the package can be named from the manifest`。
 known_issue F-025 である。
 
-同じく known_issue F-025 として `the firmware runs on emulated hardware` を
-置いてある。スクリプトを指せないことの帰結——**起動しない**——を直接見る側で
-ある。
+`17bd54e` で `link_flags` が `List<Str | Path>` になり、`file()` の要素が
+絶対パスへ展開されるようになった。木の中のスクリプトをそのまま指せる。
 
-対照として次を通常の検査に置いてある。
+指せることの帰結を、次の通常の検査で見ている。
 
-- `without a script the image is placed where the vector table cannot be`
-- `instead the processor locks up at reset, having read no vector table`
-- `the linker says it cannot open the script, so the path never resolved`
-- `the same script does work when named by an absolute path`
-- `and then the image lands at the start of flash, where it can be programmed`
+- `and the image lands at the start of flash, where it can be programmed`
 - `and the firmware runs on emulated hardware and its test passes`
+- `the firmware reports through semihosting, so the result comes from the device`
+
+指さなかったときに何が起きるかは、外して確かめる。
+
+- `without the script the image is placed where the vector table cannot be`
+- `and then the processor locks up at reset, having read no vector table`
 
 スクリプトが効いたときは、生イメージの先頭2語を直に読んで確かめている。
 `the first word of the image is the initial stack pointer` と
@@ -2188,14 +2191,17 @@ F-015 の検査も「宣言の無い triple を求めたら拒む」向きであ
 
 ### 検査
 
-`apps/blink` の `a package can say which targets it is for`。
-known_issue F-026 である。
+`apps/blink` の `a package can say which targets it is for`。`17bd54e` で
+`[package] targets` が入り、宣言外の triple は `unsupported-target` で断られる。
 
-現状の挙動は通常の検査として記録してある。
+- `and leaving out --target is refused`
+- `by the package itself, with a diagnostic of its own`
+- `the message is about the package's targets, not about a flag`
+- `and the host compiler is never reached`
 
-- `leaving out --target is refused, but by the host compiler`
-- `the message is about a flag, not about the package's targets`
-- `and dowel emits no diagnostic of its own about the target`
+宣言を外すと以前の形に戻ることも見ている
+（`without the declaration the host compiler is what complains`）。
+断っているのが `targets` であることは、外して初めて言える。
 
 ---
 
@@ -2270,11 +2276,10 @@ error[unknown-table]: `[runner.thumbv7em-none-eabihf]` does not belong in dowel.
 ### 検査
 
 `apps/blink` の `a runner written into dowel.toml is not silently ignored`。
-known_issue F-027 である。
+`17bd54e` で `dowel.toml` の未知の最上位テーブルが `unknown-table` で拒まれる
+ようになった。
 
-現状の挙動と、正しく置いたときに動くことを通常の検査として置いてある。
-
-- `and the failure claims no runner is declared, though one is`
+- `and the failure is about the misplaced table, not about a missing declaration`
 - `putting the runner back where it belongs makes the tests run again`
 - `the runner ends its args with -kernel, and dowel appends the artifact`
 
@@ -2345,14 +2350,17 @@ C++ の利用者が非互換と判定されないことが要る。今回の形�
 
 `apps/hashx` の
 `a C++ consumer can declare its own abi label and still use a C library`。
-known_issue F-028 である。
+`17bd54e` で境界を指す札 `abi = "c"` が入った。
 
-現状は通常の検査として記録してある。
-
-- `instead the two labels are compared and the build is refused`
-- `the refusal comes with a diagnostic code and both provenances`
-- `writing the library's label into the consumer builds again`
+- `the library names the C ABI boundary rather than its own language`
+- `and the C++ consumer declares its own language`
 - `and the C++ consumer gets the same answer from the same archive`
+
+札の緩さが境界に限ることも見ている。C ABI を名乗っていない目標どうしが
+食い違えば、これまでどおり落ちる。
+
+- `two labels that are not the boundary are still compared`
+- `and the refusal comes with a diagnostic code and both provenances`
 
 ---
 
@@ -2419,11 +2427,9 @@ built: .../bin/hashsum                  # ../lib から組まれている
 
 `apps/hashx` の `a dependency entry that names two sources is refused` と
 `the same holds when the two sources are a path and a version`。
-どちらも known_issue F-029 である。
+`17bd54e` で修正され、規則が両側に揃った。
 
-現状と、反対側の規則が在ることを通常の検査として置いてある。
-
-- `instead the local path silently wins and the unreachable git source is never touched`
+- `and the build does not fall back to the local path`
 - `a dependency entry that names no source at all is refused`
 
 ---
@@ -2475,14 +2481,15 @@ defines = { HASHX_VERSION = pkg.version }
 
 ### 検査
 
-`apps/hashx` の `moving the manifest version alone is noticed`。
-known_issue F-030 である。
+`17bd54e` で `pkg.name` / `pkg.version` が入った。版は1か所にしか無くなり、
+突き合わせる相手そのものが消えた。`apps/hashx` の
 
-現状は通常の検査として記録してある。
+- `the library takes its version from the manifest instead of repeating it`
+- `so the public header holds no copy of it`
+- `and the artifact reports the version the manifest declares`
+- `moving the manifest version moves what the artifact answers`
 
-- `the version in the manifest and the one in the header agree today`
-  （本スイートが2か所を突き合わせている。本来は木の側で保証されてほしい）
-- `and the artifact keeps reporting the version written in the header`
+最後の1件が要点である。写しが無いのだから、ずれようがない。
 
 ---
 
@@ -2567,20 +2574,19 @@ exclusive = [["headless", "x11"]]     # この2つは同時に立てない
 
 ### 検査
 
-`bin` の側は `apps/plot` の
-`a manifest that can select two exclusive backends at once is refused`、
-`lib` の側は `apps/httpd` の
-`and a package that ends up with two implementations of one interface says so`。
-どちらも known_issue F-031 である。
+`17bd54e` で `[features] exclusive` が入った。両方立てた木は
+`conflicting-features` で拒まれる。`bin` の側は `apps/plot`、`lib` の側は
+`apps/httpd` に置いてある。
 
-現状は通常の検査として記録してある。
+- `a package can declare which of its features are exclusive`
+- `and asking for both at once is refused`
+- `the diagnostic says the other one came from default, which is the usual cause`
+- `a package can declare that its two waiters are exclusive`
+- `and a package that would end up with two implementations of one interface says so`
+- `the build does not proceed to pick one silently`
 
-- `with two whens, asking for one backend compiles both`
-- `instead the linker reports multiple definition, with nothing from dowel`
-- `written as a match, the same flag selects exactly one`
-- `forgetting to drop the defaults compiles both waiters`
-- `instead the build succeeds, because a static archive keeps only the first definition`
-- `and the artifact carries whichever the linker reached first`
+診断が `default` を名指しすることが効く。両方立つ原因はほぼ常にそれであり、
+`--no-default-features` が落とし方だからである。
 
 ---
 

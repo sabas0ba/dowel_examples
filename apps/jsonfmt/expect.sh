@@ -45,7 +45,7 @@ ok "the application builds"               -C cli  build --no-compdb
 # 依存を持たない層である。pkg-config も外部の道具も要らない。
 _last_cmd="dowel -C cli graph --kind=action | grep -- -l"
 OUT=$("$DOWEL" -C cli graph --kind=action --format=json 2>/dev/null |
-      jq -r '.actions[] | select(.kind == "link") | .command | join(" ")')
+      jq -r '.steps[] | select(.kind == "link") | ([.program] + .arguments) | join(" ")')
 RC=0
 ! printf '%s' "$OUT" | grep -qE '(^| )-l'
 fact $? "nothing outside the standard library is linked in"
@@ -57,8 +57,8 @@ fact $? "nothing outside the standard library is linked in"
 
 cli_args() {
     "$DOWEL" -C cli graph --kind=action --format=json 2>/dev/null |
-        jq -r '.actions[] | select(.kind == "cc" and (.target | test("jsonfmt:")))
-               | .command | join(" ")'
+        jq -r '.steps[] | select(.kind == "cc" and (.target | test("jsonfmt:")))
+               | ([.program] + .arguments) | join(" ")'
 }
 
 got=$(cli_args)
@@ -149,7 +149,6 @@ deep_dirs=$(find cli/.dowel/build -mindepth 2 -maxdepth 2 -type d -name deep | w
 verdict=$?
 RC=0; _last_cmd="find cli/.dowel/build -mindepth 2 -maxdepth 2 -type d"
 OUT="$(find cli/.dowel/build -mindepth 1 -maxdepth 2 -type d | sed 's|.*/build/||' | sort)"
-known_issue F-023
 fact $verdict "a forwarded feature does not split the build directory in two"
 
 # ------------------------------------------------------------ 6. 構成
@@ -183,13 +182,12 @@ n=$(_ran_actions)
 verdict=$?
 RC=0; _last_cmd="dowel -C cli build; dowel -C cli test; dowel -C cli build"
 OUT="ran ${n:-?} actions after running the tests"
-known_issue F-024
 fact $verdict "running the tests does not make the next build redo work"
 
 # 逆向きは無害である。広い呼び出しは狭い呼び出しを含む。
 "$DOWEL" -C cli build --no-compdb >/dev/null 2>&1
-out=$("$DOWEL" -C cli test --executor=direct --log-level=debug 2>&1)
-n=$(printf '%s' "$out" | sed -n 's/.*ran \([0-9]*\) actions.*/\1/p' | tail -1)
+out=$("$DOWEL" -C cli test --backend=direct --log-level=debug 2>&1)
+n=$(printf '%s' "$out" | sed -n 's/.*ran \([0-9]*\) steps.*/\1/p' | tail -1)
 [ "${n:-1}" = 0 ]
 RC=0; _last_cmd="dowel -C cli build; dowel -C cli test"
 OUT="ran ${n:-?} actions after a full build"
@@ -204,7 +202,6 @@ n=$(_ran_actions)
 verdict=$?
 RC=0; _last_cmd="dowel -C cli build; dowel -C cli build jsonfmt; dowel -C cli build"
 OUT="ran ${n:-?} actions after building one target"
-known_issue F-024
 fact $verdict "building one target does not make the next full build redo work"
 
 # ------------------------------------------------------------ 8. 実行時に落ちないこと
@@ -226,8 +223,8 @@ ok "and builds"                                  -C cli build --no-compdb --feat
 # 計装は翻訳だけでは効かない。ライブラリの private な link_flags が、
 # それを使う側のリンクにも乗ること（F-018 で入った性質）を実地で使う。
 got=$("$DOWEL" -C cli graph --kind=action --format=json --features=sanitize 2>/dev/null |
-      jq -r '.actions[] | select(.kind == "link" and (.target | test("jsonfmt:jsonfmt")))
-             | .command | join(" ")')
+      jq -r '.steps[] | select(.kind == "link" and (.target | test("jsonfmt:jsonfmt")))
+             | ([.program] + .arguments) | join(" ")')
 _last_cmd="graph --features=sanitize | select(.kind==\"link\")"; OUT="$got"; RC=0
 printf '%s' "$got" | grep -q 'fsanitize'
 fact $? "the instrumentation the library asks for reaches the link of the application"

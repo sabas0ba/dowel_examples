@@ -38,7 +38,7 @@ exists() {
 transform_command() {
     local dir=$1; shift
     "$DOWEL" -C "$dir" graph --kind=action --format=json "$@" 2>/dev/null |
-        jq -r '.actions[] | select(.kind == "transform") | .command | join(" ")'
+        jq -r '.steps[] | select(.kind == "transform") | ([.program] + .arguments) | join(" ")'
 }
 
 # ------------------------------------------------------------ 1. 作られること
@@ -241,9 +241,7 @@ _last_cmd="find library/.dowel/build -name libpart.stripped"
 OUT="found: ${p:-(nothing)}"
 RC=0
 [ -n "$p" ]
-verdict=$?
-known_issue F-022
-fact $verdict "a library keeps producing its derived file when a binary depends on it"
+fact $? "a library keeps producing its derived file when a binary depends on it"
 
 # 名指しすれば作られる。宣言ではなく到達の仕方が答を決めている。
 rm -rf library/.dowel
