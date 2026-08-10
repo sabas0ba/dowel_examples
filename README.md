@@ -10,7 +10,7 @@ dowel 本体は自分自身を内側から検査している（`crates/*/tests/`
 仕様と実装の食い違いを仕様の側から見つけられる。
 
 見つけたものは [docs/10-findings.md](docs/10-findings.md) に記録し、本体へ報告する。
-これまでに 31 件を報告し、19 件が修正された。
+これまでに 45 件を報告し、30 件が修正された。
 
 ## 走らせる
 
@@ -56,15 +56,13 @@ DOWELUP=/path/to/dowelup DOWEL_SRC=/path/to/dowel ./run.sh
 ## 出力
 
 1 検査 1 行。本体が直していない事項に対する検査は `xfail` として登録する。
-本体側が直ると `XPASS` になって落ち、宣言を外すべきことが分かる。現在は 16 件で、
-[F-011](docs/10-findings.md#f-011) の残っている側、
-[F-020](docs/10-findings.md#f-020) の残っている側（検査の道具）、
-[F-022](docs/10-findings.md#f-022)、[F-023](docs/10-findings.md#f-023)、
-[F-024](docs/10-findings.md#f-024)、[F-025](docs/10-findings.md#f-025)、
-[F-026](docs/10-findings.md#f-026)、[F-027](docs/10-findings.md#f-027)、
-[F-028](docs/10-findings.md#f-028)、[F-029](docs/10-findings.md#f-029)、
-[F-030](docs/10-findings.md#f-030)、[F-031](docs/10-findings.md#f-031)
-に対応する。
+本体側が直ると `XPASS` になって落ち、宣言を外すべきことが分かる。現在は 18 件で、
+[F-011](docs/10-findings.md#f-011) の残っている側と、テストフレームワークに
+ついて見つけた [F-032](docs/10-findings.md#f-032) から
+[F-045](docs/10-findings.md#f-045) に対応する。
+
+直った所見の検査は `known_issue` を外すだけでは足りない。**新しい機構を実際に
+使う形へ書き換える**。書き換えないと、直ったことを確かめたことにならない。
 
 ```
 02-config
@@ -94,7 +92,11 @@ apps/plot
   ok   the windowed build runs against a real X server
   ok   and the first pixel is exactly the background colour the header declares
 
-total 1053 checks: 1037 passed, 0 failed, 16 known, 0 fixed
+20-cases
+  ok   cases add no translation unit; five of them share one binary
+  xfail the schema dump describes the properties a case accepts  [F-042]
+
+total 1100 checks: 1082 passed, 0 failed, 18 known, 0 fixed
 ```
 
 検査名は英語で書く。実装の中身ではなく、何が固定されているかを1行で読ませる
@@ -123,6 +125,7 @@ total 1053 checks: 1037 passed, 0 failed, 16 known, 0 fixed
 | [17-deps](projects/17-deps/) | システムパッケージへの依存。pkg-config への委譲、版の下限、`dowel.lock` の漂流検出 |
 | [18-tools](projects/18-tools/) | ツールチェーンの道具。宣言・語彙・実在確認・記録・トリプルごとの選択 |
 | [19-artifacts](projects/19-artifacts/) | 成果物から別の成果物を作る。生イメージと HEX、命令の形、増分、クロス |
+| [20-cases](projects/20-cases/) | 1本の実行ファイルから複数のテストを登録する。宣言・選択・時間切れ・語彙 |
 
 ## アプリケーション
 

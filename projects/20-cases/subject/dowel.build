@@ -1,0 +1,23 @@
+# 1つの test 目標が、同じ実行ファイルの別の起動を複数登録する（ADR-0022）。
+# 事例は翻訳単位を増やさない。分けるのは引数だけである。
+[test.suite]
+sources = [file("tests/suite.c")]
+
+[test.suite.private]
+flags = ["-std=gnu11"]
+abi   = "gnu11"
+
+[test.suite.cases]
+plain   = { args = ["plain"] }
+slow    = { args = ["sleep1"], labels = ["slow"] }
+rejects = { args = ["fail"], should_fail = true }
+strict  = { args = ["env"], env = { SUITE_MODE = "strict" } }
+patient = { args = ["plain"], timeout = 30 }
+
+# 事例を書かない目標は、目標自身が1件である（ADR-0022 の規則）。
+[test.lone]
+sources = [file("tests/suite.c")]
+
+[test.lone.private]
+flags = ["-std=gnu11"]
+abi   = "gnu11"

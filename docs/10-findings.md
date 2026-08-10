@@ -15,8 +15,9 @@ F-020 の残っていた側（検査の道具）と F-022 から F-031 までは
 外し、**新しい機構を実際に使う形へ書き換えて**通常の検査として残してある。
 書き換えないと、直ったことを確かめたことにならない。
 
-未修正は F-011 の残っている側だけである。対応する検査は `known_issue` を
-付けてあり、本体が直すと `XPASS` になって落ちる。
+未修正は F-011 の残っている側と、テストフレームワーク（`[test.<name>.cases]`,
+ADR-0022）について見つけた F-032 から F-045 までである。対応する検査は
+`known_issue` を付けてあり、本体が直すと `XPASS` になって落ちる。
 
 各項目は次の形で記録する。
 
@@ -61,6 +62,20 @@ F-020 の残っていた側（検査の道具）と F-022 から F-031 までは
 | [F-029](#f-029) | 依存が出所を2つ名乗っても無診断で受理され、黙って `path` が勝つ | 実装 | [#79](https://github.com/sabas0ba/dowel/issues/79) | 修正済み |
 | [F-030](#f-030) | パッケージの `version` を翻訳へ届ける手立てが無い | 要望 | [#80](https://github.com/sabas0ba/dowel/issues/80) | 修正済み |
 | [F-031](#f-031) | 排他な機能を宣言できず、`lib` では黙って片方の実装が勝つ | 要望 | [#82](https://github.com/sabas0ba/dowel/issues/82) | 修正済み |
+| [F-032](#f-032) | `should_fail` がシグナルによる異常終了を通す | 実装 | [#88](https://github.com/sabas0ba/dowel/issues/88) | 未修正 |
+| [F-033](#f-033) | `timeout = 0` と負値が受理され、黙って無視される | 実装 | [#96](https://github.com/sabas0ba/dowel/issues/96) | 未修正 |
+| [F-034](#f-034) | `--label` の空振りが終了状態 0 で終わる | 実装／文書 | [#89](https://github.com/sabas0ba/dowel/issues/89) | 未修正 |
+| [F-035](#f-035) | 印字された事例のラベルをコマンドラインに渡せない | 要望 | [#93](https://github.com/sabas0ba/dowel/issues/93) | 未修正 |
+| [F-036](#f-036) | `--failed` が、覚えている事例の消失を黙って緑にする | 実装 | [#91](https://github.com/sabas0ba/dowel/issues/91) | 未修正 |
+| [F-037](#f-037) | 事例の型診断が、誤っている鍵ではなく事例全体を指す | 診断 | [#101](https://github.com/sabas0ba/dowel/issues/101) | 未修正 |
+| [F-038](#f-038) | 事例の名前が検証されず、ラベルの文法を壊す | 実装 | [#97](https://github.com/sabas0ba/dowel/issues/97) | 未修正 |
+| [F-039](#f-039) | 事例を表見出しで書いた診断が直し方を示さない | 診断 | [#98](https://github.com/sabas0ba/dowel/issues/98) | 未修正 |
+| [F-040](#f-040) | 空の `cases` 表が黙って素の1件に落ちる | 実装 | [#99](https://github.com/sabas0ba/dowel/issues/99) | 未修正 |
+| [F-041](#f-041) | 事例そのものを条件付きにできない | 要望／文書 | [#92](https://github.com/sabas0ba/dowel/issues/92) | 未修正 |
+| [F-042](#f-042) | `schema dump` と LSP が `cases` を知らない | 実装／文書 | [#90](https://github.com/sabas0ba/dowel/issues/90) | 未修正 |
+| [F-043](#f-043) | 事例を走らせずに一覧する方法が無い | 要望 | [#94](https://github.com/sabas0ba/dowel/issues/94) | 未修正 |
+| [F-044](#f-044) | 結果の JSON が目標と事例を分けず、事例の属性を出さない | 実装 | [#100](https://github.com/sabas0ba/dowel/issues/100) | 未修正 |
+| [F-045](#f-045) | 事例の作業ディレクトリが未文書・指定不可 | 文書／要望 | [#95](https://github.com/sabas0ba/dowel/issues/95) | 未修正 |
 
 ---
 
@@ -2587,6 +2602,688 @@ exclusive = [["headless", "x11"]]     # この2つは同時に立てない
 
 診断が `default` を名指しすることが効く。両方立つ原因はほぼ常にそれであり、
 `--no-default-features` が落とし方だからである。
+---
+
+## F-032
+
+報告先: [sabas0ba/dowel#88](https://github.com/sabas0ba/dowel/issues/88)
+
+**`should_fail` はシグナルによる異常終了を「期待どおりの失敗」として通す。
+JSON でも普通の非零終了と区別できない。**
+
+種別: 実装。未修正（`17bd54e`）。`[test.<name>.cases]` を使って踏んだ。
+
+### 観測
+
+`rejects = { args = ["bad"], should_fail = true }` の処理を SIGSEGV に
+差し替える。
+
+```console
+$ dowel test
+test c:suite/rejects ... ok (7ms)
+```
+```json
+{"target":"c:suite/rejects","passed":true,"timed_out":false,"exit_status":null,"launch_error":null}
+```
+
+`exit_status` が `null` になるのは**時間切れと同じ**で、`timed_out` でしか
+区別できない。人間向けの行にもシグナルの話は出ない。
+
+### 期待
+
+シグナルによる終了は `should_fail` を満たさない。少なくとも報告する。
+
+`should_fail` を書く場所は「壊れた入力を食わせる事例」であり、それは
+**クラッシュが最も起きやすい事例**でもある。この2つが同じ場所に来ることが、
+外側の用途から見て初めて分かる。
+
+**時間切れが `should_fail` に優先することは既にそうなっている**（確認した）。
+「異常な終わり方は期待された失敗ではない」という判断は一度下されており、
+シグナルも同じ側に置くのが一貫する。
+
+### なぜ内側から見つからないか
+
+`should_fail` の検査は「非零で終了するプログラム」で足りる。**シグナルで
+死ぬプログラム**を `should_fail` の事例として置く理由が、内側からは生じない。
+
+### 検査
+
+`projects/20-cases` の `a case killed by a signal does not satisfy should_fail`
+と `and the report distinguishes a crash from a nonzero exit`。
+どちらも known_issue F-032 である。
+
+対照として `a timeout wins over should_fail, so a hang is never an expected failure`
+を通常の検査に置いてある。これがこの所見の論拠である。
+
+---
+
+## F-033
+
+報告先: [sabas0ba/dowel#96](https://github.com/sabas0ba/dowel/issues/96)
+
+**`timeout = 0` と負値が受理され、実行時には無視される。**
+
+種別: 実装。未修正（`17bd54e`）。
+
+### 観測
+
+```console
+$ dowel check          # timeout = 0
+check passed: 1 packages, 1 targets
+$ dowel test
+test c:suite/parse ... ok (1ms)          # 時間切れにならない
+```
+
+型が違えば拒まれる（`timeout = "10"` は `type-mismatch`）。値の範囲だけが
+見られていない。
+
+### 期待
+
+0 以下を拒む。note に「省略すると待つ」を添える。`timeout = 0` を書く人の
+意図は「制限を設けない」と「時間を与えない」に割れ、現状の挙動は偶然にも
+前者と一致しているが、それは書かれていない。
+
+`match` で組み立てると自然に混入する。
+
+```toml
+slow = { args = ["big"], timeout = match cfg.opt { debug => 60, release => 0 } }
+```
+
+### なぜ内側から見つからないか
+
+時間切れの機構が働くことを見るには正の値を渡せば足りる。型が `Int` である
+以上、型検査は通ってしまうので、値の範囲は誰も問わない。
+
+### 検査
+
+`projects/20-cases` の `a timeout of zero or less is refused`。
+known_issue F-033 である。対照として
+`a case past its timeout is killed and reported as timed out` を置いてある。
+
+---
+
+## F-034
+
+報告先: [sabas0ba/dowel#89](https://github.com/sabas0ba/dowel/issues/89)
+
+**`--label` に誰も持たない名前を渡すと、報告はするが終了状態は 0 になる。
+`docs/60-cli.md` の記述と食い違う。**
+
+種別: 実装／文書。未修正（`17bd54e`）。
+
+### 観測
+
+文書はこう書いている。
+
+> Naming a label nobody carries **reports that, rather than passing with zero
+> tests**
+
+前半は実装されている。後半が実装されていない。
+
+```console
+$ dowel test --label nosuch
+no test carries `nosuch`. labels are declared in `[test.<name>.cases]`
+
+$ dowel test --label nosuch >/dev/null 2>/dev/null; echo $?
+0
+```
+
+正常に1件通った場合と区別が付かない。報告は stderr に出るため、CI のログでは
+埋もれる。`--label smoke` を `smok` と打ち間違えた段は、0 件走って緑になる。
+
+### 期待
+
+ラベルが誰にも一致しなかったとき、終了状態を非零にする。文書が既に
+「zero tests で通すのではない」と述べている以上、それが期待値である。
+
+[F-043](#f-043)（事例を走らせずに一覧できない）と組で効く。**利用者は正しい
+ラベルを引き当てる手段を持たない。**
+
+### なぜ内側から見つからないか
+
+内側の検査が渡すラベルは、同じフィクスチャに書いてある正しい名前である。
+外から見ると、これは打ち間違いではなく**時間の経過**で起きる。ラベルを改名
+した、事例を消した、`--label` を書いた CI の設定だけが残った。
+
+### 検査
+
+`projects/20-cases` の `naming a label nobody carries does not pass with zero tests`。
+known_issue F-034 である。報告そのものは出るので
+`and it does say which label found nothing` を通常の検査に置いてある。
+
+---
+
+## F-035
+
+報告先: [sabas0ba/dowel#93](https://github.com/sabas0ba/dowel/issues/93)
+
+**出力が印字する `<package>:<target>/<case>` を、そのまま渡し返せない。**
+
+種別: 要望。未修正（`17bd54e`）。
+
+### 観測
+
+```console
+$ dowel test
+test c:suite/rejects ... FAILED (1ms)
+
+$ dowel test c:suite/rejects
+error: no target named `c:suite/rejects`
+```
+
+`docs/60-cli.md` は「以降の選択肢はすべて**事例**に対して働く」と述べており、
+`--label` も `--failed` も事例の単位で働く。位置引数だけが目標の単位である。
+
+### 期待
+
+位置引数が事例のラベルを受け付ける。目標の名前を渡したときは従来どおり
+その目標の全事例が走る。
+
+テストが落ちたとき最初にやることは「その1件だけ再実行」である。今できるのは
+`--label`（あらかじめラベルを振っていた場合のみ）か `--failed`（落ちた全部）
+だけで、どちらも噛み合わない。落ちた事例が重いとき（時間切れを起こす事例、
+エミュレータ上の事例）、他を巻き込まずに1件だけ回したい要求はそのまま残る。
+
+### なぜ内側から見つからないか
+
+内側の検査は結果を**プログラムとして**読む。人間が出力を読んで、そこから
+次のコマンドを組み立てる、という往復が現れない。
+
+### 検査
+
+`projects/20-cases` の
+`the label a case is reported under selects that case on the command line`。
+known_issue F-035 である。対照として `naming the target runs all of its cases`
+を置いてある。
+
+---
+
+## F-036
+
+報告先: [sabas0ba/dowel#91](https://github.com/sabas0ba/dowel/issues/91)
+
+**`--failed` は、覚えている事例がマニフェストから消えていると 0 件走って
+状態 0 で終わる。**
+
+種別: 実装。未修正（`17bd54e`）。[F-034](#f-034) と同じ家族である。
+
+### 観測
+
+```console
+$ dowel test
+test c:suite/hang ... FAILED (2007ms)
+```
+
+`hang` を改名する。
+
+```console
+$ dowel test --failed
+running 0 tests
+test result: ok. 0 passed; 0 failed         # rc=0
+```
+
+「前回落ちたものを直したので確認したい」と打った利用者は `ok` を見る。実際に
+は確認していない。
+
+### 期待
+
+覚えている事例が現在の計画に無いとき、そのことを述べる。終了状態の扱いは
+[F-034](#f-034) と揃えるのが自然である。
+
+記録そのものは正しく働いている。ラベルで絞った実行のあとでも、走らせなかった
+事例の判定は保持された（`60-cli.md` の "verdicts of targets not run are kept"
+のとおり）。問題は**記録が現実と合わなくなったときに何も言わない**ことだけ。
+
+### なぜ内側から見つからないか
+
+内側の検査は「落ちる → 直す → `--failed` が走る」で足り、そこでは事例の名前
+は変わらない。外では、落ちたテストを直すついでに事例を分割する・改名する・
+`args` を変えるのはどれも普通の作業である。**「直す」という行為そのものが、
+記録と現実を食い違わせる契機**になっている。
+
+### 検査
+
+`projects/20-cases` の `rerunning failures says so when the remembered case is gone`。
+known_issue F-036 である。対照として
+`--failed reruns the case that failed, not its whole target` を置いてある。
+
+---
+
+## F-037
+
+報告先: [sabas0ba/dowel#101](https://github.com/sabas0ba/dowel/issues/101)
+
+**事例の型診断が、誤っている鍵ではなく事例全体に下線を引く。**
+
+種別: 診断。未修正（`17bd54e`）。
+
+### 観測
+
+```console
+error[type-mismatch]: `timeout` is Int but Str was given
+ --> dowel.build:9:1
+  |
+9 | parse   = { args = ["parse"], timeout = "10" }
+  | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ this value has type Str
+```
+
+短い事例なら困らない。鍵が4つ5つ並ぶと、下線が行全体に引かれたまま
+「`this value has type Str`」と言われる。
+
+### 期待
+
+範囲を、誤っている鍵とその値に絞る。`docs/12-build-reference.md` は診断の
+性質として「Source locations (multiple labels) and notes」を挙げており、
+`abi-mismatch` は実際に両側の来歴を別々に指している。
+
+### なぜ内側から見つからないか
+
+内側の検査は診断**コード**が出ることを見れば通る。位置の粒度は、鍵が1つか
+2つの最小の入力では区別が付かない。読みにくくなるのは実際の事例の大きさで
+あり、それは最小のフィクスチャには現れない。
+
+### 検査
+
+`projects/20-cases` の `a type error inside a case points at the key that is wrong`。
+known_issue F-037 である。診断そのものが出ることは
+`a value of the wrong type in a case is refused` として置いてある。
+
+---
+
+## F-038
+
+報告先: [sabas0ba/dowel#97](https://github.com/sabas0ba/dowel/issues/97)
+
+**事例の名前が検証されない。`a/b`・空名・空白入りがラベルの文法を壊す。**
+
+種別: 実装。未修正（`17bd54e`）。
+
+### 観測
+
+```console
+$ dowel test
+test c:suite/a/b ... ok (1ms)
+test c:suite/ ... ok (1ms)
+test c:suite/x y ... ok (1ms)
+```
+
+| 名前 | ラベル | 何が壊れるか |
+|---|---|---|
+| `a/b` | `c:suite/a/b` | 目標がどこで終わるか読めない |
+| `""` | `c:suite/` | 事例名が無い。目標の綴りと1文字しか違わない |
+| `x y` | `c:suite/x y` | 空白で区切って読む消費者が壊れる |
+
+重複した名前は正しく拒まれる。名前の**形**だけが見られていない。
+
+### 期待
+
+事例の名前を識別子として検証する。少なくとも `/` と空白と空名を拒む。
+目標の名前は表見出しの文法が拒むので、事例だけが素通りしている形である。
+
+### なぜ内側から見つからないか
+
+内側のフィクスチャは普通の名前を付ける。外では、事例の名前は「何を試すか」の
+説明になりがちで、`parse/nested`、`utf-8/bom` のような名前が自然に出る。
+とくに `/` は分類の意図で使われる——ラベルの文法がそれを区切りに使っていると
+知らなければ。
+
+### 検査
+
+`projects/20-cases` の `a case name that breaks the label grammar is refused`。
+known_issue F-038 である。対照として `two cases with the same name are refused`
+を置いてある。
+
+---
+
+## F-039
+
+報告先: [sabas0ba/dowel#98](https://github.com/sabas0ba/dowel/issues/98)
+
+**`[test.x.cases.<名前>]` と書くと `too-deep-table` になり、事例がインライン
+表であることに触れない。**
+
+種別: 診断。未修正（`17bd54e`）。
+
+### 観測
+
+```console
+$ dowel check
+error[too-deep-table]: `[test.suite.cases.parse]` is nested too deeply
+   | ^^^^^^^^^^^^^^^^^^^^^^^^ expected `[kind.name]` or `[kind.name.block]`
+```
+
+対照的に `[bin.app.cases]` の診断はとても良い。
+
+```console
+error[unknown-block]: `cases` has no meaning on a `bin` target
+   | ^^^^^^^^^^^^^^^ only `test` targets register cases
+    = note: a case is another invocation of the same test binary; `dowel test` is what runs them
+```
+
+**片方だけがそうなっている**のがもったいない。
+
+### 期待
+
+診断が正しい書き方を述べる。`cases` という名前が見えている以上、そこまで
+踏み込めるはずである。
+
+この書き方をするのには理由がある。`cases` は複数の項目を持つ集まりであり、
+TOML でそれを書く既定の形は項目ごとの表見出しである。しかも `dowel.build` は
+既に3段を許しているので、4段目が許されないことは書いてみるまで分からない。
+鍵が増えるほどインライン表は長くなり、表見出しに逃げたくなる圧力もある。
+
+### なぜ内側から見つからないか
+
+`too-deep-table` の検査は「深すぎる表が拒まれること」を見れば通り、拒んだ
+あとに利用者が何をすればよいかは問われない。**診断が次の一手を示すか**は、
+その診断を初めて見る人にしか判定できない。
+
+### 検査
+
+`projects/20-cases` の `writing a case as a table header says how to write it as an entry`。
+known_issue F-039 である。対照として
+`a cases block on a bin target is refused` と `with what to do instead` を
+置いてある。
+
+---
+
+## F-040
+
+報告先: [sabas0ba/dowel#99](https://github.com/sabas0ba/dowel/issues/99)
+
+**空の `[cases]` 表が黙って「素の実行ファイル1件」に落ちる。**
+
+種別: 実装。未修正（`17bd54e`）。
+
+### 観測
+
+```console
+$ dowel check          # [test.empty.cases] を中身なしで書いた
+check passed: 1 packages, 2 targets
+$ dowel test
+test c:empty ... ok (1ms)
+```
+
+実行ファイルが**引数なしで**1回走る。
+
+### 期待
+
+空の `cases` を拒む。あるいは0件として扱い、その目標は走らないと述べる。
+
+「事例を書かない」と「事例を書いたが1つも残らなかった」は別の意図である。
+後者は編集の途中、生成されたマニフェスト、そして [F-041](#f-041) が入った
+場合の「条件が全部偽」として起きる。いずれでも利用者が期待するのは「この
+目標は走らない」であり、実際に起きるのは意図しない起動が1件成功することで
+ある。事例を宣言した木では、素の起動は普通なにもしないように書かれている。
+
+### なぜ内側から見つからないか
+
+`cases` を書くときは中身を書く。ADR が定めた「無い場合」の規則は検査される
+はずだが、「空の場合」はその規則の対象ではないため、どちらの検査からも漏れる。
+
+### 検査
+
+`projects/20-cases` の `a cases block with no case in it is not silently one bare run`。
+known_issue F-040 である。対照として
+`a target with no cases block is one test named after the target` を置いてある。
+
+---
+
+## F-041
+
+報告先: [sabas0ba/dowel#92](https://github.com/sabas0ba/dowel/issues/92)
+
+**事例そのものを条件付きにできない。ADR-0022 と reference の
+「`match` / `when` apply」が誘う書き方が型エラーになる。**
+
+種別: 要望／文書。未修正（`17bd54e`）。
+
+### 観測
+
+中の値は通る。
+
+```toml
+parse = { args = ["parse"], timeout = match cfg.opt { debug => 30, release => 5 } }
+```
+
+事例そのものは通らない。
+
+```console
+$ # emit = { ... } when cfg.opt == "debug"
+error[type-mismatch]: `emit` is an inline table but Cfg<Map<Ident, List<Str>>> was given
+
+$ # parse = match cfg.opt { debug => { ... }, release => { ... } }
+error[type-mismatch]: `parse` is an inline table but Cfg<?> was given
+```
+
+### 期待
+
+事例を構成ごとに現れたり消えたりさせられるようにする。`sources` が既にその
+形を持っている。
+
+ADR は `timeout` を「実際に要る例」として挙げるが、その隣にもっと強い必要が
+ある。**その対象では走らせられない事例**である。組み込み（実機でしか意味を
+持たない事例）、GUI（表示が要る事例）、機能フラグ、クロス（エミュレータの下
+では現実的な時間で終わらない事例——`timeout` を伸ばすのではなく落としたい）。
+
+回避しようとすると `[test.<name>]` を分けることになり、**翻訳単位が増える**。
+ADR-0022 が「事例は翻訳単位を増やさない」と述べた利点を捨てる形になる。
+
+現状の挙動を保つとしても、文書の書き方は直したほうがよい。「Case values are
+ordinary manifest values」は、事例そのものが値だと読める。
+
+### なぜ内側から見つからないか
+
+内側の検査は文書の例をなぞる。通る側は確かめられ、**効かない側**を書く理由が
+生じない。外では、事例を条件付きにしたい理由は具体的な対象——実機、表示、
+エミュレータ——から来る。
+
+### 検査
+
+`projects/20-cases` の `a case can be registered only for some configurations`。
+known_issue F-041 である。通常の検査として
+`a value inside a case can branch on the configuration` と
+`and the diagnostic for a conditional case shows the literal form` を置いてある。
+
+---
+
+## F-042
+
+報告先: [sabas0ba/dowel#90](https://github.com/sabas0ba/dowel/issues/90)
+
+**`schema dump` が `cases` を記述せず、LSP のホバーが `cases` の中を何も
+答えない。`12-build-reference.md` が宣言する不変条件が破れている。**
+
+種別: 実装／文書。未修正（`17bd54e`）。
+
+### 観測
+
+その頁の冒頭はこう述べている。
+
+> The machine-readable form of everything on this page is `dowel schema dump`
+> — the language server's hover and the type checker read the same tables, so
+> **this page, the editor, and the diagnostics cannot disagree silently.**
+
+同じ頁が `[test.<name>.cases]` を5行の鍵表つきで記述している。
+
+```console
+$ dowel schema dump | jq 'keys'
+["artifact_properties","blocks","cfg","functions","inspection_properties",
+ "pkg_constants","table_kinds","tools"]
+```
+
+`artifacts` には `artifact_properties`、`inspect` には `inspection_properties`
+がある。**`case_properties` に相当するものが無い。** 兄弟のうち `cases` だけが
+抜けている。
+
+エディタ側でも答が割れる。
+
+| 位置 | ホバー |
+|---|---|
+| `sources` | `**sources** — List<Path>` / merge: `append` … |
+| `cases` / `args` / `timeout` / `should_fail` / `labels` | **（空）** |
+
+一方、型検査器は語彙を持っている（`a case accepts: args, env, timeout,
+should_fail, labels`）。**鍵表が実装の中に3か所ある**ことになる。文書、
+型検査器、（無い）スキーマ。文書の主張はこれを1つに保つことだった。
+
+### 期待
+
+`schema dump` に `case_properties` を足す。`artifact_properties` /
+`inspection_properties` と同じ形で足りるはずである。
+
+併せて `[runner.<triple>]` の性質もダンプに無い。`table_kinds` に `runner` は
+出るが、その鍵表は出ていない。
+
+### なぜ内側から見つからないか
+
+`schema dump` の内側の検査は、ダンプが自分自身と整合していることを見れば
+通る。抜けているものは、抜けたまま整合する。「文書に書いてあるがダンプに
+無い」を捕まえるには**文書とダンプを突き合わせる**必要があり、それは実装の
+外側にある比較である。
+
+### 検査
+
+`projects/20-cases` の `the schema dump describes the properties a case accepts`。
+known_issue F-042 である。対照として
+`the two sibling blocks are described, which is the shape cases should follow`
+を置いてある。抜けているのが `cases` だけであることを示す。
+
+---
+
+## F-043
+
+報告先: [sabas0ba/dowel#94](https://github.com/sabas0ba/dowel/issues/94)
+
+**事例を走らせずに一覧する方法が無い。`--no-run` も `graph` も `schema dump`
+も事例を出さない。**
+
+種別: 要望。未修正（`17bd54e`）。
+
+### 観測
+
+```console
+$ dowel test --no-run
+built: .../bin/suite
+
+$ dowel graph --kind=target --format=json | jq '.targets'
+[{"label": "c:suite", "kind": "test", "package": "c", "deps": []}]
+```
+
+`--message-format=json` は事例を1件ずつ出すが、**走らせた後**である。
+
+### 期待
+
+`--no-run` が、組んだうえで走るはずのものを並べる。選択（`--label` /
+位置引数）が効いた後の一覧であることが重要である。
+
+3つの用途がふさがっている。**ラベルの語彙を確かめる**（[F-034](#f-034) と
+組み合わさると、綴りを間違えた利用者には確かめる術も気づく術も無い）、
+時間のかかる事例を選ぶ前に見当をつける、外の道具から呼ぶ（一覧のために
+全部走らせることになる。事例が時間切れを含むなら猶更）。
+
+### なぜ内側から見つからないか
+
+内側からは、どんな事例が宣言されているかはマニフェストを読めば分かる。
+フィクスチャを書いた者が中身を知っているので、尋ねる必要が生じない。
+外では、事例を宣言した人と `dowel test` を打つ人は別人である。
+
+### 検査
+
+`projects/20-cases` の `the cases that would run can be listed without running them`
+と `or found in the target graph`。どちらも known_issue F-043 である。
+
+---
+
+## F-044
+
+報告先: [sabas0ba/dowel#100](https://github.com/sabas0ba/dowel/issues/100)
+
+**`test-result` の JSON が `target` に事例ラベルを入れ、事例の属性を1つも
+出さない。**
+
+種別: 実装。未修正（`17bd54e`）。
+
+### 観測
+
+```json
+{"kind":"test-result","target":"c:suite/parse","binary":"…","passed":true,
+ "timed_out":false,"exit_status":0,"duration_ms":1,"stdout":"…","launch_error":null}
+```
+
+`target` という名前の欄に `<target>/<case>` が入る。下流が目標ごとに集計する
+には最後の `/` で割るしかなく、その推測は安全でない（[F-038](#f-038)）。
+
+`labels` / `should_fail` / `timeout` のどれも出ない。ラベルごとの集計が
+できず、**期待された失敗と普通の成功が区別できない**。`exit_status: null` が
+時間切れとシグナル（[F-032](#f-032)）の2つを意味することも効いている。
+
+### 期待
+
+事例を第一級の欄にする。`target` は目標のまま置き、`case` / `label` /
+`labels` / `should_fail` / `signal` / `args` を足す。
+
+### なぜ内側から見つからないか
+
+内側の検査は、JSON が自分が生成した値を持っていることを見れば通る。**別の
+道具がそれをどう使うか**は入力に現れない。本スイートは実際に結果を表へ積んで
+おり、そこで具体的な要求が立つ。
+
+### 検査
+
+`projects/20-cases` の
+`the machine-readable result names the target and the case separately` と
+`and says whether the case was expected to fail`。
+どちらも known_issue F-044 である。対照として
+`the machine-readable results go to stdout while the progress goes to stderr`
+を置いてある（こちらは正しく分かれている）。
+
+---
+
+## F-045
+
+報告先: [sabas0ba/dowel#95](https://github.com/sabas0ba/dowel/issues/95)
+
+**事例の作業ディレクトリが文書化されておらず、指定する手立ても無い。**
+
+種別: 文書／要望。未修正（`17bd54e`）。
+
+### 観測
+
+実測ではパッケージの根である。ADR-0022 にも reference の鍵表にも
+`docs/60-cli.md` にも記述が無い。つまり**約束されていない**。実測に頼って
+`fopen("tests/data/x.json")` と書いた木は、実装が変われば黙って壊れる。
+
+そして `docs/60-cli.md` は、逐次実行が既定である理由をこう書いている。
+
+> The default is sequential because C tests may use shared resources
+> (**working directory**, fixed ports, output files)
+
+**共有資源として認識されているのに、その値が規定されていない。**
+
+### 期待
+
+2つ、独立に。文書化すること。そして ctest の `WORKING_DIRECTORY` に相当する
+鍵を足すこと（型は `Path` が素直で、`dir()` を受ける）。
+
+要る場面は具体的である。相対パスで資料を読むテスト。出力ファイルを書く
+テスト——同じ実行ファイルの複数の事例が同じ場所へ書くと `--test-jobs` で
+衝突する。**事例ごとに別のディレクトリを与えられれば、`--test-jobs` の既定が
+逐次である理由の一つが消える。**
+
+### なぜ内側から見つからないか
+
+内側のフィクスチャは、テストが読む資料を引数で渡すか埋め込むかで書ける。
+**相対パスでファイルを開くテスト**を書く理由が生じない。外ではそう書く理由が
+いくらでもあり、そのとき最初に尋ねるのが「どこから走るのか」である。
+
+### 検査
+
+`projects/20-cases` の `a case can be given the directory it runs in`。
+known_issue F-045 である。実測は
+`a case runs in the root of the package that declares it` として固定してある
+が、文書に無い以上これは**約束ではなく観測**である。
+
 
 ---
 
