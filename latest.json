@@ -1,20 +1,20 @@
 {
- "run_id": "31145409536",
+ "run_id": "31397049757",
  "run_attempt": "1",
- "run_url": "https://github.com/sabas0ba/dowel_examples/actions/runs/31145409536",
- "commit": "7660d8f3dc1a52ccdce35f13423fac3a1ea114c8",
+ "run_url": "https://github.com/sabas0ba/dowel_examples/actions/runs/31397049757",
+ "commit": "3751aa5f6672a23db8e24ae593d6909cc54c664c",
  "branch": "main",
- "started_at": "2026-08-07T03:48:35Z",
+ "started_at": "2026-08-10T14:15:51Z",
  "dowel_version": "dowel 0.0.1",
- "dowel_ref": "af7d391f1e223680b9a61af9dbe0ee73efd890b2",
- "dowel_commit": "af7d391f1e223680b9a61af9dbe0ee73efd890b2",
+ "dowel_ref": "17bd54e090b17a46d71d37f7612fb09f9097abea",
+ "dowel_commit": "17bd54e090b17a46d71d37f7612fb09f9097abea",
  "cc": "cc (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0",
  "ninja": "1.13.2",
  "projects": [
   {
    "name": "01-minimal",
    "root": "projects",
-   "duration_ms": 1201,
+   "duration_ms": 283,
    "counts": {
     "pass": 10,
     "fail": 0,
@@ -34,7 +34,7 @@
     },
     {
      "status": "pass",
-     "desc": "hello: a second build runs nothing, across executors too"
+     "desc": "hello: a second build runs nothing, across backends too"
     },
     {
      "status": "pass",
@@ -72,7 +72,7 @@
   {
    "name": "02-config",
    "root": "projects",
-   "duration_ms": 5029,
+   "duration_ms": 1044,
    "counts": {
     "pass": 21,
     "fail": 0,
@@ -92,7 +92,7 @@
     },
     {
      "status": "pass",
-     "desc": "app: a second build runs nothing, across executors too"
+     "desc": "app: a second build runs nothing, across backends too"
     },
     {
      "status": "pass",
@@ -175,7 +175,7 @@
   {
    "name": "03-features",
    "root": "projects",
-   "duration_ms": 295,
+   "duration_ms": 285,
    "counts": {
     "pass": 17,
     "fail": 0,
@@ -195,7 +195,7 @@
     },
     {
      "status": "pass",
-     "desc": "app: a second build runs nothing, across executors too"
+     "desc": "app: a second build runs nothing, across backends too"
     },
     {
      "status": "pass",
@@ -265,7 +265,7 @@
   {
    "name": "04-diagnostics",
    "root": "projects",
-   "duration_ms": 321,
+   "duration_ms": 351,
    "counts": {
     "pass": 66,
     "fail": 0,
@@ -567,7 +567,7 @@
   {
    "name": "05-incremental",
    "root": "projects",
-   "duration_ms": 1688,
+   "duration_ms": 1781,
    "counts": {
     "pass": 48,
     "fail": 0,
@@ -779,7 +779,7 @@
   {
    "name": "06-runner",
    "root": "projects",
-   "duration_ms": 360,
+   "duration_ms": 381,
    "counts": {
     "pass": 17,
     "fail": 0,
@@ -867,7 +867,7 @@
   {
    "name": "07-robustness",
    "root": "projects",
-   "duration_ms": 1293,
+   "duration_ms": 1360,
    "counts": {
     "pass": 145,
     "fail": 0,
@@ -1465,7 +1465,7 @@
   {
    "name": "08-lsp",
    "root": "projects",
-   "duration_ms": 12663,
+   "duration_ms": 12810,
    "counts": {
     "pass": 110,
     "fail": 0,
@@ -1923,7 +1923,7 @@
   {
    "name": "09-acquisition",
    "root": "projects",
-   "duration_ms": 18420,
+   "duration_ms": 21398,
    "counts": {
     "pass": 66,
     "fail": 0,
@@ -2207,7 +2207,7 @@
   {
    "name": "10-toolchain",
    "root": "projects",
-   "duration_ms": 4562,
+   "duration_ms": 2196,
    "counts": {
     "pass": 31,
     "fail": 0,
@@ -2349,7 +2349,7 @@
   {
    "name": "11-cross",
    "root": "projects",
-   "duration_ms": 2382,
+   "duration_ms": 1261,
    "counts": {
     "pass": 17,
     "fail": 0,
@@ -2435,7 +2435,7 @@
   {
    "name": "12-store",
    "root": "projects",
-   "duration_ms": 206,
+   "duration_ms": 216,
    "counts": {
     "pass": 29,
     "fail": 0,
@@ -2569,7 +2569,7 @@
   {
    "name": "13-parallel",
    "root": "projects",
-   "duration_ms": 10910,
+   "duration_ms": 10768,
    "counts": {
     "pass": 18,
     "fail": 0,
@@ -2659,7 +2659,7 @@
   {
    "name": "14-scale",
    "root": "projects",
-   "duration_ms": 6115,
+   "duration_ms": 6364,
    "counts": {
     "pass": 17,
     "fail": 0,
@@ -2743,7 +2743,7 @@
   {
    "name": "15-cpp",
    "root": "projects",
-   "duration_ms": 7376,
+   "duration_ms": 4490,
    "counts": {
     "pass": 70,
     "fail": 0,
@@ -3051,7 +3051,7 @@
   {
    "name": "16-migrate",
    "root": "projects",
-   "duration_ms": 1557,
+   "duration_ms": 1727,
    "counts": {
     "pass": 54,
     "fail": 0,
@@ -3285,7 +3285,7 @@
   {
    "name": "17-deps",
    "root": "projects",
-   "duration_ms": 748,
+   "duration_ms": 785,
    "counts": {
     "pass": 51,
     "fail": 0,
@@ -3510,11 +3510,11 @@
   {
    "name": "18-tools",
    "root": "projects",
-   "duration_ms": 475,
+   "duration_ms": 512,
    "counts": {
-    "pass": 31,
+    "pass": 32,
     "fail": 0,
-    "xfail": 1,
+    "xfail": 0,
     "xpass": 0
    },
    "total": 32,
@@ -3645,8 +3645,8 @@
      "desc": "a transform tool can be declared alongside the archiver"
     },
     {
-     "status": "xfail",
-     "desc": "an inspection tool can be declared alongside the archiver  [F-020]"
+     "status": "pass",
+     "desc": "an inspection tool can be declared alongside the archiver"
     }
    ],
    "packages": [
@@ -3659,11 +3659,11 @@
   {
    "name": "19-artifacts",
    "root": "projects",
-   "duration_ms": 631,
+   "duration_ms": 669,
    "counts": {
-    "pass": 34,
+    "pass": 35,
     "fail": 0,
-    "xfail": 1,
+    "xfail": 0,
     "xpass": 0
    },
    "total": 35,
@@ -3798,8 +3798,8 @@
      "desc": "the library archive is still produced as a dependency"
     },
     {
-     "status": "xfail",
-     "desc": "a library keeps producing its derived file when a binary depends on it  [F-022]"
+     "status": "pass",
+     "desc": "a library keeps producing its derived file when a binary depends on it"
     },
     {
      "status": "pass",
@@ -3817,16 +3817,218 @@
    ]
   },
   {
-   "name": "blink",
-   "root": "apps",
-   "duration_ms": 2947,
+   "name": "20-cases",
+   "root": "projects",
+   "duration_ms": 28056,
    "counts": {
-    "pass": 32,
+    "pass": 29,
     "fail": 0,
-    "xfail": 4,
+    "xfail": 17,
     "xpass": 0
    },
-   "total": 36,
+   "total": 46,
+   "ok": true,
+   "checks": [
+    {
+     "status": "pass",
+     "desc": "a package that registers cases passes check"
+    },
+    {
+     "status": "pass",
+     "desc": "and all of its cases pass"
+    },
+    {
+     "status": "pass",
+     "desc": "each case is reported under <package>:<target>/<case>"
+    },
+    {
+     "status": "pass",
+     "desc": "a target with no cases block is one test named after the target"
+    },
+    {
+     "status": "pass",
+     "desc": "cases add no translation unit; five of them share one binary"
+    },
+    {
+     "status": "pass",
+     "desc": "the args of a case reach the binary"
+    },
+    {
+     "status": "pass",
+     "desc": "the env of a case reaches the binary"
+    },
+    {
+     "status": "pass",
+     "desc": "should_fail turns a nonzero exit into a pass"
+    },
+    {
+     "status": "pass",
+     "desc": "and a case that was supposed to fail says so rather than reporting a bare status"
+    },
+    {
+     "status": "pass",
+     "desc": "a case past its timeout is killed and reported as timed out"
+    },
+    {
+     "status": "pass",
+     "desc": "a timeout wins over should_fail, so a hang is never an expected failure"
+    },
+    {
+     "status": "xfail",
+     "desc": "a case killed by a signal does not satisfy should_fail  [F-032]"
+    },
+    {
+     "status": "xfail",
+     "desc": "and the report distinguishes a crash from a nonzero exit  [F-032]"
+    },
+    {
+     "status": "xfail",
+     "desc": "a timeout of zero or less is refused  [F-033]"
+    },
+    {
+     "status": "pass",
+     "desc": "a label selects the cases that carry it"
+    },
+    {
+     "status": "xfail",
+     "desc": "naming a label nobody carries does not pass with zero tests  [F-034]"
+    },
+    {
+     "status": "pass",
+     "desc": "and it does say which label found nothing"
+    },
+    {
+     "status": "xfail",
+     "desc": "the label a case is reported under selects that case on the command line  [F-035]"
+    },
+    {
+     "status": "pass",
+     "desc": "naming the target runs all of its cases"
+    },
+    {
+     "status": "pass",
+     "desc": "--fail-fast stops at the first failure and says how many did not run"
+    },
+    {
+     "status": "pass",
+     "desc": "--failed reruns the case that failed, not its whole target"
+    },
+    {
+     "status": "xfail",
+     "desc": "rerunning failures says so when the remembered case is gone  [F-036]"
+    },
+    {
+     "status": "pass",
+     "desc": "cases of one target run at the same time under --test-jobs"
+    },
+    {
+     "status": "pass",
+     "desc": "and the display stays in request order however many run at once"
+    },
+    {
+     "status": "pass",
+     "desc": "an unknown key in a case is refused"
+    },
+    {
+     "status": "pass",
+     "desc": "and the accepted keys are listed"
+    },
+    {
+     "status": "pass",
+     "desc": "a value of the wrong type in a case is refused"
+    },
+    {
+     "status": "xfail",
+     "desc": "a type error inside a case points at the key that is wrong  [F-037]"
+    },
+    {
+     "status": "xfail",
+     "desc": "a case name that breaks the label grammar is refused  [F-038]"
+    },
+    {
+     "status": "pass",
+     "desc": "two cases with the same name are refused"
+    },
+    {
+     "status": "xfail",
+     "desc": "writing a case as a table header says how to write it as an entry  [F-039]"
+    },
+    {
+     "status": "pass",
+     "desc": "a cases block on a bin target is refused"
+    },
+    {
+     "status": "pass",
+     "desc": "with what to do instead"
+    },
+    {
+     "status": "xfail",
+     "desc": "a cases block with no case in it is not silently one bare run  [F-040]"
+    },
+    {
+     "status": "pass",
+     "desc": "a value inside a case can branch on the configuration"
+    },
+    {
+     "status": "xfail",
+     "desc": "a case can be registered only for some configurations  [F-041]"
+    },
+    {
+     "status": "pass",
+     "desc": "and the diagnostic for a conditional case shows the literal form"
+    },
+    {
+     "status": "xfail",
+     "desc": "the schema dump describes the properties a case accepts  [F-042]"
+    },
+    {
+     "status": "pass",
+     "desc": "the two sibling blocks are described, which is the shape cases should follow"
+    },
+    {
+     "status": "xfail",
+     "desc": "the cases that would run can be listed without running them  [F-043]"
+    },
+    {
+     "status": "xfail",
+     "desc": "or found in the target graph  [F-043]"
+    },
+    {
+     "status": "pass",
+     "desc": "the machine-readable results go to stdout while the progress goes to stderr"
+    },
+    {
+     "status": "xfail",
+     "desc": "the machine-readable result names the target and the case separately  [F-044]"
+    },
+    {
+     "status": "xfail",
+     "desc": "and says whether the case was expected to fail  [F-044]"
+    },
+    {
+     "status": "pass",
+     "desc": "a case runs in the root of the package that declares it"
+    },
+    {
+     "status": "xfail",
+     "desc": "a case can be given the directory it runs in  [F-045]"
+    }
+   ],
+   "packages": [
+    "subject"
+   ]
+  },
+  {
+   "name": "blink",
+   "root": "apps",
+   "duration_ms": 2820,
+   "counts": {
+    "pass": 35,
+    "fail": 0,
+    "xfail": 0,
+    "xpass": 0
+   },
+   "total": 35,
    "ok": true,
    "checks": [
     {
@@ -3863,19 +4065,27 @@
     },
     {
      "status": "pass",
-     "desc": "leaving out --target is refused, but by the host compiler"
+     "desc": "a package can say which targets it is for"
     },
     {
      "status": "pass",
-     "desc": "the message is about a flag, not about the package's targets"
+     "desc": "and leaving out --target is refused"
     },
     {
      "status": "pass",
-     "desc": "and dowel emits no diagnostic of its own about the target"
+     "desc": "by the package itself, with a diagnostic of its own"
     },
     {
-     "status": "xfail",
-     "desc": "a package can say which targets it is for  [F-026]"
+     "status": "pass",
+     "desc": "the message is about the package's targets, not about a flag"
+    },
+    {
+     "status": "pass",
+     "desc": "and the host compiler is never reached"
+    },
+    {
+     "status": "pass",
+     "desc": "without the declaration the host compiler is what complains"
     },
     {
      "status": "pass",
@@ -3899,31 +4109,11 @@
     },
     {
      "status": "pass",
-     "desc": "without a script the image is placed where the vector table cannot be"
-    },
-    {
-     "status": "xfail",
-     "desc": "the firmware runs on emulated hardware  [F-025]"
+     "desc": "a linker script inside the package can be named from the manifest"
     },
     {
      "status": "pass",
-     "desc": "instead the processor locks up at reset, having read no vector table"
-    },
-    {
-     "status": "xfail",
-     "desc": "a linker script inside the package can be named from the manifest  [F-025]"
-    },
-    {
-     "status": "pass",
-     "desc": "the linker says it cannot open the script, so the path never resolved"
-    },
-    {
-     "status": "pass",
-     "desc": "the same script does work when named by an absolute path"
-    },
-    {
-     "status": "pass",
-     "desc": "and then the image lands at the start of flash, where it can be programmed"
+     "desc": "and the image lands at the start of flash, where it can be programmed"
     },
     {
      "status": "pass",
@@ -3932,6 +4122,14 @@
     {
      "status": "pass",
      "desc": "the firmware reports through semihosting, so the result comes from the device"
+    },
+    {
+     "status": "pass",
+     "desc": "without the script the image is placed where the vector table cannot be"
+    },
+    {
+     "status": "pass",
+     "desc": "and then the processor locks up at reset, having read no vector table"
     },
     {
      "status": "pass",
@@ -3946,12 +4144,12 @@
      "desc": "the runner ends its args with -kernel, and dowel appends the artifact"
     },
     {
-     "status": "xfail",
-     "desc": "a runner written into dowel.toml is not silently ignored  [F-027]"
+     "status": "pass",
+     "desc": "a runner written into dowel.toml is not silently ignored"
     },
     {
      "status": "pass",
-     "desc": "and the failure claims no runner is declared, though one is"
+     "desc": "and the failure is about the misplaced table, not about a missing declaration"
     },
     {
      "status": "pass",
@@ -3981,14 +4179,14 @@
   {
    "name": "hashx",
    "root": "apps",
-   "duration_ms": 1487,
+   "duration_ms": 1818,
    "counts": {
-    "pass": 34,
+    "pass": 41,
     "fail": 0,
-    "xfail": 4,
+    "xfail": 0,
     "xpass": 0
    },
-   "total": 38,
+   "total": 41,
    "ok": true,
    "checks": [
     {
@@ -4052,32 +4250,40 @@
      "desc": "the link of the C++ consumer runs through the C++ driver"
     },
     {
-     "status": "xfail",
-     "desc": "a C++ consumer can declare its own abi label and still use a C library  [F-028]"
+     "status": "pass",
+     "desc": "the library names the C ABI boundary rather than its own language"
     },
     {
      "status": "pass",
-     "desc": "instead the two labels are compared and the build is refused"
+     "desc": "and the C++ consumer declares its own language"
     },
     {
      "status": "pass",
-     "desc": "the refusal comes with a diagnostic code and both provenances"
+     "desc": "a C++ consumer can declare its own abi label and still use a C library"
     },
     {
      "status": "pass",
-     "desc": "writing the library's label into the consumer builds again"
-    },
-    {
-     "status": "xfail",
-     "desc": "a dependency entry that names two sources is refused  [F-029]"
+     "desc": "two labels that are not the boundary are still compared"
     },
     {
      "status": "pass",
-     "desc": "instead the local path silently wins and the unreachable git source is never touched"
+     "desc": "and the refusal comes with a diagnostic code and both provenances"
     },
     {
-     "status": "xfail",
-     "desc": "the same holds when the two sources are a path and a version  [F-029]"
+     "status": "pass",
+     "desc": "restoring the boundary label builds again"
+    },
+    {
+     "status": "pass",
+     "desc": "a dependency entry that names two sources is refused"
+    },
+    {
+     "status": "pass",
+     "desc": "and the build does not fall back to the local path"
+    },
+    {
+     "status": "pass",
+     "desc": "the same holds when the two sources are a path and a version"
     },
     {
      "status": "pass",
@@ -4089,15 +4295,19 @@
     },
     {
      "status": "pass",
-     "desc": "the version in the manifest and the one in the header agree today"
-    },
-    {
-     "status": "xfail",
-     "desc": "moving the manifest version alone is noticed  [F-030]"
+     "desc": "the library takes its version from the manifest instead of repeating it"
     },
     {
      "status": "pass",
-     "desc": "and the artifact keeps reporting the version written in the header"
+     "desc": "so the public header holds no copy of it"
+    },
+    {
+     "status": "pass",
+     "desc": "and the artifact reports the version the manifest declares"
+    },
+    {
+     "status": "pass",
+     "desc": "moving the manifest version moves what the artifact answers"
     },
     {
      "status": "pass",
@@ -4153,14 +4363,14 @@
   {
    "name": "httpd",
    "root": "apps",
-   "duration_ms": 5277,
+   "duration_ms": 4812,
    "counts": {
     "pass": 36,
     "fail": 0,
-    "xfail": 1,
+    "xfail": 0,
     "xpass": 0
    },
-   "total": 37,
+   "total": 36,
    "ok": true,
    "checks": [
     {
@@ -4189,23 +4399,19 @@
     },
     {
      "status": "pass",
-     "desc": "forgetting to drop the defaults compiles both waiters"
-    },
-    {
-     "status": "xfail",
-     "desc": "and a package that ends up with two implementations of one interface says so  [F-031]"
+     "desc": "a package can declare that its two waiters are exclusive"
     },
     {
      "status": "pass",
-     "desc": "instead the build succeeds, because a static archive keeps only the first definition"
+     "desc": "and a package that would end up with two implementations of one interface says so"
     },
     {
      "status": "pass",
-     "desc": "and the artifact carries whichever the linker reached first"
+     "desc": "the build does not proceed to pick one silently"
     },
     {
      "status": "pass",
-     "desc": "and drops the first one"
+     "desc": "naming default as the source, which is what --no-default-features drops"
     },
     {
      "status": "pass",
@@ -4319,11 +4525,11 @@
   {
    "name": "jsonfmt",
    "root": "apps",
-   "duration_ms": 1922,
+   "duration_ms": 1883,
    "counts": {
-    "pass": 34,
+    "pass": 37,
     "fail": 0,
-    "xfail": 3,
+    "xfail": 0,
     "xpass": 0
    },
    "total": 37,
@@ -4418,8 +4624,8 @@
      "desc": "a feature forwarded to a dependency reaches it"
     },
     {
-     "status": "xfail",
-     "desc": "a forwarded feature does not split the build directory in two  [F-023]"
+     "status": "pass",
+     "desc": "a forwarded feature does not split the build directory in two"
     },
     {
      "status": "pass",
@@ -4438,16 +4644,16 @@
      "desc": "and does not recompile its neighbours"
     },
     {
-     "status": "xfail",
-     "desc": "running the tests does not make the next build redo work  [F-024]"
+     "status": "pass",
+     "desc": "running the tests does not make the next build redo work"
     },
     {
      "status": "pass",
      "desc": "and a full build leaves nothing for the tests to redo"
     },
     {
-     "status": "xfail",
-     "desc": "building one target does not make the next full build redo work  [F-024]"
+     "status": "pass",
+     "desc": "building one target does not make the next full build redo work"
     },
     {
      "status": "pass",
@@ -4486,11 +4692,11 @@
   {
    "name": "plot",
    "root": "apps",
-   "duration_ms": 2079,
+   "duration_ms": 1924,
    "counts": {
-    "pass": 41,
+    "pass": 42,
     "fail": 0,
-    "xfail": 1,
+    "xfail": 0,
     "xpass": 0
    },
    "total": 42,
@@ -4570,23 +4776,23 @@
     },
     {
      "status": "pass",
-     "desc": "with two whens, asking for one backend compiles both"
-    },
-    {
-     "status": "xfail",
-     "desc": "a manifest that can select two exclusive backends at once is refused  [F-031]"
+     "desc": "a package can declare which of its features are exclusive"
     },
     {
      "status": "pass",
-     "desc": "instead the linker reports multiple definition, with nothing from dowel"
+     "desc": "and asking for both at once is refused"
     },
     {
      "status": "pass",
-     "desc": "written as a match, the same flag selects exactly one"
+     "desc": "the diagnostic says the other one came from default, which is the usual cause"
     },
     {
      "status": "pass",
-     "desc": "and the build that follows links"
+     "desc": "dropping the defaults and asking for one builds"
+    },
+    {
+     "status": "pass",
+     "desc": "and exactly one shell is compiled, whichever way the flag goes"
     },
     {
      "status": "pass",
@@ -4673,7 +4879,7 @@
   {
    "name": "docs",
    "root": "projects",
-   "duration_ms": 62,
+   "duration_ms": 70,
    "counts": {
     "pass": 8,
     "fail": 0,
@@ -4720,12 +4926,12 @@
   }
  ],
  "totals": {
-  "pass": 1037,
+  "pass": 1082,
   "fail": 0,
-  "xfail": 16,
+  "xfail": 18,
   "xpass": 0
  },
- "total": 1053,
+ "total": 1100,
  "ok": true,
  "attention": [],
  "known_issues": [
@@ -4736,78 +4942,88 @@
   },
   {
    "status": "xfail",
-   "project": "18-tools",
-   "desc": "an inspection tool can be declared alongside the archiver  [F-020]"
+   "project": "20-cases",
+   "desc": "a case killed by a signal does not satisfy should_fail  [F-032]"
   },
   {
    "status": "xfail",
-   "project": "19-artifacts",
-   "desc": "a library keeps producing its derived file when a binary depends on it  [F-022]"
+   "project": "20-cases",
+   "desc": "and the report distinguishes a crash from a nonzero exit  [F-032]"
   },
   {
    "status": "xfail",
-   "project": "blink",
-   "desc": "a package can say which targets it is for  [F-026]"
+   "project": "20-cases",
+   "desc": "a timeout of zero or less is refused  [F-033]"
   },
   {
    "status": "xfail",
-   "project": "blink",
-   "desc": "the firmware runs on emulated hardware  [F-025]"
+   "project": "20-cases",
+   "desc": "naming a label nobody carries does not pass with zero tests  [F-034]"
   },
   {
    "status": "xfail",
-   "project": "blink",
-   "desc": "a linker script inside the package can be named from the manifest  [F-025]"
+   "project": "20-cases",
+   "desc": "the label a case is reported under selects that case on the command line  [F-035]"
   },
   {
    "status": "xfail",
-   "project": "blink",
-   "desc": "a runner written into dowel.toml is not silently ignored  [F-027]"
+   "project": "20-cases",
+   "desc": "rerunning failures says so when the remembered case is gone  [F-036]"
   },
   {
    "status": "xfail",
-   "project": "hashx",
-   "desc": "a C++ consumer can declare its own abi label and still use a C library  [F-028]"
+   "project": "20-cases",
+   "desc": "a type error inside a case points at the key that is wrong  [F-037]"
   },
   {
    "status": "xfail",
-   "project": "hashx",
-   "desc": "a dependency entry that names two sources is refused  [F-029]"
+   "project": "20-cases",
+   "desc": "a case name that breaks the label grammar is refused  [F-038]"
   },
   {
    "status": "xfail",
-   "project": "hashx",
-   "desc": "the same holds when the two sources are a path and a version  [F-029]"
+   "project": "20-cases",
+   "desc": "writing a case as a table header says how to write it as an entry  [F-039]"
   },
   {
    "status": "xfail",
-   "project": "hashx",
-   "desc": "moving the manifest version alone is noticed  [F-030]"
+   "project": "20-cases",
+   "desc": "a cases block with no case in it is not silently one bare run  [F-040]"
   },
   {
    "status": "xfail",
-   "project": "httpd",
-   "desc": "and a package that ends up with two implementations of one interface says so  [F-031]"
+   "project": "20-cases",
+   "desc": "a case can be registered only for some configurations  [F-041]"
   },
   {
    "status": "xfail",
-   "project": "jsonfmt",
-   "desc": "a forwarded feature does not split the build directory in two  [F-023]"
+   "project": "20-cases",
+   "desc": "the schema dump describes the properties a case accepts  [F-042]"
   },
   {
    "status": "xfail",
-   "project": "jsonfmt",
-   "desc": "running the tests does not make the next build redo work  [F-024]"
+   "project": "20-cases",
+   "desc": "the cases that would run can be listed without running them  [F-043]"
   },
   {
    "status": "xfail",
-   "project": "jsonfmt",
-   "desc": "building one target does not make the next full build redo work  [F-024]"
+   "project": "20-cases",
+   "desc": "or found in the target graph  [F-043]"
   },
   {
    "status": "xfail",
-   "project": "plot",
-   "desc": "a manifest that can select two exclusive backends at once is refused  [F-031]"
+   "project": "20-cases",
+   "desc": "the machine-readable result names the target and the case separately  [F-044]"
+  },
+  {
+   "status": "xfail",
+   "project": "20-cases",
+   "desc": "and says whether the case was expected to fail  [F-044]"
+  },
+  {
+   "status": "xfail",
+   "project": "20-cases",
+   "desc": "a case can be given the directory it runs in  [F-045]"
   }
  ]
 }
