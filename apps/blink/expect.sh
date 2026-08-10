@@ -298,6 +298,41 @@ mv dowel.toml.keep  dowel.toml
 ok "putting the runner back where it belongs makes the tests run again" \
     test --target=$TRIPLE
 
+# ------------------------------------------------------------ 6.5 デバッグ (F-046)
+#
+# qemu-system は `-gdb tcp::<port>` でスタブを開き、`-S` で最初の命令の前に
+# 止まる。runner に保持する側（debug_args）と繋ぐ側（debug_connect）を
+# 宣言してあるので、`dowel debug firmware --target=...` で**電源投入直後の
+# 実機**に繋がるはずである。
+#
+# ただし現状、スタブの引数は args と成果物の間に挿し込まれる。この runner は
+# 成果物を取るフラグ（-kernel）を args の末尾に置く——ADR-0008 が勧める形——
+# ため、`-kernel -gdb tcp::13579 -S <elf>` という壊れたコマンドになる。
+# qemu は `-gdb` という名前のファイルをカーネルとして読もうとする。
+
+launch=$("$DOWEL" debug firmware --target=$TRIPLE --dap 2>/dev/null)
+_last_cmd="dowel debug firmware --target=... --dap | .debugServerArgs"
+OUT=$(printf '%s' "$launch" | jq -c '.debugServerArgs')
+RC=0
+printf '%s' "$launch" | jq -e '.miDebuggerServerAddress == "localhost:13579"' >/dev/null 2>&1
+fact $? "the firmware's debug launch attaches at the declared stub address"
+
+got=$(printf '%s' "$launch" | jq -r '.miDebuggerPath')
+[ "$got" = "gdb-multiarch" ]
+v=$?; RC=0; _last_cmd="dap | .miDebuggerPath"
+OUT="debugger: ${got:-(none)}"
+fact $v "with the debugger the bare-metal triple declares"
+
+# -kernel の直後に成果物が来ること。来なければ、qemu はスタブの旗を
+# カーネルとして読む。宣言は正しいのに、組まれたコマンドが壊れている。
+after_kernel=$(printf '%s' "$launch" |
+    jq -r '.debugServerArgs | .[(index("-kernel") + 1)] // "(nothing)"')
+case $after_kernel in */bin/firmware) verdict=0 ;; *) verdict=1 ;; esac
+RC=0; _last_cmd="dap | debugServerArgs の -kernel の直後"
+OUT="after -kernel: $after_kernel"$'\n'"$(printf '%s' "$launch" | jq -c '.debugServerArgs')"
+known_issue F-046
+fact $verdict "the stub arguments do not break a runner that ends with the flag taking the artifact"
+
 # ------------------------------------------------------------ 7. 増分
 
 # 直前に `test` を挟んでいるため、まず組み直してから測る。挟まないと

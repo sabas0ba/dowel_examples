@@ -81,23 +81,24 @@ readelf と nm でも読む。
 | Entry point address | `nm` が言う `_reset` の番地と一致（thumb のため +1） |
 | `.vectors` 節 | 残っている（誰も呼ばないが、消えると立ち上がらない） |
 
-## 3つの関門
+## 3つの関門（すべて `17bd54e` で開いた）
 
-### リンカスクリプトを指せない（[F-025](../../docs/10-findings.md#f-025)）
+この木を書くことで3件を報告し、いずれも本体に修正が入った。経緯は所見に
+残してある。ここには「いま何がどう書けるか」と、直る前に何が起きていたかを
+記す。
 
-`ld/thumbv7em-none-eabihf.ld` は木の中に置いてあるが、マニフェストから指す
-方法が無い。
+### リンカスクリプト（[F-025](../../docs/10-findings.md#f-025)）
+
+ベアメタルでは記憶の配置を省略できない。`link_flags` は `List<Str | Path>`
+であり、`file()` の要素は絶対パスへ展開されるので、木の中のスクリプトを
+そのまま指せる。
 
 ```
-link_flags = ["-T", "ld/....ld"]      → cannot open linker script file
-link_flags = ["-Wl,-T,ld/....ld"]     → 同じ
-link_flags = ["-Lld", "-T....ld"]     → 同じ（-L も同じ基準で解決される）
-link_flags = [file("ld/....ld")]      → type-mismatch（List<Str> である）
+link_flags = [..., "-T", file("ld/thumbv7em-none-eabihf.ld")]
 ```
 
-絶対パスなら通り、配置も効く。**足りないのは道の書き方だけ**である。
-
-実害は像の大きさでも配置の見た目でもなく、**立ち上がらないこと**に出る。
+指せなかった頃の実害は、像の大きさでも配置の見た目でもなく**立ち上がらない
+こと**に出ていた。`expect.sh` はいまも `-T` を外して確かめている。
 
 | | 最初の LOAD | `dowel test` |
 |---|---|---|
@@ -105,8 +106,7 @@ link_flags = [file("ld/....ld")]      → type-mismatch（List<Str> である）
 | スクリプトなし | `0x00008000`（何も無い番地） | `qemu: fatal: Lockup: can't escalate 3 to HardFault` |
 
 リセット時、CPU は `0x00000000` から2語を読む。そこに何も無ければ、スタック
-ポインタも入口も不定のまま実行が始まり、最初の例外で lockup する。書き込み器に
-食わせる前の段階で、像は既に起動しない。
+ポインタも入口も不定のまま実行が始まり、最初の例外で lockup する。
 
 スクリプトが効いたときは、生イメージの先頭2語を直に読んで確かめている。
 
@@ -115,49 +115,33 @@ link_flags = [file("ld/....ld")]      → type-mismatch（List<Str> である）
 | `[0]` | `0x20400000` — SRAM の末尾。初期スタックポインタ |
 | `[1]` | flash 内の番地 — リセットハンドラ |
 
-### 対象の triple を宣言できない（[F-026](../../docs/10-findings.md#f-026)）
+### 対象の宣言（[F-026](../../docs/10-findings.md#f-026)）
 
-`--target` を付け忘れても、ホストには既定があるため計画が立つ。
+この木はホスト向けではない。`dowel.toml` にそう書いてある。
 
-```console
-$ dowel build                      # --target を忘れた
-cc: error: unrecognized command-line option '-mthumb'
-
-$ dowel build --message-format=json | jq -r '.code'
-                                   # 何も出ない
+```toml
+[package]
+targets = ["thumbv7em-none-eabihf"]
 ```
 
-落ちること自体は良いが、**利用者が見るのはフラグについての苦情**である。
-「この木はホスト向けではない」とはどこにも書かれておらず、`--target` の
-付け忘れだと気づく手がかりが無い。
+`--target` を付け忘れると、ホストの既定で計画が立つ前に**パッケージの側が
+断る**（`unsupported-target`）。宣言が無かった頃、利用者が見るのは
+`unrecognized command-line option '-mthumb'` というフラグへの苦情であり、
+フラグがたまたま通る木では黙ってホストの「ファームウェア像」が出来上がった。
 
-フラグがたまたまホストのコンパイラにも通る木（対象が
-`aarch64-unknown-linux-gnu` など）では、**黙って x86-64 の「ファームウェア像」が
-出来上がる**。書き込み器に食わせるつもりのファイルが、ホストの objcopy が
-作った別物になる。どちらの形も dowel は何も言わない。
+断っているのが `targets` であることは、宣言を外して確かめている。外すと
+ホストのコンパイラの苦情に戻る。
 
-`expect.sh` は前者を通常の検査として記録し、パッケージが対象を宣言できることを
-`xfail` として置いてある。
+### 実行の宣言の置き場所（[F-027](../../docs/10-findings.md#f-027)）
 
-### 実行の宣言を置き違える（[F-027](../../docs/10-findings.md#f-027)）
+`[toolchain.<triple>]` は `dowel.toml`、`[runner.<triple>]` は `dowel.build`
+である。組み込みの構成ではこの2つを続けて書くため、片方の隣にもう片方を
+書くのは自然な間違いである。
 
-`[toolchain.<triple>]` は `dowel.toml`、`[runner.<triple>]` は `dowel.build` で
-ある。組み込みの構成ではこの2つを続けて書く。同じ triple を鍵に持ち名前も対に
-なっているため、片方の隣にもう片方を書くのは自然な間違いである。
-
-そう書くと、**診断が1件も出ずに無視される**。そのうえで `dowel test` が
-「宣言が無い」と言い、書けと勧める。
-
-```console
-$ dowel check --target=thumbv7em-none-eabihf
-check passed                       # [runner] は dowel.toml にある
-
-$ dowel test --target=thumbv7em-none-eabihf
-error[missing-runner]: no runner is declared for `thumbv7em-none-eabihf`
-  = help: declare one, for example `[runner.<triple>]` with `command = "qemu-..."`
-```
-
-利用者は自分の `dowel.toml` を見て、書いてあることを確かめ、途方に暮れる。
+いまは `dowel.toml` の未知の最上位テーブルが `unknown-table` で拒まれる。
+直る前は**診断が1件も出ずに無視され**、そのうえで `dowel test` が「宣言が
+無い」と言って書けと勧めてきた。利用者は自分の `dowel.toml` を見て、書いて
+あることを確かめ、途方に暮れることになる。
 
 ## 何を dowel に効かせているか
 

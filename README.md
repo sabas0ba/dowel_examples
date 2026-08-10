@@ -10,7 +10,7 @@ dowel 本体は自分自身を内側から検査している（`crates/*/tests/`
 仕様と実装の食い違いを仕様の側から見つけられる。
 
 見つけたものは [docs/10-findings.md](docs/10-findings.md) に記録し、本体へ報告する。
-これまでに 45 件を報告し、30 件が修正された。
+これまでに 49 件を報告し、44 件が修正された。
 
 ## 走らせる
 
@@ -56,10 +56,10 @@ DOWELUP=/path/to/dowelup DOWEL_SRC=/path/to/dowel ./run.sh
 ## 出力
 
 1 検査 1 行。本体が直していない事項に対する検査は `xfail` として登録する。
-本体側が直ると `XPASS` になって落ち、宣言を外すべきことが分かる。現在は 18 件で、
-[F-011](docs/10-findings.md#f-011) の残っている側と、テストフレームワークに
-ついて見つけた [F-032](docs/10-findings.md#f-032) から
-[F-045](docs/10-findings.md#f-045) に対応する。
+本体側が直ると `XPASS` になって落ち、宣言を外すべきことが分かる。現在は 5 件で、
+[F-011](docs/10-findings.md#f-011) の残っている側と、デバッグ機能について
+見つけた [F-046](docs/10-findings.md#f-046) から
+[F-049](docs/10-findings.md#f-049) に対応する。
 
 直った所見の検査は `known_issue` を外すだけでは足りない。**新しい機構を実際に
 使う形へ書き換える**。書き換えないと、直ったことを確かめたことにならない。
@@ -94,9 +94,13 @@ apps/plot
 
 20-cases
   ok   cases add no translation unit; five of them share one binary
-  xfail the schema dump describes the properties a case accepts  [F-042]
+  ok   the binary lists its own cases and each runs as its own test
 
-total 1100 checks: 1082 passed, 0 failed, 18 known, 0 fixed
+21-debug
+  ok   a breakpoint set through dowel stops the program where the source says
+  ok   a cross debug session attaches to the declared stub address
+
+total 1145 checks: 1140 passed, 0 failed, 5 known, 0 fixed
 ```
 
 検査名は英語で書く。実装の中身ではなく、何が固定されているかを1行で読ませる
@@ -126,6 +130,7 @@ total 1100 checks: 1082 passed, 0 failed, 18 known, 0 fixed
 | [18-tools](projects/18-tools/) | ツールチェーンの道具。宣言・語彙・実在確認・記録・トリプルごとの選択 |
 | [19-artifacts](projects/19-artifacts/) | 成果物から別の成果物を作る。生イメージと HEX、命令の形、増分、クロス |
 | [20-cases](projects/20-cases/) | 1本の実行ファイルから複数のテストを登録する。宣言・選択・時間切れ・語彙 |
+| [21-debug](projects/21-debug/) | 宣言されたデバッガとスタブ。本物の gdb で止め、--dap が同じ事実を書き出すこと |
 
 ## アプリケーション
 

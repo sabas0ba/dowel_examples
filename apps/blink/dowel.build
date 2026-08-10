@@ -89,3 +89,11 @@ link_flags = [
 [runner.thumbv7em-none-eabihf]
 command = "qemu-system-arm"
 args    = ["-M", "mps2-an386", "-nographic", "-semihosting", "-kernel"]
+# 保持する側と繋ぐ側（ADR-0024）。qemu-system は -gdb でスタブを開き、
+# -S で最初の命令の前に止まる。
+#
+# ただし現状、スタブの引数は args と成果物の間に挿し込まれるため、
+# `-kernel` が `-gdb` を食ってしまい、この宣言では繋がらない
+# （docs/10-findings.md F-046）。
+debug_args    = ["-gdb", "tcp::13579", "-S"]
+debug_connect = "localhost:13579"

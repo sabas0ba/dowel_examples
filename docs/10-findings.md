@@ -15,9 +15,13 @@ F-020 の残っていた側（検査の道具）と F-022 から F-031 までは
 外し、**新しい機構を実際に使う形へ書き換えて**通常の検査として残してある。
 書き換えないと、直ったことを確かめたことにならない。
 
-未修正は F-011 の残っている側と、テストフレームワーク（`[test.<name>.cases]`,
-ADR-0022）について見つけた F-032 から F-045 までである。対応する検査は
-`known_issue` を付けてあり、本体が直すと `XPASS` になって落ちる。
+テストフレームワークについて見つけた F-032 から F-045 までは `e12bac7` で
+まとめて修正が入った。検査は新しい挙動を使う形へ書き換えて通常の検査として
+残してある。
+
+未修正は F-011 の残っている側と、デバッグ機能（`dowel debug` / ADR-0024、
+ハーネス規約 / ADR-0023）について見つけた F-046 から F-049 までである。
+対応する検査は `known_issue` を付けてあり、本体が直すと `XPASS` になって落ちる。
 
 各項目は次の形で記録する。
 
@@ -62,20 +66,24 @@ ADR-0022）について見つけた F-032 から F-045 までである。対応�
 | [F-029](#f-029) | 依存が出所を2つ名乗っても無診断で受理され、黙って `path` が勝つ | 実装 | [#79](https://github.com/sabas0ba/dowel/issues/79) | 修正済み |
 | [F-030](#f-030) | パッケージの `version` を翻訳へ届ける手立てが無い | 要望 | [#80](https://github.com/sabas0ba/dowel/issues/80) | 修正済み |
 | [F-031](#f-031) | 排他な機能を宣言できず、`lib` では黙って片方の実装が勝つ | 要望 | [#82](https://github.com/sabas0ba/dowel/issues/82) | 修正済み |
-| [F-032](#f-032) | `should_fail` がシグナルによる異常終了を通す | 実装 | [#88](https://github.com/sabas0ba/dowel/issues/88) | 未修正 |
-| [F-033](#f-033) | `timeout = 0` と負値が受理され、黙って無視される | 実装 | [#96](https://github.com/sabas0ba/dowel/issues/96) | 未修正 |
-| [F-034](#f-034) | `--label` の空振りが終了状態 0 で終わる | 実装／文書 | [#89](https://github.com/sabas0ba/dowel/issues/89) | 未修正 |
-| [F-035](#f-035) | 印字された事例のラベルをコマンドラインに渡せない | 要望 | [#93](https://github.com/sabas0ba/dowel/issues/93) | 未修正 |
-| [F-036](#f-036) | `--failed` が、覚えている事例の消失を黙って緑にする | 実装 | [#91](https://github.com/sabas0ba/dowel/issues/91) | 未修正 |
-| [F-037](#f-037) | 事例の型診断が、誤っている鍵ではなく事例全体を指す | 診断 | [#101](https://github.com/sabas0ba/dowel/issues/101) | 未修正 |
-| [F-038](#f-038) | 事例の名前が検証されず、ラベルの文法を壊す | 実装 | [#97](https://github.com/sabas0ba/dowel/issues/97) | 未修正 |
-| [F-039](#f-039) | 事例を表見出しで書いた診断が直し方を示さない | 診断 | [#98](https://github.com/sabas0ba/dowel/issues/98) | 未修正 |
-| [F-040](#f-040) | 空の `cases` 表が黙って素の1件に落ちる | 実装 | [#99](https://github.com/sabas0ba/dowel/issues/99) | 未修正 |
-| [F-041](#f-041) | 事例そのものを条件付きにできない | 要望／文書 | [#92](https://github.com/sabas0ba/dowel/issues/92) | 未修正 |
-| [F-042](#f-042) | `schema dump` と LSP が `cases` を知らない | 実装／文書 | [#90](https://github.com/sabas0ba/dowel/issues/90) | 未修正 |
-| [F-043](#f-043) | 事例を走らせずに一覧する方法が無い | 要望 | [#94](https://github.com/sabas0ba/dowel/issues/94) | 未修正 |
-| [F-044](#f-044) | 結果の JSON が目標と事例を分けず、事例の属性を出さない | 実装 | [#100](https://github.com/sabas0ba/dowel/issues/100) | 未修正 |
-| [F-045](#f-045) | 事例の作業ディレクトリが未文書・指定不可 | 文書／要望 | [#95](https://github.com/sabas0ba/dowel/issues/95) | 未修正 |
+| [F-032](#f-032) | `should_fail` がシグナルによる異常終了を通す | 実装 | [#88](https://github.com/sabas0ba/dowel/issues/88) | 修正済み |
+| [F-033](#f-033) | `timeout = 0` と負値が受理され、黙って無視される | 実装 | [#96](https://github.com/sabas0ba/dowel/issues/96) | 修正済み |
+| [F-034](#f-034) | `--label` の空振りが終了状態 0 で終わる | 実装／文書 | [#89](https://github.com/sabas0ba/dowel/issues/89) | 修正済み |
+| [F-035](#f-035) | 印字された事例のラベルをコマンドラインに渡せない | 要望 | [#93](https://github.com/sabas0ba/dowel/issues/93) | 修正済み |
+| [F-036](#f-036) | `--failed` が、覚えている事例の消失を黙って緑にする | 実装 | [#91](https://github.com/sabas0ba/dowel/issues/91) | 修正済み |
+| [F-037](#f-037) | 事例の型診断が、誤っている鍵ではなく事例全体を指す | 診断 | [#101](https://github.com/sabas0ba/dowel/issues/101) | 修正済み |
+| [F-038](#f-038) | 事例の名前が検証されず、ラベルの文法を壊す | 実装 | [#97](https://github.com/sabas0ba/dowel/issues/97) | 修正済み |
+| [F-039](#f-039) | 事例を表見出しで書いた診断が直し方を示さない | 診断 | [#98](https://github.com/sabas0ba/dowel/issues/98) | 修正済み |
+| [F-040](#f-040) | 空の `cases` 表が黙って素の1件に落ちる | 実装 | [#99](https://github.com/sabas0ba/dowel/issues/99) | 修正済み |
+| [F-041](#f-041) | 事例そのものを条件付きにできない | 要望／文書 | [#92](https://github.com/sabas0ba/dowel/issues/92) | 修正済み |
+| [F-042](#f-042) | `schema dump` と LSP が `cases` を知らない | 実装／文書 | [#90](https://github.com/sabas0ba/dowel/issues/90) | 修正済み |
+| [F-043](#f-043) | 事例を走らせずに一覧する方法が無い | 要望 | [#94](https://github.com/sabas0ba/dowel/issues/94) | 修正済み |
+| [F-044](#f-044) | 結果の JSON が目標と事例を分けず、事例の属性を出さない | 実装 | [#100](https://github.com/sabas0ba/dowel/issues/100) | 修正済み |
+| [F-045](#f-045) | 事例の作業ディレクトリが未文書・指定不可 | 文書／要望 | [#95](https://github.com/sabas0ba/dowel/issues/95) | 修正済み |
+| [F-046](#f-046) | `debug_args` の挿し込み位置が `-kernel` で終わる runner を壊す | 実装 | [#107](https://github.com/sabas0ba/dowel/issues/107) | 未修正 |
+| [F-047](#f-047) | ハーネスの列挙が返した事例名が検証されない | 実装 | [#108](https://github.com/sabas0ba/dowel/issues/108) | 未修正 |
+| [F-048](#f-048) | 半分だけ宣言したスタブに「宣言が無い」と言う | 診断 | [#109](https://github.com/sabas0ba/dowel/issues/109) | 未修正 |
+| [F-049](#f-049) | 落ちていない事例をデバッガの下で開けない | 要望 | [#110](https://github.com/sabas0ba/dowel/issues/110) | 未修正 |
 
 ---
 
@@ -2611,7 +2619,7 @@ exclusive = [["headless", "x11"]]     # この2つは同時に立てない
 **`should_fail` はシグナルによる異常終了を「期待どおりの失敗」として通す。
 JSON でも普通の非零終了と区別できない。**
 
-種別: 実装。未修正（`17bd54e`）。`[test.<name>.cases]` を使って踏んだ。
+種別: 実装。`e12bac7` で修正（`17bd54e` で観測）。`[test.<name>.cases]` を使って踏んだ。
 
 ### 観測
 
@@ -2650,7 +2658,7 @@ test c:suite/rejects ... ok (7ms)
 
 `projects/20-cases` の `a case killed by a signal does not satisfy should_fail`
 と `and the report distinguishes a crash from a nonzero exit`。
-どちらも known_issue F-032 である。
+どちらも修正され、通常の検査になっている。
 
 対照として `a timeout wins over should_fail, so a hang is never an expected failure`
 を通常の検査に置いてある。これがこの所見の論拠である。
@@ -2663,7 +2671,7 @@ test c:suite/rejects ... ok (7ms)
 
 **`timeout = 0` と負値が受理され、実行時には無視される。**
 
-種別: 実装。未修正（`17bd54e`）。
+種別: 実装。`e12bac7` で修正（`17bd54e` で観測）。
 
 ### 観測
 
@@ -2697,7 +2705,7 @@ slow = { args = ["big"], timeout = match cfg.opt { debug => 60, release => 0 } }
 ### 検査
 
 `projects/20-cases` の `a timeout of zero or less is refused`。
-known_issue F-033 である。対照として
+修正され、通常の検査になっている。対照として
 `a case past its timeout is killed and reported as timed out` を置いてある。
 
 ---
@@ -2709,7 +2717,7 @@ known_issue F-033 である。対照として
 **`--label` に誰も持たない名前を渡すと、報告はするが終了状態は 0 になる。
 `docs/60-cli.md` の記述と食い違う。**
 
-種別: 実装／文書。未修正（`17bd54e`）。
+種別: 実装／文書。`e12bac7` で修正（`17bd54e` で観測）。
 
 ### 観測
 
@@ -2748,7 +2756,7 @@ $ dowel test --label nosuch >/dev/null 2>/dev/null; echo $?
 ### 検査
 
 `projects/20-cases` の `naming a label nobody carries does not pass with zero tests`。
-known_issue F-034 である。報告そのものは出るので
+修正され、通常の検査になっている。報告そのものは出るので
 `and it does say which label found nothing` を通常の検査に置いてある。
 
 ---
@@ -2759,7 +2767,7 @@ known_issue F-034 である。報告そのものは出るので
 
 **出力が印字する `<package>:<target>/<case>` を、そのまま渡し返せない。**
 
-種別: 要望。未修正（`17bd54e`）。
+種別: 要望。`e12bac7` で修正（`17bd54e` で観測）。
 
 ### 観測
 
@@ -2793,7 +2801,7 @@ error: no target named `c:suite/rejects`
 
 `projects/20-cases` の
 `the label a case is reported under selects that case on the command line`。
-known_issue F-035 である。対照として `naming the target runs all of its cases`
+修正され、通常の検査になっている。対照として `naming the target runs all of its cases`
 を置いてある。
 
 ---
@@ -2805,7 +2813,7 @@ known_issue F-035 である。対照として `naming the target runs all of its
 **`--failed` は、覚えている事例がマニフェストから消えていると 0 件走って
 状態 0 で終わる。**
 
-種別: 実装。未修正（`17bd54e`）。[F-034](#f-034) と同じ家族である。
+種別: 実装。`e12bac7` で修正（`17bd54e` で観測）。[F-034](#f-034) と同じ家族である。
 
 ### 観測
 
@@ -2844,7 +2852,7 @@ test result: ok. 0 passed; 0 failed         # rc=0
 ### 検査
 
 `projects/20-cases` の `rerunning failures says so when the remembered case is gone`。
-known_issue F-036 である。対照として
+修正され、通常の検査になっている。対照として
 `--failed reruns the case that failed, not its whole target` を置いてある。
 
 ---
@@ -2855,7 +2863,7 @@ known_issue F-036 である。対照として
 
 **事例の型診断が、誤っている鍵ではなく事例全体に下線を引く。**
 
-種別: 診断。未修正（`17bd54e`）。
+種別: 診断。`e12bac7` で修正（`17bd54e` で観測）。
 
 ### 観測
 
@@ -2885,7 +2893,7 @@ error[type-mismatch]: `timeout` is Int but Str was given
 ### 検査
 
 `projects/20-cases` の `a type error inside a case points at the key that is wrong`。
-known_issue F-037 である。診断そのものが出ることは
+修正され、通常の検査になっている。診断そのものが出ることは
 `a value of the wrong type in a case is refused` として置いてある。
 
 ---
@@ -2896,7 +2904,7 @@ known_issue F-037 である。診断そのものが出ることは
 
 **事例の名前が検証されない。`a/b`・空名・空白入りがラベルの文法を壊す。**
 
-種別: 実装。未修正（`17bd54e`）。
+種別: 実装。`e12bac7` で修正（`17bd54e` で観測）。
 
 ### 観測
 
@@ -2930,7 +2938,7 @@ test c:suite/x y ... ok (1ms)
 ### 検査
 
 `projects/20-cases` の `a case name that breaks the label grammar is refused`。
-known_issue F-038 である。対照として `two cases with the same name are refused`
+修正され、通常の検査になっている。対照として `two cases with the same name are refused`
 を置いてある。
 
 ---
@@ -2942,7 +2950,7 @@ known_issue F-038 である。対照として `two cases with the same name are 
 **`[test.x.cases.<名前>]` と書くと `too-deep-table` になり、事例がインライン
 表であることに触れない。**
 
-種別: 診断。未修正（`17bd54e`）。
+種別: 診断。`e12bac7` で修正（`17bd54e` で観測）。
 
 ### 観測
 
@@ -2981,7 +2989,7 @@ TOML でそれを書く既定の形は項目ごとの表見出しである。し
 ### 検査
 
 `projects/20-cases` の `writing a case as a table header says how to write it as an entry`。
-known_issue F-039 である。対照として
+修正され、通常の検査になっている。対照として
 `a cases block on a bin target is refused` と `with what to do instead` を
 置いてある。
 
@@ -2993,7 +3001,7 @@ known_issue F-039 である。対照として
 
 **空の `[cases]` 表が黙って「素の実行ファイル1件」に落ちる。**
 
-種別: 実装。未修正（`17bd54e`）。
+種別: 実装。`e12bac7` で修正（`17bd54e` で観測）。
 
 ### 観測
 
@@ -3024,7 +3032,7 @@ test c:empty ... ok (1ms)
 ### 検査
 
 `projects/20-cases` の `a cases block with no case in it is not silently one bare run`。
-known_issue F-040 である。対照として
+修正され、通常の検査になっている。対照として
 `a target with no cases block is one test named after the target` を置いてある。
 
 ---
@@ -3036,7 +3044,7 @@ known_issue F-040 である。対照として
 **事例そのものを条件付きにできない。ADR-0022 と reference の
 「`match` / `when` apply」が誘う書き方が型エラーになる。**
 
-種別: 要望／文書。未修正（`17bd54e`）。
+種別: 要望／文書。`e12bac7` で修正（`17bd54e` で観測）。
 
 ### 観測
 
@@ -3081,9 +3089,10 @@ ordinary manifest values」は、事例そのものが値だと読める。
 ### 検査
 
 `projects/20-cases` の `a case can be registered only for some configurations`。
-known_issue F-041 である。通常の検査として
+`e12bac7` で修正された。通常の検査として
 `a value inside a case can branch on the configuration` と
-`and the diagnostic for a conditional case shows the literal form` を置いてある。
+`the case exists in the configuration its condition names` と
+`and is absent from the one it does not` を置いてある。
 
 ---
 
@@ -3094,7 +3103,7 @@ known_issue F-041 である。通常の検査として
 **`schema dump` が `cases` を記述せず、LSP のホバーが `cases` の中を何も
 答えない。`12-build-reference.md` が宣言する不変条件が破れている。**
 
-種別: 実装／文書。未修正（`17bd54e`）。
+種別: 実装／文書。`e12bac7` で修正（`17bd54e` で観測）。
 
 ### 観測
 
@@ -3145,9 +3154,11 @@ should_fail, labels`）。**鍵表が実装の中に3か所ある**ことにな�
 ### 検査
 
 `projects/20-cases` の `the schema dump describes the properties a case accepts`。
-known_issue F-042 である。対照として
-`the two sibling blocks are described, which is the shape cases should follow`
-を置いてある。抜けているのが `cases` だけであることを示す。
+`e12bac7` で修正された。`case_properties` に加えて `runner_properties` も
+入り（#90 で併せて指摘した側）、
+`and the runner's, which was the other block missing from it` と
+`and the case keys it lists are exactly the ones the type checker accepts`
+を通常の検査として置いてある。
 
 ---
 
@@ -3158,7 +3169,7 @@ known_issue F-042 である。対照として
 **事例を走らせずに一覧する方法が無い。`--no-run` も `graph` も `schema dump`
 も事例を出さない。**
 
-種別: 要望。未修正（`17bd54e`）。
+種別: 要望。`e12bac7` で修正（`17bd54e` で観測）。
 
 ### 観測
 
@@ -3190,8 +3201,10 @@ $ dowel graph --kind=target --format=json | jq '.targets'
 
 ### 検査
 
-`projects/20-cases` の `the cases that would run can be listed without running them`
-と `or found in the target graph`。どちらも known_issue F-043 である。
+`projects/20-cases` の `the cases that would run can be listed without running them`。
+`e12bac7` で `--no-run` が一覧を出すようになった。
+`with the properties that change how a case is judged` と
+`and the listing honours the selection that was asked for` も通常の検査である。
 
 ---
 
@@ -3202,7 +3215,7 @@ $ dowel graph --kind=target --format=json | jq '.targets'
 **`test-result` の JSON が `target` に事例ラベルを入れ、事例の属性を1つも
 出さない。**
 
-種別: 実装。未修正（`17bd54e`）。
+種別: 実装。`e12bac7` で修正（`17bd54e` で観測）。
 
 ### 観測
 
@@ -3234,7 +3247,7 @@ $ dowel graph --kind=target --format=json | jq '.targets'
 `projects/20-cases` の
 `the machine-readable result names the target and the case separately` と
 `and says whether the case was expected to fail`。
-どちらも known_issue F-044 である。対照として
+どちらも修正され、通常の検査になっている。対照として
 `the machine-readable results go to stdout while the progress goes to stderr`
 を置いてある（こちらは正しく分かれている）。
 
@@ -3246,7 +3259,7 @@ $ dowel graph --kind=target --format=json | jq '.targets'
 
 **事例の作業ディレクトリが文書化されておらず、指定する手立ても無い。**
 
-種別: 文書／要望。未修正（`17bd54e`）。
+種別: 文書／要望。`e12bac7` で修正（`17bd54e` で観測）。
 
 ### 観測
 
@@ -3280,9 +3293,192 @@ $ dowel graph --kind=target --format=json | jq '.targets'
 ### 検査
 
 `projects/20-cases` の `a case can be given the directory it runs in`。
-known_issue F-045 である。実測は
+修正され、通常の検査になっている。実測は
 `a case runs in the root of the package that declares it` として固定してある
 が、文書に無い以上これは**約束ではなく観測**である。
+
+---
+
+## F-046
+
+報告先: [sabas0ba/dowel#107](https://github.com/sabas0ba/dowel/issues/107)
+
+**スタブの起動コマンドは `command + args + debug_args + <成果物>` の順で
+組まれる。`args` の末尾に成果物を取るフラグを置く runner——ADR-0008 が勧める
+形——では、そのフラグが `debug_args` の先頭を食い、壊れたコマンドができる。**
+
+種別: 実装。未修正（`e12bac7`）。`apps/blink` へデバッグを足そうとして踏んだ。
+
+### 観測
+
+`dowel test` で動いている組み込みの runner に、スタブの宣言を足す。
+
+```toml
+[runner.thumbv7em-none-eabihf]
+command       = "qemu-system-arm"
+args          = ["-M", "mps2-an386", "-nographic", "-semihosting", "-kernel"]
+debug_args    = ["-gdb", "tcp::13579", "-S"]
+debug_connect = "localhost:13579"
+```
+
+```console
+$ dowel debug firmware --target=... --dap | jq -r '.debugServerArgs | join(" ")'
+-M mps2-an386 -nographic -semihosting -kernel -gdb tcp::13579 -S /.../bin/firmware
+```
+
+`-kernel` の直後が `-gdb` である。qemu は `-gdb` という名前のファイルを
+カーネルとして読もうとし、スタブは立たず、gdb は
+`could not connect: Connection timed out` で終わる。
+
+qemu-user（`-g` が位置に依存しない）ではたまたま通るため、qemu-system で
+初めて現れる。`docs/30-devexp.md` 2.2 の「クロス実行では gdbstub を立てて
+繋ぐ」という筋書きの、組み込み側の半分が宣言できない。
+
+### 期待
+
+挿し込む位置を `args` の前にする（`command + debug_args + args + <成果物>`）。
+qemu-system は正しく動き、qemu-user も動き続ける。「成果物を取るフラグは
+末尾」という既存の規約と衝突しない位置は先頭側しかない。あわせて挿し込み
+位置を文書に明記する——現状どこにも書かれていない。
+
+### なぜ内側から見つからないか
+
+スタブの検査を qemu-user で書くと、どの挿し込み位置でも通る。位置が意味を
+持つ runner は qemu-system で初めて現れ、それは実機の代わりのエミュレータを
+相手にする木でしか書かれない。
+
+### 検査
+
+`apps/blink` の
+`the stub arguments do not break a runner that ends with the flag taking the artifact`。
+known_issue F-046 である。qemu-user 側が動くことは `projects/21-debug` の
+通常の検査（`a cross debug session attaches to the declared stub address`）。
+
+---
+
+## F-047
+
+報告先: [sabas0ba/dowel#108](https://github.com/sabas0ba/dowel/issues/108)
+
+**マニフェストに書いた事例名は `invalid-name` で検証される（F-038 の修正）が、
+ハーネスの列挙が返した名前は素通りし、同じラベルの文法を壊す。**
+
+種別: 実装。未修正（`e12bac7`）。ADR-0023 を使ってみて踏んだ。
+
+### 観測
+
+`--list` が `a/b` や `be ta` を印字すると、そのまま登録される。
+
+```console
+$ dowel test h
+test d:h/a/b ... FAILED (1ms)
+test d:h/be ta ... FAILED (1ms)
+```
+
+`d:h/a/b` は目標がどこで終わるか読めず、位置引数での再実行（#93）が
+曖昧さなしに受けられない。規則が片方の入口にしか無い。
+
+### 期待
+
+列挙が返した名前にも同じ検証を通し、違反は**その目標の失敗**として報告する。
+列挙の失敗（非零・時間切れ・空）が既に目標の失敗として扱われているので、
+その並びに入る。
+
+ハーネスの列挙は既存の試験フレームワークの出力をそのまま流す場所であり、
+名前に空白や `/` を含む枠組みは普通にある。マニフェストの名前は書き手が
+選べるが、**列挙が返す名前は選べない**。
+
+### なぜ内側から見つからないか
+
+列挙の検査は行儀の良いハーネスで書かれる。壊れた名前を返すハーネスは、
+既存のフレームワークの出力形式を思い浮かべて初めて「普通に来る入力」だと
+分かる。
+
+### 検査
+
+`projects/20-cases` の
+`a discovered name that breaks the label grammar is not silently accepted`。
+known_issue F-047 である。マニフェスト側の `invalid-name` は通常の検査
+（`a case name that breaks the label grammar is refused`）。
+
+---
+
+## F-048
+
+報告先: [sabas0ba/dowel#109](https://github.com/sabas0ba/dowel/issues/109)
+
+**`debug_args` と `debug_connect` の片方だけを書いた場合の診断が、何も
+書かなかった場合と同じ「declares no stub」になる。**
+
+種別: 診断。未修正（`e12bac7`）。#74（宣言してあるのに missing-runner）と
+同族の、規模の小さい版である。
+
+### 観測
+
+```console
+$ dowel debug app --target=...      # debug_args は書いた
+error[missing-debug-stub]: no debug stub is declared for `...`
+   | ^^^^ this runner declares no stub
+```
+
+半分は宣言してある。利用者は自分の `debug_args` を見て、書いてあることを
+確かめることになる。
+
+### 期待
+
+書いてある側を認め、欠けている側の鍵を指す。
+
+### なぜ内側から見つからないか
+
+「両方無い」と「片方だけ」は同じ経路に落ちるため、内側の検査は前者で足りる。
+文言が実態と合っているかは、片方だけ書いた利用者の視点でしか問われない。
+
+### 検査
+
+`projects/21-debug` の `a half-declared stub is told which half is missing`。
+known_issue F-048 である。両方無い場合の `missing-debug-stub` は通常の検査。
+
+---
+
+## F-049
+
+報告先: [sabas0ba/dowel#110](https://github.com/sabas0ba/dowel/issues/110)
+
+**落ちていない事例をデバッガの下で開けない。`dowel debug` は事例ラベルを
+受けず、`--debug-failed` は失敗の記録を経由する道しか無い。**
+
+種別: 要望。未修正（`e12bac7`）。
+
+### 観測
+
+```console
+$ dowel debug d:suite/plain
+error: no target named `d:suite/plain`
+```
+
+`dowel test` の位置引数は事例ラベルを受ける（#93）。`dowel debug` は目標だけ。
+
+### 期待
+
+`dowel debug` の位置引数が事例ラベルも受け、事例の宣言（args / env / cwd、
+ハーネスなら `run` + 名前）を Launch に写す。写す機構は `--debug-failed` に
+既にあり、選択の入口を1つ足すだけに見える。
+
+デバッガを開きたいのは失敗のときだけではない。通っているが遅い事例、
+これから書く事例の初回実行、別の構成で落ちた事例。回避策は「わざと落として
+記録を作る」で、道具に嘘をつく形である。
+
+### なぜ内側から見つからないか
+
+`--debug-failed` の検査は「落ちる → 開く」の流れで書かれ、その流れの中では
+記録が常に在る。記録が無い状態で開きたいのは日常の開発の側から来る要求である。
+
+### 検査
+
+`projects/21-debug` の
+`a case that has not failed can be opened under the debugger`。
+known_issue F-049 である。`--debug-failed` が宣言を写すことは通常の検査
+（args / env / cwd がそのまま Launch に写ること）。
 
 
 ---

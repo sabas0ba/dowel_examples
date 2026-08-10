@@ -109,11 +109,13 @@ jobs:
         # qemu-system-arm はそれを実際の基板の代わりに走らせるために使う。
         # cairo と X11 は apps/plot が pkg-config 経由で引き、xvfb は
         # その窓を実際に開くために使う（表示の無い機械で GUI を走らせる）。
+        # gdb と gdb-multiarch は 21-debug が本物のデバッガを繋ぐために使う。
         run: |
           sudo apt-get update -qq
           sudo apt-get install -y -qq ninja-build jq cmake pkg-config gcc g++ clang \
               gcc-aarch64-linux-gnu g++-aarch64-linux-gnu qemu-user-static \
-              gcc-arm-none-eabi qemu-system-arm xvfb libcairo2-dev libx11-dev
+              gcc-arm-none-eabi qemu-system-arm xvfb libcairo2-dev libx11-dev \
+              gdb gdb-multiarch
           ninja --version
           jq --version
           cmake --version | head -1
@@ -126,6 +128,8 @@ jobs:
           qemu-system-arm --version | head -1
           pkg-config --modversion cairo x11 | paste -sd' ' -
           Xvfb -help 2>&1 | head -1
+          gdb --version | head -1
+          gdb-multiarch --version | head -1
           clang --version | head -1
           g++ --version | head -1
           aarch64-linux-gnu-gcc --version | head -1

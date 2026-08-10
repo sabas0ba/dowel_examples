@@ -14,3 +14,6 @@ targets = ["thumbv7em-none-eabihf"]
 c       = "arm-none-eabi-gcc"
 ar      = "arm-none-eabi-ar"
 objcopy = "arm-none-eabi-objcopy"
+# 繋ぐ側。arm-none-eabi-gdb は Ubuntu のパッケージに無いため、
+# 多アーキテクチャ版の gdb を名指しする。
+debug   = "gdb-multiarch"
