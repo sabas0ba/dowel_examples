@@ -21,3 +21,18 @@ sources = [file("tests/suite.c")]
 [test.lone.private]
 flags = ["-std=gnu11"]
 abi   = "gnu11"
+
+# 事例をコードの側に持つ形（ADR-0023）。規約はここで宣言し、dowel は
+# 枠組みを1つも知らない。`cases` と `harness` は同時に書けない。
+[test.disc]
+sources = [file("tests/harness.c")]
+
+[test.disc.private]
+flags = ["-std=gnu11"]
+abi   = "gnu11"
+
+[test.disc.harness]
+list    = ["--list"]
+run     = ["--run"]
+timeout = 10
+labels  = ["discovered"]

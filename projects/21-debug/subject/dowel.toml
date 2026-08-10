@@ -1,0 +1,10 @@
+[package]
+name    = "subject"
+version = "0.1.0"
+edition = "2026"
+
+# デバッガも道具である。宣言・既定（gdb）・トリプルごとの選択が
+# ar や objcopy と同じ形で効く（ADR-0024）。
+[toolchain.aarch64-unknown-linux-gnu]
+c     = "aarch64-linux-gnu-gcc"
+debug = "gdb-multiarch"

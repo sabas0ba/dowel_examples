@@ -1,0 +1,21 @@
+[bin.app]
+sources = [file("src/main.c")]
+
+[lib.quiet]
+sources = [file("src/lib.c")]
+
+[test.t]
+sources = [file("tests/t.c")]
+
+[test.t.cases]
+calm = { args = ["calm"] }
+sad  = { args = ["sad"], env = { WHY = "declared" }, cwd = dir("tests") }
+
+# エミュレータ越しのデバッグは2プロセスである。保持する側（debug_args で
+# スタブになる runner）と、繋ぐ側（debug_connect に繋ぐデバッガ）。
+# 港が2回現れるのは設計上の取引である（ADR-0024）。
+[runner.aarch64-unknown-linux-gnu]
+command       = "qemu-aarch64-static"
+args          = ["-L", "/usr/aarch64-linux-gnu"]
+debug_args    = ["-g", "17233"]
+debug_connect = "localhost:17233"

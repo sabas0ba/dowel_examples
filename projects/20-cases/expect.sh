@@ -57,7 +57,7 @@ ok "a package that registers cases passes check" -C subject check
 ok "and all of its cases pass"                   -C subject test
 
 got=$(ran | tr '\n' ' ' | sed 's/ *$//')
-want="subject:suite/plain subject:suite/slow subject:suite/rejects subject:suite/strict subject:suite/patient subject:lone"
+want="subject:suite/plain subject:suite/slow subject:suite/rejects subject:suite/strict subject:suite/patient subject:lone subject:disc/alpha subject:disc/beta subject:disc/gamma"
 [ "$got" = "$want" ]
 v=$?; RC=0; _last_cmd="dowel test | 走った事例"
 OUT="want: $want"$'\n'"got:  $got"
@@ -71,9 +71,9 @@ fact $v "a target with no cases block is one test named after the target"
 # 事例は翻訳単位を増やさない。5件でも実行ファイルは1本である。
 n=$("$DOWEL" -C subject graph --kind=action --format=json 2>/dev/null |
     jq -r '.steps[] | select(.kind == "link") | .outputs[]' | sort -u | wc -l)
-[ "$n" = 2 ]
+[ "$n" = 3 ]
 v=$?; RC=0; _last_cmd="graph --kind=action | link の出力"
-OUT="linked binaries: ${n:-?} (suite と lone の2本。事例は5件ある)"
+OUT="linked binaries: ${n:-?} (suite / lone / disc の3本。事例は8件ある)"
 fact $v "cases add no translation unit; five of them share one binary"
 
 # args は起動の末尾に付く。事例を分けているのはこれである。
@@ -120,37 +120,32 @@ _last_cmd="dowel test  # should_fail と timeout の両方"; OUT="$said"; RC=0
 printf '%s' "$said" | grep -q 'timed out'
 fact $? "a timeout wins over should_fail, so a hang is never an expected failure"
 
-# 同じ理屈がシグナルにも要る（docs/10-findings.md F-032）。
+# 同じ理屈がシグナルにも効く（F-032 / #88 で入った）。
 with_cases 'patient = { args = ["hang"], timeout = 2, should_fail = true }' \
            'patient = { args = ["crash"], should_fail = true }'
 case_status
 said=$CASE_SAID
 [ "$RC" -ne 0 ]
-verdict=$?
+v=$?
 _last_cmd="dowel test  # should_fail の事例が SIGSEGV で死ぬ"; OUT="$said"; RC=0
-known_issue F-032
-fact $verdict "a case killed by a signal does not satisfy should_fail"
+fact $v "a case killed by a signal does not satisfy should_fail"
+
+printf '%s' "$said" | grep -q 'killed by signal'
+fact $? "and the failure names the signal, not a bare status"
 
 OUT=$("$DOWEL" -C subject test --message-format=json 2>/dev/null |
-      jq -c 'select(.target | endswith("patient"))')
+      jq -c 'select(.case == "patient")')
 RC=0
-printf '%s' "$OUT" | grep -qE '"signal"|"killed"'
-verdict=$?
-_last_cmd="dowel test --message-format=json | patient"
-known_issue F-032
-fact $verdict "and the report distinguishes a crash from a nonzero exit"
+printf '%s' "$OUT" | jq -e '.signal == 11' >/dev/null 2>&1
+v=$?
+_last_cmd="dowel test --message-format=json | case == patient"
+fact $v "and the report distinguishes a crash from a nonzero exit"
 restore_cases
 
 # 0 以下の timeout は宣言として意味を成さない（F-033）。
 with_cases 'patient = { args = ["plain"], timeout = 30 }' \
            'patient = { args = ["plain"], timeout = 0 }'
-OUT=$(json_diags -C subject check)
-RC=0
-printf '%s' "$OUT" | jq -e '.code' >/dev/null 2>&1
-verdict=$?
-_last_cmd="dowel check  # timeout = 0"
-known_issue F-033
-fact $verdict "a timeout of zero or less is refused"
+diag invalid-value "a timeout of zero or less is refused" -C subject check
 restore_cases
 
 # ------------------------------------------------------------ 3. 選ぶ
@@ -165,23 +160,24 @@ fact $v "a label selects the cases that carry it"
 case_status --label nosuch
 said=$CASE_SAID
 [ "$RC" -ne 0 ]
-verdict=$?
+v=$?
 _last_cmd="dowel test --label nosuch; echo \$?"
 OUT="rc: $RC"$'\n'"$said"; RC=0
-known_issue F-034
-fact $verdict "naming a label nobody carries does not pass with zero tests"
+fact $v "naming a label nobody carries does not pass with zero tests"
 
 printf '%s' "$said" | grep -q 'no test carries'
 fact $? "and it does say which label found nothing"
 
+printf '%s' "$said" | grep -q -- '--no-run'
+fact $? "and points at the listing that shows the labels that do exist"
+
 # 印字された名前をコマンドラインに渡し返せること（F-035）。
 run -C subject test 'subject:suite/plain'
 said=$OUT
-[ "$RC" -eq 0 ] && printf '%s' "$said" | grep -q 'suite/plain'
-verdict=$?
+[ "$RC" -eq 0 ] && [ "$(printf '%s' "$said" | grep -c '^test subject:')" = 1 ]
+v=$?
 _last_cmd="dowel test subject:suite/plain"; OUT="$said"; RC=0
-known_issue F-035
-fact $verdict "the label a case is reported under selects that case on the command line"
+fact $v "the label a case is reported under selects that case on the command line"
 
 got=$(ran suite)
 n=$(printf '%s' "$got" | grep -c 'suite/')
@@ -210,11 +206,10 @@ with_cases 'aaa_bad = { args = ["fail"] }' 'renamed = { args = ["plain"] }'
 case_status --failed
 said=$CASE_SAID
 [ "$RC" -ne 0 ]
-verdict=$?
+v=$?
 _last_cmd="覚えている事例を改名して dowel test --failed"
 OUT="rc: $RC"$'\n'"$said"; RC=0
-known_issue F-036
-fact $verdict "rerunning failures says so when the remembered case is gone"
+fact $v "rerunning failures says so when the remembered case is gone"
 restore_cases
 
 # ------------------------------------------------------------ 4. 並列
@@ -254,30 +249,28 @@ with_cases 'plain   = { args = ["plain"] }' 'plain   = { args = "plain" }'
 diag type-mismatch "a value of the wrong type in a case is refused" -C subject check
 restore_cases
 
-# 誤っている鍵を指すこと（F-037）。
+# 誤っている値を指すこと（F-037 / #101 で入った）。下線は誤った値だけに引かれる。
 with_cases 'strict  = { args = ["env"], env = { SUITE_MODE = "strict" } }' \
            'strict  = { args = ["env"], timeout = "x", env = { SUITE_MODE = "strict" } }'
 OUT=$("$DOWEL" -C subject check 2>&1)
 RC=0
 _last_cmd="dowel check  # 長い事例の1つの鍵だけが誤り"
-# 下線が事例全体に引かれていれば、その長さは事例の綴りと同じになる。
-carets=$(printf '%s' "$OUT" | sed -n 's/^ *| *\(\^*\)$/\1/p' | head -1)
-[ -n "$carets" ] && [ "${#carets}" -lt 30 ]
-verdict=$?
+carets=$(printf '%s' "$OUT" | sed -n 's/^ *| *\(\^\^*\).*$/\1/p' | head -1)
+[ -n "$carets" ] && [ "${#carets}" -lt 10 ]
+v=$?
 OUT="$OUT"$'\n'"underlined: ${#carets} characters"
-known_issue F-037
-fact $verdict "a type error inside a case points at the key that is wrong"
+fact $v "a type error inside a case points at the key that is wrong"
 restore_cases
 
 # 事例の名前はラベルの一部になる。文法を壊す名前は拒みたい（F-038）。
 with_cases 'plain   = { args = ["plain"] }' '"a/b"   = { args = ["plain"] }'
-OUT=$(json_diags -C subject check)
-RC=0
-printf '%s' "$OUT" | jq -e '.code' >/dev/null 2>&1
-verdict=$?
-_last_cmd="dowel check  # 事例の名前が a/b"
-known_issue F-038
-fact $verdict "a case name that breaks the label grammar is refused"
+diag invalid-name "a case name that breaks the label grammar is refused" \
+    -C subject check
+run -C subject check
+said=$OUT
+_last_cmd="dowel check  # 事例の名前が a/b"; OUT="$said"; RC=0
+printf '%s' "$said" | grep -q 'separates the target from the case'
+fact $? "and the diagnostic says why the grammar owns that character"
 restore_cases
 
 with_cases 'plain   = { args = ["plain"] }' 'plain   = { args = ["plain"] }
@@ -291,10 +284,8 @@ printf '\n[test.suite.cases.extra]\nargs = ["plain"]\n' >>subject/dowel.build
 run -C subject check
 said=$OUT
 _last_cmd="dowel check  # [test.suite.cases.extra] と書いた"; OUT="$said"; RC=0
-printf '%s' "$said" | grep -qE 'inline table|args = \[|entries of'
-verdict=$?
-known_issue F-039
-fact $verdict "writing a case as a table header says how to write it as an entry"
+printf '%s' "$said" | grep -q 'inline tables inside it'
+fact $? "writing a case as a table header says how to write it as an entry"
 mv subject/dowel.build.keep subject/dowel.build
 
 # cases は test だけのものである。
@@ -313,13 +304,8 @@ mv subject/dowel.build.keep subject/dowel.build
 cp subject/dowel.build subject/dowel.build.keep
 printf '\n[test.empty]\nsources = [file("tests/suite.c")]\n\n[test.empty.private]\nflags = ["-std=gnu11"]\nabi = "gnu11"\n\n[test.empty.cases]\n' \
     >>subject/dowel.build
-OUT=$(json_diags -C subject check)
-RC=0
-printf '%s' "$OUT" | jq -e '.code' >/dev/null 2>&1
-verdict=$?
-_last_cmd="dowel check  # 空の [test.empty.cases]"
-known_issue F-040
-fact $verdict "a cases block with no case in it is not silently one bare run"
+diag empty-block "a cases block with no case in it is not silently one bare run" \
+    -C subject check
 mv subject/dowel.build.keep subject/dowel.build
 
 # ------------------------------------------------------------ 6. 構成ごとの値
@@ -329,43 +315,44 @@ with_cases 'patient = { args = ["plain"], timeout = 30 }' \
            'patient = { args = ["plain"], timeout = match cfg.opt { debug => 30, release => 5 } }'
 ok "a value inside a case can branch on the configuration" -C subject check
 
-# 事例そのものは分岐できない（F-041）。
+# 事例そのものも分岐できる（F-041 / #92 で入った）。構成に無い事例は
+# 登録されず、走らない。
 with_cases 'patient = { args = ["plain"], timeout = match cfg.opt { debug => 30, release => 5 } }' \
            'patient = { args = ["plain"] } when cfg.opt == "debug"'
-OUT=$("$DOWEL" -C subject check 2>&1)
-RC=0
-! printf '%s' "$OUT" | grep -q 'type-mismatch'
-verdict=$?
-_last_cmd="dowel check  # 事例そのものに後置 when"
-known_issue F-041
-fact $verdict "a case can be registered only for some configurations"
+ok "a case can be registered only for some configurations" -C subject check
 
-printf '%s' "$OUT" | grep -q 'expected `{ args'
-v=$?; RC=0; _last_cmd="dowel check  # 事例そのものに後置 when"
-fact $v "and the diagnostic for a conditional case shows the literal form"
+n=$(ran | grep -c 'suite/')
+[ "$n" = 5 ]
+v=$?; RC=0; _last_cmd="dowel test  # patient は debug でだけ登録される"
+OUT="cases run in debug: ${n:-?}"
+fact $v "the case exists in the configuration its condition names"
+
+n=$("$DOWEL" -C subject test --no-run --config=release 2>&1 | grep -c '^subject:suite/')
+[ "$n" = 4 ]
+v=$?; RC=0; _last_cmd="dowel test --no-run --config=release"
+OUT="cases listed in release: ${n:-?}"
+fact $v "and is absent from the one it does not"
 restore_cases
 
 # ------------------------------------------------------------ 7. 語彙として見える
 
 # `docs/12-build-reference.md` は、この頁の機械可読形が `schema dump` であり、
 # 頁とエディタと診断は黙って食い違えない、と述べている（F-042）。
-OUT=$("$DOWEL" schema dump 2>/dev/null)
-RC=0
-printf '%s' "$OUT" | jq -e 'has("case_properties")' >/dev/null 2>&1
-verdict=$?
-_last_cmd="dowel schema dump | keys"
-OUT=$(printf '%s' "$OUT" | jq -c 'keys')
-known_issue F-042
-fact $verdict "the schema dump describes the properties a case accepts"
+keys=$("$DOWEL" schema dump 2>/dev/null | jq -c 'keys')
+OUT="$keys"; RC=0; _last_cmd="dowel schema dump | keys"
+printf '%s' "$keys" | grep -q 'case_properties'
+fact $? "the schema dump describes the properties a case accepts"
 
-# 兄弟の2つは出ている。抜けているのが `cases` だけであることを見る。
-OUT=$("$DOWEL" schema dump 2>/dev/null | jq -c 'keys')
-RC=0
-printf '%s' "$OUT" | grep -q 'artifact_properties'
-v=$?
-printf '%s' "$OUT" | grep -q 'inspection_properties'
-[ "$v" = 0 ] && [ "$?" = 0 ]
-fact $? "the two sibling blocks are described, which is the shape cases should follow"
+printf '%s' "$keys" | grep -q 'runner_properties'
+v=$?; OUT="$keys"; RC=0; _last_cmd="dowel schema dump | keys"
+fact $v "and the runner's, which was the other block missing from it"
+
+got=$("$DOWEL" schema dump 2>/dev/null |
+      jq -r '.case_properties[].name' | sort | paste -sd' ' -)
+[ "$got" = "args cwd env labels should_fail timeout" ]
+v=$?; RC=0; _last_cmd="schema dump | .case_properties[].name"
+OUT="described: ${got:-(none)}"
+fact $v "and the case keys it lists are exactly the ones the type checker accepts"
 
 # ------------------------------------------------------------ 8. 走らせずに知る
 
@@ -374,21 +361,18 @@ fact $? "the two sibling blocks are described, which is the shape cases should f
 run -C subject test --no-run
 said=$OUT
 printf '%s' "$said" | grep -q 'suite/plain'
-verdict=$?
+v=$?
 _last_cmd="dowel test --no-run"; OUT="$said"; RC=0
-known_issue F-043
-fact $verdict "the cases that would run can be listed without running them"
+fact $v "the cases that would run can be listed without running them"
 
-# グラフにも出ない。事例は翻訳単位を作らないので、アクションの側に無いのは
-# 設計どおりである。目標のグラフの側にも無い。
-OUT=$("$DOWEL" -C subject graph --kind=target --format=json 2>/dev/null)
-RC=0
-printf '%s' "$OUT" | jq -e '[.targets[].label] | index("subject:suite/plain")' >/dev/null 2>&1
-verdict=$?
-_last_cmd="dowel graph --kind=target | 事例が出るか"
-OUT=$(printf '%s' "$OUT" | jq -c '[.targets[].label]')
-known_issue F-043
-fact $verdict "or found in the target graph"
+printf '%s' "$said" | grep -q 'should_fail'
+fact $? "with the properties that change how a case is judged"
+
+got=$("$DOWEL" -C subject test --no-run --label slow 2>&1 | grep -c 'suite/')
+[ "$got" = 1 ]
+v=$?; RC=0; _last_cmd="dowel test --no-run --label slow"
+OUT="listed: ${got:-?}"
+fact $v "and the listing honours the selection that was asked for"
 
 # ------------------------------------------------------------ 9. 機械可読の面
 
@@ -399,24 +383,22 @@ v=$?; RC=0; _last_cmd="dowel test --message-format=json | stdout の JSON 行"
 OUT="json lines on stdout: ${n:-0}"
 fact $v "the machine-readable results go to stdout while the progress goes to stderr"
 
-# 目標と事例を別に名乗ってほしい（F-044）。今は `target` に両方入っている。
+# 目標と事例は別の欄で名乗る（F-044 / #100 で入った）。
 OUT=$("$DOWEL" -C subject test --message-format=json 2>/dev/null |
-      jq -c 'select(.target | test("plain"))')
+      jq -c 'select(.case == "plain")')
 RC=0
-printf '%s' "$OUT" | jq -e 'has("case")' >/dev/null 2>&1
-verdict=$?
-_last_cmd="dowel test --message-format=json | plain の行"
-known_issue F-044
-fact $verdict "the machine-readable result names the target and the case separately"
+printf '%s' "$OUT" | jq -e '.target == "subject:suite"' >/dev/null 2>&1
+v=$?
+_last_cmd="dowel test --message-format=json | case == plain"
+fact $v "the machine-readable result names the target and the case separately"
 
 OUT=$("$DOWEL" -C subject test --message-format=json 2>/dev/null |
-      jq -c 'select(.target | test("rejects"))')
+      jq -c 'select(.case == "rejects")')
 RC=0
-printf '%s' "$OUT" | jq -e 'has("should_fail")' >/dev/null 2>&1
-verdict=$?
-_last_cmd="dowel test --message-format=json | rejects の行"
-known_issue F-044
-fact $verdict "and says whether the case was expected to fail"
+printf '%s' "$OUT" | jq -e '.should_fail == true and .exit_status == 3' >/dev/null 2>&1
+v=$?
+_last_cmd="dowel test --message-format=json | case == rejects"
+fact $v "and says whether the case was expected to fail"
 
 # ------------------------------------------------------------ 10. 作業ディレクトリ
 
@@ -426,11 +408,119 @@ with_cases 'plain   = { args = ["plain"] }' 'plain   = { args = ["openrun"] }'
 ok "a case runs in the root of the package that declares it" -C subject test suite
 restore_cases
 
-# ただしそれは文書のどこにも書かれていない。指定する鍵も無い（F-045）。
-grep -q 'cwd' subject/dowel.build
-verdict=$?
-RC=0; _last_cmd="grep cwd subject/dowel.build"
-OUT="a case cannot be told where to run; the observed default is the package root"
-known_issue F-045
-fact $verdict "a case can be given the directory it runs in"
+# 指定もできる（F-045 / #95 で入った）。`cwd` は Path を受ける。
+with_cases 'plain   = { args = ["plain"] }' \
+           'plain   = { args = ["plain"], cwd = dir("tests") }'
+out=$("$DOWEL" -C subject test subject:suite/plain --nocapture 2>&1 | sed -n 's/^cwd=//p')
+case $out in */tests) v=0 ;; *) v=1 ;; esac
+RC=0; _last_cmd="dowel test  # cwd = dir(\"tests\")"
+OUT="ran in: ${out:-(unknown)}"
+fact $v "a case can be given the directory it runs in"
+restore_cases
 rm -rf "$RUN"
+
+# ------------------------------------------------------------ 11. 事例をコードの側に持つ (ADR-0023)
+#
+# suite の事例はコードにある。マニフェストへ書き写すと2つの一覧が漂流し、
+# 漂流は効く方向に黙って出る——ソースに足した事例が走らず、誰も何も
+# 言わない。`[test.<name>.harness]` は列挙の規約を宣言する。dowel は
+# 枠組みを1つも知らない。
+
+got=$(ran disc | tr '\n' ' ' | sed 's/ *$//')
+[ "$got" = "subject:disc/alpha subject:disc/beta subject:disc/gamma" ]
+v=$?; RC=0; _last_cmd="dowel test disc"
+OUT="discovered and ran: ${got:-(none)}"
+fact $v "the binary lists its own cases and each runs as its own test"
+
+# 空行と # 始まりは読み飛ばされる。それ以上の解釈は無い。
+n=$(ran disc | grep -c 'disc/')
+[ "$n" = 3 ]
+v=$?; RC=0; _last_cmd="dowel test disc  # 列挙には注釈と空行が混ざっている"
+OUT="cases: ${n:-?} (listing prints 5 lines; 2 are skipped)"
+fact $v "blank lines and comment lines in the listing are skipped"
+
+# 発見された事例もラベルを持ち、選べる。
+got=$(ran --label discovered | grep -c 'disc/')
+[ "$got" = 3 ]
+v=$?; RC=0; _last_cmd="dowel test --label discovered"
+OUT="selected: ${got:-?}"
+fact $v "a label declared on the harness reaches every discovered case"
+
+# 両方は書けない。どちらも「事例は何か」に答えるためである。
+cp subject/dowel.build subject/dowel.build.keep
+printf '\n[test.disc.cases]\nx = { args = ["--run", "alpha"] }\n' >>subject/dowel.build
+diag conflicting-declaration "cases and harness cannot both be declared" \
+    -C subject check
+mv subject/dowel.build.keep subject/dowel.build
+
+# 列挙に失敗した目標は、0件ではなく失敗である。列挙できないことと
+# 走るものが無いことは別であり、黙った0件はスイートが消える形である。
+cp subject/tests/harness.c subject/tests/harness.c.keep
+python3 - <<'PATCH'
+p = "subject/tests/harness.c"
+t = open(p, encoding="utf-8").read()
+t = t.replace('        puts("gamma");\n        return 0;',
+              '        puts("gamma");\n        return 3;')
+open(p, "w", encoding="utf-8").write(t)
+PATCH
+case_status disc
+said=$CASE_SAID
+[ "$RC" -ne 0 ] && printf '%s' "$said" | grep -q 'could not list the cases'
+v=$?
+_last_cmd="dowel test disc  # 列挙が状態3で終わる"
+OUT="$said"; RC=0
+fact $v "a listing that fails is a failure of the target, not zero tests"
+
+# 固まる列挙も同じである。harness の timeout が列挙自身にも効く。
+python3 - <<'PATCH'
+p = "subject/tests/harness.c"
+t = open(p, encoding="utf-8").read()
+t = t.replace('strcmp(argv[1], "--list") == 0) {',
+              'strcmp(argv[1], "--list") == 0) { for (;;) { }')
+open(p, "w", encoding="utf-8").write(t)
+PATCH
+cp subject/dowel.build subject/dowel.build.keep
+python3 - <<'PATCH'
+p = "subject/dowel.build"
+t = open(p, encoding="utf-8").read()
+t = t.replace('timeout = 10', 'timeout = 2')
+open(p, "w", encoding="utf-8").write(t)
+PATCH
+case_status disc
+said=$CASE_SAID
+[ "$RC" -ne 0 ] && printf '%s' "$said" | grep -q 'timed out'
+v=$?
+_last_cmd="dowel test disc  # 列挙が固まる。harness の timeout = 2"
+OUT="$said"; RC=0
+fact $v "and a listing that hangs is killed by the harness timeout"
+mv subject/dowel.build.keep subject/dowel.build
+cp subject/tests/harness.c.keep subject/tests/harness.c
+
+# 列挙が返す名前は選べない。既存の枠組みの出力には空白も `/` も普通に
+# 混ざるが、いまは素通りしてラベルの文法を壊す（F-047）。マニフェスト側の
+# 同じ名前は invalid-name で拒まれる——規則が片方の入口にしか無い。
+python3 - <<'PATCH'
+p = "subject/tests/harness.c"
+t = open(p, encoding="utf-8").read()
+t = t.replace('        puts("beta");', '        puts("a/b");')
+open(p, "w", encoding="utf-8").write(t)
+PATCH
+case_status disc
+said=$CASE_SAID
+! printf '%s' "$said" | grep -q 'disc/a/b'
+verdict=$?
+_last_cmd="dowel test disc  # 列挙が a/b という名前を返す"
+OUT="$said"; RC=0
+known_issue F-047
+fact $verdict "a discovered name that breaks the label grammar is not silently accepted"
+cp subject/tests/harness.c.keep subject/tests/harness.c
+rm -f subject/tests/harness.c.keep
+
+# 発見された事例の宣言は、失敗の記録からデバッガへも届く（21-debug が
+# 起動の側を見る）。ここでは記録の形だけを確かめる。
+"$DOWEL" -C subject test disc >/dev/null 2>&1
+OUT=$("$DOWEL" -C subject test disc --message-format=json 2>/dev/null |
+      jq -c 'select(.case == "gamma")')
+RC=0
+printf '%s' "$OUT" | jq -e '.target == "subject:disc"' >/dev/null 2>&1
+fact $? "a discovered case reports under the same label grammar as a declared one"

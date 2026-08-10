@@ -112,7 +112,7 @@ export DOWELUP DOWEL_SRC
 for tool in cc ninja jq git cmake pkg-config gcc gcc-ar objcopy readelf g++ clang clang++ \
              aarch64-linux-gnu-gcc aarch64-linux-gnu-g++ aarch64-linux-gnu-objcopy \
              arm-none-eabi-gcc arm-none-eabi-objcopy qemu-system-arm \
-             qemu-aarch64-static xvfb-run; do
+             qemu-aarch64-static xvfb-run gdb gdb-multiarch; do
     command -v "$tool" >/dev/null 2>&1 || {
         printf '%s is missing.\n\n' "$tool" >&2
         cat >&2 <<'EOF'
@@ -131,6 +131,7 @@ migration layers
   cmake                        16-migrate imports from a real CMake build
   pkg-config                   17-deps resolves system packages through it
   xvfb-run                     apps/plot opens a real window on a virtual display
+  gdb gdb-multiarch            21-debug attaches a real debugger, host and cross
 
 apps/plot also needs the cairo and X11 development packages, which it
 resolves through pkg-config like any other system dependency.
@@ -139,7 +140,8 @@ on debian and ubuntu:
 
   apt-get install -y ninja-build jq cmake pkg-config gcc g++ clang \
       gcc-aarch64-linux-gnu g++-aarch64-linux-gnu qemu-user-static \
-      gcc-arm-none-eabi qemu-system-arm xvfb libcairo2-dev libx11-dev
+      gcc-arm-none-eabi qemu-system-arm xvfb libcairo2-dev libx11-dev \
+      gdb gdb-multiarch
 EOF
         exit 2
     }
