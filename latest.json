@@ -1,20 +1,20 @@
 {
- "run_id": "31397049757",
+ "run_id": "31441718491",
  "run_attempt": "1",
- "run_url": "https://github.com/sabas0ba/dowel_examples/actions/runs/31397049757",
- "commit": "3751aa5f6672a23db8e24ae593d6909cc54c664c",
+ "run_url": "https://github.com/sabas0ba/dowel_examples/actions/runs/31441718491",
+ "commit": "85f8b798a8d3f2718f59c197f290b5f2ae4e3086",
  "branch": "main",
- "started_at": "2026-08-10T14:15:51Z",
+ "started_at": "2026-08-10T23:18:19Z",
  "dowel_version": "dowel 0.0.1",
- "dowel_ref": "17bd54e090b17a46d71d37f7612fb09f9097abea",
- "dowel_commit": "17bd54e090b17a46d71d37f7612fb09f9097abea",
+ "dowel_ref": "e12bac762dfd14f0ca5529913464e03590863162",
+ "dowel_commit": "e12bac762dfd14f0ca5529913464e03590863162",
  "cc": "cc (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0",
  "ninja": "1.13.2",
  "projects": [
   {
    "name": "01-minimal",
    "root": "projects",
-   "duration_ms": 283,
+   "duration_ms": 244,
    "counts": {
     "pass": 10,
     "fail": 0,
@@ -72,7 +72,7 @@
   {
    "name": "02-config",
    "root": "projects",
-   "duration_ms": 1044,
+   "duration_ms": 5920,
    "counts": {
     "pass": 21,
     "fail": 0,
@@ -175,7 +175,7 @@
   {
    "name": "03-features",
    "root": "projects",
-   "duration_ms": 285,
+   "duration_ms": 270,
    "counts": {
     "pass": 17,
     "fail": 0,
@@ -265,7 +265,7 @@
   {
    "name": "04-diagnostics",
    "root": "projects",
-   "duration_ms": 351,
+   "duration_ms": 325,
    "counts": {
     "pass": 66,
     "fail": 0,
@@ -567,7 +567,7 @@
   {
    "name": "05-incremental",
    "root": "projects",
-   "duration_ms": 1781,
+   "duration_ms": 1636,
    "counts": {
     "pass": 48,
     "fail": 0,
@@ -779,7 +779,7 @@
   {
    "name": "06-runner",
    "root": "projects",
-   "duration_ms": 381,
+   "duration_ms": 353,
    "counts": {
     "pass": 17,
     "fail": 0,
@@ -867,7 +867,7 @@
   {
    "name": "07-robustness",
    "root": "projects",
-   "duration_ms": 1360,
+   "duration_ms": 1241,
    "counts": {
     "pass": 145,
     "fail": 0,
@@ -1465,7 +1465,7 @@
   {
    "name": "08-lsp",
    "root": "projects",
-   "duration_ms": 12810,
+   "duration_ms": 12651,
    "counts": {
     "pass": 110,
     "fail": 0,
@@ -1923,7 +1923,7 @@
   {
    "name": "09-acquisition",
    "root": "projects",
-   "duration_ms": 21398,
+   "duration_ms": 20717,
    "counts": {
     "pass": 66,
     "fail": 0,
@@ -2207,7 +2207,7 @@
   {
    "name": "10-toolchain",
    "root": "projects",
-   "duration_ms": 2196,
+   "duration_ms": 2160,
    "counts": {
     "pass": 31,
     "fail": 0,
@@ -2349,7 +2349,7 @@
   {
    "name": "11-cross",
    "root": "projects",
-   "duration_ms": 1261,
+   "duration_ms": 581,
    "counts": {
     "pass": 17,
     "fail": 0,
@@ -2435,7 +2435,7 @@
   {
    "name": "12-store",
    "root": "projects",
-   "duration_ms": 216,
+   "duration_ms": 198,
    "counts": {
     "pass": 29,
     "fail": 0,
@@ -2569,7 +2569,7 @@
   {
    "name": "13-parallel",
    "root": "projects",
-   "duration_ms": 10768,
+   "duration_ms": 10723,
    "counts": {
     "pass": 18,
     "fail": 0,
@@ -2659,7 +2659,7 @@
   {
    "name": "14-scale",
    "root": "projects",
-   "duration_ms": 6364,
+   "duration_ms": 5933,
    "counts": {
     "pass": 17,
     "fail": 0,
@@ -2743,7 +2743,7 @@
   {
    "name": "15-cpp",
    "root": "projects",
-   "duration_ms": 4490,
+   "duration_ms": 5115,
    "counts": {
     "pass": 70,
     "fail": 0,
@@ -3051,7 +3051,7 @@
   {
    "name": "16-migrate",
    "root": "projects",
-   "duration_ms": 1727,
+   "duration_ms": 1606,
    "counts": {
     "pass": 54,
     "fail": 0,
@@ -3285,7 +3285,7 @@
   {
    "name": "17-deps",
    "root": "projects",
-   "duration_ms": 785,
+   "duration_ms": 715,
    "counts": {
     "pass": 51,
     "fail": 0,
@@ -3510,7 +3510,7 @@
   {
    "name": "18-tools",
    "root": "projects",
-   "duration_ms": 512,
+   "duration_ms": 464,
    "counts": {
     "pass": 32,
     "fail": 0,
@@ -3659,7 +3659,7 @@
   {
    "name": "19-artifacts",
    "root": "projects",
-   "duration_ms": 669,
+   "duration_ms": 606,
    "counts": {
     "pass": 35,
     "fail": 0,
@@ -3819,14 +3819,14 @@
   {
    "name": "20-cases",
    "root": "projects",
-   "duration_ms": 28056,
+   "duration_ms": 32487,
    "counts": {
-    "pass": 29,
+    "pass": 59,
     "fail": 0,
-    "xfail": 17,
+    "xfail": 1,
     "xpass": 0
    },
-   "total": 46,
+   "total": 60,
    "ok": true,
    "checks": [
     {
@@ -3874,32 +3874,40 @@
      "desc": "a timeout wins over should_fail, so a hang is never an expected failure"
     },
     {
-     "status": "xfail",
-     "desc": "a case killed by a signal does not satisfy should_fail  [F-032]"
+     "status": "pass",
+     "desc": "a case killed by a signal does not satisfy should_fail"
     },
     {
-     "status": "xfail",
-     "desc": "and the report distinguishes a crash from a nonzero exit  [F-032]"
+     "status": "pass",
+     "desc": "and the failure names the signal, not a bare status"
     },
     {
-     "status": "xfail",
-     "desc": "a timeout of zero or less is refused  [F-033]"
+     "status": "pass",
+     "desc": "and the report distinguishes a crash from a nonzero exit"
+    },
+    {
+     "status": "pass",
+     "desc": "a timeout of zero or less is refused"
     },
     {
      "status": "pass",
      "desc": "a label selects the cases that carry it"
     },
     {
-     "status": "xfail",
-     "desc": "naming a label nobody carries does not pass with zero tests  [F-034]"
+     "status": "pass",
+     "desc": "naming a label nobody carries does not pass with zero tests"
     },
     {
      "status": "pass",
      "desc": "and it does say which label found nothing"
     },
     {
-     "status": "xfail",
-     "desc": "the label a case is reported under selects that case on the command line  [F-035]"
+     "status": "pass",
+     "desc": "and points at the listing that shows the labels that do exist"
+    },
+    {
+     "status": "pass",
+     "desc": "the label a case is reported under selects that case on the command line"
     },
     {
      "status": "pass",
@@ -3914,8 +3922,8 @@
      "desc": "--failed reruns the case that failed, not its whole target"
     },
     {
-     "status": "xfail",
-     "desc": "rerunning failures says so when the remembered case is gone  [F-036]"
+     "status": "pass",
+     "desc": "rerunning failures says so when the remembered case is gone"
     },
     {
      "status": "pass",
@@ -3938,20 +3946,24 @@
      "desc": "a value of the wrong type in a case is refused"
     },
     {
-     "status": "xfail",
-     "desc": "a type error inside a case points at the key that is wrong  [F-037]"
+     "status": "pass",
+     "desc": "a type error inside a case points at the key that is wrong"
     },
     {
-     "status": "xfail",
-     "desc": "a case name that breaks the label grammar is refused  [F-038]"
+     "status": "pass",
+     "desc": "a case name that breaks the label grammar is refused"
+    },
+    {
+     "status": "pass",
+     "desc": "and the diagnostic says why the grammar owns that character"
     },
     {
      "status": "pass",
      "desc": "two cases with the same name are refused"
     },
     {
-     "status": "xfail",
-     "desc": "writing a case as a table header says how to write it as an entry  [F-039]"
+     "status": "pass",
+     "desc": "writing a case as a table header says how to write it as an entry"
     },
     {
      "status": "pass",
@@ -3962,56 +3974,230 @@
      "desc": "with what to do instead"
     },
     {
-     "status": "xfail",
-     "desc": "a cases block with no case in it is not silently one bare run  [F-040]"
+     "status": "pass",
+     "desc": "a cases block with no case in it is not silently one bare run"
     },
     {
      "status": "pass",
      "desc": "a value inside a case can branch on the configuration"
     },
     {
-     "status": "xfail",
-     "desc": "a case can be registered only for some configurations  [F-041]"
+     "status": "pass",
+     "desc": "a case can be registered only for some configurations"
     },
     {
      "status": "pass",
-     "desc": "and the diagnostic for a conditional case shows the literal form"
-    },
-    {
-     "status": "xfail",
-     "desc": "the schema dump describes the properties a case accepts  [F-042]"
+     "desc": "the case exists in the configuration its condition names"
     },
     {
      "status": "pass",
-     "desc": "the two sibling blocks are described, which is the shape cases should follow"
+     "desc": "and is absent from the one it does not"
     },
     {
-     "status": "xfail",
-     "desc": "the cases that would run can be listed without running them  [F-043]"
+     "status": "pass",
+     "desc": "the schema dump describes the properties a case accepts"
     },
     {
-     "status": "xfail",
-     "desc": "or found in the target graph  [F-043]"
+     "status": "pass",
+     "desc": "and the runner's, which was the other block missing from it"
+    },
+    {
+     "status": "pass",
+     "desc": "and the case keys it lists are exactly the ones the type checker accepts"
+    },
+    {
+     "status": "pass",
+     "desc": "the cases that would run can be listed without running them"
+    },
+    {
+     "status": "pass",
+     "desc": "with the properties that change how a case is judged"
+    },
+    {
+     "status": "pass",
+     "desc": "and the listing honours the selection that was asked for"
     },
     {
      "status": "pass",
      "desc": "the machine-readable results go to stdout while the progress goes to stderr"
     },
     {
-     "status": "xfail",
-     "desc": "the machine-readable result names the target and the case separately  [F-044]"
+     "status": "pass",
+     "desc": "the machine-readable result names the target and the case separately"
     },
     {
-     "status": "xfail",
-     "desc": "and says whether the case was expected to fail  [F-044]"
+     "status": "pass",
+     "desc": "and says whether the case was expected to fail"
     },
     {
      "status": "pass",
      "desc": "a case runs in the root of the package that declares it"
     },
     {
+     "status": "pass",
+     "desc": "a case can be given the directory it runs in"
+    },
+    {
+     "status": "pass",
+     "desc": "the binary lists its own cases and each runs as its own test"
+    },
+    {
+     "status": "pass",
+     "desc": "blank lines and comment lines in the listing are skipped"
+    },
+    {
+     "status": "pass",
+     "desc": "a label declared on the harness reaches every discovered case"
+    },
+    {
+     "status": "pass",
+     "desc": "cases and harness cannot both be declared"
+    },
+    {
+     "status": "pass",
+     "desc": "a listing that fails is a failure of the target, not zero tests"
+    },
+    {
+     "status": "pass",
+     "desc": "and a listing that hangs is killed by the harness timeout"
+    },
+    {
      "status": "xfail",
-     "desc": "a case can be given the directory it runs in  [F-045]"
+     "desc": "a discovered name that breaks the label grammar is not silently accepted  [F-047]"
+    },
+    {
+     "status": "pass",
+     "desc": "a discovered case reports under the same label grammar as a declared one"
+    }
+   ],
+   "packages": [
+    "subject"
+   ]
+  },
+  {
+   "name": "21-debug",
+   "root": "projects",
+   "duration_ms": 1064,
+   "counts": {
+    "pass": 26,
+    "fail": 0,
+    "xfail": 2,
+    "xpass": 0
+   },
+   "total": 28,
+   "ok": true,
+   "checks": [
+    {
+     "status": "pass",
+     "desc": "the package passes check"
+    },
+    {
+     "status": "pass",
+     "desc": "the debugger is a toolchain tool with gdb as its default"
+    },
+    {
+     "status": "pass",
+     "desc": "a library cannot be debugged, because there is nothing to start"
+    },
+    {
+     "status": "pass",
+     "desc": "dowel builds the target and starts the declared debugger"
+    },
+    {
+     "status": "pass",
+     "desc": "and hands it the artifact it just built"
+    },
+    {
+     "status": "pass",
+     "desc": "a debugger that is not on PATH is refused when debugging"
+    },
+    {
+     "status": "pass",
+     "desc": "while an ordinary build never asks for it"
+    },
+    {
+     "status": "pass",
+     "desc": "a breakpoint set through dowel stops the program where the source says"
+    },
+    {
+     "status": "pass",
+     "desc": "and the debugger can evaluate expressions in the stopped program"
+    },
+    {
+     "status": "pass",
+     "desc": "a cross debug session attaches to the declared stub address"
+    },
+    {
+     "status": "pass",
+     "desc": "and stops the foreign binary at the same source line"
+    },
+    {
+     "status": "pass",
+     "desc": "the stub is killed when the debugger exits"
+    },
+    {
+     "status": "pass",
+     "desc": "a cross target whose runner declares no stub is refused"
+    },
+    {
+     "status": "xfail",
+     "desc": "a half-declared stub is told which half is missing  [F-048]"
+    },
+    {
+     "status": "pass",
+     "desc": "--dap writes a launch configuration instead of starting anything"
+    },
+    {
+     "status": "pass",
+     "desc": "naming the artifact the session would have opened"
+    },
+    {
+     "status": "pass",
+     "desc": "with the package root as the working directory, the same as dowel test"
+    },
+    {
+     "status": "pass",
+     "desc": "a cross launch carries the declared attach address"
+    },
+    {
+     "status": "pass",
+     "desc": "and the debugger the triple declared, not the host's"
+    },
+    {
+     "status": "pass",
+     "desc": "and the stub command that hosts the program behind it"
+    },
+    {
+     "status": "pass",
+     "desc": "the failing case's arguments become the launch arguments"
+    },
+    {
+     "status": "pass",
+     "desc": "and its environment"
+    },
+    {
+     "status": "pass",
+     "desc": "and the directory the case declared it runs in"
+    },
+    {
+     "status": "pass",
+     "desc": "when nothing failed there is nothing to debug, and that is a success"
+    },
+    {
+     "status": "pass",
+     "desc": "two recorded failures refuse to guess which one to open"
+    },
+    {
+     "status": "pass",
+     "desc": "and ask to name one, listing the candidates"
+    },
+    {
+     "status": "pass",
+     "desc": "naming a case narrows the choice to it"
+    },
+    {
+     "status": "xfail",
+     "desc": "a case that has not failed can be opened under the debugger  [F-049]"
     }
    ],
    "packages": [
@@ -4021,14 +4207,14 @@
   {
    "name": "blink",
    "root": "apps",
-   "duration_ms": 2820,
+   "duration_ms": 2675,
    "counts": {
-    "pass": 35,
+    "pass": 37,
     "fail": 0,
-    "xfail": 0,
+    "xfail": 1,
     "xpass": 0
    },
-   "total": 35,
+   "total": 38,
    "ok": true,
    "checks": [
     {
@@ -4157,6 +4343,18 @@
     },
     {
      "status": "pass",
+     "desc": "the firmware's debug launch attaches at the declared stub address"
+    },
+    {
+     "status": "pass",
+     "desc": "with the debugger the bare-metal triple declares"
+    },
+    {
+     "status": "xfail",
+     "desc": "the stub arguments do not break a runner that ends with the flag taking the artifact  [F-046]"
+    },
+    {
+     "status": "pass",
      "desc": "a second build changes nothing"
     },
     {
@@ -4179,7 +4377,7 @@
   {
    "name": "hashx",
    "root": "apps",
-   "duration_ms": 1818,
+   "duration_ms": 1658,
    "counts": {
     "pass": 41,
     "fail": 0,
@@ -4363,7 +4561,7 @@
   {
    "name": "httpd",
    "root": "apps",
-   "duration_ms": 4812,
+   "duration_ms": 4651,
    "counts": {
     "pass": 36,
     "fail": 0,
@@ -4525,7 +4723,7 @@
   {
    "name": "jsonfmt",
    "root": "apps",
-   "duration_ms": 1883,
+   "duration_ms": 1718,
    "counts": {
     "pass": 37,
     "fail": 0,
@@ -4692,7 +4890,7 @@
   {
    "name": "plot",
    "root": "apps",
-   "duration_ms": 1924,
+   "duration_ms": 1825,
    "counts": {
     "pass": 42,
     "fail": 0,
@@ -4879,7 +5077,7 @@
   {
    "name": "docs",
    "root": "projects",
-   "duration_ms": 70,
+   "duration_ms": 62,
    "counts": {
     "pass": 8,
     "fail": 0,
@@ -4926,12 +5124,12 @@
   }
  ],
  "totals": {
-  "pass": 1082,
+  "pass": 1140,
   "fail": 0,
-  "xfail": 18,
+  "xfail": 5,
   "xpass": 0
  },
- "total": 1100,
+ "total": 1145,
  "ok": true,
  "attention": [],
  "known_issues": [
@@ -4943,87 +5141,22 @@
   {
    "status": "xfail",
    "project": "20-cases",
-   "desc": "a case killed by a signal does not satisfy should_fail  [F-032]"
+   "desc": "a discovered name that breaks the label grammar is not silently accepted  [F-047]"
   },
   {
    "status": "xfail",
-   "project": "20-cases",
-   "desc": "and the report distinguishes a crash from a nonzero exit  [F-032]"
+   "project": "21-debug",
+   "desc": "a half-declared stub is told which half is missing  [F-048]"
   },
   {
    "status": "xfail",
-   "project": "20-cases",
-   "desc": "a timeout of zero or less is refused  [F-033]"
+   "project": "21-debug",
+   "desc": "a case that has not failed can be opened under the debugger  [F-049]"
   },
   {
    "status": "xfail",
-   "project": "20-cases",
-   "desc": "naming a label nobody carries does not pass with zero tests  [F-034]"
-  },
-  {
-   "status": "xfail",
-   "project": "20-cases",
-   "desc": "the label a case is reported under selects that case on the command line  [F-035]"
-  },
-  {
-   "status": "xfail",
-   "project": "20-cases",
-   "desc": "rerunning failures says so when the remembered case is gone  [F-036]"
-  },
-  {
-   "status": "xfail",
-   "project": "20-cases",
-   "desc": "a type error inside a case points at the key that is wrong  [F-037]"
-  },
-  {
-   "status": "xfail",
-   "project": "20-cases",
-   "desc": "a case name that breaks the label grammar is refused  [F-038]"
-  },
-  {
-   "status": "xfail",
-   "project": "20-cases",
-   "desc": "writing a case as a table header says how to write it as an entry  [F-039]"
-  },
-  {
-   "status": "xfail",
-   "project": "20-cases",
-   "desc": "a cases block with no case in it is not silently one bare run  [F-040]"
-  },
-  {
-   "status": "xfail",
-   "project": "20-cases",
-   "desc": "a case can be registered only for some configurations  [F-041]"
-  },
-  {
-   "status": "xfail",
-   "project": "20-cases",
-   "desc": "the schema dump describes the properties a case accepts  [F-042]"
-  },
-  {
-   "status": "xfail",
-   "project": "20-cases",
-   "desc": "the cases that would run can be listed without running them  [F-043]"
-  },
-  {
-   "status": "xfail",
-   "project": "20-cases",
-   "desc": "or found in the target graph  [F-043]"
-  },
-  {
-   "status": "xfail",
-   "project": "20-cases",
-   "desc": "the machine-readable result names the target and the case separately  [F-044]"
-  },
-  {
-   "status": "xfail",
-   "project": "20-cases",
-   "desc": "and says whether the case was expected to fail  [F-044]"
-  },
-  {
-   "status": "xfail",
-   "project": "20-cases",
-   "desc": "a case can be given the directory it runs in  [F-045]"
+   "project": "blink",
+   "desc": "the stub arguments do not break a runner that ends with the flag taking the artifact  [F-046]"
   }
  ]
 }
