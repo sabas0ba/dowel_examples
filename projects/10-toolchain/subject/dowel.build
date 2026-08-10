@@ -18,4 +18,4 @@ sources = glob("tests/*.c")
 # 食い違えばテストが落ちる。期待値をハーネスに二重に持たない。
 [test.identity.private]
 includes = [dir("include")]
-defines  = { EXPECTED = match tc.c { "clang" => "\"clang\"", _ => "\"gcc\"" } }
+defines  = { EXPECTED = match tc.c { "clang" => "clang", _ => "gcc" } }

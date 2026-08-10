@@ -126,7 +126,7 @@ ok "a full run passes again" test
 
 # --------------------------------------------------- 実行器を跨ぐ
 #
-# 実行器は差し替え可能なものとして提示されている（`--executor=ninja|direct`、
+# 実行器は差し替え可能なものとして提示されている（`--backend=ninja|direct`、
 # ninja が無ければ direct へ落ちる）。利用者から見れば「同じものを別の方法で
 # 実行するだけ」であり、片方で組んでから他方に渡すのは自然な操作である。
 #
@@ -159,10 +159,10 @@ for pair in "ninja direct" "direct ninja" "ninja ninja" "direct direct"; do
     first=$1 second=$2
     rm -rf .dowel
     printf '#define VALUE 3\n' > include/value.h
-    run build --executor="$first"
+    run build --backend="$first"
 
     printf '#define VALUE 7\n' > include/value.h
-    run build --executor="$second"
+    run build --backend="$second"
 
     got=$(built_value)
     [ "$got" = 7 ]; verdict=$?

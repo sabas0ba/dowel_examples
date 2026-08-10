@@ -251,7 +251,7 @@ fact() { _verdict "$1" "$2"; }
 cc_args() {
     local t=$1; shift
     "$DOWEL" graph --kind=action --format=json "$@" 2>/dev/null |
-        jq -r --arg t "$t" '.actions[] | select(.kind == "cc" and .target == $t) | .command | join(" ")'
+        jq -r --arg t "$t" '.steps[] | select(.kind == "cc" and .target == $t) | ([.program] + .arguments) | join(" ")'
 }
 
 # args_have <target> <text> <desc> — 引数に部分文字列があること。
@@ -280,7 +280,7 @@ args_lack() {
 
 # _ran_actions — 直前の run の出力から実行したアクション数を取り出す。
 _ran_actions() {
-    printf '%s' "$OUT" | sed -n 's/.*ran \([0-9]*\) actions.*/\1/p' | tail -1
+    printf '%s' "$OUT" | sed -n 's/.*ran \([0-9]*\) steps.*/\1/p' | tail -1
 }
 
 # 直前の再ビルドで走ったアクションの記述。件数だけでは
@@ -289,8 +289,8 @@ RAN=""
 
 # build_direct <dowel args...> — direct 実行器と debug ログでビルドする。
 build_direct() {
-    run build --executor=direct --log-level=debug "$@"
-    RAN=$(printf '%s' "$OUT" | sed -n 's/.*info  exec  *//p')
+    run build --backend=direct --log-level=debug "$@"
+    RAN=$(printf '%s' "$OUT" | sed -n 's/.*info  direct  *//p')
 }
 
 # rebuilt <記述の一部> <desc> — そのアクションが走ったこと。
@@ -363,7 +363,7 @@ standard() {
     local name=$1
     ok    "$name: check passes" check
     ok    "$name: build passes" build
-    runs_actions 0 "$name: a second build runs nothing, across executors too"
+    runs_actions 0 "$name: a second build runs nothing, across backends too"
 }
 
 # has_tests — パッケージが test ターゲットを持つか。

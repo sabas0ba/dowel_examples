@@ -7,9 +7,9 @@
  * 2語を読み、[0] を SP に、[1] を PC に載せる。配置を決めなければそこに
  * ベクタ表は無く、**起動した瞬間に落ちる**。
  *
- * 現在この木からは指せない（docs/10-findings.md F-025）。`link_flags` は
- * List<Str> であり file() を受けず、フラグの中の相対パスはビルド
- * ディレクトリ基準で解決されるためである。 */
+ * マニフェストからは `link_flags = [..., "-T", file("ld/<triple>.ld")]` で
+ * 指す。`link_flags` は List<Str | Path> であり、Path の要素は絶対パスへ
+ * 展開される（docs/10-findings.md F-025）。 */
 MEMORY
 {
     FLASH (rx)  : ORIGIN = 0x00000000, LENGTH = 4M
@@ -18,8 +18,13 @@ MEMORY
 
 SECTIONS
 {
+    /* ベクタ表は独立した節に置く。畳んでしまうと、成果物を読んだときに
+       「残っているか」を節の一覧では確かめられなくなる。 */
+    .vectors : {
+        KEEP(*(.vectors))       /* 誰も呼ばない。削らせない */
+    } > FLASH
+
     .text : {
-        KEEP(*(.vectors))       /* ベクタ表は先頭に、削らせない */
         *(.text*)
         *(.rodata*)
     } > FLASH

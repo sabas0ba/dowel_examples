@@ -5,11 +5,14 @@ edition = "2026"
 
 [features]
 # 既定は窓を開かない。描いたものをファイルへ書く。
-default  = []
+default  = ["headless"]
 # 窓を開く側。同名の optional 依存を有効にする。
 x11      = []
 # 検査用。ライブラリ側も同じ計装で組む必要があるため転送する。
 sanitize = ["plot-core/sanitize"]
+# 見せ方は択一である。両方立った木は組み上がってはならない。
+headless = []
+exclusive = [["headless", "x11"]]
 
 [[dependencies]]
 name = "plot-core"

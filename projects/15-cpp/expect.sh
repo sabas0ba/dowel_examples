@@ -24,23 +24,23 @@ EXTRA=""
 cc_of() {
     # shellcheck disable=SC2086
     "$DOWEL" -C "$1" graph --kind=action --format=json $EXTRA 2>/dev/null |
-        jq -r --arg s "$2" '.actions[] | select(.kind == "cc")
-            | select(.command | map(select(test($s))) | length > 0)
-            | .command[0]' | head -1
+        jq -r --arg s "$2" '.steps[] | select(.kind == "cc")
+            | select(([.program] + .arguments) | map(select(test($s))) | length > 0)
+            | .program' | head -1
 }
 
 # link_of <パッケージ> — リンクを行う driver。
 link_of() {
     # shellcheck disable=SC2086
     "$DOWEL" -C "$1" graph --kind=action --format=json $EXTRA 2>/dev/null |
-        jq -r '.actions[] | select(.kind == "link") | .command[0]' | head -1
+        jq -r '.steps[] | select(.kind == "link") | .program' | head -1
 }
 
 # driver_is <期待> <パッケージ> <ソース名の一部> <desc>
 driver_is() {
     local got; got=$(cc_of "$2" "$3")
     [ "$got" = "$1" ]; local v=$?
-    RC=0; _last_cmd="graph --kind=action | .command[0]"; OUT="driver = ${got:-(none)}"
+    RC=0; _last_cmd="graph --kind=action | .program"; OUT="driver = ${got:-(none)}"
     _verdict $v "$4"
 }
 
@@ -134,7 +134,7 @@ printf '\n[lib.cpplib.private]\nflags = [match tc.cxx { "clang++" => "-DVIA_CLAN
     >> cpplib/dowel.build
 args_have_cxx() {
     OUT=$("$DOWEL" -C cpplib graph --kind=action --format=json 2>/dev/null |
-        jq -r '.actions[] | select(.kind == "cc") | .command | join(" ")')
+        jq -r '.steps[] | select(.kind == "cc") | ([.program] + .arguments) | join(" ")')
     RC=0; _last_cmd="graph --kind=action | grep -F -- $1"
     printf '%s' "$OUT" | grep -qF -- "$1"; _verdict $? "$2"
 }
@@ -222,10 +222,10 @@ ok "a test target written in C++ builds and passes" -C reverse/cxxapp test
 
 MIXED=$PWD/mixed
 mixed_ran() {
-    OUT=$("$DOWEL" -C mixed build --executor=direct --log-level=debug 2>&1)
+    OUT=$("$DOWEL" -C mixed build --backend=direct --log-level=debug 2>&1)
     RC=$?
-    _last_cmd="dowel -C mixed build --executor=direct"
-    printf '%s' "$OUT" | sed -n 's/.*ran \([0-9]*\) actions.*/\1/p' | tail -1
+    _last_cmd="dowel -C mixed build --backend=direct"
+    printf '%s' "$OUT" | sed -n 's/.*ran \([0-9]*\) steps.*/\1/p' | tail -1
 }
 mixed_says() {
     local p; p=$(find "$MIXED/.dowel/build" -type f -path '*/bin/mixed' 2>/dev/null | head -1)
@@ -262,7 +262,7 @@ _verdict $v "and the artifact reflects that too"
 
 sed -i 's/#define CXX_VALUE .*/#define CXX_VALUE 3/' "$MIXED/include/cxx_only.h"
 sed -i 's/#define C_VALUE .*/#define C_VALUE 1/' "$MIXED/include/c_only.h"
-run -C mixed build --executor=direct
+run -C mixed build --backend=direct
 
 # ------------------------------------------------------- ほかのツールチェーン
 #

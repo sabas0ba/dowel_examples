@@ -14,7 +14,7 @@ out_has "json:json" "graph shows the json edge" graph
 # --------------------------------------------------- 機能を足す
 
 ok "json and xml can both be enabled" build --features=xml
-prints "backends=json+xml width=12" "both edges appear" "$(artifact app json+xml)"
+prints "backends=json+xml width=12" "both edges appear" "$(artifact app "app--json+app--xml")"
 
 # --------------------------------------------------- 機能を外す
 

@@ -31,7 +31,9 @@ int main(void)
     hashx_crc_feed(&h, "56789", 5);
     eq(hashx_crc_end(&h), 0xCBF43926u, "crc32 fed in two pieces");
 
-    /* 版は見出しの値と一致する。 */
+    /* 版はマニフェストの値である。ライブラリもテストも同じ `pkg.version`
+       から受け取るので、突き合わせているのは「写し間違い」ではなく
+       「ライブラリが答える版が、このパッケージの版か」である。 */
     if (strcmp(hashx_version(), HASHX_VERSION) != 0) {
         printf("FAIL version: want %s got %s\n", HASHX_VERSION, hashx_version());
         fails++;

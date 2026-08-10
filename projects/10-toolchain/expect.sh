@@ -38,7 +38,7 @@ built_by() {
 # cc0 <dowel args...> — コンパイル行の argv[0]。宣言が実際の起動に届いたか。
 cc0() {
     "$DOWEL" -C subject graph --kind=action --format=json "$@" 2>/dev/null |
-        jq -r '.actions[] | select(.kind == "cc") | .command[0]' | sort -u
+        jq -r '.steps[] | select(.kind == "cc") | .program' | sort -u
 }
 
 # ---------------------------------------------------------- 双方で通ること
@@ -55,7 +55,7 @@ for tc in gcc clang; do
 
     # 宣言が起動に届くこと。ここが `cc` のままなら、宣言は飾りである。
     got=$(cc0); [ "$got" = "$tc" ]; v=$?
-    RC=0; _last_cmd="graph --kind=action | .command[0]"; OUT="argv[0] = $got"
+    RC=0; _last_cmd="graph --kind=action | .program"; OUT="argv[0] = $got"
     fact $v "$tc: the declared toolchain is what gets invoked"
 
     # 成果物が自分を名乗る。マニフェストではなく生成物に答えさせる。
@@ -78,7 +78,7 @@ done
 use clang
 args_have_cc() {
     OUT=$("$DOWEL" -C subject graph --kind=action --format=json 2>/dev/null |
-        jq -r '.actions[] | select(.kind == "cc") | .command | join(" ")')
+        jq -r '.steps[] | select(.kind == "cc") | ([.program] + .arguments) | join(" ")')
     RC=0
     _last_cmd="graph --kind=action | grep -F -- $1"
     printf '%s' "$OUT" | grep -qF -- "$1"; _verdict $? "$2"
@@ -104,9 +104,9 @@ run -C subject build
 use clang
 runs_actions_in_subject() {
     local want=$1 desc=$2; shift 2
-    OUT=$("$DOWEL" -C subject build --executor=direct --log-level=debug "$@" 2>&1)
+    OUT=$("$DOWEL" -C subject build --backend=direct --log-level=debug "$@" 2>&1)
     RC=$?
-    local got; got=$(printf '%s' "$OUT" | sed -n 's/.*ran \([0-9]*\) actions.*/\1/p' | tail -1)
+    local got; got=$(printf '%s' "$OUT" | sed -n 's/.*ran \([0-9]*\) steps.*/\1/p' | tail -1)
     if [ "$RC" -ne 0 ]; then
         _verdict 1 "$desc (the build failed)"
     elif [ "$want" = "+" ]; then

@@ -147,84 +147,87 @@ fact $v "and the C++ consumer gets the same answer from the same archive"
 # 閉包に C++ が1つでもあれば、リンクは C++ のドライバを通る。
 # C のライブラリだけを見て C のドライバでリンクすると、C++ の実行時が付かない。
 got=$("$DOWEL" -C cxxtool graph --kind=action --format=json 2>/dev/null |
-      jq -r '.actions[] | select(.kind == "link" and (.target | test("hashcxx")))
-             | .command[0]')
+      jq -r '.steps[] | select(.kind == "link" and (.target | test("hashcxx")))
+             | .program')
 case $got in *++*|*clang++*) v=0 ;; *) v=1 ;; esac
-RC=0; _last_cmd="graph --kind=action | select(.kind==\"link\") | .command[0]"
+RC=0; _last_cmd="graph --kind=action | select(.kind==\"link\") | .program"
 OUT="linker driver: ${got:-(none)}"
 fact $v "the link of the C++ consumer runs through the C++ driver"
 
 # ------------------------------------------------------------ 4. abi の札 (F-028)
 #
 # `abi` は must_equal である。C のライブラリと C++ の利用者は、言語が違う
-# 以上、正しく書けば違う札になる。しかし違う札は abi-mismatch で落ちる。
+# 以上、正しく書けば違う札になる。ライブラリの面は `abi = "c"` を名乗り、
+# **境界**を指す。`extern "C"` を跨ぐ呼び出しに ODR の危険は無いためである。
 #
-# `extern "C"` の境界を跨ぐ呼び出しに ODR の問題は無い。にもかかわらず、
-# 利用者は**ライブラリの札を書き写す**しかない。ライブラリを配るとき、
-# 札は利用者ごとに違ってよいはずのものである。
+# 以前は `c` が無く、利用者はライブラリの札を書き写すしかなかった。それは
+# 札から意味を奪う——「本当の ABI」ではなく「このライブラリを使う組」を表す
+# 名前になる。F-028 / #78 として報告し、境界を指す札が入った。
 
-cp cxxtool/dowel.build cxxtool/dowel.build.keep
-sed -i 's/^abi       = "gnu11"$/abi       = "gnu++17"/' cxxtool/dowel.build
+_last_cmd="grep abi lib/dowel.build cxxtool/dowel.build"
+OUT=$(grep -h '^abi' lib/dowel.build cxxtool/dowel.build)
+RC=0
+printf '%s' "$OUT" | grep -q '"c"'
+fact $? "the library names the C ABI boundary rather than its own language"
 
+got=$(grep -h '^abi' cxxtool/dowel.build | head -1)
+case $got in *'"gnu++17"'*) v=0 ;; *) v=1 ;; esac
+RC=0; _last_cmd="grep abi cxxtool/dowel.build"; OUT="$got"
+fact $v "and the C++ consumer declares its own language"
+
+ok "a C++ consumer can declare its own abi label and still use a C library" \
+    -C cxxtool build --no-compdb
+
+# 札の緩さは境界に限る。C ABI を名乗っていない目標どうしが食い違えば、
+# これまでどおり落ちる。
+cp lib/dowel.build lib/dowel.build.keep
+sed -i 's/^abi      = "c"$/abi      = "gnu11"/' lib/dowel.build
 run -C cxxtool build --no-compdb
 said=$OUT
-[ "$RC" -eq 0 ]
-verdict=$?
-_last_cmd="dowel -C cxxtool build   # abi = \"gnu++17\"（本当の言語）"
+_last_cmd="dowel -C cxxtool build   # ライブラリの札を gnu11 に戻した"
 OUT="$said"; RC=0
-known_issue F-028
-fact $verdict "a C++ consumer can declare its own abi label and still use a C library"
-
 printf '%s' "$said" | grep -q 'abi-mismatch'
-fact $? "instead the two labels are compared and the build is refused"
+fact $? "two labels that are not the boundary are still compared"
 
-diag abi-mismatch "the refusal comes with a diagnostic code and both provenances" \
+diag abi-mismatch "and the refusal comes with a diagnostic code and both provenances" \
     -C cxxtool build --no-compdb
 
-mv cxxtool/dowel.build.keep cxxtool/dowel.build
-ok "writing the library's label into the consumer builds again" \
-    -C cxxtool build --no-compdb
+mv lib/dowel.build.keep lib/dowel.build
+ok "restoring the boundary label builds again" -C cxxtool build --no-compdb
 
 # ------------------------------------------------------------ 5. 出所の切り替え (F-029)
 #
 # ライブラリは出所が変わる。開発中は隣の木（`path`）、配ったあとは `git` か
 # 版である。切り替えは片方を消してもう片方を書く操作であり、**消し忘れ**は
-# 起こる。そのとき、どちらが使われたのかが分からなければ困る。
+# 起こる。以前は無診断で通り、黙って `path` が勝った。F-029 / #79 として
+# 報告し、出所を2つ名乗る項目が拒まれるようになった。
 
 with_dep_line ctool \
     'git     = "https://example.invalid/hashx"' \
-    'rev     = "0123456789012345678901234567890123456789"'
+    'rev     = "<40 桁の sha>"'
 
 OUT=$(json_diags -C ctool check)
 RC=0
 printf '%s' "$OUT" | jq -e '.code' >/dev/null 2>&1
-verdict=$?
-_last_cmd="dowel -C ctool check   # 依存が path と git の両方を名乗る"
-known_issue F-029
-fact $verdict "a dependency entry that names two sources is refused"
-
-run -C ctool build --no-compdb
-said=$OUT
-[ "$RC" -eq 0 ]
 v=$?
-_last_cmd="dowel -C ctool build   # git は存在しない宛先を指している"
-OUT="$said"; RC=0
-fact $v "instead the local path silently wins and the unreachable git source is never touched"
+_last_cmd="dowel -C ctool check   # 依存が path と git の両方を名乗る"
+fact $v "a dependency entry that names two sources is refused"
+
+fails "and the build does not fall back to the local path" -C ctool build --no-compdb
 
 with_dep_line ctool 'version = "9.0"'
 
 OUT=$(json_diags -C ctool check)
 RC=0
 printf '%s' "$OUT" | jq -e '.code' >/dev/null 2>&1
-verdict=$?
+v=$?
 _last_cmd="dowel -C ctool check   # 依存が path と version の両方を名乗る"
-known_issue F-029
-fact $verdict "the same holds when the two sources are a path and a version"
+fact $v "the same holds when the two sources are a path and a version"
 
 with_dep_line ctool
 ok "removing the second source leaves the package as it was" -C ctool check
 
-# 出所が1つも無い場合は拒まれる。規則は片側だけにある。
+# 出所が1つも無い場合も拒まれる。規則が両側に揃った。
 with_dep_line ctool
 cp ctool/dowel.toml ctool/dowel.toml.keep
 python3 -c '
@@ -238,40 +241,43 @@ mv ctool/dowel.toml.keep ctool/dowel.toml
 
 # ------------------------------------------------------------ 6. 版 (F-030)
 #
-# ライブラリの版は2か所にある。`dowel.toml` の `version` と、見出しの
-# `HASHX_VERSION` である。利用者は後者を `#if` で見る。両者がずれると、
-# 利用者は間違った前提で組み立てる。
+# ライブラリの版は `dowel.toml` にある。`pkg.version` でそれを翻訳へ届けられる
+# ため、見出しに書き写す必要が無い。
 #
-# マニフェストの版を翻訳へ届ける手立ては無い。`cfg` の語彙にパッケージの
-# 情報は入っていない。したがってライブラリの作者は手で写すしかなく、
-# 写し間違いを見つけるものは誰もいない。
+# 以前は写すしかなく、写し間違いを見つけるものは誰もいなかった。F-030 / #80
+# として報告し、`pkg` の定数が入った。
+
+_last_cmd="grep pkg.version lib/dowel.build"
+OUT=$(grep -n 'pkg\.version' lib/dowel.build)
+RC=0
+[ -n "$OUT" ]
+fact $? "the library takes its version from the manifest instead of repeating it"
+
+absent_copy=$(grep -c '^#define HASHX_VERSION "[0-9]' lib/include/hashx/hashx.h)
+[ "$absent_copy" = 0 ]
+v=$?; RC=0; _last_cmd="grep '#define HASHX_VERSION \"<数字>' hashx.h"
+OUT="copies of the version written into the header: $absent_copy"
+fact $v "so the public header holds no copy of it"
 
 manifest=$(sed -n 's/^version *= *"\(.*\)"/\1/p' lib/dowel.toml | head -1)
-header=$(sed -n 's/^#define HASHX_VERSION *"\(.*\)"/\1/p' lib/include/hashx/hashx.h)
-[ -n "$manifest" ] && [ "$manifest" = "$header" ]
-v=$?
-RC=0; _last_cmd="dowel.toml の version   vs   hashx.h の HASHX_VERSION"
-OUT="manifest: ${manifest:-?}"$'\n'"header:   ${header:-?}"
-fact $v "the version in the manifest and the one in the header agree today"
+said=$("$(tool ctool hashsum)" --version 2>&1)
+printf '%s' "$said" | grep -q "$manifest"
+v=$?; RC=0; _last_cmd="hashsum --version"
+OUT="manifest: ${manifest:-?}"$'\n'"said:     $said"
+fact $v "and the artifact reports the version the manifest declares"
 
-# 片方だけを動かす。dowel は何も言わない。
+# 版を動かすと、成果物が答える版も動く。写しが無いのだから、ずれようがない。
 cp lib/dowel.toml lib/dowel.toml.keep
 sed -i 's/^version = "0.4.0"/version = "9.9.9"/' lib/dowel.toml
-OUT=$(json_diags -C lib build --no-compdb)
-RC=0
-printf '%s' "$OUT" | jq -e '.code' >/dev/null 2>&1
-verdict=$?
-_last_cmd="dowel.toml の版だけを 9.9.9 にして build"
-known_issue F-030
-fact $verdict "moving the manifest version alone is noticed"
-
+"$DOWEL" -C ctool build --no-compdb >/dev/null 2>&1
 said=$("$(tool ctool hashsum)" --version 2>&1)
-printf '%s' "$said" | grep -q '0.4.0'
-v=$?; RC=0; _last_cmd="hashsum --version   # dowel.toml は 9.9.9 と言っている"
+printf '%s' "$said" | grep -q '9\.9\.9'
+v=$?; RC=0; _last_cmd="dowel.toml の版を 9.9.9 にして組み直し、--version"
 OUT="said: $said"
-fact $v "and the artifact keeps reporting the version written in the header"
+fact $v "moving the manifest version moves what the artifact answers"
 
 mv lib/dowel.toml.keep lib/dowel.toml
+"$DOWEL" -C ctool build --no-compdb >/dev/null 2>&1
 
 # ------------------------------------------------------------ 7. 配る先
 #

@@ -10,7 +10,9 @@ sources = [
 
 [lib.hashx.public]
 includes = [dir("include")]
-abi      = "gnu11"
+# この面は C ABI である。見出しは `extern "C"` で囲ってあり、境界を跨いだ
+# 呼び出しに ODR の危険は無い。`c` はどの札とも合う（F-028）。
+abi      = "c"
 
 [lib.hashx.private]
 includes = [dir("src")]
@@ -20,7 +22,11 @@ flags    = [
     "-std=gnu11", "-Wall", "-Wextra", "-Werror=missing-prototypes",
     "-fvisibility=hidden",
 ]
-defines  = { HASHX_SMALL_TABLE = 1 } when feature.small
+defines  = {
+    HASHX_SMALL_TABLE = 1 when feature.small,
+    # 版はここから届く。見出しに書き写さない（F-030）。
+    HASHX_VERSION     = pkg.version,
+}
 
 [test.unit]
 sources = [file("../tests/unit.c")]
@@ -30,3 +36,6 @@ deps     = [target("hashx")]
 includes = [dir("src")]
 flags    = ["-std=gnu11"]
 abi      = "gnu11"
+# テストも版を知る。ライブラリが答える版がパッケージの版であることを、
+# 手で写した値ではなくマニフェストの値と突き合わせる。
+defines  = { HASHX_VERSION = pkg.version }

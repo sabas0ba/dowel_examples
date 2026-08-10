@@ -70,7 +70,7 @@ app ──private──> core
 
 ## 観測の方法
 
-`--executor=direct --log-level=debug` の判定理由を数える。成果物の更新時刻を
+`--backend=direct --log-level=debug` の判定理由を数える。成果物の更新時刻を
 見る方法もあるが、時刻の分解能に依存し、「なぜ再実行したか」が記録に残らない。
 
 件数は `runs_actions`、走ったものの識別は `rebuilt` / `not_rebuilt` で見る。

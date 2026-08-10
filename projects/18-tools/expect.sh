@@ -27,7 +27,7 @@ cp host/dowel.build "$BUILD_BAK"
 tool_of() {
     local dir=$1 kind=$2; shift 2
     "$DOWEL" -C "$dir" graph --kind=action --format=json "$@" 2>/dev/null |
-        jq -r --arg k "$kind" '.actions[] | select(.kind == $k) | .command[0]' | head -1
+        jq -r --arg k "$kind" '.steps[] | select(.kind == $k) | .program' | head -1
 }
 
 # tool_is <期待> <パッケージ> <種類> <desc> [dowel args...]
@@ -54,8 +54,8 @@ declare_toolchain() {
 # 記録された入力かどうかは、走った数でしか観測できない。
 ran() {
     local dir=$1; shift
-    "$DOWEL" -C "$dir" build --executor=direct --log-level=debug "$@" 2>&1 |
-        sed -n 's/.*ran \([0-9]*\) actions.*/\1/p' | tail -1
+    "$DOWEL" -C "$dir" build --backend=direct --log-level=debug "$@" 2>&1 |
+        sed -n 's/.*ran \([0-9]*\) steps.*/\1/p' | tail -1
 }
 
 # ------------------------------------------------------------ 1. 宣言と既定
@@ -78,7 +78,7 @@ ok "the package builds with the declared archiver" -C host build --no-compdb
 
 ar_define() {
     "$DOWEL" -C vocab graph --kind=action --format=json 2>/dev/null |
-        jq -r '.actions[] | select(.kind == "cc") | .command | join(" ")' |
+        jq -r '.steps[] | select(.kind == "cc") | ([.program] + .arguments) | join(" ")' |
         tr ' ' '\n' | grep -E '^-DAR_IS' | head -1
 }
 
@@ -131,14 +131,14 @@ rm -rf host/.dowel
 "$DOWEL" -C host build --no-compdb >/dev/null 2>&1
 n=$(ran host --no-compdb)
 [ "${n:-1}" = 0 ]
-v=$?; RC=0; _last_cmd="dowel -C host build --executor=direct"; OUT="ran ${n:-?} actions"
+v=$?; RC=0; _last_cmd="dowel -C host build --backend=direct"; OUT="ran ${n:-?} actions"
 fact $v "a rebuild with the same archiver runs nothing"
 
 declare_toolchain host 'ar = "gcc-ar"'
 build_direct -C host --no-compdb
 n=$(_ran_actions)
 [ "${n:-0}" -gt 0 ]
-v=$?; RC=0; _last_cmd="dowel -C host build --executor=direct"; OUT="ran ${n:-?} actions"
+v=$?; RC=0; _last_cmd="dowel -C host build --backend=direct"; OUT="ran ${n:-?} actions"
 fact $v "changing the declared archiver rebuilds"
 
 # 何が走ったか。翻訳まで走るなら、道具の変更が必要以上に波及している。
@@ -158,7 +158,7 @@ rm -rf host/.dowel
 "$DOWEL" -C host build --no-compdb >/dev/null 2>&1
 n=$(PATH="$SHIM:$PATH" ran host --no-compdb)
 [ "${n:-1}" = 0 ]
-v=$?; RC=0; _last_cmd="PATH=<other ar and cc> dowel -C host build --executor=direct"
+v=$?; RC=0; _last_cmd="PATH=<other ar and cc> dowel -C host build --backend=direct"
 OUT="ran ${n:-?} actions"
 fact $v "the record is the tool's name, so swapping what the name resolves to does not rebuild"
 
@@ -257,10 +257,10 @@ probe_vocabulary() {
 probe_vocabulary objcopy; v=$?
 fact $v "a transform tool can be declared alongside the archiver"
 
-# 検査の道具（size / nm / objdump）はまだ表に無い。ファイルを作らないため、
-# 「報せる場所」が要る（dowel#60）。
+# 検査の道具（size / nm / objdump）も表にある。ファイルを作らないため
+# 「報せる場所」が別に要り、`[<kind>.<name>.inspect]` がそれである
+# （F-020 / dowel#60）。
 probe_vocabulary size; v=$?
-known_issue F-020
 fact $v "an inspection tool can be declared alongside the archiver"
 
 # 変換がグラフに乗ることそのものは 19-artifacts が見る。ここで確かめるのは

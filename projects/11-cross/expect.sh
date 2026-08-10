@@ -88,8 +88,8 @@ fi
 
 # 片方を組み直しても、もう片方は組み直さない。
 ran_for() {
-    OUT=$("$DOWEL" -C subject build --executor=direct --log-level=debug "$@" 2>&1)
-    printf '%s' "$OUT" | sed -n 's/.*ran \([0-9]*\) actions.*/\1/p' | tail -1
+    OUT=$("$DOWEL" -C subject build --backend=direct --log-level=debug "$@" 2>&1)
+    printf '%s' "$OUT" | sed -n 's/.*ran \([0-9]*\) steps.*/\1/p' | tail -1
 }
 rm -rf "$SUBJECT/.dowel"
 ran_for --target=$TRIPLE >/dev/null

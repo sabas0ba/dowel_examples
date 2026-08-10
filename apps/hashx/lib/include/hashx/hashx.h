@@ -13,10 +13,12 @@
 extern "C" {
 #endif
 
-/* 版。`dowel.toml` の version と一致していなければならないが、
- * マニフェストの値をここへ届ける手立てが無いため手で写している
- * （docs/10-findings.md F-030）。 */
-#define HASHX_VERSION "0.4.0"
+/* 版。`dowel.toml` の version がそのまま届く（`pkg.version`）。
+ * ここに書き写さない——写しは必ずずれる（docs/10-findings.md F-030）。
+ * ライブラリを使う側の翻訳には届かないため、値は hashx_version() で問う。 */
+#ifndef HASHX_VERSION
+#define HASHX_VERSION "(unknown)"
+#endif
 
 /* 翻訳単位の外へ出す記号は、これを付けたものだけである。
  * それ以外は -fvisibility=hidden により隠れる。 */

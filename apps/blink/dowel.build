@@ -51,6 +51,10 @@ link_flags = [
     "-static",
     "-Wl,--build-id=none",
     "-Wl,-e,_reset",        # 入口はベクタ表の [1] が指す先
+    # 記憶の配置。link_flags は Str と Path を受けるので、木の中の
+    # スクリプトをそのまま指せる。リンクはビルドディレクトリで走るため、
+    # 相対の文字列では届かない。
+    "-T", file("ld/thumbv7em-none-eabihf.ld"),
 ]
 
 # 書き込み用の像。ELF のままでは書き込み器が読めない。
@@ -74,10 +78,11 @@ abi   = "thumbv7em-hard"
 link_flags = [
     "-mcpu=cortex-m4", "-mthumb", "-mfloat-abi=hard", "-mfpu=fpv4-sp-d16",
     "-nostdlib", "-static", "-Wl,--build-id=none", "-Wl,-e,_reset",
+    "-T", file("ld/thumbv7em-none-eabihf.ld"),
 ]
 
 # 実行の仕方。`[runner.<triple>]` は **dowel.build** の表である
-# （dowel.toml へ書くと黙って無視される。docs/10-findings.md F-027）。
+# （dowel.toml へ書くと `unknown-table` で拒まれる。docs/10-findings.md F-027）。
 #
 # 成果物の道は実装が末尾に付ける（ADR-0008）。したがって `-kernel` を
 # args の最後に置けば `qemu-system-arm ... -kernel <artifact>` になる。

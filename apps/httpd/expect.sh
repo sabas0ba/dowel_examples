@@ -23,14 +23,14 @@ waiter() { local b; b=$(built "$1"); [ -n "$b" ] && "$b" --waiter; }
 # link_args [dowel args...] — httpd のリンク引数。
 link_args() {
     "$DOWEL" graph --kind=action --format=json "$@" 2>/dev/null |
-        jq -r '.actions[] | select(.kind == "link" and .target == "httpd:httpd")
-               | .command | join(" ")'
+        jq -r '.steps[] | select(.kind == "link" and .target == "httpd:httpd")
+               | ([.program] + .arguments) | join(" ")'
 }
 
 # sources_of [dowel args...] — 翻訳された src のファイル名。
 sources_of() {
     "$DOWEL" graph --kind=action --format=json "$@" 2>/dev/null |
-        jq -r '.actions[] | select(.kind == "cc") | .command[]' |
+        jq -r '.steps[] | select(.kind == "cc") | ([.program] + .arguments)[]' |
         grep '/src/' | sed 's|.*/||' | sort -u | paste -sd' ' -
 }
 
@@ -115,50 +115,43 @@ case $got in *wait_epoll.c*) v=0 ;; *) v=1 ;; esac
 fact $v "choosing the other feature compiles the other waiter"
 
 # 既定を落とし忘れると、両方が立つ。機能は加算であり、`--features=epoll`
-# だけでは `default = ["poll"]` は消えない（docs/10-findings.md F-031）。
+# だけでは `default = ["poll"]` は消えない。
 #
-# ここは `lib` である。両方の翻訳単位が同じ書庫に入り、リンカは片方だけを
-# 引く。**組み上がってしまう。** `bin` に直に並べた場合（apps/plot）は
-# multiple definition で落ちるので、同じ書き方が目標の種別によって
-# 「落ちる」と「黙って選ばれる」に分かれる。
-got=$(sources_of --features=epoll)
-_last_cmd="graph ... --features=epoll   # --no-default-features を忘れた"
-OUT="$got"; RC=0
-case $got in *wait_epoll.c*wait_poll.c*|*wait_poll.c*wait_epoll.c*) v=0 ;; *) v=1 ;; esac
-fact $v "forgetting to drop the defaults compiles both waiters"
+# 待ち方は択一なので `exclusive` に宣言してある。宣言が無かった頃、ここは
+# `lib` なので**組み上がってしまった**——両方の翻訳単位が同じ書庫に入り、
+# リンカが片方だけを引く。テストも通り、成果物だけが頼んだのと違うものに
+# なる。`bin` に直に並べた場合（apps/plot）は multiple definition で落ちる
+# ので、同じ誤りが目標の種別によって「落ちる」と「黙って選ばれる」に
+# 分かれていた。F-031 / #82 として報告し、`exclusive` が入った。
 
-OUT=$(json_diags check --features=epoll)
+_last_cmd="grep exclusive dowel.toml"
+OUT=$(grep -n 'exclusive' dowel.toml)
 RC=0
-printf '%s' "$OUT" | jq -e '.code' >/dev/null 2>&1
-verdict=$?
-_last_cmd="dowel check --features=epoll   # 両方の待ち方が立っている"
-known_issue F-031
-fact $verdict "and a package that ends up with two implementations of one interface says so"
+[ -n "$OUT" ]
+fact $? "a package can declare that its two waiters are exclusive"
 
-ok "instead the build succeeds, because a static archive keeps only the first definition" \
-    build --no-compdb --features=epoll
+diag conflicting-features \
+    "and a package that would end up with two implementations of one interface says so" \
+    check --features=epoll
 
-got=$(waiter '-epoll+poll')
-_last_cmd="httpd --waiter   # 両方の待ち方を立てて組んだ"
-OUT="said: ${got:-(nothing)}"$'\n'"the manifest asked for both; one of them simply lost"
-RC=0
-[ -n "$got" ]
-fact $? "and the artifact carries whichever the linker reached first"
+fails "the build does not proceed to pick one silently" build --no-compdb --features=epoll
 
-case $got in *wait_poll.c*) v=1 ;; *) v=0 ;; esac
-_last_cmd="graph ... --features=epoll"; OUT="$got"; RC=0
-fact $v "and drops the first one"
+run check --features=epoll
+said=$OUT
+_last_cmd="dowel check --features=epoll"; OUT="$said"; RC=0
+printf '%s' "$said" | grep -q 'comes from `default`'
+fact $? "naming default as the source, which is what --no-default-features drops"
 
 # 成果物自身に名乗らせる。引数の形だけでは、翻訳された側が実際にリンク
 # されたかどうかは分からない。
 ok "the epoll configuration builds" build --no-compdb --no-default-features --features=epoll
 
-got=$(waiter '-debug-poll')
+got=$(waiter '-debug-httpd--poll')
 [ "$got" = "poll sequential" ]
 v=$?; RC=0; _last_cmd="httpd --waiter"; OUT="said: ${got:-(nothing)}"
 fact $v "the default artifact says it is the portable waiter"
 
-got=$(waiter '-debug-epoll')
+got=$(waiter '-debug-httpd--epoll')
 [ "$got" = "epoll sequential" ]
 v=$?; RC=0; _last_cmd="httpd --waiter  # --features=epoll"; OUT="said: ${got:-(nothing)}"
 fact $v "the epoll artifact says so too"
@@ -175,7 +168,7 @@ printf '%s' "$OUT" | grep -q -- '-pthread'
 fact $? "the threaded configuration asks the linker for threads"
 
 ok "the threaded configuration builds" build --no-compdb --features=threads
-got=$(waiter '-debug-poll+threads')
+got=$(waiter '-debug-httpd--poll+httpd--threads')
 [ "$got" = "poll threaded" ]
 v=$?; RC=0; _last_cmd="httpd --waiter  # --features=threads"
 OUT="said: ${got:-(nothing)}"
@@ -187,7 +180,7 @@ fact $v "and its artifact says it is threaded"
 
 ok "the default configuration builds" build --no-compdb
 
-serve_once '-debug-poll' $'GET /index.html HTTP/1.0\r\n\r\n'
+serve_once '-debug-httpd--poll' $'GET /index.html HTTP/1.0\r\n\r\n'
 said=$SAID
 _last_cmd="GET /index.html"; OUT="$said"; RC=0
 printf '%s' "$said" | grep -q '^HTTP/1.1 200 OK'
@@ -201,20 +194,20 @@ _last_cmd="GET /index.html"; OUT="$said"; RC=0
 printf '%s' "$said" | grep -q 'dowel'
 fact $? "and the body is what the file holds"
 
-serve_once '-debug-poll' $'GET /nope.html HTTP/1.0\r\n\r\n'
+serve_once '-debug-httpd--poll' $'GET /nope.html HTTP/1.0\r\n\r\n'
 _last_cmd="GET /nope.html"; OUT="$SAID"; RC=0
 printf '%s' "$SAID" | grep -q '^HTTP/1.1 404'
 fact $? "a request for a file that does not exist is answered with 404"
 
 # 経路の外へ出ようとする要求。実アプリとして最低限の性質である。
-serve_once '-debug-poll' $'GET /../dowel.toml HTTP/1.0\r\n\r\n'
+serve_once '-debug-httpd--poll' $'GET /../dowel.toml HTTP/1.0\r\n\r\n'
 _last_cmd="GET /../dowel.toml"; OUT="$SAID"; RC=0
 printf '%s' "$SAID" | grep -q '^HTTP/1.1 403'
 fact $? "a path that climbs out of the root is refused"
 
 # 別の実装でも同じ答である。差し替えたのは待ち方だけであり、
 # 振る舞いは変わってはならない。
-serve_once '-debug-epoll' $'GET /index.html HTTP/1.0\r\n\r\n'
+serve_once '-debug-httpd--epoll' $'GET /index.html HTTP/1.0\r\n\r\n'
 _last_cmd="GET /index.html  # epoll build"; OUT="$SAID"; RC=0
 printf '%s' "$SAID" | grep -q '^HTTP/1.1 200 OK'
 fact $? "the epoll build answers the same request the same way"
@@ -343,7 +336,7 @@ print("\n".join(bad) if bad else "%d requests, the server survived them all" % l
 PY
 }
 
-report=$(survives '-debug-poll+sanitize')
+report=$(survives '-debug-httpd--poll+httpd--sanitize')
 printf '%s' "$report" | grep -q 'survived them all'
 v=$?
 RC=0; _last_cmd="send 16 malformed requests to the instrumented server"
@@ -355,7 +348,7 @@ fact $v "a malformed request is answered or refused, never crashes the server"
 ok "the epoll configuration builds instrumented too" \
     build --no-compdb --no-default-features --features=epoll,sanitize
 
-report=$(survives '-debug-epoll+sanitize')
+report=$(survives '-debug-httpd--epoll+httpd--sanitize')
 printf '%s' "$report" | grep -q 'survived them all'
 v=$?
 RC=0; _last_cmd="the same 16 requests against the epoll build"
