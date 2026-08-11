@@ -112,3 +112,68 @@ if grep -q 'includes = \[dir("src")\]' fixed/dowel.build; then
 else
     fact 1 "applying the suggestion keeps the value intact (got: $(sed -n '6p' fixed/dowel.build))"
 fi
+
+# ------------------------------------------------------- 同名のターゲット
+#
+# 1つのパッケージに `[lib.foo]` と `[bin.foo]` を両方書ける。ライブラリと
+# その CLI に同じ名前を付けるのは避けるべき書き方ではなく、自然な書き方で
+# ある——成果物の綴りは `libfoo.a` と `foo` で衝突しない。
+#
+# 受理された先が壊れている（F-052）。現れ方は2つある。
+#
+#   duplicate-target         `public` がどこへも伝播せず、翻訳が落ちる
+#   duplicate-target-shared  オブジェクトの経路が衝突し、**ninja** が落ちる
+#
+# 後者は `docs/00-overview.md` 1節が「既存システムの失敗様式」として挙げて
+# いる形そのものである。マニフェストの誤りが、下流の道具の語彙で、利用者が
+# 書いていない行番号を指して出る。
+
+known_issue F-052
+fails "check refuses two targets that share a name in one package" \
+    -C cases/duplicate-target check
+
+# dowel は2つあることを知っている。助言がその事実を使えていないだけである。
+run build foo --no-compdb -C cases/duplicate-target
+_last_cmd="dowel build foo"
+printf '%s' "$OUT" | grep -q 'duplicate_target:foo, duplicate_target:foo'
+fact $? "and the advice for naming it offers the same spelling twice"
+
+# `public` が伝播しない。依存する側にも、宣言した側自身のソースにも。
+run build --no-compdb -C cases/duplicate-target
+_last_cmd="dowel build"; OUT=$(printf '%s' "$OUT" | grep -m3 'fatal error\|error:')
+known_issue F-052
+[ "$RC" -eq 0 ]
+fact $? "and the library's public include directory reaches the sources that need it"
+
+# オブジェクトの経路に種別が入らないので、同名の2つは同じ場所を共有する。
+objs=$("$DOWEL" -C cases/duplicate-target-shared graph --kind=action --format=json 2>/dev/null |
+       jq -r '.steps[] | select(.kind == "cc") | .arguments[-1]' | sed 's|.*/obj/|obj/|')
+dupes=$(printf '%s\n' "$objs" | sort | uniq -d)
+_last_cmd="graph --kind=action | the object each translation writes"
+OUT="$objs"$'\n'"---"$'\n'"written twice: ${dupes:-(none)}"
+RC=0
+known_issue F-052
+[ -z "$dupes" ]
+fact $? "and a shared source does not collide in the object directory"
+
+# その結果は ninja の語彙で出る。dowel の診断ではない。
+run build --no-compdb -C cases/duplicate-target-shared
+_last_cmd="dowel build"
+OUT=$(printf '%s' "$OUT" | grep -m2 'ninja:\|error:')
+known_issue F-052
+! printf '%s' "$OUT" | grep -q 'multiple rules generate'
+fact $? "so the manifest's mistake is not reported in the downstream tool's words"
+
+# 対照。名前を割れば、同じ木がそのまま通る。差はターゲット名だけである。
+for c in duplicate-target duplicate-target-shared; do
+    rm -rf "renamed-$c" && cp -r "cases/$c" "renamed-$c"
+    sed -i 's/^\[lib\.foo\]/[lib.foolib]/; s/^\[lib\.foo\./[lib.foolib./; s/target("foo")/target("foolib")/' \
+        "renamed-$c/dowel.build"
+done
+ok "renaming one of them makes the same tree build"        -C renamed-duplicate-target        build --no-compdb
+ok "and makes the tree that shares a source build as well" -C renamed-duplicate-target-shared build --no-compdb
+
+built=$(cd renamed-duplicate-target-shared && find .dowel/build -name 'libfoolib.a' | head -1)
+_last_cmd="find libfoolib.a (renamed)"; OUT="${built:-(absent)}"; RC=0
+[ -n "$built" ]
+fact $? "producing the archive that the colliding names could not, on the same sources"

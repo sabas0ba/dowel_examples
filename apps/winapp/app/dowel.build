@@ -1,0 +1,60 @@
+# 行末と経路。答が構成ごとに違う二つを、1枚の見出しの裏で切り替える。
+#
+# ライブラリの名前が `wtcore` で実行ファイルが `wt` なのは、避けたのであって
+# 選んだのではない。両方を `wt` と名乗ると `dowel check` は通り、`public` は
+# どこにも伝播せず、ソースを共有した側は黙って計画から消える
+# （[F-052](../../../docs/10-findings.md#f-052)）。名前を割るのが今の回避である。
+#
+# 切り替えは `match cfg.target` で書く。ここには**書きたい形が無い**。
+# 欲しいのは「対象が Windows なら」であって「対象がこの三つ組なら」では
+# ないが、語彙にある `host.os` は組む側の機械を指し、対象を指す語は無い
+# （[F-053](../../../docs/10-findings.md#f-053)）。三つ組が増えるたびに
+# ここへ腕が1本増え、書き忘れた三つ組は静かに `_` の側へ落ちる。
+[lib.wtcore]
+sources = [
+    file("src/text.c"),
+    match cfg.target {
+        "x86_64-pc-windows-gnu"  => file("src/plat_win.c"),
+        "x86_64-pc-windows-msvc" => file("src/plat_win.c"),
+        _                        => file("src/plat_posix.c"),
+    },
+]
+
+[lib.wtcore.public]
+includes = [dir("include")]
+abi      = "gnu11"
+
+[lib.wtcore.private]
+includes = [dir("src")]
+flags    = ["-Wall", "-Wextra"]
+c_std    = "c11"
+
+[bin.wt]
+sources = [file("src/main.c")]
+
+[bin.wt.private]
+deps  = [target("wtcore")]
+flags = ["-Wall", "-Wextra"]
+c_std = "c11"
+abi   = "gnu11"
+
+[test.unit]
+sources = [file("../tests/unit.c")]
+
+[test.unit.private]
+deps  = [target("wtcore")]
+flags = ["-Wall", "-Wextra"]
+c_std = "c11"
+abi   = "gnu11"
+
+[test.unit.cases]
+eol  = { args = ["eol"] }
+sep  = { args = ["sep"] }
+base = { args = ["base"] }
+norm = { args = ["norm"] }
+
+# 組んだものを走らせる側。手元の機械に Windows は無いので wine を通す。
+# 宣言はこれで足りているが、渡される経路に `.exe` が付かないため今は
+# 起動できない（[F-050](../../../docs/10-findings.md#f-050)）。
+[runner.x86_64-pc-windows-gnu]
+command = "wine"

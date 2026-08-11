@@ -1,0 +1,17 @@
+# 1つのパッケージに同じ名前のターゲットを2つ。種別は違う。
+#
+# ライブラリ `foo` とその CLI `foo` は、ほかのビルドツールでは普通に同居する
+# 書き方である（成果物の綴りは `libfoo.a` と `foo` で衝突しない）。ここでは
+# 受理され、`lib.foo.public` の `includes` はどこへも伝播しない——依存する
+# `bin.foo` にも、`lib.foo` 自身のソースにも（docs/10-findings.md F-052）。
+[lib.foo]
+sources = [file("src/lib.c")]
+
+[lib.foo.public]
+includes = [dir("include")]
+
+[bin.foo]
+sources = [file("src/main.c")]
+
+[bin.foo.private]
+deps = [target("foo")]

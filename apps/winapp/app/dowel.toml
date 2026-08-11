@@ -1,0 +1,21 @@
+[package]
+name    = "winapp"
+version = "0.2.0"
+edition = "2026"
+
+# Windows 向けの道具立て。手元の機械には mingw がある。
+#
+# `[toolchain]`（三つ組なし）は手元の構成にだけ掛かり、他の三つ組へは
+# 決して及ばない。だから `--target` を渡す構成は、それぞれ自分の表を持つ。
+[toolchain.x86_64-pc-windows-gnu]
+c  = "x86_64-w64-mingw32-gcc"
+ar = "x86_64-w64-mingw32-ar"
+
+# 参考: MSVC は**名指しはできるが宣言はできない**。下は書けてしまうが、
+# 出てくる引数は GNU の形（`-c` `-o` `-MD -MF`）であり、`cl` には通らない。
+# `-MD` に至っては MSVC では動的 CRT の指定であり、意味が衝突する。
+# ここでは書かずに、expect.sh が偽の `cl` を置いて計画を読み取る（F-051）。
+#
+#   [toolchain.x86_64-pc-windows-msvc]
+#   c  = "cl"
+#   ar = "lib"

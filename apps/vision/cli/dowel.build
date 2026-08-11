@@ -1,0 +1,12 @@
+# 使う側。C で書いてあり、GL も OpenCV も知らない。見出しは1枚だけ届く。
+[bin.vis]
+sources = [file("src/main.c")]
+
+[bin.vis.private]
+deps  = [dep("vision-core")]
+flags = [
+    "-Wall", "-Wextra",
+    "-fsanitize=address,undefined" when feature.sanitize,
+]
+c_std = "c11"
+abi   = "gnu11"

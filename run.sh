@@ -112,7 +112,8 @@ export DOWELUP DOWEL_SRC
 for tool in cc ninja jq git cmake pkg-config gcc gcc-ar objcopy readelf g++ clang clang++ \
              aarch64-linux-gnu-gcc aarch64-linux-gnu-g++ aarch64-linux-gnu-objcopy \
              arm-none-eabi-gcc arm-none-eabi-objcopy qemu-system-arm \
-             qemu-aarch64-static xvfb-run gdb gdb-multiarch; do
+             qemu-aarch64-static xvfb-run gdb gdb-multiarch \
+             x86_64-w64-mingw32-gcc x86_64-w64-mingw32-ar wine file; do
     command -v "$tool" >/dev/null 2>&1 || {
         printf '%s is missing.\n\n' "$tool" >&2
         cat >&2 <<'EOF'
@@ -132,16 +133,22 @@ migration layers
   pkg-config                   17-deps resolves system packages through it
   xvfb-run                     apps/plot opens a real window on a virtual display
   gdb gdb-multiarch            21-debug attaches a real debugger, host and cross
+  x86_64-w64-mingw32-gcc       apps/winapp cross compiles for Windows
+  wine                         apps/winapp runs what it compiled for Windows
+  file                         apps/winapp tells a PE image from an ELF one
 
-apps/plot also needs the cairo and X11 development packages, which it
-resolves through pkg-config like any other system dependency.
+apps/plot also needs the cairo and X11 development packages, and apps/vision
+needs OSMesa and OpenCV. Both resolve them through pkg-config like any other
+system dependency. OSMesa is what lets the graphics tests run on a machine
+with no display at all.
 
 on debian and ubuntu:
 
   apt-get install -y ninja-build jq cmake pkg-config gcc g++ clang \
       gcc-aarch64-linux-gnu g++-aarch64-linux-gnu qemu-user-static \
       gcc-arm-none-eabi qemu-system-arm xvfb libcairo2-dev libx11-dev \
-      gdb gdb-multiarch
+      gdb gdb-multiarch libosmesa6-dev libopencv-dev \
+      gcc-mingw-w64-x86-64 wine wine64
 EOF
         exit 2
     }

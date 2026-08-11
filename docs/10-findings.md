@@ -20,8 +20,13 @@ F-020 の残っていた側（検査の道具）と F-022 から F-031 までは
 残してある。
 
 未修正は F-011 の残っている側と、デバッグ機能（`dowel debug` / ADR-0024、
-ハーネス規約 / ADR-0023）について見つけた F-046 から F-049 までである。
+ハーネス規約 / ADR-0023）について見つけた F-046 から F-049、および実践的な
+アプリケーションを書く過程で見つけた F-050 から F-053 までである。
 対応する検査は `known_issue` を付けてあり、本体が直すと `XPASS` になって落ちる。
+
+F-050 から F-053 は `apps/vision`（大きい依存）と `apps/winapp`（Windows）を
+書く過程で出た。**アプリケーションを書かないと現れない層**であり、性質を1つ
+ずつ固定する `projects/` の側からは要求として立ち上がらなかったものである。
 
 各項目は次の形で記録する。
 
@@ -84,6 +89,10 @@ F-020 の残っていた側（検査の道具）と F-022 から F-031 までは
 | [F-047](#f-047) | ハーネスの列挙が返した事例名が検証されない | 実装 | [#108](https://github.com/sabas0ba/dowel/issues/108) | 未修正 |
 | [F-048](#f-048) | 半分だけ宣言したスタブに「宣言が無い」と言う | 診断 | [#109](https://github.com/sabas0ba/dowel/issues/109) | 未修正 |
 | [F-049](#f-049) | 落ちていない事例をデバッガの下で開けない | 要望 | [#110](https://github.com/sabas0ba/dowel/issues/110) | 未修正 |
+| [F-050](#f-050) | Windows 対象の成果物名が `.exe` を知らない | 実装 | [#112](https://github.com/sabas0ba/dowel/issues/112) | 未修正 |
+| [F-051](#f-051) | MSVC は名指しできるが宣言できない（引数が GNU の形） | 実装 | [#113](https://github.com/sabas0ba/dowel/issues/113) | 未修正 |
+| [F-052](#f-052) | 同名のターゲットを2つ書け、伝播とオブジェクト経路が壊れる | 実装 | [#114](https://github.com/sabas0ba/dowel/issues/114) | 未修正 |
+| [F-053](#f-053) | 対象の OS を指す語が無く、三つ組を数え上げるしかない | 要望 | [#115](https://github.com/sabas0ba/dowel/issues/115) | 未修正 |
 
 ---
 
@@ -3479,6 +3488,297 @@ error: no target named `d:suite/plain`
 `a case that has not failed can be opened under the debugger`。
 known_issue F-049 である。`--debug-failed` が宣言を写すことは通常の検査
 （args / env / cwd がそのまま Launch に写ること）。
+
+
+## F-050
+
+報告先: [sabas0ba/dowel#112](https://github.com/sabas0ba/dowel/issues/112)
+
+**Windows 対象は組めるが、dowel が名指しする成果物が存在しない。ドライバは
+`bin/<名前>.exe` を書き、dowel は `bin/<名前>` として扱う。**
+
+種別: 実装。未修正（`e12bac7`）。
+
+### 観測
+
+```console
+$ dowel build --target=x86_64-pc-windows-gnu
+built: .../x86_64-pc-windows-gnu-debug/bin/wt
+
+$ ls .../x86_64-pc-windows-gnu-debug/bin/
+wt.exe
+```
+
+ずれは4か所に出る。
+
+| 面 | 現れ方 |
+|---|---|
+| 印字 | `built:` が実在しない道を出す |
+| 実行 | runner に `.exe` の無い道が渡り、wine が `c0000135` を返す |
+| 派生 | `artifacts` の `objcopy` に存在しない入力が渡り、ビルドが落ちる |
+| **増分** | **宣言した出力が永久に無いので、リンクが毎回やり直される** |
+
+最後の1つは報告後に見つけて追記した。何も触らずに繰り返し組むと、
+`ran 2 steps` が何度でも出る。同じ木を手元へ組めば `ran 0 steps` に収束する。
+
+```console
+$ for i in 1 2 3; do dowel build --target=x86_64-pc-windows-gnu --backend=direct --log-level=debug; done
+run 1: ran 2 steps, skipped 5 already up to date
+run 2: ran 2 steps, skipped 5 already up to date
+run 3: ran 2 steps, skipped 5 already up to date
+```
+
+成功として終わる（終了状態 0、`built:` も出る）ので、手がかりは所要時間しか
+無い。リンクが重い木——大きい依存、LTO、静的リンク——で初めて体感に出る。
+
+### 期待
+
+対象の三つ組が実行ファイルの綴りを決める、という規則を1か所に置く。
+`*-windows-*` では `bin/<名前>.exe`。runner・`artifacts`・`inspect`・`debug`・
+`built:` の印字・指紋の照合が、すべて同じ値を読む形になる。
+
+`docs/12-build-reference.md` の種別の表は `bin` の成果物を `bin/<名前>` と
+書いており、Windows ではこれが成り立たない。
+
+### なぜ内側から見つからないか
+
+本体のフィクスチャが組む対象は、ホストとベアメタルだと思われる。どちらも
+実行ファイルに拡張子が付かない。**拡張子が付く対象**を入力にして初めて、
+名指しする道と書かれたファイルがずれる。
+
+ずれは組む段では現れない。ninja はリンクの成功を終了状態で判断し、出力
+ファイルの実在を確かめないためである。次の段で初めて出る。増分の面だけは
+組む段に出るが、そちらは「成功して速い」ように見える。
+
+### 検査
+
+`apps/winapp` の
+`the artifact dowel names is the file that was written`、
+`and a Windows target can be tested through its runner`、
+`a second Windows build runs nothing`。いずれも known_issue F-050 である。
+
+対照として、同じ実行ファイルを手で wine に渡すと CRLF と `\` と Win32 の値を
+正しく返すこと、および同じ木の手元向けビルドが 0 件に収束することを通常の
+検査として置いてある。組めないのではなく、組めるのに使えないことが読める形に
+してある。
+
+## F-051
+
+報告先: [sabas0ba/dowel#113](https://github.com/sabas0ba/dowel/issues/113)
+
+**MSVC は名指しできるが宣言できない。`[toolchain.<triple>] c = "cl"` は
+受理され、計画も立つが、出てくる引数は GNU の形である。**
+
+種別: 実装。未修正（`e12bac7`）。
+
+### 観測
+
+`cl` と `lib` を PATH に置いて計画を読む。
+
+```console
+$ dowel graph --kind=action --target=x86_64-pc-windows-msvc --format=json
+cl   -g -O0 -MD -MF …/src_main.c.o.d -c …/src/main.c -o …/src_main.c.o
+lib  rcs …/lib/libapp.a …/src_main.c.o
+cl   …/src_main.c.o …/lib/libapp.a -o …/bin/app
+```
+
+すべての綴りが GNU である。`-c` `-o` `-g` `-O0` は `cl` の綴りではなく、
+`-MD` に至っては MSVC では**動的 CRT の指定**であり、意味が衝突する
+（`docs/00-overview.md` 自身が CRT を ABI の軸として挙げている）。書庫の
+綴り `lib<名前>.a` も MSVC では `<名前>.lib` である。ツール表に `link` が
+無いため、リンクを別の実行ファイルに割り当てることもできない。
+
+### 期待
+
+族（GNU 風 / MSVC 風）が引数の組み立てを選ぶ形。ツールの名前だけでなく、
+その名前が**どの綴りで話すか**を宣言できること。あわせて成果物の綴り
+（`lib<名前>.a` / `<名前>.lib`、`<名前>` / `<名前>.exe`）も族から決まる形。
+
+短期には、対応していない族を名指ししたときに `unsupported-toolchain` の
+ような診断で拒む方が、GNU の引数を `cl` に渡して下流で落ちるより良い。
+
+### なぜ内側から見つからないか
+
+引数の組み立ては、本体から見ると1つしかない。「族が2つある」という前提が
+入っていないので、それが破れる入力を作る動機が無い。`cl` を PATH に置いて
+計画だけ読むという形は、**MSVC を実際に使おうとした側**からしか出てこない。
+
+### 検査
+
+`apps/winapp` の `an MSVC toolchain can be declared, not just named`。
+known_issue F-051 である。`cl` を名指しできること自体、および同じ引数の形が
+GNU の族には正しいことは通常の検査として置いてある。
+
+## F-052
+
+報告先: [sabas0ba/dowel#114](https://github.com/sabas0ba/dowel/issues/114)
+
+**1つのパッケージに同名のターゲットを2つ書ける。`check` は通り、`public` は
+どこへも伝播せず、同じソースを持つとオブジェクトの経路が衝突して ninja が
+落ちる。**
+
+種別: 実装。未修正（`e12bac7`）。
+
+### 観測
+
+```toml
+[lib.foo]
+sources = [file("src/lib.c")]
+
+[lib.foo.public]
+includes = [dir("include")]
+
+[bin.foo]
+sources = [file("src/main.c")]
+
+[bin.foo.private]
+deps = [target("foo")]
+```
+
+```console
+$ dowel check
+check passed: 1 packages, 2 targets
+```
+
+現れ方は4つ。
+
+1. **グラフのラベルが同じ。** 4つの手順がすべて `pkg:foo` になり、どの `cc`
+   が書庫のためのものかをラベルから決められない。`--failed` や
+   `--message-format=json` を読む側は、この名前を鍵にしている
+2. **`public` が伝播しない。** 依存する `bin.foo` にも、`lib.foo` 自身の
+   ソースにも `-I include` が届かず、翻訳が落ちる。名前を割るだけで通る
+3. **オブジェクトの経路が衝突する。** 経路は `obj/<パッケージ>/<名前>/` で
+   あり種別が入らない。同じソースを両方が持つと、同じ経路を2つの規則が作る
+4. **助言が同じ綴りを2つ挙げる。**
+   `` error: `foo` exists in several packages: pkg:foo, pkg:foo ``
+   パッケージは1つであり、言われたとおり書いても区別できない
+
+3 の落ち方が悪い。
+
+```console
+$ dowel build
+ninja: error: …/build.ninja:39: multiple rules generate …/obj/pkg/foo/src_shared.c.o
+```
+
+`docs/00-overview.md` 1節が「既存システムの失敗様式」として挙げている形で
+ある。マニフェストの誤りが、下流の道具の語彙で、利用者が書いていない行番号を
+指して出る。`dowel check` は通っているので、commit 前に洗い出す用途も
+満たさない。
+
+### 期待
+
+1つのパッケージの中でターゲット名は一意である、として2つ目の宣言を
+`duplicate-target` で拒む。成果物の綴り（`libfoo.a` と `foo`）が衝突しない
+以上、同居させたい書き手はいる。それでも `target()` とラベルと `obj/` の
+3か所すべてを種別で修飾するのは、得られるものに対して面が広い。名前が
+一意であることは `dowel build <名前>` の文法が前提にしているものでもある。
+
+### なぜ内側から見つからないか
+
+ターゲットの検査は種別ごとに1つずつ書くのが自然である。`lib` の伝播を見る
+フィクスチャ、`bin` のリンクを見るフィクスチャ、という具合に。**同じ
+パッケージに同じ名前で2つ**という組み合わせは、どちらの検査からも要らない。
+
+そしてこれは「壊れた入力」に見えない。`unknown-property` のように明らかに
+誤った綴りではなく、**両方とも単独では正しい宣言**である。
+
+### 報告の訂正
+
+最初の報告では「ソースを共有すると `ar` が計画から消え、`build` が 0 を
+返す」と書いた。**これは誤りだった。** 依存の辺を書いていなかったためで、
+辺が無ければ名前が同じでも違っても同じ結果になる（到達されない `lib` が
+組まれないだけで、`docs/60-cli.md` のとおりである）。対照を取らずに報告して
+しまった。#114 に訂正を出し、正しい症状（3）に置き換えてある。
+
+対照を並べる前に報告した点が、こちら側の反省である。検査を書く段で対照が
+必要になり、そこで初めて気づいた。**検査を書く前に報告しない**方が良い。
+
+### 検査
+
+`projects/04-diagnostics` の
+`check refuses two targets that share a name in one package`、
+`and the library's public include directory reaches the sources that need it`、
+`and a shared source does not collide in the object directory`、
+`so the manifest's mistake is not reported in the downstream tool's words`。
+いずれも known_issue F-052 である。
+
+助言が同じ綴りを2つ挙げることは、**現況を固定する**通常の検査として置いて
+ある（直れば落ちる）。対照として、名前を割った同じ木が通り、書庫が作られる
+ことも通常の検査である。差がターゲット名だけであることが読める形にしてある。
+
+## F-053
+
+報告先: [sabas0ba/dowel#115](https://github.com/sabas0ba/dowel/issues/115)
+
+**対象の OS を指す語が無い。条件つきソースは三つ組を数え上げるしかなく、
+`match host.os` は組む側を指すため書き手の意図と逆に効く。**
+
+種別: 要望（`docs/99-open-questions.md` Q1 への材料）。未修正（`e12bac7`）。
+
+### 観測
+
+語彙にあるのは `host.os` / `host.arch`（組む側）と `cfg.target`（三つ組その
+もの）だけである。対象の OS を指す語は無い。
+
+素直に書くとこうなる。
+
+```toml
+match host.os {
+    windows => file("src/plat_win.c"),
+    _       => file("src/plat_posix.c"),
+}
+```
+
+Linux から Windows 向けに組む。
+
+```console
+$ dowel graph --target=x86_64-pc-windows-gnu --format=json | jq '…plat…'
+…/src/plat_posix.c
+```
+
+`--target` に windows と書き、`match` にも `windows` と書いてあるのに、
+POSIX の実装が選ばれる。`plat_posix.c` が `<unistd.h>` を含んでいれば翻訳で
+落ちるが、含んでいなければ**組み上がって答だけが違う**。
+
+正しい綴りは三つ組の数え上げになる。
+
+```toml
+match cfg.target {
+    "x86_64-pc-windows-gnu"  => file("src/plat_win.c"),
+    "x86_64-pc-windows-msvc" => file("src/plat_win.c"),
+    _                        => file("src/plat_posix.c"),
+}
+```
+
+Windows の三つ組は複数あり、「Windows のどれか」と言う手段が無い。`_` が
+既定なので、**書き忘れた三つ組は静かに POSIX 側へ落ちる**。`cfg.target` は
+開いた領域なので網羅性の検査も掛からない。
+
+### 期待
+
+Q1 で `target.os` / `target.arch` を語彙に入れる。`host.*` は残す——組む側を
+見たい場面は実在する。
+
+`target.os` は `host.os` と同じ有限領域にできるので、`match` の網羅性検査が
+効く。`_` を書かずに済み、対象が増えたときに**マニフェストが落ちて教えて
+くれる**。三つ組を数え上げる形の一番の弱点がここである。三つ組から導ける
+値なので、新しい入力は要らない。
+
+### なぜ内側から見つからないか
+
+`projects/11-cross` も `apps/blink` も、対象は1つずつだった。**対象ごとに
+実装が分かれる**形で初めて出る。語彙が足りないことは、足りない語を使いたく
+なる木を書くまで現れない。
+
+### 検査
+
+`apps/winapp` の
+`a manifest can select sources by the target's operating system`。
+known_issue F-053 である。
+
+三つ組を数え上げる形が正しく選ぶこと、および `host.os` が組む側を指すと
+文書化されていることは通常の検査として置いてある。後者は「そういうもので
+ある」ことの固定であり、値が変わったらこちら側が気づけるようにしてある。
 
 
 ---
