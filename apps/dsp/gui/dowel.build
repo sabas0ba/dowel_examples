@@ -1,0 +1,15 @@
+# 見せる側。同じ算法を、**重いシステム依存を持つ使う側**から引く。
+#
+# この木で dsp-core を引く4番目の使い方である。他の3つ（cli / fw / 検査）
+# と違い、こちらは cairo に依存しており、手元の機械でしか組まない。
+#
+# 見どころは、算法の側が**何も変わらない**ことである。cairo を引くのは
+# この private な依存だけで、dsp-core の翻訳にも成果物にも現れない。
+[bin.dspview]
+sources = [file("src/main.c")]
+
+[bin.dspview.private]
+deps  = [dep("dsp-core"), dep("cairo")]
+c_std = "c11"
+flags = ["-Wall", "-Wextra"]
+abi   = "gnu11"

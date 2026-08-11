@@ -113,7 +113,8 @@ for tool in cc ninja jq git cmake pkg-config gcc gcc-ar objcopy readelf g++ clan
              aarch64-linux-gnu-gcc aarch64-linux-gnu-g++ aarch64-linux-gnu-objcopy \
              arm-none-eabi-gcc arm-none-eabi-objcopy qemu-system-arm \
              qemu-aarch64-static xvfb-run gdb gdb-multiarch \
-             x86_64-w64-mingw32-gcc x86_64-w64-mingw32-ar wine file; do
+             x86_64-w64-mingw32-gcc x86_64-w64-mingw32-ar wine file \
+             riscv64-linux-gnu-gcc riscv64-linux-gnu-ar qemu-riscv64-static; do
     command -v "$tool" >/dev/null 2>&1 || {
         printf '%s is missing.\n\n' "$tool" >&2
         cat >&2 <<'EOF'
@@ -133,6 +134,8 @@ migration layers
   pkg-config                   17-deps resolves system packages through it
   xvfb-run                     apps/plot opens a real window on a virtual display
   gdb gdb-multiarch            21-debug attaches a real debugger, host and cross
+  riscv64-linux-gnu-gcc        apps/dsp builds the same algorithm for RISC-V
+  qemu-riscv64-static          apps/dsp runs it there
   x86_64-w64-mingw32-gcc       apps/winapp cross compiles for Windows
   wine                         apps/winapp runs what it compiled for Windows
   file                         apps/winapp tells a PE image from an ELF one
@@ -148,7 +151,7 @@ on debian and ubuntu:
       gcc-aarch64-linux-gnu g++-aarch64-linux-gnu qemu-user-static \
       gcc-arm-none-eabi qemu-system-arm xvfb libcairo2-dev libx11-dev \
       gdb gdb-multiarch libosmesa6-dev libopencv-dev \
-      gcc-mingw-w64-x86-64 wine wine64
+      gcc-mingw-w64-x86-64 wine wine64 gcc-riscv64-linux-gnu
 EOF
         exit 2
     }

@@ -1,0 +1,21 @@
+[package]
+name    = "dsp-fw"
+version = "0.1.0"
+edition = "2026"
+# この木はベアメタル専用である。宣言しておくと、--target を付け忘れた
+# ときに旗についての苦情ではなく `unsupported-target` が返る。
+targets = ["thumbv7em-none-eabihf"]
+
+[[dependencies]]
+name = "dsp-core"
+path = "../core"
+
+# 道具立て。**ここは dsp-core と同じ表の写しである。**
+#
+# 三つ組ごとのコンパイラは依存の宣言からは降ってこない。使う側の根が
+# 自分で宣言していなければ `missing-toolchain` で拒まれる
+# （[F-054](../../../docs/10-findings.md#f-054)）。
+[toolchain.thumbv7em-none-eabihf]
+c       = "arm-none-eabi-gcc"
+ar      = "arm-none-eabi-ar"
+objcopy = "arm-none-eabi-objcopy"

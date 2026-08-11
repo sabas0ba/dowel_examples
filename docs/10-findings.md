@@ -21,12 +21,16 @@ F-020 の残っていた側（検査の道具）と F-022 から F-031 までは
 
 未修正は F-011 の残っている側と、デバッグ機能（`dowel debug` / ADR-0024、
 ハーネス規約 / ADR-0023）について見つけた F-046 から F-049、および実践的な
-アプリケーションを書く過程で見つけた F-050 から F-053 までである。
+アプリケーションを書く過程で見つけた F-050 から F-055 までである。
 対応する検査は `known_issue` を付けてあり、本体が直すと `XPASS` になって落ちる。
 
-F-050 から F-053 は `apps/vision`（大きい依存）と `apps/winapp`（Windows）を
-書く過程で出た。**アプリケーションを書かないと現れない層**であり、性質を1つ
-ずつ固定する `projects/` の側からは要求として立ち上がらなかったものである。
+F-050 から F-055 は `apps/vision`（大きい依存）、`apps/winapp`（Windows）、
+`apps/dsp`（1つの算法を4つの三つ組で）を書く過程で出た。**アプリケーションを
+書かないと現れない層**であり、性質を1つずつ固定する `projects/` の側からは
+要求として立ち上がらなかったものである。
+
+F-054 と F-055 は特に、**パッケージが分かれていて、かつ三つ組が複数ある**と
+きにしか現れない。どちらか一方だけの木では無害か、そもそも起きない。
 
 各項目は次の形で記録する。
 
@@ -93,6 +97,8 @@ F-050 から F-053 は `apps/vision`（大きい依存）と `apps/winapp`（Win
 | [F-051](#f-051) | MSVC は名指しできるが宣言できない（引数が GNU の形） | 実装 | [#113](https://github.com/sabas0ba/dowel/issues/113) | 未修正 |
 | [F-052](#f-052) | 同名のターゲットを2つ書け、伝播とオブジェクト経路が壊れる | 実装 | [#114](https://github.com/sabas0ba/dowel/issues/114) | 未修正 |
 | [F-053](#f-053) | 対象の OS を指す語が無く、三つ組を数え上げるしかない | 要望 | [#115](https://github.com/sabas0ba/dowel/issues/115) | 未修正 |
+| [F-054](#f-054) | 依存の `[toolchain]` が効かず、使う側すべてが写す | 診断／要望 | [#125](https://github.com/sabas0ba/dowel/issues/125) | 未修正 |
+| [F-055](#f-055) | 目標を三つ組で絞れず、依存の `test` が使う側の build で組まれる | 要望 | [#126](https://github.com/sabas0ba/dowel/issues/126) | 未修正 |
 
 ---
 
@@ -3781,6 +3787,174 @@ known_issue F-053 である。
 ある」ことの固定であり、値が変わったらこちら側が気づけるようにしてある。
 
 
+## F-054
+
+報告先: [sabas0ba/dowel#125](https://github.com/sabas0ba/dowel/issues/125)
+
+**依存パッケージが宣言した `[toolchain.<triple>]` は使う側の build に効かない。
+dowel はその宣言を読み上げたうえで「宣言が無い」と言って止まる。**
+
+種別: 診断／要望。未修正（`e12bac7`）。
+
+### 観測
+
+```
+lib/dowel.toml      [toolchain.aarch64-unknown-linux-gnu] を宣言する
+app/dowel.toml      lib に依存する。道具立ては書かない
+```
+
+```console
+$ dowel -C app build --target=aarch64-unknown-linux-gnu
+error[missing-toolchain]: no toolchain is declared for target `aarch64-unknown-linux-gnu`
+  = note: declare one, for example `[toolchain.aarch64-unknown-linux-gnu]` with `c = "..."` in dowel.toml
+warning[toolchain-mismatch]: package `mylib` asks for `c = "aarch64-linux-gnu-gcc"` but the build uses `cc`
+warning[toolchain-mismatch]: package `mylib` asks for `ar = "aarch64-linux-gnu-ar"` but the build uses `ar`
+1 errors, 2 warnings
+```
+
+同じ出力の中で、dowel は「宣言が無い」と言って止まり、その2行下で
+「`c = "aarch64-linux-gnu-gcc"` と書いてある」と読み上げている。
+**探しているものを見つけていて、それでも無いと言う。** 助言が挙げる例は、
+2行下で読み上げている値そのものである。
+
+`docs/11-toml-reference.md` は「依存の道具立てが違えば `toolchain-mismatch`
+で警告する」と述べているので、**警告が出ること自体は文書どおり**である。
+所見にしたのは、そこから出てくる書き味の方である。
+
+### なぜ問題か
+
+複数の三つ組を支えるライブラリを書くと、**支える三つ組の数 × 使う側の数**
+だけ表の写しができる。`apps/dsp` では `core` が4つの三つ組の表を持って
+いても、`cli` は2つ、`fw` は1つを自分で書き直している。
+
+- **食い違っても止まらない。** 片方を `aarch64-linux-gnu-gcc-12` に変えて
+  他方を直し忘れると、`toolchain-mismatch` は出るが警告であり、組み上がる
+- **ライブラリの作者が「対応する三つ組」を配れない。** どのコンパイラで
+  組むかはライブラリの知識だが、置き場所は使う側にしかない
+- 三つ組を1つ増やす作業が、1行ではなく**使う側の数だけ**になる
+
+### 期待
+
+1. **少なくとも、診断が読んだものを言う。** 設計を変えずに済む。
+
+   ```
+   error[missing-toolchain]: no toolchain is declared for target `…`
+     = note: dependency `mylib` declares one for this triple (c = "aarch64-linux-gnu-gcc").
+             a dependency's toolchain does not apply to the build; declare it here to use it.
+   ```
+
+2. できれば、根が宣言していないときに依存の宣言を採る。「single pinned
+   toolchain per build」は保てる——採るのは1つだけで、複数の依存が食い違う
+   値を出したら拒めばよい。
+
+2 に踏み込まない判断もある。道具立ては build 全体の性質であって依存の性質
+ではない、という立場は一貫している（Cargo でも toolchain はパッケージでは
+なく環境の側にある）。その場合でも 1 は要る。**いまの出力はその立場を
+説明していない。**
+
+### なぜ内側から見つからないか
+
+クロスを見るフィクスチャは、1つのパッケージに `[toolchain.<triple>]` を
+書いて `--target` を渡すのが最短であり、それで挙動は十分見える。写しの
+費用は、パッケージが分かれていて**かつ複数の三つ組がある**ときにしか出ない。
+
+`toolchain-mismatch` の検査も、おそらく食い違いを警告することを見るもので、
+そのとき根は必ず宣言を持っている。**根が持っていない**場合が、警告と
+error が同時に出る唯一の形である。
+
+### 検査
+
+`apps/dsp` の
+`the error for a missing toolchain mentions the declaration a dependency already carries`。
+known_issue F-054 である。診断そのもの（error の行と続く `= note:`）だけを
+取り出して見ている——直後の `toolchain-mismatch` には依存の名前があるので、
+そこまで含めると「言及している」と誤って読める。
+
+対照として、依存の宣言だけでは組めないこと、およびその宣言を dowel が
+読んでいることは、現況を固定する通常の検査として置いてある。
+
+## F-055
+
+報告先: [sabas0ba/dowel#126](https://github.com/sabas0ba/dowel/issues/126)
+
+**目標を三つ組で絞れないため、複数の三つ組を支えるライブラリが自分の検査を
+持てない。使う側の `build` が依存の `test` を組み、組めない三つ組では落ちる。**
+
+種別: 要望。未修正（`e12bac7`）。
+
+### 観測
+
+```console
+$ dowel -C app build --target=aarch64-unknown-linux-gnu
+built: …/bin/app
+built: …/bin/libcheck        ← 依存の検査
+
+$ dowel -C app build app --target=aarch64-unknown-linux-gnu
+built: …/bin/app             ← 名指しすれば組まれない
+```
+
+ホスト付きの三つ組では余計なだけだが、**OS の無い三つ組では落ちる**。
+
+```console
+$ dowel -C fw test --target=thumbv7em-none-eabihf
+… ld: libc.a(libc_a-lseekr.o): undefined reference to `_lseek'
+ninja: build stopped: subcommand failed.
+
+$ dowel -C fw test onhw --target=thumbv7em-none-eabihf
+test dsp-fw:onhw ... ok (5009ms)
+```
+
+`fw` は `-nostdlib` で正しく組まれている。落ちているのは**依存側の
+`test.vectors`** で、こちらはホスト用に書かれており `-nostdlib` を持たない。
+
+`docs/60-cli.md` は「With no targets named, builds every `bin` and `test`」と
+述べ、パッケージの範囲に触れていないので**挙動は文書どおり**である。
+
+### 根にあるもの
+
+ライブラリの側で「この検査はホストの載っている三つ組でだけ」と書けない。
+
+- `[package] targets` はパッケージ全体に掛かる。`core` は4つすべてへ組む
+  必要があるので使えない
+- 目標ごとの `targets` は無い
+- `sources` を `match cfg.target` で振り替えることはできるが、**空にする
+  書き方が無い**
+
+残るのはパッケージを割ることだけである。検査がライブラリと同じパッケージに
+居られないのは、置き場所として不自然である。
+
+### 期待
+
+1. **使う側の `build` / `test` は依存の `test` を組まない。** `cargo build`
+   が依存のテストを組まないのと同じ立場。いまも名指しすれば避けられるので、
+   既定がどちらかという話である
+2. **目標ごとに三つ組を絞れる。** `[package] targets` と同じ綴りを目標にも
+   許す形。語彙は増えない
+
+1 を推す。小さく、既定の変更だけで済む。ただし 1 だけでは、ライブラリ自身の
+ディレクトリで `dowel build --target=thumbv7em-none-eabihf` と打った場合は
+落ちたままであり、そこは 2 が要る。
+
+### なぜ内側から見つからないか
+
+依存を持つフィクスチャは「使う側が依存の成果物を引けること」を見る。その
+とき**依存の側に `test` を置く理由が無い**。逆にライブラリの検査を見る
+フィクスチャは単独のパッケージになる。**依存されているライブラリが自分の
+検査を持っている**という組み合わせが、どちらの側からも要らない。
+
+そして三つ組が1つなら、これは余計なものが組まれるだけで無害である。
+**組めない三つ組が混じって初めて**落ちる。
+
+### 検査
+
+`apps/dsp` の `building a consumer does not build the dependency's own tests`。
+known_issue F-055 である。
+
+対照として、名指しすればベアメタルの検査が通ること（同じ算法が同じ答を
+出すこと）は通常の検査として置いてある。ホスト付きの三つ組では落ちずに
+余計に組まれるだけであることも、現況を固定する検査として置いてある。
+
+
 ---
 
 ## 所見に至らなかったもの
@@ -3800,3 +3974,12 @@ known_issue F-053 である。
   拡張ほか）」を既に載せている。報告しても重なるだけなので、現状の記録に
   留めた（`what a build produces today is one static archive and nothing a
   foreign consumer could read`）
+- **三つ組ごとの機械の旗を束ねられない** — `apps/dsp` で踏んだ。
+  `-mcpu=cortex-m4 -mthumb -mfloat-abi=hard -mfpu=fpv4-sp-d16` が
+  `core`（ライブラリの `match` の腕）と `fw`（使う側の目標）の2か所に要り、
+  同じ値でなければならないのに揃っていることを確かめる手立てが無い。
+  食い違えば呼び出し規約の違う書庫ができる。ただし `docs/12-build-reference.md`
+  の種別の表は `template`（非再帰の再利用単位）を予約済みであり、変数も
+  文字列の連結も無いのは ADR-0004 の決定である。そこで解かれるものと読んで
+  報告しなかった。`expect.sh` は代わりに**2か所が実際に同じ旗を出している
+  こと**をグラフから確かめている

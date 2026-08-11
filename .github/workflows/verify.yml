@@ -114,6 +114,9 @@ jobs:
         # OSMesa と OpenCV は apps/vision が引く。ここまでで最大の依存であり、
         # OpenCV の .pc は 55 個のリンク旗を出す。OSMesa は表示の無い機械でも
         # GL の文脈を作れるので、描いたものを実際に読み返せる。
+        # riscv64 のクロスと qemu-riscv64 は apps/dsp が使う。1つの算法を
+        # 4つの三つ組（x86_64 / aarch64 / riscv64 / thumbv7em）へ組み、
+        # どれでも同じ答が出ることを見る層である。
         # mingw と wine は apps/winapp が Windows 向けに組んで走らせるために
         # 使う。ここまでのクロスは同じ族のコンパイラだったが、Windows は
         # 実行ファイルの綴りが変わる対象である。
@@ -123,7 +126,7 @@ jobs:
               gcc-aarch64-linux-gnu g++-aarch64-linux-gnu qemu-user-static \
               gcc-arm-none-eabi qemu-system-arm xvfb libcairo2-dev libx11-dev \
               gdb gdb-multiarch libosmesa6-dev libopencv-dev \
-              gcc-mingw-w64-x86-64 wine wine64
+              gcc-mingw-w64-x86-64 wine wine64 gcc-riscv64-linux-gnu
           ninja --version
           jq --version
           cmake --version | head -1
@@ -139,6 +142,8 @@ jobs:
           gdb --version | head -1
           gdb-multiarch --version | head -1
           pkg-config --modversion osmesa opencv4 | paste -sd' ' -
+          riscv64-linux-gnu-gcc --version | head -1
+          qemu-riscv64-static --version | head -1
           x86_64-w64-mingw32-gcc --version | head -1
           wine --version
           clang --version | head -1

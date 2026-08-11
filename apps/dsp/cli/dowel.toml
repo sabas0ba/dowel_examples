@@ -1,0 +1,23 @@
+[package]
+name    = "dsp"
+version = "0.1.0"
+edition = "2026"
+
+[[dependencies]]
+name = "dsp-core"
+path = "../core"
+
+# 道具立て。**ここは dsp-core と同じ表の写しである。**
+#
+# 三つ組ごとのコンパイラは、依存の宣言からは降ってこない。使う側の根が
+# 自分で宣言していなければ `missing-toolchain` で拒まれる——dowel が
+# dsp-core の宣言を読んでいて `toolchain-mismatch` で「こう書いてある」と
+# 言っている場合でも、である（[F-054](../../../docs/10-findings.md#f-054)）。
+# 一つのライブラリを複数の三つ組で使うほど、この写しが増える。
+[toolchain.aarch64-unknown-linux-gnu]
+c  = "aarch64-linux-gnu-gcc"
+ar = "aarch64-linux-gnu-ar"
+
+[toolchain.riscv64gc-unknown-linux-gnu]
+c  = "riscv64-linux-gnu-gcc"
+ar = "riscv64-linux-gnu-ar"

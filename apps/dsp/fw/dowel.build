@@ -1,0 +1,55 @@
+# 4つ目の三つ組。OS が無く、libc も無い。
+#
+# ここが他の3つと決定的に違うのは、**同じ算法を使う側が起動コードから
+# 書く**ことである。dsp-core の `lib.dsp` は `match cfg.target` の腕で
+# freestanding 向けに組まれ、そのまま繋がる。
+#
+# 期待値は tests/golden.h、つまりホスト向けの検査と同じ1枚を読む。
+#
+# 機械の旗（`-mcpu` 以下）が2か所に書いてある。ここと、dsp-core の
+# `lib.dsp` の腕である。**同じ値でなければならないのに、揃っていることを
+# 確かめる手立てが無い。** 食い違えば呼び出し規約の違う書庫ができ、
+# 現れるのはリンカの苦情かベアメタルでの静かな誤動作である。
+#
+# 束ねる書き方は今の文法に無い（変数も文字列の連結も無い）。`template`
+# という種別が「非再帰の再利用単位」として予約されているので、そこで
+# 解かれるものと読んで、報告はしていない。expect.sh は代わりに、
+# **2か所が実際に同じ旗を出していること**をグラフから確かめている。
+
+# 実機で走る検査。結果は semihosting で返す。
+[test.onhw]
+sources = [
+    file("src/boot.c"),
+    file("src/onhw.c"),
+]
+
+[test.onhw.private]
+deps     = [dep("dsp-core")]
+includes = [dir("src"), dir("../tests")]
+c_std    = "c11"
+flags    = [
+    "-mcpu=cortex-m4", "-mthumb", "-mfloat-abi=hard", "-mfpu=fpv4-sp-d16",
+    "-ffreestanding", "-fno-builtin",
+    "-Wall", "-Wextra",
+]
+abi        = "thumbv7em-hard"
+link_flags = [
+    "-mcpu=cortex-m4", "-mthumb", "-mfloat-abi=hard", "-mfpu=fpv4-sp-d16",
+    "-nostdlib",            # 起動コードも libc も付けない
+    "-static",
+    "-Wl,--build-id=none",
+    "-Wl,-e,_reset",        # 入口はベクタ表の [1] が指す先
+    # 記憶の配置。リンクはビルドディレクトリで走るので、相対の文字列では
+    # 届かない。Path として渡せば絶対パスへ展開される（F-025）。
+    "-T", file("ld/thumbv7em-none-eabihf.ld"),
+]
+
+# 書き込み用の像。ELF のままでは書き込み器が読めない。
+[test.onhw.artifacts]
+bin = { tool = "objcopy", args = ["-O", "binary"] }
+
+# 走らせ方。成果物の道は実装が末尾に付ける（ADR-0008）ので、
+# `-kernel` を args の最後に置く。
+[runner.thumbv7em-none-eabihf]
+command = "qemu-system-arm"
+args    = ["-M", "mps2-an386", "-nographic", "-semihosting", "-kernel"]

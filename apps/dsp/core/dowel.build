@@ -1,0 +1,92 @@
+# 算法。1つのソースが4つの三つ組へ組まれる。
+#
+#   x86_64-unknown-linux-gnu       手元。cli と gui が使う
+#   aarch64-unknown-linux-gnu      ARM。qemu-user で走らせる
+#   riscv64gc-unknown-linux-gnu    RISC-V。同上
+#   thumbv7em-none-eabihf          Cortex-M4F。OS も libc も無い（fw/ が使う）
+#
+# 三つ組ごとに変わるのは**旗と ABI ラベルだけ**である。ソースは1つで、
+# `#ifdef` は1つも無い。算法の側が機械を知らないから、「どの三つ組でも
+# 同じ答が出る」ことを検査にできる。
+#
+# 書きたいのは「OS が無い側なら freestanding」であって「この三つ組なら」
+# ではない。語彙に対象の OS を指す語が無いので三つ組を数え上げている
+# （[F-053](../../../docs/10-findings.md#f-053)）。腕は4本で済んでいるが、
+# 対象が増えるたびに `flags` と `abi` の両方へ1本ずつ増える。
+
+[lib.dsp]
+sources = [
+    file("src/biquad.c"),
+    file("src/crc32.c"),
+]
+
+[lib.dsp.public]
+includes = [dir("include")]
+# ABI ラベルも三つ組で変わる。ベアメタルの側は浮動小数の渡し方が別なので、
+# ホスト向けと同じラベルを名乗らせない。名乗らせると、取り違えた組み合わせが
+# `abi-mismatch` ではなくリンカの苦情として出る。
+abi = match cfg.target {
+    "thumbv7em-none-eabihf" => "thumbv7em-hard",
+    _                       => "gnu11",
+}
+
+[lib.dsp.private]
+c_std = "c11"
+flags = match cfg.target {
+    # OS の無い側。標準ライブラリの存在を仮定させず、CPU と浮動小数の
+    # 渡し方を名指しする。ここが揃っていないと、使う側（fw）と別の
+    # 呼び出し規約で組まれた書庫ができる。
+    "thumbv7em-none-eabihf" => [
+        "-Wall", "-Wextra",
+        "-mcpu=cortex-m4", "-mthumb", "-mfloat-abi=hard", "-mfpu=fpv4-sp-d16",
+        "-ffreestanding", "-fno-builtin",
+    ],
+    # ホストの載っている3つ。機械ごとの旗は要らない——三つ組を渡された
+    # コンパイラが自分で正しく選ぶ。それが `[toolchain.<triple>]` に
+    # 別のコンパイラを書く意味である。
+    _ => ["-Wall", "-Wextra"],
+}
+
+# 算法の検査。**この1本がホストの載っている3つの三つ組すべてで走る。**
+#
+#   dowel test                                        x86_64
+#   dowel test --target=aarch64-unknown-linux-gnu     ARM
+#   dowel test --target=riscv64gc-unknown-linux-gnu   RISC-V
+#
+# ベアメタルの側は libc が無いので、この実体（stdio を使う）は組めない。
+# 同じ期待値を同じ見出し（tests/golden.h）から読む別の実体を fw/ が持つ。
+# fw を組むとき、このパッケージからは `lib.dsp` だけが引かれる——到達
+# されない目標は組まれないので、ここが邪魔をすることはない。
+[test.vectors]
+sources = [file("../tests/vectors.c")]
+
+[test.vectors.private]
+deps     = [target("dsp")]
+includes = [dir("../tests")]
+c_std    = "c11"
+flags    = ["-Wall", "-Wextra"]
+# `lib.dsp` の面と同じ式でなければならない。この実体はベアメタルでは
+# 組めない（libc が要る）が、**組まない三つ組でも ABI ラベルは突き合わ
+# される**。片方だけ固定の文字列にすると、fw を組んだ瞬間に
+# `abi-mismatch` が出る。組まれないものの宣言も、宣言としては生きている。
+abi = match cfg.target {
+    "thumbv7em-none-eabihf" => "thumbv7em-hard",
+    _                       => "gnu11",
+}
+
+[test.vectors.cases]
+signal   = { args = ["signal"] }
+filter   = { args = ["filter"] }
+smooth   = { args = ["smooth"] }
+saturate = { args = ["saturate"] }
+stream   = { args = ["stream"] }
+
+# 走らせる側。どちらも qemu-user である。動的リンクの成果物なので、
+# その三つ組の系の根を教えないと読み込み器が見つからない。
+[runner.aarch64-unknown-linux-gnu]
+command = "qemu-aarch64-static"
+args    = ["-L", "/usr/aarch64-linux-gnu"]
+
+[runner.riscv64gc-unknown-linux-gnu]
+command = "qemu-riscv64-static"
+args    = ["-L", "/usr/riscv64-linux-gnu"]
