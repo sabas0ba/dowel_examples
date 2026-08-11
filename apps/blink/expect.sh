@@ -298,17 +298,17 @@ mv dowel.toml.keep  dowel.toml
 ok "putting the runner back where it belongs makes the tests run again" \
     test --target=$TRIPLE
 
-# ------------------------------------------------------------ 6.5 デバッグ (F-046)
+# ------------------------------------------------------------ 6.5 デバッグ
 #
 # qemu-system は `-gdb tcp::<port>` でスタブを開き、`-S` で最初の命令の前に
 # 止まる。runner に保持する側（debug_args）と繋ぐ側（debug_connect）を
 # 宣言してあるので、`dowel debug firmware --target=...` で**電源投入直後の
-# 実機**に繋がるはずである。
+# 実機**に繋がる。
 #
-# ただし現状、スタブの引数は args と成果物の間に挿し込まれる。この runner は
+# スタブの引数は `args` の**前**に挿し込まれる（F-046 の修正）。この runner は
 # 成果物を取るフラグ（-kernel）を args の末尾に置く——ADR-0008 が勧める形——
-# ため、`-kernel -gdb tcp::13579 -S <elf>` という壊れたコマンドになる。
-# qemu は `-gdb` という名前のファイルをカーネルとして読もうとする。
+# ので、後ろに挿し込むと `-kernel -gdb tcp::13579 -S <elf>` になり、qemu は
+# `-gdb` という名前のファイルをカーネルとして読もうとしていた。
 
 launch=$("$DOWEL" debug firmware --target=$TRIPLE --dap 2>/dev/null)
 _last_cmd="dowel debug firmware --target=... --dap | .debugServerArgs"
@@ -330,8 +330,18 @@ after_kernel=$(printf '%s' "$launch" |
 case $after_kernel in */bin/firmware) verdict=0 ;; *) verdict=1 ;; esac
 RC=0; _last_cmd="dap | debugServerArgs の -kernel の直後"
 OUT="after -kernel: $after_kernel"$'\n'"$(printf '%s' "$launch" | jq -c '.debugServerArgs')"
-known_issue F-046
 fact $verdict "the stub arguments do not break a runner that ends with the flag taking the artifact"
+
+# 挿し込みが前であること自体を見る。上の検査は「-kernel の直後が成果物」で
+# あり、宣言の順序が別の形で壊れても通りうる。ここでは順序そのものを固定する。
+order=$(printf '%s' "$launch" |
+    jq -r '.debugServerArgs | "\(index("-gdb")) \(index("-M")) \(index("-kernel"))"')
+set -- $order
+_last_cmd="dap | debugServerArgs の -gdb / -M / -kernel の位置"
+OUT="-gdb: $1  -M: $2  -kernel: $3"$'\n'"$(printf '%s' "$launch" | jq -c '.debugServerArgs')"
+RC=0
+[ "$1" != "null" ] && [ "$2" != "null" ] && [ "$1" -lt "$2" ] && [ "$2" -lt "$3" ]
+fact $? "because they are inserted before the runner's own arguments, not after them"
 
 # ------------------------------------------------------------ 7. 増分
 

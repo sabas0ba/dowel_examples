@@ -55,12 +55,16 @@ dap() {
 ok "the package passes check" -C subject check
 
 # デバッガは道具の表にある。語彙・既定・宣言の3点。
+#
+# 既定は様式ごとに分かれている（ADR-0027）。MSVC の綴りで組めるように
+# なった回で `default` が `default_gnu` / `default_msvc` に割れた。
+# 道具の既定は**様式の性質**であって道具の性質ではない、という形である。
 got=$("$DOWEL" schema dump 2>/dev/null |
-      jq -r '.tools[] | select(.name == "debug") | .default')
-[ "$got" = "gdb" ]
+      jq -r '.tools[] | select(.name == "debug") | "\(.default_gnu) \(.default_msvc)"')
+[ "$got" = "gdb cdb" ]
 v=$?; RC=0; _last_cmd="schema dump | .tools[] | select(.name==\"debug\")"
-OUT="default: ${got:-(absent)}"
-fact $v "the debugger is a toolchain tool with gdb as its default"
+OUT="gnu / msvc の既定: ${got:-(absent)}"
+fact $v "the debugger is a toolchain tool with a default per argument style"
 
 # ライブラリは開けない。始めるものが無い。
 diag not-debuggable "a library cannot be debugged, because there is nothing to start" \
@@ -166,8 +170,17 @@ _last_cmd="dowel debug --target=...  # debug_args だけ宣言した"
 OUT="$said"; RC=0
 ! printf '%s' "$said" | grep -q 'declares no stub'
 verdict=$?
-known_issue F-048
 fact $verdict "a half-declared stub is told which half is missing"
+
+# 欠けているのは繋ぐ側である。それを名指しし、在る側を指し、何を足せばよいかを言う。
+_last_cmd="dowel debug --target=...  # 診断の中身"; OUT="$said"; RC=0
+printf '%s' "$said" | grep -q 'no attach address'
+fact $? "naming the missing half rather than reporting the pair as absent"
+
+_last_cmd="dowel debug --target=...  # 診断の位置と助言"; OUT="$said"; RC=0
+printf '%s' "$said" | grep -q 'the host side is declared' &&
+    printf '%s' "$said" | grep -q 'debug_connect'
+fact $? "pointing at the half that is there, and naming the key that completes it"
 mv subject/dowel.build.keep subject/dowel.build
 
 # ------------------------------------------------------------ 5. --dap は同じ事実を書き出す
@@ -278,15 +291,35 @@ fact $? "naming a case narrows the choice to it"
 mv subject/dowel.build.keep subject/dowel.build
 "$DOWEL" -C subject test >/dev/null 2>&1        # 記録を現在の宣言で作り直す
 
-# 落ちていない事例は開けない。宣言を写す機構はあるのに、失敗の記録を
-# 経由する道しか無い（F-049）。
-run -C subject debug subject:t/calm
-said=$OUT
-[ "$RC" -eq 0 ]
+# 落ちていない事例も開ける（F-049 の修正）。`dowel debug <target>/<case>` が
+# 事例ラベルを受ける。デバッガを開きたいのは失敗のときだけではない——通って
+# いるが遅い事例、これから書く事例、別の構成で落ちた事例。以前は失敗の記録を
+# 経由する道しか無く、回避策は「わざと落として記録を作る」だった。
+#
+# 本物の gdb が起きるので、命令を流して閉じる。流さないと待ち続ける——
+# デバッグの起動は対話であり、そこが `--dap` との違いである。
+said=$(printf 'quit\ny\n' | timeout 60 "$DOWEL" -C subject debug subject:t/calm 2>&1)
 verdict=$?
-_last_cmd="dowel debug subject:t/calm  # 落ちていない事例"
+_last_cmd="printf 'quit' | dowel debug subject:t/calm  # 落ちていない事例"
 OUT="$said"; RC=0
-known_issue F-049
-fact $verdict "a case that has not failed can be opened under the debugger"
+[ "$verdict" -eq 0 ]
+fact $? "a case that has not failed can be opened under the debugger"
+
+# 開いた先が、その事例の宣言を写していること。ラベルを受けるだけで引数が
+# 付かなければ、開いたのは事例ではなく素の実行ファイルである。
+launch=$("$DOWEL" -C subject debug subject:t/calm --dap 2>/dev/null)
+_last_cmd="dowel debug subject:t/calm --dap"; OUT="$launch"; RC=0
+printf '%s' "$launch" | jq -e '.args == ["calm"]' >/dev/null 2>&1
+fact $? "carrying that case's own arguments, not a bare run of the binary"
+
+# 存在しない事例は断る。素の目標へ黙って落ちると、開いたものが宣言と
+# 違うことに気づけない。
+said=$(printf 'quit\ny\n' | timeout 60 "$DOWEL" -C subject debug subject:t/no-such-case 2>&1)
+verdict=$?
+_last_cmd="dowel debug subject:t/no-such-case"
+OUT=$(printf '%s' "$said" | grep -m3 'error\|no ')
+RC=0
+[ "$verdict" -ne 0 ]
+fact $? "while a case that does not exist is refused rather than opened as the bare target"
 
 rm -rf "$FAKE" "$FAKE_LOG"

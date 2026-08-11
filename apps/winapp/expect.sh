@@ -13,11 +13,11 @@
 #   - **成果物の綴りが対象で変わる。** `bin/wt` と `bin/wt.exe` は
 #     別の名前である。dowel が名乗る経路が、書かれた経路と一致するか
 #   - **走らせる側。** wine を runner に据えて、組んだものを実際に起動できるか
-#   - **対象ごとにソースを差し替える。** 語彙に対象の OS が無い
-#   - **もう1つの族。** MSVC は名指しできるが、出てくる引数は GNU の形である
+#   - **対象ごとにソースを差し替える。** `target.os` で書けるか
+#   - **もう1つの族。** MSVC の綴りで組めるか
 #
-# 3つが未修正である（F-050 / F-051 / F-053）。それぞれ対照を置いて、
-# 「組めないから確かめられない」のか「組めるのに使えない」のかを分ける。
+# この3つは当初いずれも壊れていた（F-050 / F-051 / F-053）。いまはどれも
+# 直っており、検査は**直った機構を実際に使う形**へ書き換えてある。
 
 WINE=wine
 export WINEDEBUG=-all
@@ -80,7 +80,8 @@ fact $? "and the compiler is the one the triple's toolchain table named"
 # ------------------------------------------------------------ 3. 綴りが対象で変わる
 #
 # Windows のドライバは `bin/wt` と言われても `bin/wt.exe` を書く。
-# dowel はその綴りを知らないので、名乗る経路と書かれた経路が食い違う。
+# 成果物の綴りは `target.os` に従う（F-050 の修正）。以前は dowel が
+# その綴りを知らず、名乗る経路と書かれた経路が食い違っていた。
 
 d=$(win_build_dir)
 _last_cmd="ls $d/bin"; OUT=$(ls "$d/bin" 2>&1); RC=0
@@ -91,14 +92,21 @@ said=$("$DOWEL" -C app build --target=$TRIPLE --no-compdb 2>&1 |
        sed -n 's/^built: //p' | grep -m1 'bin/wt$\|bin/wt\.exe$')
 _last_cmd="dowel build --target=$TRIPLE | built:"
 OUT="said:    ${said:-(none)}"$'\n'"on disk: $(ls "$d/bin"/wt* 2>/dev/null | paste -sd' ' -)"
-known_issue F-050
 [ -n "$said" ] && [ -f "$said" ]
 fact $? "the artifact dowel names is the file that was written"
 
+# 綴りは対象に従う（`target.os`）。手元向けには `.exe` が付かない。
+h=$("$DOWEL" -C app build --no-compdb 2>&1 | sed -n 's/^built: //p' | grep -m1 'bin/wt')
+_last_cmd="dowel build | built:   （手元向け）"
+OUT="windows: ${said:-(none)}"$'\n'"host:    ${h:-(none)}"
+RC=0
+case $said in *.exe) case $h in *.exe) v=1 ;; *) v=0 ;; esac ;; *) v=1 ;; esac
+fact $v "and the suffix follows the target, so the host build keeps none"
+
 # ------------------------------------------------------------ 4. 走らせる
 #
-# runner の宣言は足りている。足りていないのは渡される経路の綴りだけである。
-# それを分けるために、同じ実行ファイルを手で wine に渡して確かめる。
+# 手で wine に渡した場合と、宣言した runner を通した場合の両方を見る。
+# 以前は前者だけが通り、後者は `.exe` の付かない経路が渡って起動できなかった。
 
 got=$(wine_run "$d/bin/wt.exe")
 _last_cmd="wine wt.exe"; OUT="$got"; RC=0
@@ -126,23 +134,32 @@ _last_cmd="wine wt.exe norm"; OUT="$got"; RC=0
 [ "$got" = 'a\r\nb' ]
 fact $? "and a bare LF is normalised to the Windows line ending"
 
-# ここまでが手で渡した場合。宣言した runner を通すと、`.exe` の付かない
-# 経路が渡り、wine は起動できない（c0000135 = image not found）。
+# ここまでが手で渡した場合。宣言した runner を通しても同じである。
 run test --target=$TRIPLE --no-compdb -C app
 _last_cmd="dowel test --target=$TRIPLE"
 OUT=$(printf '%s' "$OUT" | grep -m6 'test result\|c0000135\|failed to open')
-known_issue F-050
 [ "$RC" -eq 0 ]
 fact $? "and a Windows target can be tested through its runner"
 
+# 事例のラベルまで届く。走ったのが4件であること——`.exe` の付かない道を
+# 渡していた頃は、ここが4件とも起動できずに落ちていた。
+_last_cmd="dowel test --target=$TRIPLE | 事例"; RC=0
+OUT=$("$DOWEL" -C app test --target=$TRIPLE --no-compdb 2>&1 | grep -c '^test winapp:unit/')
+[ "$OUT" = 4 ]
+fact $? "with each declared case launched in its own right"
+
 # ------------------------------------------------------------ 5. もう1つの族
 #
-# MSVC は名指しできる。`[toolchain.<triple>] c = "cl"` は通り、計画も立つ。
-# 出てくるのは GNU の引数である。`-c` `-o` は `cl` の綴りではなく、
-# `-MD` に至っては MSVC では**動的 CRT の指定**であり、意味が衝突する。
+# MSVC は名指しできるだけでなく、**その綴りで組める**（ADR-0027、F-051 の
+# 修正）。道具の名前と、dowel が組み立てる引数の様式は別のものであり、
+# 後者を `style` として宣言できる。三つ組からも導かれる（`*-msvc` → msvc）。
+#
+# 本物の MSVC は手元に無い。確かめたいのは「MSVC が使えるか」ではなく
+# **引数の形が族に合っているか**であり、それは計画を読めば分かる。
+# 偽の cl / lib / link を PATH に置いて、組まずに計画だけを読む。
 
 fake=$(mktemp -d)
-for t in cl lib; do printf '#!/bin/sh\nexit 0\n' >"$fake/$t"; chmod +x "$fake/$t"; done
+for t in cl lib link; do printf '#!/bin/sh\nexit 0\n' >"$fake/$t"; chmod +x "$fake/$t"; done
 
 msvc=$(mktemp -d)
 mkdir -p "$msvc/src"
@@ -167,53 +184,88 @@ plan=$(PATH="$fake:$PATH" "$DOWEL" -C "$msvc" graph --kind=action --format=json 
        jq -r '.steps[] | "\(.program) \(.arguments | join(" "))"' |
        sed "s|$msvc/||g; s|\.dowel/build/[^ ]*/||g")
 
-_last_cmd="graph --target=x86_64-pc-windows-msvc, with cl and lib on PATH"
+_last_cmd="graph --target=x86_64-pc-windows-msvc, with cl / lib / link on PATH"
 OUT="$plan"
 RC=0
 [ -n "$plan" ]
 fact $? "a manifest may name cl as the compiler for the MSVC triple"
 
-# 名乗れるだけである。以下が「宣言できていない」ことの中身になる。
+# 引数が MSVC の綴りであること。ここが「宣言できている」の中身である。
 _last_cmd="the planned arguments for cl"; OUT="$plan"; RC=0
-known_issue F-051
-! printf '%s' "$plan" | grep -q -- '-MD -MF'
+printf '%s' "$plan" | grep -q -- '/c ' && printf '%s' "$plan" | grep -q -- '/Fo:'
 fact $? "an MSVC toolchain can be declared, not just named"
 
-# 対照。GNU の族へ向けたときは、同じ引数が正しい綴りである。
+# `-MD` が出ないこと。MSVC ではそれは**動的 CRT の指定**であり、依存の
+# 記録を頼んだつもりが結合の指定になる。この衝突が、様式を利用者に
+# 任せられない理由そのものである。
+_last_cmd="the planned arguments | -MD"; OUT="$plan"; RC=0
+! printf '%s' "$plan" | grep -q -- '-MD'
+fact $? "without asking for a dependency record in a spelling that means the dynamic CRT there"
+
+_last_cmd="the planned arguments | /showIncludes"; OUT="$plan"; RC=0
+printf '%s' "$plan" | grep -q -- '/showIncludes'
+fact $? "using the spelling that does mean it under this style"
+
+# リンクは別の実行ファイルである。GNU の族ではドライバが兼ねる。
+prog=$(printf '%s' "$plan" | sed -n '2p' | cut -d' ' -f1)
+_last_cmd="the planned link step"; OUT="$plan"; RC=0
+[ "$prog" = "link" ]
+fact $? "and the link runs through a separate program, as that toolchain has it"
+
+# 成果物の綴りも様式に従う。`.obj` と `.exe`、`lib<name>.a` ではなく。
+_last_cmd="the planned outputs"; OUT="$plan"; RC=0
+printf '%s' "$plan" | grep -q '\.obj' && printf '%s' "$plan" | grep -q '/OUT:'
+fact $? "with the object and output spellings that toolchain writes"
+
+# 対照。GNU の族へ向けたときは、同じ引数が GNU の綴りである。
 gnu=$("$DOWEL" -C app graph --kind=action --format=json --target=$TRIPLE 2>/dev/null |
       jq -r '.steps[] | select(.kind == "cc") | .arguments | join(" ")' | head -1)
 _last_cmd="graph --target=$TRIPLE | cc arguments"
 OUT=$(printf '%s' "$gnu" | tr ' ' '\n' | grep -m6 '^-')
 RC=0
 printf '%s' "$gnu" | grep -q -- '-MD -MF'
-fact $? "the same argument shape is correct for the GNU family, which is what it was written for"
+fact $? "while the GNU family still gets the spelling that is correct for it"
 
 rm -rf "$fake" "$msvc"
 
 # ------------------------------------------------------------ 6. 対象の OS
 #
-# 書きたいのは「対象が Windows なら」である。語彙にあるのは組む側の OS と、
-# 対象の三つ組そのものだけである。
+# 書きたいのは「対象が Windows なら」である。それが `target.os` として
+# 語彙に入った（F-053 の修正）。以前あったのは組む側の OS（`host.os`）と
+# 対象の三つ組そのもの（`cfg.target`）だけで、素直に `match host.os` と
+# 書くと、Windows 向けに組んでも POSIX 側が選ばれていた。
 
-_last_cmd="dowel schema dump | .cfg.keys"
-OUT=$("$DOWEL" schema dump 2>/dev/null | jq -r '.cfg.keys[].name' | paste -sd' ' -)
-RC=0
-known_issue F-053
-printf '%s' "$OUT" | grep -qw 'target.os'
+keys=$("$DOWEL" schema dump 2>/dev/null | jq -r '.cfg.keys[].name' | paste -sd' ' -)
+_last_cmd="dowel schema dump | .cfg.keys"; OUT="$keys"; RC=0
+printf '%s' "$keys" | grep -qw 'target.os'
 fact $? "a manifest can select sources by the target's operating system"
 
-# 今ある綴りは効く。三つ組を数え上げる形は正しく選ぶ。
+# 有限領域であること。ここが数え上げとの本質的な差である——腕の網羅性が
+# 検査されるので、対象が増えたときに**マニフェストが落ちて教えてくれる**。
+# `cfg.target` は開いた領域なので `_` が要り、書き忘れは静かに落ちる。
+dom=$("$DOWEL" schema dump 2>/dev/null |
+      jq -r '.cfg.keys[] | select(.name == "target.os") | "\(.domain) \(.values | join(","))"')
+_last_cmd="schema dump | target.os"; OUT="$dom"; RC=0
+printf '%s' "$dom" | grep -q '^finite' && printf '%s' "$dom" | grep -q 'none'
+fact $? "and that key has a finite domain, so a match on it is checked for exhaustiveness"
+
+# 実際に効いていること。マニフェストは `match target.os` で書いてある。
+_last_cmd="grep target.os app/dowel.build"; RC=0
+OUT=$(grep -n 'target\.os' app/dowel.build)
+[ -n "$OUT" ]
+fact $? "which is how this application actually spells the choice"
+
 _last_cmd="graph --target=$TRIPLE | translated plat_*"; OUT="$picked"; RC=0
 [ "$picked" = "plat_win.c" ]
-fact $? "enumerating triples does select correctly, which is the workaround it forces"
+fact $? "and it selects the Windows implementation when the target is Windows"
 
-# そして `host.os` は組む側を指す。Windows 向けに組んでも linux のままである。
-# 「そういうものである」ことを固定する——値が変わったらこちらが気づけるように。
-hos=$("$DOWEL" -C app schema dump 2>/dev/null |
+# そして `host.os` は組む側を指したままである。両方が要る——走らせられるか、
+# その機械にしか無い道具があるか、を見たい場面は実在する。
+hos=$("$DOWEL" schema dump 2>/dev/null |
       jq -r '.cfg.keys[] | select(.name == "host.os") | .doc')
 _last_cmd="schema dump | host.os"; OUT="$hos"; RC=0
 printf '%s' "$hos" | grep -qi 'build host'
-fact $? "and host.os is documented as the build machine, not the target"
+fact $? "while host.os still means the build machine, so the pair is complete"
 
 # ------------------------------------------------------------ 7. 二つの対象が混ざらない
 #
@@ -237,10 +289,10 @@ fact $? "while the host directory holds an ELF one, from the same sources"
 
 # ------------------------------------------------------------ 8. 増分
 #
-# 宣言された出力 `bin/wt` は永久に存在しない（書かれるのは `bin/wt.exe`）。
-# 出力の無いアクションは「まだ作られていない」ので、何を触らなくても
-# リンクが毎回やり直される。組む段は成功したように見えるので、手がかりは
-# 所要時間しか無い（F-050 の4つ目の面）。
+# 綴りが揃うと、増分も収束する。宣言された出力が実在しない間は、出力の
+# 無いアクションが「まだ作られていない」ままになり、何を触らなくても
+# リンクが毎回やり直されていた（F-050 の4つ目の面）。組む段は成功して
+# 見えるので、手がかりは所要時間しか無かった。
 
 build_direct -C app --target=$TRIPLE --no-compdb
 n=$(_ran_actions)
@@ -248,7 +300,6 @@ n=$(_ran_actions)
 verdict=$?
 RC=0; _last_cmd="dowel build --target=$TRIPLE, twice, touching nothing"
 OUT="ran ${n:-?} steps the second time"
-known_issue F-050
 fact $verdict "a second Windows build runs nothing"
 
 # 対照。同じ木を手元へ組めば 0 件に収束する。差は対象だけである。

@@ -21,8 +21,9 @@
 #   - **同じ答**。期待値は tests/golden.h の1枚で、4つすべてがそれを読む
 #   - **機械は本当に違う**。語長も命令集合も違うのに答だけが同じ、を見る
 #   - **道具立てが三つ組ごとに効く**。手元の cc が別の対象の物を作らない
-#   - **ライブラリが自分の道具立てを持てない**（F-054）
-#   - **使う側の build が依存の検査を組む**（F-055）
+#   - **ライブラリが自分の道具立てを持てない**。設計としてそうであり、
+#     診断がその理由を言う（F-054 の修正）
+#   - **目標を三つ組で絞る**。ライブラリが自分の検査を持てる（F-055 の修正）
 
 ARM_T=aarch64-unknown-linux-gnu
 RV_T=riscv64gc-unknown-linux-gnu
@@ -53,10 +54,11 @@ ok "it builds for the host"   -C core build --no-compdb
 ok "and for ARM"              -C core build --no-compdb --target=$ARM_T
 ok "and for RISC-V"           -C core build --no-compdb --target=$RV_T
 
-# ベアメタルは使う側（fw）から組む。依存の検査が混ざらないよう名指しする
-# （F-055。名指ししない形は6節で見る）。
+# ベアメタルは使う側（fw）から組む。名指しは要らない——依存の検査は
+# 集められず、ライブラリ側の検査は自分の `targets` でこの三つ組から外れて
+# いる（F-055 の修正。6節で両方を見る）。
 ok "and for a machine with no operating system" \
-    -C fw build onhw --no-compdb --target=$FW_T
+    -C fw build --no-compdb --target=$FW_T
 
 # ------------------------------------------------------------ 2. 同じ答
 #
@@ -70,8 +72,8 @@ ok "and on RISC-V"                -C core test --no-compdb --target=$RV_T
 
 # ベアメタルの側は libc が無いので実体が別になる。読む期待値は同じ1枚で
 # あり、結果は semihosting で返る。
-run test onhw --no-compdb --target=$FW_T -C fw
-_last_cmd="dowel test onhw --target=$FW_T"
+run test --no-compdb --target=$FW_T -C fw
+_last_cmd="dowel test --target=$FW_T"
 OUT=$(printf '%s' "$OUT" | grep -m4 'test result\|onhw:\|dsp-fw:')
 [ "$RC" -eq 0 ]
 fact $? "and on bare metal, against the same golden header, reported over semihosting"
@@ -209,7 +211,11 @@ _last_cmd="the same output"; OUT=$(printf '%s' "$said" | grep -m2 'toolchain-mis
 printf '%s' "$said" | grep -q 'toolchain-mismatch'
 fact $? "though it read the declaration, and says so in the same output"
 
-# 探しているものを見つけていて、なお「無い」と言う。助言はそれを指さない。
+# 見つけたものを言う（F-054 の修正）。診断が依存の宣言を読み上げ、値まで出し、
+# **なぜ効かないか**を言う。効かないこと自体は設計である——道具立ては build
+# 全体の性質であって依存の性質ではない（ADR-0031）。それを言わない診断は、
+# 利用者に「宣言したのに無視された」としか読めない。
+#
 # 診断そのもの（error の行と、それに続く `= note:` だけ）を取り出す。
 # 直後の `warning[toolchain-mismatch]` には依存の名前があるので、そこまで
 # 含めると「言及している」と誤って読める。見たいのは**利用者が最初に読む
@@ -222,35 +228,56 @@ block=$(printf '%s\n' "$said" | awk '
 _last_cmd="the missing-toolchain diagnostic alone, without the warnings that follow"
 OUT="$block"
 RC=0
-known_issue F-054
-printf '%s' "$block" | grep -qi 'mylib\|dependency'
+printf '%s' "$block" | grep -q 'mylib'
 fact $? "the error for a missing toolchain mentions the declaration a dependency already carries"
+
+_last_cmd="the same diagnostic"; OUT="$block"; RC=0
+printf '%s' "$block" | grep -q 'aarch64-linux-gnu-gcc'
+fact $? "quoting the value, so the line to write is in front of the reader"
+
+_last_cmd="the same diagnostic"; OUT="$block"; RC=0
+printf '%s' "$block" | grep -qi 'property of the build'
+fact $? "and why it does not apply, which is what makes the refusal read as a design"
 
 rm -rf "$probe"
 
-# ------------------------------------------------------------ 6. 使う側が依存の検査を組む
+# ------------------------------------------------------------ 6. 目標を三つ組で絞る
 #
-# ライブラリの検査はホスト向けに書いてある（libc を使う）。ベアメタルの
-# 使う側を名指しせずに組むと、それが混ざって落ちる。使う側のマニフェストに
-# 誤りは無い。
+# ライブラリの検査はホスト向けである（libc を使う）。ベアメタルの三つ組では
+# 組めない。それを**目標ごとの `targets`** で言う（F-055 の修正）。
+#
+# 書けなかった頃は、使う側を名指しせずに組むとライブラリの検査が混ざって
+# 落ちた。使う側のマニフェストに誤りは無いのに、である。`[package] targets`
+# はパッケージ全体に掛かるので使えない——このパッケージは4つすべてへ組む。
 
-run build --no-compdb --target=$FW_T -C fw
-_last_cmd="dowel build --target=$FW_T  (no target named)"
-OUT=$(printf '%s' "$OUT" | grep -m4 'undefined reference\|error\|ninja:')
-known_issue F-055
-[ "$RC" -eq 0 ]
-fact $? "building a consumer does not build the dependency's own tests"
+ok "a consumer builds for a triple its dependency's tests cannot be built for" \
+    -C fw build --no-compdb --target=$FW_T
 
-# 名指しすれば通る。落ちているのが使う側でないことが、この対照で読める。
-ok "and naming its own target builds it, which is the workaround it forces" \
-    -C fw build onhw --no-compdb --target=$FW_T
-
-# ホスト付きの三つ組では無害である——余計に組まれるだけで、落ちはしない。
-# だから「組めない三つ組が混じって初めて」現れる。
+# 依存の検査は、どの三つ組でも使う側からは組まれない。ホスト付きの側でも
+# 同じ規則である——以前はここだけ「余計に組まれる」形で無害に見えていた。
 built=$("$DOWEL" -C cli build --no-compdb 2>&1 | sed -n 's/^built: //p' | sed 's|.*/||' | sort | paste -sd' ' -)
-_last_cmd="dowel -C cli build | built:"; OUT="$built"; RC=0
-printf '%s' "$built" | grep -q 'vectors'
-fact $? "on a hosted triple the same rule is merely surprising: the library's test is built too"
+_last_cmd="dowel -C cli build | built:"; OUT="${built:-(nothing)}"; RC=0
+! printf '%s' "$built" | grep -q 'vectors'
+fact $? "a consumer never builds the dependency's own tests, on a hosted triple either"
+
+# 絞られた目標は、その三つ組の計画に**現れない**。誤りではなく圏外である。
+n=$("$DOWEL" -C core graph --kind=action --format=json --target=$FW_T 2>/dev/null |
+    jq -r '[.steps[] | select(.arguments | join(" ") | test("vectors"))] | length')
+_last_cmd="graph --target=$FW_T | vectors を含む手順の数"; OUT="steps: ${n:-?}"; RC=0
+[ "${n:-1}" = 0 ]
+fact $? "a target outside its triples does not appear in that triple's plan"
+
+# しかし名指しは断る。名指しは要求であり、黙って何も作らない build は
+# 成功に読める。
+run build vectors --no-compdb --target=$FW_T -C core
+_last_cmd="dowel build vectors --target=$FW_T"
+OUT=$(printf '%s' "$OUT" | grep -m3 'error\|note')
+[ "$RC" -ne 0 ]
+fact $? "while naming it there is refused, because a build that quietly produces nothing reads as success"
+
+# 圏内の三つ組では、同じ目標が普通に組まれて走る。
+ok "and on a triple it does declare, the same target builds and runs" \
+    -C core test --no-compdb --target=$ARM_T
 
 # ------------------------------------------------------------ 7. 重い依存を持つ使う側
 #

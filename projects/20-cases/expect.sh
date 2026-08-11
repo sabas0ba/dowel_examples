@@ -296,7 +296,9 @@ diag unknown-block "a cases block on a bin target is refused" -C subject check
 run -C subject check
 said=$OUT
 _last_cmd="dowel check  # [bin.app.cases]"; OUT="$said"; RC=0
-printf '%s' "$said" | grep -q 'only `test` targets register cases'
+# 案内は事例を登録できる種別を挙げる。`bench` 種別が入った回（ADR-0025）で
+# ここが2つになった。綴りを固定せず「test を挙げていること」で見る。
+printf '%s' "$said" | grep -q 'only `test`.*register cases'
 fact $? "with what to do instead"
 mv subject/dowel.build.keep subject/dowel.build
 
@@ -496,9 +498,10 @@ fact $v "and a listing that hangs is killed by the harness timeout"
 mv subject/dowel.build.keep subject/dowel.build
 cp subject/tests/harness.c.keep subject/tests/harness.c
 
-# 列挙が返す名前は選べない。既存の枠組みの出力には空白も `/` も普通に
-# 混ざるが、いまは素通りしてラベルの文法を壊す（F-047）。マニフェスト側の
-# 同じ名前は invalid-name で拒まれる——規則が片方の入口にしか無い。
+# 列挙が返す名前は選べない。既存の枠組みの出力には空白も `/` も普通に混ざる。
+# 素通りするとラベルの文法（`<package>:<target>/<case>`）が壊れる。マニフェスト
+# 側の同じ名前は `invalid-name` で拒まれるので、規則は両方の入口に要る
+# （F-047 の修正。以前は列挙の側にだけ無かった）。
 python3 - <<'PATCH'
 p = "subject/tests/harness.c"
 t = open(p, encoding="utf-8").read()
@@ -507,12 +510,21 @@ open(p, "w", encoding="utf-8").write(t)
 PATCH
 case_status disc
 said=$CASE_SAID
-! printf '%s' "$said" | grep -q 'disc/a/b'
+[ "$RC" -ne 0 ]
 verdict=$?
 _last_cmd="dowel test disc  # 列挙が a/b という名前を返す"
 OUT="$said"; RC=0
-known_issue F-047
 fact $verdict "a discovered name that breaks the label grammar is not silently accepted"
+
+# 拒むだけでなく、どの名前が悪いのか、なぜ悪いのかを言う。ハーネスは
+# こちらの書いたものではないことがある——直す先は列挙する側の印字である。
+_last_cmd="dowel test disc  # 診断の中身"; OUT="$said"; RC=0
+printf '%s' "$said" | grep -q '`a/b`' && printf '%s' "$said" | grep -q 'separates the target from the case'
+fact $? "naming the offending name and the grammar it would break"
+
+_last_cmd="dowel test disc  # 助言"; OUT="$said"; RC=0
+printf '%s' "$said" | grep -qi 'have the harness print names without it'
+fact $? "and pointing at the harness, which is where such a name has to be fixed"
 cp subject/tests/harness.c.keep subject/tests/harness.c
 rm -f subject/tests/harness.c.keep
 

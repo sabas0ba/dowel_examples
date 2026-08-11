@@ -19,15 +19,18 @@ SCALE_TEST=obj/core/scale_test/tests_scale_test.c.o
 
 # --------------------------------------------------- 基準
 
+# ここから下の計数は **app を根として組んだ場合**のものである。
+# 依存（core）の検査は含まれない——使う側の build が依存の `test` を
+# 組まなくなった（F-055 の修正）。それ以前は 9 件だった。
 ok "app: check passes" check
-runs_actions 9 "a first build runs every action (5 compiles, 1 archive, 3 links)"
+runs_actions 5 "a first build runs every action (3 compiles, 1 archive, 1 link)"
 prints "scale=6 offset=10" "the binary runs" "$(artifact app)"
 runs_actions 0 "a second build runs nothing"
 
 # --------------------------------------------------- ソースの編集
 
 edit ../core/src/scale.c
-runs_actions 5 "editing one source rebuilds it and everything downstream"
+runs_actions 3 "editing one source rebuilds it and everything downstream"
 rebuilt     "$CORE_SCALE"  "the edited unit is recompiled"
 not_rebuilt "$CORE_OFFSET" "the other unit of the same target is not"
 not_rebuilt "$APP_MAIN"    "a dependent's own sources are not recompiled"
@@ -45,24 +48,26 @@ not_rebuilt "AR lib/libcore.a" "the dependency's archive is left alone"
 # 古い成果物が成功として報告される。
 
 edit ../core/src/internal.h
-runs_actions 5 "editing a private header rebuilds through the depfile"
+runs_actions 3 "editing a private header rebuilds through the depfile"
 rebuilt     "$CORE_OFFSET" "the unit that includes the private header is recompiled"
 not_rebuilt "$CORE_SCALE"  "a unit of the same target that does not include it is not"
 not_rebuilt "$APP_MAIN"    "a private header never reaches a dependent"
-not_rebuilt "$SCALE_TEST"  "nor a test that only uses the public header"
 
 edit ../core/include/core.h
-runs_actions 9 "editing a public header rebuilds every dependent unit"
+runs_actions 5 "editing a public header rebuilds every dependent unit"
 rebuilt "$CORE_SCALE"  "the dependency's own units are recompiled"
 rebuilt "$CORE_OFFSET" "both of them"
 rebuilt "$APP_MAIN"    "and the dependent's unit as well"
-rebuilt "$SCALE_TEST"  "and the tests"
+
+# 依存の検査は、使う側を組んでも組まれない。ヘッダを触った直後でさえ
+# 走らないので、これは「順序の都合でまだ来ていない」ではなく規則である。
+not_rebuilt "$SCALE_TEST" "while the dependency's own test is not built by its consumer at all"
 
 # 内容を変えず更新時刻だけ動かす。実行器の最新性判定は mtime による
 # （docs/91-implementation-status.md のビルドの節）。したがって走る。
 # 内容で判定する形に変えるなら、本体の文書も一緒に変わる。
 touch ../core/src/scale.c
-runs_actions 5 "touching a source without changing it still rebuilds (mtime judgement)"
+runs_actions 3 "touching a source without changing it still rebuilds (mtime judgement)"
 
 # --------------------------------------------------- マニフェストの編集
 #
@@ -89,17 +94,17 @@ not_rebuilt "$CORE_SCALE" "and no further than the target that declares it"
 # --------------------------------------------------- ソースの増減
 
 printf '#include "core.h"\nint core_extra(void) { return 1; }\n' >../core/src/extra.c
-runs_actions 5 "adding a source compiles only the new one"
+runs_actions 3 "adding a source compiles only the new one"
 rebuilt     "src_extra.c.o" "the new unit is compiled"
 not_rebuilt "$CORE_SCALE"   "the existing units are not"
 
 rm ../core/src/extra.c
-runs_actions 4 "removing a source rebuilds the archive without compiling anything"
+runs_actions 2 "removing a source rebuilds the archive without compiling anything"
 not_rebuilt "CC " "no compile action runs when only a source disappeared"
 
 # --------------------------------------------------- 構成の切り替え
 
-runs_actions 9 "the first release build runs every action" --config=release
+runs_actions 5 "the first release build runs every action" --config=release
 runs_actions 0 "switching back to debug rebuilds nothing"
 runs_actions 0 "switching to release again rebuilds nothing" --config=release
 
@@ -108,6 +113,15 @@ runs_actions 0 "switching to release again rebuilds nothing" --config=release
 cd ../core || exit 1
 
 ok "core: both tests pass" test
+
+# 公開ヘッダが検査の翻訳単位まで波及すること。**依存の側から見ると
+# 組まれない**ものなので、それが組まれる側——ライブラリ自身のパッケージ
+# ——で見る。組む根が変われば計数も変わるが、波及の規則は同じである。
+"$DOWEL" build --no-compdb >/dev/null 2>&1
+edit include/core.h
+build_direct --no-compdb
+rebuilt "$SCALE_TEST" "editing the public header reaches the library's own test"
+rebuilt "$CORE_SCALE" "and its own units, from the package that declares them"
 
 sed -i 's|return core_scale(3) == 3 \* CORE_SCALE ? 0 : 1;|return 1;|' tests/scale_test.c
 fails "test exits non-zero when a test fails" test
