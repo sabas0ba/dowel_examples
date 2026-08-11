@@ -1,10 +1,10 @@
 {
- "run_id": "31453208030",
+ "run_id": "31480095796",
  "run_attempt": "1",
- "run_url": "https://github.com/sabas0ba/dowel_examples/actions/runs/31453208030",
- "commit": "e0afaf9fb4a326208a14d625a5488ab3639b0191",
+ "run_url": "https://github.com/sabas0ba/dowel_examples/actions/runs/31480095796",
+ "commit": "78c5d1a0fd71189bd4887b82937cb05912e182ad",
  "branch": "main",
- "started_at": "2026-08-11T02:45:33Z",
+ "started_at": "2026-08-11T10:00:09Z",
  "dowel_version": "dowel 0.0.1",
  "dowel_ref": "e12bac762dfd14f0ca5529913464e03590863162",
  "dowel_commit": "e12bac762dfd14f0ca5529913464e03590863162",
@@ -14,7 +14,7 @@
   {
    "name": "01-minimal",
    "root": "projects",
-   "duration_ms": 244,
+   "duration_ms": 247,
    "counts": {
     "pass": 10,
     "fail": 0,
@@ -72,7 +72,7 @@
   {
    "name": "02-config",
    "root": "projects",
-   "duration_ms": 903,
+   "duration_ms": 3779,
    "counts": {
     "pass": 21,
     "fail": 0,
@@ -175,7 +175,7 @@
   {
    "name": "03-features",
    "root": "projects",
-   "duration_ms": 279,
+   "duration_ms": 291,
    "counts": {
     "pass": 17,
     "fail": 0,
@@ -265,7 +265,7 @@
   {
    "name": "04-diagnostics",
    "root": "projects",
-   "duration_ms": 556,
+   "duration_ms": 575,
    "counts": {
     "pass": 70,
     "fail": 0,
@@ -601,7 +601,7 @@
   {
    "name": "05-incremental",
    "root": "projects",
-   "duration_ms": 1784,
+   "duration_ms": 1848,
    "counts": {
     "pass": 48,
     "fail": 0,
@@ -813,7 +813,7 @@
   {
    "name": "06-runner",
    "root": "projects",
-   "duration_ms": 379,
+   "duration_ms": 399,
    "counts": {
     "pass": 17,
     "fail": 0,
@@ -901,7 +901,7 @@
   {
    "name": "07-robustness",
    "root": "projects",
-   "duration_ms": 1359,
+   "duration_ms": 1333,
    "counts": {
     "pass": 145,
     "fail": 0,
@@ -1499,7 +1499,7 @@
   {
    "name": "08-lsp",
    "root": "projects",
-   "duration_ms": 12767,
+   "duration_ms": 12660,
    "counts": {
     "pass": 110,
     "fail": 0,
@@ -1957,7 +1957,7 @@
   {
    "name": "09-acquisition",
    "root": "projects",
-   "duration_ms": 21898,
+   "duration_ms": 21142,
    "counts": {
     "pass": 66,
     "fail": 0,
@@ -2241,7 +2241,7 @@
   {
    "name": "10-toolchain",
    "root": "projects",
-   "duration_ms": 2233,
+   "duration_ms": 1754,
    "counts": {
     "pass": 31,
     "fail": 0,
@@ -2383,7 +2383,7 @@
   {
    "name": "11-cross",
    "root": "projects",
-   "duration_ms": 752,
+   "duration_ms": 662,
    "counts": {
     "pass": 17,
     "fail": 0,
@@ -2469,7 +2469,7 @@
   {
    "name": "12-store",
    "root": "projects",
-   "duration_ms": 212,
+   "duration_ms": 213,
    "counts": {
     "pass": 29,
     "fail": 0,
@@ -2603,7 +2603,7 @@
   {
    "name": "13-parallel",
    "root": "projects",
-   "duration_ms": 10755,
+   "duration_ms": 10790,
    "counts": {
     "pass": 18,
     "fail": 0,
@@ -2693,7 +2693,7 @@
   {
    "name": "14-scale",
    "root": "projects",
-   "duration_ms": 6575,
+   "duration_ms": 6638,
    "counts": {
     "pass": 17,
     "fail": 0,
@@ -2777,7 +2777,7 @@
   {
    "name": "15-cpp",
    "root": "projects",
-   "duration_ms": 4869,
+   "duration_ms": 4615,
    "counts": {
     "pass": 70,
     "fail": 0,
@@ -3085,7 +3085,7 @@
   {
    "name": "16-migrate",
    "root": "projects",
-   "duration_ms": 1197,
+   "duration_ms": 1478,
    "counts": {
     "pass": 54,
     "fail": 0,
@@ -3319,7 +3319,7 @@
   {
    "name": "17-deps",
    "root": "projects",
-   "duration_ms": 800,
+   "duration_ms": 786,
    "counts": {
     "pass": 51,
     "fail": 0,
@@ -3544,7 +3544,7 @@
   {
    "name": "18-tools",
    "root": "projects",
-   "duration_ms": 507,
+   "duration_ms": 529,
    "counts": {
     "pass": 32,
     "fail": 0,
@@ -3693,7 +3693,7 @@
   {
    "name": "19-artifacts",
    "root": "projects",
-   "duration_ms": 663,
+   "duration_ms": 674,
    "counts": {
     "pass": 35,
     "fail": 0,
@@ -3853,7 +3853,7 @@
   {
    "name": "20-cases",
    "root": "projects",
-   "duration_ms": 32611,
+   "duration_ms": 32632,
    "counts": {
     "pass": 59,
     "fail": 0,
@@ -4111,7 +4111,7 @@
   {
    "name": "21-debug",
    "root": "projects",
-   "duration_ms": 1149,
+   "duration_ms": 1138,
    "counts": {
     "pass": 26,
     "fail": 0,
@@ -4241,7 +4241,7 @@
   {
    "name": "blink",
    "root": "apps",
-   "duration_ms": 2837,
+   "duration_ms": 2484,
    "counts": {
     "pass": 37,
     "fail": 0,
@@ -4409,9 +4409,182 @@
    ]
   },
   {
+   "name": "dsp",
+   "root": "apps",
+   "duration_ms": 1646,
+   "counts": {
+    "pass": 36,
+    "fail": 0,
+    "xfail": 2,
+    "xpass": 0
+   },
+   "total": 38,
+   "ok": true,
+   "checks": [
+    {
+     "status": "pass",
+     "desc": "the algorithm passes check"
+    },
+    {
+     "status": "pass",
+     "desc": "it builds for the host"
+    },
+    {
+     "status": "pass",
+     "desc": "and for ARM"
+    },
+    {
+     "status": "pass",
+     "desc": "and for RISC-V"
+    },
+    {
+     "status": "pass",
+     "desc": "and for a machine with no operating system"
+    },
+    {
+     "status": "pass",
+     "desc": "the vectors pass on the host"
+    },
+    {
+     "status": "pass",
+     "desc": "and on ARM"
+    },
+    {
+     "status": "pass",
+     "desc": "and on RISC-V"
+    },
+    {
+     "status": "pass",
+     "desc": "and on bare metal, against the same golden header, reported over semihosting"
+    },
+    {
+     "status": "pass",
+     "desc": "the same executable source prints byte-identical numbers on all three"
+    },
+    {
+     "status": "pass",
+     "desc": "the word size is the same on both, so it is not what makes the answers agree"
+    },
+    {
+     "status": "pass",
+     "desc": "but what was built for ARM really is a aarch64 image"
+    },
+    {
+     "status": "pass",
+     "desc": "but what was built for RISC-V really is a RISC-V image"
+    },
+    {
+     "status": "pass",
+     "desc": "but what was built for the host really is a x86-64 image"
+    },
+    {
+     "status": "pass",
+     "desc": "and the bare-metal target also yields the raw image a programmer would take"
+    },
+    {
+     "status": "pass",
+     "desc": "whose ELF form is an ARM image, from the same algorithm source"
+    },
+    {
+     "status": "pass",
+     "desc": "the compiler for aarch64-unknown-linux-gnu is the one its toolchain table named"
+    },
+    {
+     "status": "pass",
+     "desc": "the compiler for riscv64gc-unknown-linux-gnu is the one its toolchain table named"
+    },
+    {
+     "status": "pass",
+     "desc": "the library's own source is compiled freestanding only for the machine that has no libc"
+    },
+    {
+     "status": "pass",
+     "desc": "and is not, for the ones that have it"
+    },
+    {
+     "status": "pass",
+     "desc": "the machine flags the library and its consumer are built with agree, though nothing binds them"
+    },
+    {
+     "status": "pass",
+     "desc": "a dependency's toolchain declaration does not reach the build that uses it"
+    },
+    {
+     "status": "pass",
+     "desc": "though it read the declaration, and says so in the same output"
+    },
+    {
+     "status": "xfail",
+     "desc": "the error for a missing toolchain mentions the declaration a dependency already carries  [F-054]"
+    },
+    {
+     "status": "xfail",
+     "desc": "building a consumer does not build the dependency's own tests  [F-055]"
+    },
+    {
+     "status": "pass",
+     "desc": "and naming its own target builds it, which is the workaround it forces"
+    },
+    {
+     "status": "pass",
+     "desc": "on a hosted triple the same rule is merely surprising: the library's test is built too"
+    },
+    {
+     "status": "pass",
+     "desc": "a consumer that pulls a system library builds against the same algorithm"
+    },
+    {
+     "status": "pass",
+     "desc": "and the algorithm's own translation never sees that library"
+    },
+    {
+     "status": "pass",
+     "desc": "the picture is drawn from the same numbers the other three triples printed"
+    },
+    {
+     "status": "pass",
+     "desc": "and what it wrote has the dimensions it reported"
+    },
+    {
+     "status": "pass",
+     "desc": "with the corner left exactly the declared background colour"
+    },
+    {
+     "status": "pass",
+     "desc": "each triple keeps its own build directory"
+    },
+    {
+     "status": "pass",
+     "desc": "and the archive of the same name differs between them, as it must"
+    },
+    {
+     "status": "pass",
+     "desc": "a second build for one triple runs nothing"
+    },
+    {
+     "status": "pass",
+     "desc": "editing the algorithm recompiles it for the triple being built"
+    },
+    {
+     "status": "pass",
+     "desc": "and leaves the other source alone"
+    },
+    {
+     "status": "pass",
+     "desc": "while another triple is rebuilt only when it is asked for (3 actions)"
+    }
+   ],
+   "packages": [
+    "cli",
+    "core",
+    "fw",
+    "gui"
+   ]
+  },
+  {
    "name": "hashx",
    "root": "apps",
-   "duration_ms": 1806,
+   "duration_ms": 1754,
    "counts": {
     "pass": 41,
     "fail": 0,
@@ -4595,7 +4768,7 @@
   {
    "name": "httpd",
    "root": "apps",
-   "duration_ms": 5150,
+   "duration_ms": 4680,
    "counts": {
     "pass": 36,
     "fail": 0,
@@ -4757,7 +4930,7 @@
   {
    "name": "jsonfmt",
    "root": "apps",
-   "duration_ms": 1860,
+   "duration_ms": 1932,
    "counts": {
     "pass": 37,
     "fail": 0,
@@ -4924,7 +5097,7 @@
   {
    "name": "plot",
    "root": "apps",
-   "duration_ms": 4364,
+   "duration_ms": 3345,
    "counts": {
     "pass": 42,
     "fail": 0,
@@ -5111,7 +5284,7 @@
   {
    "name": "vision",
    "root": "apps",
-   "duration_ms": 19304,
+   "duration_ms": 17198,
    "counts": {
     "pass": 32,
     "fail": 0,
@@ -5258,7 +5431,7 @@
   {
    "name": "winapp",
    "root": "apps",
-   "duration_ms": 6431,
+   "duration_ms": 5322,
    "counts": {
     "pass": 25,
     "fail": 0,
@@ -5396,7 +5569,7 @@
   {
    "name": "docs",
    "root": "projects",
-   "duration_ms": 79,
+   "duration_ms": 80,
    "counts": {
     "pass": 9,
     "fail": 0,
@@ -5447,12 +5620,12 @@
   }
  ],
  "totals": {
-  "pass": 1202,
+  "pass": 1238,
   "fail": 0,
-  "xfail": 14,
+  "xfail": 16,
   "xpass": 0
  },
- "total": 1216,
+ "total": 1254,
  "ok": true,
  "attention": [],
  "known_issues": [
@@ -5500,6 +5673,16 @@
    "status": "xfail",
    "project": "blink",
    "desc": "the stub arguments do not break a runner that ends with the flag taking the artifact  [F-046]"
+  },
+  {
+   "status": "xfail",
+   "project": "dsp",
+   "desc": "the error for a missing toolchain mentions the declaration a dependency already carries  [F-054]"
+  },
+  {
+   "status": "xfail",
+   "project": "dsp",
+   "desc": "building a consumer does not build the dependency's own tests  [F-055]"
   },
   {
    "status": "xfail",
