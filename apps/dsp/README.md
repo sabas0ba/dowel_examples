@@ -51,7 +51,7 @@ in=53106e76 out=b9b26ef1 rough_in=1342514 rough_out=98452
 ```
 
 ```console
-$ dowel -C fw test onhw --target=thumbv7em-none-eabihf
+$ dowel -C fw test --target=thumbv7em-none-eabihf
 test dsp-fw:onhw ... ok (5009ms)
 ```
 
@@ -72,8 +72,8 @@ test dsp-fw:onhw ... ok (5009ms)
 
 ```toml
 [lib.dsp.private]
-flags = match cfg.target {
-    "thumbv7em-none-eabihf" => [
+flags = match target.os {
+    none => [                       # OS が無い側だけ
         "-Wall", "-Wextra",
         "-mcpu=cortex-m4", "-mthumb", "-mfloat-abi=hard", "-mfpu=fpv4-sp-d16",
         "-ffreestanding", "-fno-builtin",
@@ -86,53 +86,60 @@ flags = match cfg.target {
 正しく選ぶからである。それが `[toolchain.<triple>]` に別のコンパイラを書く
 意味である。
 
-書きたいのは「OS が無い側なら freestanding」であって「この三つ組なら」では
-ない。語彙に対象の OS を指す語が無いので三つ組を数え上げている
-（[F-053](../../docs/10-findings.md#f-053)）。腕は1本で済んでいるが、対象が
-増えるたびに `flags` と `abi` の両方へ増える。
+分岐は `target.os` で書く。書きたいのは「OS が無い側なら freestanding」で
+あって「この三つ組なら」ではない。以前は対象の OS を指す語が無く三つ組を
+数え上げていた（[F-053](../../docs/10-findings.md#f-053)、`9858932` で修正）。
+数え上げは腕が対象の数だけ増えるうえ、`_` が既定なので**書き忘れた三つ組が
+静かにホスト側の腕へ落ちる**。`target.os` は有限領域なので、腕の網羅性は
+検査される。
 
-## 関門 1: ライブラリが自分の道具立てを持てない（[F-054](../../docs/10-findings.md#f-054)、[#125](https://github.com/sabas0ba/dowel/issues/125)）
+## 残っているもの: ライブラリが自分の道具立てを持てない（[F-054](../../docs/10-findings.md#f-054)、[#125](https://github.com/sabas0ba/dowel/issues/125)）
 
 どのコンパイラで組むかは**ライブラリの知識**である。しかし依存の宣言は
-使う側の build に効かない。
+使う側の build に効かない。`core` が4つの表を持っていても、`cli` は2つを、
+`fw` は1つを写す。支える三つ組の数 × 使う側の数だけ写しが増える。
+
+これは設計として残っている——道具立ては build 全体の性質であって依存の性質
+ではない（ADR-0031）。変わったのは**診断がそれを説明するようになった**ことで
+ある。
 
 ```console
 $ dowel -C app build --target=aarch64-unknown-linux-gnu
 error[missing-toolchain]: no toolchain is declared for target `aarch64-unknown-linux-gnu`
-  = note: declare one, for example `[toolchain.aarch64-unknown-linux-gnu]` with `c = "..."`
-warning[toolchain-mismatch]: package `mylib` asks for `c = "aarch64-linux-gnu-gcc"` but the build uses `cc`
+  = note: dependency `mylib` declares one for this triple (c = "aarch64-linux-gnu-gcc", ...)
+  = note: a dependency's toolchain does not apply to this build: it is a property of
+          the build, not of the package (ADR-0031). declare it here to use it
 ```
 
-同じ出力の中で、dowel は「宣言が無い」と言って止まり、その2行下で
-「`aarch64-linux-gnu-gcc` と書いてある」と読み上げている。**探しているものを
-見つけていて、それでも無いと言う。**
+以前は「宣言が無い」と言って止まり、その2行下の警告で
+「`aarch64-linux-gnu-gcc` と書いてある」と読み上げていた。**探しているものを
+見つけていて、それでも無いと言う**形である。いまは値まで出し、なぜ効かないか
+を言う。効かないこと自体は変わらないが、立場が読めるようになった。
 
-結果、`core` が4つの表を持っていても、`cli` は2つを、`fw` は1つを写す。
-支える三つ組の数 × 使う側の数だけ写しが増え、食い違っても警告で済む。
+## かつての関門: 目標を三つ組で絞れない（[F-055](../../docs/10-findings.md#f-055)、[#126](https://github.com/sabas0ba/dowel/issues/126)、`9858932` で修正）
 
-警告が出ること自体は文書どおりなので、報告したのは**診断が読んだものを
-言わないこと**の側である。
+`core` の検査はホスト向けである（libc を使う）。かつては `fw` をベアメタル
+向けに組むとそれが混ざって落ちた。`fw` のマニフェストに誤りは無いのに、
+である。ホスト付きの三つ組では余計に組まれるだけで無害なので、**組めない
+三つ組が混じって初めて**現れた。
 
-## 関門 2: 目標を三つ組で絞れない（[F-055](../../docs/10-findings.md#f-055)、[#126](https://github.com/sabas0ba/dowel/issues/126)）
+いまは目標ごとに `targets` で絞れる。
 
-`core` の検査はホスト向けである（libc を使う）。`fw` をベアメタル向けに
-組むと、それが混ざって落ちる。
-
-```console
-$ dowel -C fw test --target=thumbv7em-none-eabihf
-… ld: libc.a(libc_a-lseekr.o): undefined reference to `_lseek'
-
-$ dowel -C fw test onhw --target=thumbv7em-none-eabihf
-test dsp-fw:onhw ... ok
+```toml
+[test.vectors]
+sources = [file("../tests/vectors.c")]
+targets = [                      # ベアメタルでは組まない
+    "x86_64-unknown-linux-gnu",
+    "aarch64-unknown-linux-gnu",
+    "riscv64gc-unknown-linux-gnu",
+]
 ```
 
-`fw` のマニフェストに誤りは無い。落ちているのは依存側の検査である。
-ライブラリの側で「この検査はホストの載っている三つ組でだけ」と書く手立てが
-無く（`[package] targets` はパッケージ全体に掛かる）、残るのはパッケージを
-割ることだけになる。
+`[package] targets` はパッケージ全体に掛かるので使えない——このパッケージは
+4つすべてへ組む。あわせて、使う側の build は依存の `test` を組まなくなった。
 
-ホスト付きの三つ組では余計に組まれるだけで無害なので、**組めない三つ組が
-混じって初めて**現れる。
+圏外の三つ組では計画に**現れない**。それでも名指しは `unsupported-target` で
+断られる——名指しは要求であり、黙って何も作らない build は成功に読める。
 
 ## 束ねられない旗
 
@@ -165,10 +172,10 @@ drew 512x200 from 256 samples, rough_in=1342514 rough_out=98452
 |---|---|
 | 三つ組ごとの道具立て | 4つの `[toolchain.<triple>]`。手元の `cc` が別の対象の物を作らない |
 | 三つ組ごとの runner | qemu-user 2つと qemu-system 1つ |
-| 三つ組ごとの旗 | `match cfg.target`。ソースは1つ、`#ifdef` は無し |
-| 三つ組ごとの ABI ラベル | ベアメタルだけ別。組まない目標の宣言も突き合わされる |
+| 三つ組ごとの旗 | `match target.os`。ソースは1つ、`#ifdef` は無し |
+| 三つ組ごとの ABI ラベル | ベアメタルだけ別 |
 | 対象の分離 | ビルドディレクトリが分かれ、同名の書庫の中身が違う |
-| 依存の道具立て | 効かない。ここが F-054 |
-| 目標の三つ組での絞り込み | できない。ここが F-055 |
+| 依存の道具立て | 効かない。設計であり、診断がそう言う（F-054） |
+| 目標の三つ組での絞り込み | `targets` で絞る。圏外では計画に現れない |
 | 派生 | ベアメタルの側は `objcopy` で生の像も出す |
 | 増分 | 触った対象だけが組み直され、他の対象を道連れにしない |

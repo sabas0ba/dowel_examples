@@ -51,87 +51,93 @@ wine を runner に据えれば、Windows 向けの成果物も表示の無い�
 `file` で成果物を確かめると、Windows 側は PE、手元側は ELF である。同じ
 ソースから、対象だけ変えて。
 
-## 関門 1: `.exe`（[F-050](../../docs/10-findings.md#f-050)、[#112](https://github.com/sabas0ba/dowel/issues/112)）
+## かつての関門 1: `.exe`（[F-050](../../docs/10-findings.md#f-050)、[#112](https://github.com/sabas0ba/dowel/issues/112)、`9858932` で修正）
 
-**組めるのに使えない。** ドライバは `bin/wt.exe` を書き、dowel は `bin/wt` と
-して扱う。
+**組めるのに使えない**状態だった。ドライバは `bin/wt.exe` を書き、dowel は
+`bin/wt` として扱っていた。ずれは4か所に出る。`built:` の印字、runner へ渡す
+道（wine が `c0000135`）、`artifacts` の `objcopy`（入力が無くてビルドが落ちる）、
+そして**増分**。
+
+4つ目は検査を書いていて見つけ、[#112 に追記](https://github.com/sabas0ba/dowel/issues/112#issuecomment-5247985977)した。
+宣言した出力が永久に無いので、何も触らなくてもリンクが毎回やり直される。
+成功として終わる（終了状態 0、`built:` も出る）ので、手がかりは所要時間しか
+なかった。リンクが重い木で初めて「Windows のビルドはなぜか遅い」として現れる。
+
+いまは成果物の綴りが `target.os` に従う。1か所で決まるので、4つの面が同時に
+消えた。
 
 ```console
 $ dowel build --target=x86_64-pc-windows-gnu
-built: .../bin/wt          # 存在しない
-$ ls .../bin/
-wt.exe
+built: .../bin/wt.exe          # 実在する
+$ dowel test --target=x86_64-pc-windows-gnu
+test winapp:unit/eol ... ok
+$ for i in 1 2; do dowel build --target=x86_64-pc-windows-gnu; done
+run 1: ran 0 steps    run 2: ran 0 steps
 ```
 
-ずれは4か所に出る。`built:` の印字、runner へ渡す道（wine が `c0000135`）、
-`artifacts` の `objcopy`（入力が無くてビルドが落ちる）、そして**増分**。
+検査は綴りが**対象に従う**ことを見る形へ書き換えた——Windows 向けには
+`.exe` が付き、手元向けには付かない。片方だけでは「たまたま合っている」と
+区別がつかない。
 
-増分の面は検査を書いていて見つけ、[#112 に追記](https://github.com/sabas0ba/dowel/issues/112#issuecomment-5247985977)した。
-宣言した出力が永久に無いので、何も触らなくてもリンクが毎回やり直される。
+## かつての関門 2: MSVC（[F-051](../../docs/10-findings.md#f-051)、[#113](https://github.com/sabas0ba/dowel/issues/113)、`9858932` で修正）
 
-```console
-$ for i in 1 2 3; do dowel build --target=x86_64-pc-windows-gnu; done
-run 1: ran 2 steps    run 2: ran 2 steps    run 3: ran 2 steps
-$ #  同じ木を手元へ: ran 0 steps に収束する
-```
+**名指しはできるが宣言はできない**状態だった。`cl` と `lib` を PATH に置くと
+計画は立つが、出てくる引数が GNU の形（`-c` `-o` `-MD -MF`）だった。`-MD` に
+至っては MSVC では**動的 CRT の指定**であり、`docs/00-overview.md` 自身が
+CRT を ABI の軸として挙げている。
 
-成功として終わる（終了状態 0、`built:` も出る）ので、手がかりは所要時間しか
-ない。リンクが重い木で初めて「Windows のビルドはなぜか遅い」として現れる。
-
-このアプリは、**組めること自体は通常の検査**として置き、手で wine に渡せば
-正しく動くことも通常の検査として置いてある。壊れているのが成果物ではなく
-名前であることが、検査の並びから読める形にしてある。
-
-## 関門 2: MSVC（[F-051](../../docs/10-findings.md#f-051)、[#113](https://github.com/sabas0ba/dowel/issues/113)）
-
-**名指しはできるが宣言はできない。** `cl` と `lib` を PATH に置くと計画は
-立つ。出てくる引数が GNU の形である。
+いまは引数の様式を宣言できる（ADR-0027）。三つ組からも導かれる。
 
 ```console
 $ dowel graph --target=x86_64-pc-windows-msvc
-cl   -g -O0 -MD -MF …/x.o.d -c src/main.c -o …/x.o
-lib  rcs …/lib/libapp.a …/x.o
-cl   …/x.o …/lib/libapp.a -o …/bin/app
+cl    /Z7 /Od /nologo /showIncludes /c src/main.c /Fo:…/src_main.c.obj
+link  /nologo …/src_main.c.obj /OUT:…/app.exe
 ```
 
-`-c` `-o` は `cl` の綴りではない。`-MD` に至っては MSVC では**動的 CRT の
-指定**であり、`docs/00-overview.md` 自身が CRT を ABI の軸として挙げている。
-書庫の綴りも `<名前>.lib` であるべきところが `lib<名前>.a` で、ツール表に
-`link` が無いのでリンクを別の実行ファイルに割り当てることもできない。
+依存の記録は `/showIncludes` になり、`link` が道具の表に入り、成果物の綴りも
+`.obj` / `.exe` になった。**dowel が組み立てる引数だけ**が様式ごとに綴られ、
+利用者の書いた `flags` はそのまま渡る——そこが分かれていないと、`flags` を
+書く側が様式を意識することになる。
 
-検査は偽の `cl` を PATH に置いて計画だけを読む。**組もうとはしない**——
-確かめたいのは「MSVC が使えるか」ではなく「引数の形が族に合っているか」で
-あり、後者は本物の MSVC が無くても読める。
+検査は偽の `cl` / `lib` / `link` を PATH に置いて計画だけを読む。
+**組もうとはしない**——確かめたいのは「MSVC が使えるか」ではなく
+「引数の形が族に合っているか」であり、後者は本物の MSVC が無くても読める。
 
-## 関門 3: 対象の OS（[F-053](../../docs/10-findings.md#f-053)、[#115](https://github.com/sabas0ba/dowel/issues/115)）
+## かつての関門 3: 対象の OS（[F-053](../../docs/10-findings.md#f-053)、[#115](https://github.com/sabas0ba/dowel/issues/115)、`9858932` で修正）
 
-書きたいのは「対象が Windows なら」である。語彙にあるのは組む側の OS
-（`host.os`）と、対象の三つ組そのもの（`cfg.target`）だけである。
+書きたいのは「対象が Windows なら」である。かつて語彙にあったのは組む側の OS
+（`host.os`）と対象の三つ組そのもの（`cfg.target`）だけで、素直に書くと
+**意図と逆に効いた**——Linux から Windows 向けに組むと `plat_posix.c` が
+選ばれる。`plat_posix.c` が `<unistd.h>` を含んでいれば翻訳で落ちるが、
+含んでいなければ**組み上がって答だけが違う**。
 
-素直に書くと、**意図と逆に効く**。
+いまは `target.os` がある。このアプリはそれで書いてある。
 
 ```toml
-match host.os { windows => file("src/plat_win.c"), _ => file("src/plat_posix.c") }
+match target.os {
+    windows => file("src/plat_win.c"),
+    _       => file("src/plat_posix.c"),
+}
 ```
 
-Linux から `--target=x86_64-pc-windows-gnu` で組むと `plat_posix.c` が選ばれる。
-`--target` にも `match` にも windows と書いてあるのに。`plat_posix.c` が
-`<unistd.h>` を含んでいれば翻訳で落ちるが、含んでいなければ**組み上がって
-答だけが違う**。
+有限領域（`linux` / `macos` / `windows` / `none` / `other`）なので `match` の
+網羅性が検査される。三つ組を数え上げる形の一番の弱点——Windows の三つ組が
+複数あり、書き忘れが静かに `_` の腕へ落ちること——が消えた。`host.os` は
+組む側を指したまま残っている。両方が要る。
 
-正しい綴りは三つ組の数え上げになる。Windows の三つ組は複数あり、「Windows の
-どれか」と言う手段は無い。`_` が既定なので、書き忘れた三つ組は静かに POSIX
-側へ落ちる。`cfg.target` は開いた領域なので網羅性の検査も掛からない。
-
-`docs/99-open-questions.md` の Q1（`cfg` の語彙）は未着手と書かれているので、
+`docs/99-open-questions.md` の Q1（`cfg` の語彙）は未着手と書かれていたので、
 バグではなく**実際に書いてみて足りなかった語**として報告した。
 
-## 回避したもの: 同名のターゲット（[F-052](../../docs/10-findings.md#f-052)、[#114](https://github.com/sabas0ba/dowel/issues/114)）
+## かつて回避したもの: 同名のターゲット（[F-052](../../docs/10-findings.md#f-052)、[#114](https://github.com/sabas0ba/dowel/issues/114)、`9858932` で修正）
 
-ライブラリを `wtcore`、実行ファイルを `wt` と名乗っているのは、選んだので
-はなく避けたのである。両方を `wt` にすると `dowel check` は通り、`public` は
-どこへも伝播せず、同じソースを持つとオブジェクトの経路が衝突して **ninja の
-言葉で**落ちる。
+ライブラリを `wtcore`、実行ファイルを `wt` と名乗っているのは、選んだのでは
+なく避けたのである。両方を `wt` にすると、かつては `dowel check` が通って
+しまい、`public` はどこへも伝播せず、同じソースを持つとオブジェクトの経路が
+衝突して **ninja の言葉で**落ちた。
+
+いまは `duplicate-target` で拒まれる。名前を割るのは回避ではなく規則になった
+——名前は `target()`・ラベル・`obj/` の3か所で鍵として使われており、診断が
+そう述べている。
 
 このアプリを書いていて踏み、`projects/04-diagnostics` にフィクスチャを置いた。
 最初の報告には誤りがあり（対照を取る前に出してしまった）、検査を書く段で
@@ -142,10 +148,10 @@ Linux から `--target=x86_64-pc-windows-gnu` で組むと `plat_posix.c` が選
 | | |
 |---|---|
 | 三つ組ごとの道具立て | `[toolchain.x86_64-pc-windows-gnu]` が mingw を指す |
-| 対象ごとのソース | `match cfg.target`。可搬な側は共有される |
+| 対象ごとのソース | `match target.os`。可搬な側は共有される |
 | runner | wine を据えて、組んだものを実際に起動する |
-| 成果物の綴り | 対象で変わる（`wt` と `wt.exe`）。ここが F-050 |
-| もう1つの族 | MSVC の引数の形。ここが F-051 |
-| 対象の語彙 | 「対象が Windows なら」と書けるか。ここが F-053 |
+| 成果物の綴り | 対象で変わる（`wt` と `wt.exe`）。`target.os` から決まる |
+| もう1つの族 | MSVC の引数の様式。`style` で宣言でき、三つ組からも導かれる |
+| 対象の語彙 | 「対象が Windows なら」と書ける。`target.os` は有限領域 |
 | 二つの対象の分離 | 同じ木から PE と ELF が別のディレクトリに出る |
 | 増分 | 選ばれなかったソースは依存にすら入らない |

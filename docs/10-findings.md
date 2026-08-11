@@ -19,10 +19,13 @@ F-020 の残っていた側（検査の道具）と F-022 から F-031 までは
 まとめて修正が入った。検査は新しい挙動を使う形へ書き換えて通常の検査として
 残してある。
 
-未修正は F-011 の残っている側と、デバッグ機能（`dowel debug` / ADR-0024、
-ハーネス規約 / ADR-0023）について見つけた F-046 から F-049、および実践的な
-アプリケーションを書く過程で見つけた F-050 から F-055 までである。
-対応する検査は `known_issue` を付けてあり、本体が直すと `XPASS` になって落ちる。
+デバッグ機能（`dowel debug` / ADR-0024、ハーネス規約 / ADR-0023）について
+見つけた F-046 から F-049、および実践的なアプリケーションを書く過程で見つけた
+F-050 から F-055 は、`9858932` でまとめて修正が入った。検査は `known_issue` を
+外すだけでなく、**新しい機構を実際に使う形へ書き換えて**残してある。書き換え
+ないと、直ったことを確かめたことにならない。
+
+未修正は F-011 の残っている側だけである。
 
 F-050 から F-055 は `apps/vision`（大きい依存）、`apps/winapp`（Windows）、
 `apps/dsp`（1つの算法を4つの三つ組で）を書く過程で出た。**アプリケーションを
@@ -89,16 +92,16 @@ F-054 と F-055 は特に、**パッケージが分かれていて、かつ三�
 | [F-043](#f-043) | 事例を走らせずに一覧する方法が無い | 要望 | [#94](https://github.com/sabas0ba/dowel/issues/94) | 修正済み |
 | [F-044](#f-044) | 結果の JSON が目標と事例を分けず、事例の属性を出さない | 実装 | [#100](https://github.com/sabas0ba/dowel/issues/100) | 修正済み |
 | [F-045](#f-045) | 事例の作業ディレクトリが未文書・指定不可 | 文書／要望 | [#95](https://github.com/sabas0ba/dowel/issues/95) | 修正済み |
-| [F-046](#f-046) | `debug_args` の挿し込み位置が `-kernel` で終わる runner を壊す | 実装 | [#107](https://github.com/sabas0ba/dowel/issues/107) | 未修正 |
-| [F-047](#f-047) | ハーネスの列挙が返した事例名が検証されない | 実装 | [#108](https://github.com/sabas0ba/dowel/issues/108) | 未修正 |
-| [F-048](#f-048) | 半分だけ宣言したスタブに「宣言が無い」と言う | 診断 | [#109](https://github.com/sabas0ba/dowel/issues/109) | 未修正 |
-| [F-049](#f-049) | 落ちていない事例をデバッガの下で開けない | 要望 | [#110](https://github.com/sabas0ba/dowel/issues/110) | 未修正 |
-| [F-050](#f-050) | Windows 対象の成果物名が `.exe` を知らない | 実装 | [#112](https://github.com/sabas0ba/dowel/issues/112) | 未修正 |
-| [F-051](#f-051) | MSVC は名指しできるが宣言できない（引数が GNU の形） | 実装 | [#113](https://github.com/sabas0ba/dowel/issues/113) | 未修正 |
-| [F-052](#f-052) | 同名のターゲットを2つ書け、伝播とオブジェクト経路が壊れる | 実装 | [#114](https://github.com/sabas0ba/dowel/issues/114) | 未修正 |
-| [F-053](#f-053) | 対象の OS を指す語が無く、三つ組を数え上げるしかない | 要望 | [#115](https://github.com/sabas0ba/dowel/issues/115) | 未修正 |
-| [F-054](#f-054) | 依存の `[toolchain]` が効かず、使う側すべてが写す | 診断／要望 | [#125](https://github.com/sabas0ba/dowel/issues/125) | 未修正 |
-| [F-055](#f-055) | 目標を三つ組で絞れず、依存の `test` が使う側の build で組まれる | 要望 | [#126](https://github.com/sabas0ba/dowel/issues/126) | 未修正 |
+| [F-046](#f-046) | `debug_args` の挿し込み位置が `-kernel` で終わる runner を壊す | 実装 | [#107](https://github.com/sabas0ba/dowel/issues/107) | 修正済み |
+| [F-047](#f-047) | ハーネスの列挙が返した事例名が検証されない | 実装 | [#108](https://github.com/sabas0ba/dowel/issues/108) | 修正済み |
+| [F-048](#f-048) | 半分だけ宣言したスタブに「宣言が無い」と言う | 診断 | [#109](https://github.com/sabas0ba/dowel/issues/109) | 修正済み |
+| [F-049](#f-049) | 落ちていない事例をデバッガの下で開けない | 要望 | [#110](https://github.com/sabas0ba/dowel/issues/110) | 修正済み |
+| [F-050](#f-050) | Windows 対象の成果物名が `.exe` を知らない | 実装 | [#112](https://github.com/sabas0ba/dowel/issues/112) | 修正済み |
+| [F-051](#f-051) | MSVC は名指しできるが宣言できない（引数が GNU の形） | 実装 | [#113](https://github.com/sabas0ba/dowel/issues/113) | 修正済み |
+| [F-052](#f-052) | 同名のターゲットを2つ書け、伝播とオブジェクト経路が壊れる | 実装 | [#114](https://github.com/sabas0ba/dowel/issues/114) | 修正済み |
+| [F-053](#f-053) | 対象の OS を指す語が無く、三つ組を数え上げるしかない | 要望 | [#115](https://github.com/sabas0ba/dowel/issues/115) | 修正済み |
+| [F-054](#f-054) | 依存の `[toolchain]` が効かず、使う側すべてが写す | 診断／要望 | [#125](https://github.com/sabas0ba/dowel/issues/125) | 修正済み |
+| [F-055](#f-055) | 目標を三つ組で絞れず、依存の `test` が使う側の build で組まれる | 要望 | [#126](https://github.com/sabas0ba/dowel/issues/126) | 修正済み |
 
 ---
 
@@ -3322,7 +3325,7 @@ $ dowel graph --kind=target --format=json | jq '.targets'
 組まれる。`args` の末尾に成果物を取るフラグを置く runner——ADR-0008 が勧める
 形——では、そのフラグが `debug_args` の先頭を食い、壊れたコマンドができる。**
 
-種別: 実装。未修正（`e12bac7`）。`apps/blink` へデバッグを足そうとして踏んだ。
+種別: 実装。`9858932` で修正（`e12bac7` で観測）。`apps/blink` へデバッグを足そうとして踏んだ。
 
 ### 観測
 
@@ -3362,14 +3365,18 @@ qemu-system は正しく動き、qemu-user も動き続ける。「成果物を�
 持つ runner は qemu-system で初めて現れ、それは実機の代わりのエミュレータを
 相手にする木でしか書かれない。
 
+### 修正
+
+`debug_args` は `args` の**前**に挿し込まれるようになった。`args` は成果物を取るフラグで終わりうる（ADR-0008 が勧める形）ので、後ろには置けない——間に挟まったものはそのフラグの被演算子として食われる。`docs/12-build-reference.md` がその理由ごと書いている。
+
 ### 検査
 
 `apps/blink` の
-`the stub arguments do not break a runner that ends with the flag taking the artifact`。
-known_issue F-046 である。qemu-user 側が動くことは `projects/21-debug` の
-通常の検査（`a cross debug session attaches to the declared stub address`）。
+`the stub arguments do not break a runner that ends with the flag taking the artifact`、
+および挿し込みの順序そのものを固定する
+`because they are inserted before the runner's own arguments, not after them`。
+qemu-user 側が動くことは `projects/21-debug` が見ている。
 
----
 
 ## F-047
 
@@ -3378,7 +3385,7 @@ known_issue F-046 である。qemu-user 側が動くことは `projects/21-debug
 **マニフェストに書いた事例名は `invalid-name` で検証される（F-038 の修正）が、
 ハーネスの列挙が返した名前は素通りし、同じラベルの文法を壊す。**
 
-種別: 実装。未修正（`e12bac7`）。ADR-0023 を使ってみて踏んだ。
+種別: 実装。`9858932` で修正（`e12bac7` で観測）。ADR-0023 を使ってみて踏んだ。
 
 ### 観測
 
@@ -3409,14 +3416,21 @@ test d:h/be ta ... FAILED (1ms)
 既存のフレームワークの出力形式を思い浮かべて初めて「普通に来る入力」だと
 分かる。
 
+### 修正
+
+列挙が返した名前も、マニフェスト側の `invalid-name` と同じ規則で検証されるようになった。診断はどの名前が悪いのか、どの文法を壊すのかを言い、直す先——列挙する側の印字——を指す。規則が両方の入口に揃った。
+
 ### 検査
 
 `projects/20-cases` の
-`a discovered name that breaks the label grammar is not silently accepted`。
-known_issue F-047 である。マニフェスト側の `invalid-name` は通常の検査
-（`a case name that breaks the label grammar is refused`）。
+`a discovered name that breaks the label grammar is not silently accepted`、
+`naming the offending name and the grammar it would break`、
+`and pointing at the harness, which is where such a name has to be fixed`。
 
----
+最初の1つは、以前は「ラベルが出力に現れないこと」で見ていた。直った診断は
+**壊れるはずだったラベルを説明の中で引用する**ので、その見方では偽の失敗に
+なる。終了状態で見る形へ書き換えた。
+
 
 ## F-048
 
@@ -3425,7 +3439,7 @@ known_issue F-047 である。マニフェスト側の `invalid-name` は通常�
 **`debug_args` と `debug_connect` の片方だけを書いた場合の診断が、何も
 書かなかった場合と同じ「declares no stub」になる。**
 
-種別: 診断。未修正（`e12bac7`）。#74（宣言してあるのに missing-runner）と
+種別: 診断。`9858932` で修正（`e12bac7` で観測）。#74（宣言してあるのに missing-runner）と
 同族の、規模の小さい版である。
 
 ### 観測
@@ -3448,12 +3462,18 @@ error[missing-debug-stub]: no debug stub is declared for `...`
 「両方無い」と「片方だけ」は同じ経路に落ちるため、内側の検査は前者で足りる。
 文言が実態と合っているかは、片方だけ書いた利用者の視点でしか問われない。
 
+### 修正
+
+欠けている側を名指しするようになった。`the debug stub for <triple> has no attach address` と言い、在る側（`debug_args`）を指し、足すべき鍵（`debug_connect`）を名指しする。
+
 ### 検査
 
-`projects/21-debug` の `a half-declared stub is told which half is missing`。
-known_issue F-048 である。両方無い場合の `missing-debug-stub` は通常の検査。
+`projects/21-debug` の
+`a half-declared stub is told which half is missing`、
+`naming the missing half rather than reporting the pair as absent`、
+`pointing at the half that is there, and naming the key that completes it`。
+両方無い場合の `missing-debug-stub` は別に置いてある。
 
----
 
 ## F-049
 
@@ -3462,7 +3482,7 @@ known_issue F-048 である。両方無い場合の `missing-debug-stub` は通�
 **落ちていない事例をデバッガの下で開けない。`dowel debug` は事例ラベルを
 受けず、`--debug-failed` は失敗の記録を経由する道しか無い。**
 
-種別: 要望。未修正（`e12bac7`）。
+種別: 要望。`9858932` で修正（`e12bac7` で観測）。
 
 ### 観測
 
@@ -3488,12 +3508,19 @@ error: no target named `d:suite/plain`
 `--debug-failed` の検査は「落ちる → 開く」の流れで書かれ、その流れの中では
 記録が常に在る。記録が無い状態で開きたいのは日常の開発の側から来る要求である。
 
+### 修正
+
+`dowel debug <target>[/<case>]` が事例ラベルを受けるようになった。開いた先には事例の宣言（args / env / cwd）が写る。存在しない事例は、素の目標へ黙って落ちずに断られる。
+
 ### 検査
 
 `projects/21-debug` の
-`a case that has not failed can be opened under the debugger`。
-known_issue F-049 である。`--debug-failed` が宣言を写すことは通常の検査
-（args / env / cwd がそのまま Launch に写ること）。
+`a case that has not failed can be opened under the debugger`、
+`carrying that case's own arguments, not a bare run of the binary`、
+`while a case that does not exist is refused rather than opened as the bare target`。
+
+最初の1つは本物の gdb が起きるので、命令を流して閉じている。流さないと
+待ち続ける——デバッグの起動は対話であり、そこが `--dap` との違いである。
 
 
 ## F-050
@@ -3503,7 +3530,7 @@ known_issue F-049 である。`--debug-failed` が宣言を写すことは通常
 **Windows 対象は組めるが、dowel が名指しする成果物が存在しない。ドライバは
 `bin/<名前>.exe` を書き、dowel は `bin/<名前>` として扱う。**
 
-種別: 実装。未修正（`e12bac7`）。
+種別: 実装。`9858932` で修正（`e12bac7` で観測）。
 
 ### 観測
 
@@ -3556,17 +3583,22 @@ run 3: ran 2 steps, skipped 5 already up to date
 ファイルの実在を確かめないためである。次の段で初めて出る。増分の面だけは
 組む段に出るが、そちらは「成功して速い」ように見える。
 
+### 修正
+
+成果物の綴りが `target.os` に従うようになった。`built:` の印字・runner へ渡す道・`artifacts` の入力・指紋の照合が、すべて同じ値を読む。増分が収束しなかった4つ目の面も同時に消えた——宣言された出力が実在するようになったためである。
+
 ### 検査
 
 `apps/winapp` の
 `the artifact dowel names is the file that was written`、
+`and the suffix follows the target, so the host build keeps none`、
 `and a Windows target can be tested through its runner`、
-`a second Windows build runs nothing`。いずれも known_issue F-050 である。
+`with each declared case launched in its own right`、
+`a second Windows build runs nothing`。
 
-対照として、同じ実行ファイルを手で wine に渡すと CRLF と `\` と Win32 の値を
-正しく返すこと、および同じ木の手元向けビルドが 0 件に収束することを通常の
-検査として置いてある。組めないのではなく、組めるのに使えないことが読める形に
-してある。
+最後のものが増分の面である。対照として、同じ木の手元向けビルドが 0 件に
+収束することも置いてあり、差が対象だけであることが読める。
+
 
 ## F-051
 
@@ -3575,7 +3607,7 @@ run 3: ran 2 steps, skipped 5 already up to date
 **MSVC は名指しできるが宣言できない。`[toolchain.<triple>] c = "cl"` は
 受理され、計画も立つが、出てくる引数は GNU の形である。**
 
-種別: 実装。未修正（`e12bac7`）。
+種別: 実装。`9858932` で修正（`e12bac7` で観測）。
 
 ### 観測
 
@@ -3609,11 +3641,24 @@ cl   …/src_main.c.o …/lib/libapp.a -o …/bin/app
 入っていないので、それが破れる入力を作る動機が無い。`cl` を PATH に置いて
 計画だけ読むという形は、**MSVC を実際に使おうとした側**からしか出てこない。
 
+### 修正
+
+引数の様式を `style`（`gnu` / `msvc`）として宣言できるようになった（ADR-0027）。三つ組からも導かれる（`*-msvc` → msvc）。**dowel が組み立てる引数だけ**が様式ごとに綴られ、利用者の書いた `flags` はそのまま渡る。`-MD` の衝突は `/showIncludes` を出すことで解かれ、`link` が道具の表に入り、成果物の綴り（`.obj` / `<name>.lib` / `.exe`）も様式に従う。
+
 ### 検査
 
-`apps/winapp` の `an MSVC toolchain can be declared, not just named`。
-known_issue F-051 である。`cl` を名指しできること自体、および同じ引数の形が
-GNU の族には正しいことは通常の検査として置いてある。
+`apps/winapp` の
+`an MSVC toolchain can be declared, not just named`、
+`without asking for a dependency record in a spelling that means the dynamic CRT there`、
+`using the spelling that does mean it under this style`、
+`and the link runs through a separate program, as that toolchain has it`、
+`with the object and output spellings that toolchain writes`。
+
+本物の MSVC は要らない。偽の `cl` / `lib` / `link` を PATH に置いて、組まずに
+計画だけを読む。確かめたいのは「MSVC が使えるか」ではなく**引数の形が族に
+合っているか**であり、それは計画から読める。対照として、GNU の族へ向けたとき
+同じ引数が GNU の綴りであることも置いてある。
+
 
 ## F-052
 
@@ -3623,7 +3668,7 @@ GNU の族には正しいことは通常の検査として置いてある。
 どこへも伝播せず、同じソースを持つとオブジェクトの経路が衝突して ninja が
 落ちる。**
 
-種別: 実装。未修正（`e12bac7`）。
+種別: 実装。`9858932` で修正（`e12bac7` で観測）。
 
 ### 観測
 
@@ -3699,18 +3744,28 @@ ninja: error: …/build.ninja:39: multiple rules generate …/obj/pkg/foo/src_sh
 対照を並べる前に報告した点が、こちら側の反省である。検査を書く段で対照が
 必要になり、そこで初めて気づいた。**検査を書く前に報告しない**方が良い。
 
+### 修正
+
+同名の目標が `duplicate-target` で拒まれるようになった（期待の 1 の側）。診断は両方の宣言を指し、どちらが先かを言い、**なぜ一意でなければならないか**——名前が `target()`・ラベル・`obj/` の3か所で鍵として使われていること——を述べ、別の綴りを助言する。
+
 ### 検査
 
-`projects/04-diagnostics` の
-`check refuses two targets that share a name in one package`、
-`and the library's public include directory reaches the sources that need it`、
-`and a shared source does not collide in the object directory`、
-`so the manifest's mistake is not reported in the downstream tool's words`。
-いずれも known_issue F-052 である。
+`projects/04-diagnostics` の `cases/duplicate-target`。診断コードの一覧に
+入れてあるので、報告されること・非零で終わること・位置を指すことはそちらで
+見ている。名前の衝突に固有のものとして、次を置いた。
 
-助言が同じ綴りを2つ挙げることは、**現況を固定する**通常の検査として置いて
-ある（直れば落ちる）。対照として、名前を割った同じ木が通り、書庫が作られる
-ことも通常の検査である。差がターゲット名だけであることが読める形にしてある。
+- `duplicate-target carries the location of both declarations`
+- `naming which of the two came first, so the later one is the one to rename`
+- `and why the name has to be unique, naming the object directory that keys on it`
+- `and the suggestion offers a spelling that differs from both`
+
+最後の1つは、かつて目標を名指ししたときの助言が同じ綴りを2つ挙げていた
+（`pkg:foo` を2度）ことへの対である。対照として、名前を割れば同じ木が通り `public`
+が届くことも置いてある。
+
+ソースを共有する形のフィクスチャ（`duplicate-target-shared`）は消した。
+名前の段で拒まれる以上、オブジェクトの経路が衝突するところまで進まない。
+
 
 ## F-053
 
@@ -3719,7 +3774,7 @@ ninja: error: …/build.ninja:39: multiple rules generate …/obj/pkg/foo/src_sh
 **対象の OS を指す語が無い。条件つきソースは三つ組を数え上げるしかなく、
 `match host.os` は組む側を指すため書き手の意図と逆に効く。**
 
-種別: 要望（`docs/99-open-questions.md` Q1 への材料）。未修正（`e12bac7`）。
+種別: 要望（`docs/99-open-questions.md` Q1 への材料）。`9858932` で修正（`e12bac7` で観測）。
 
 ### 観測
 
@@ -3776,15 +3831,22 @@ Q1 で `target.os` / `target.arch` を語彙に入れる。`host.*` は残す—
 実装が分かれる**形で初めて出る。語彙が足りないことは、足りない語を使いたく
 なる木を書くまで現れない。
 
+### 修正
+
+`target.os` / `target.arch` が語彙に入った。`host.*` は組む側を指したまま残っている。`target.os` は有限領域（`linux` / `macos` / `windows` / `none` / `other`）なので `match` の網羅性が検査され、三つ組を数え上げる形の一番の弱点——書き忘れが静かに `_` の腕へ落ちること——が消えた。
+
 ### 検査
 
 `apps/winapp` の
-`a manifest can select sources by the target's operating system`。
-known_issue F-053 である。
+`a manifest can select sources by the target's operating system`、
+`and that key has a finite domain, so a match on it is checked for exhaustiveness`、
+`which is how this application actually spells the choice`、
+`and it selects the Windows implementation when the target is Windows`、
+`while host.os still means the build machine, so the pair is complete`。
 
-三つ組を数え上げる形が正しく選ぶこと、および `host.os` が組む側を指すと
-文書化されていることは通常の検査として置いてある。後者は「そういうもので
-ある」ことの固定であり、値が変わったらこちら側が気づけるようにしてある。
+マニフェスト側も、`cfg.target` を数え上げる形から `target.os` で分岐する形へ
+書き換えてある。`apps/dsp` も同様で、そちらは腕が「OS が無い側かどうか」に
+なった。
 
 
 ## F-054
@@ -3794,7 +3856,7 @@ known_issue F-053 である。
 **依存パッケージが宣言した `[toolchain.<triple>]` は使う側の build に効かない。
 dowel はその宣言を読み上げたうえで「宣言が無い」と言って止まる。**
 
-種別: 診断／要望。未修正（`e12bac7`）。
+種別: 診断／要望。`9858932` で修正（`e12bac7` で観測）。
 
 ### 観測
 
@@ -3862,16 +3924,24 @@ warning[toolchain-mismatch]: package `mylib` asks for `ar = "aarch64-linux-gnu-a
 そのとき根は必ず宣言を持っている。**根が持っていない**場合が、警告と
 error が同時に出る唯一の形である。
 
+### 修正
+
+期待の 1 の側で決着した。診断が依存の宣言を読み上げ、値まで出し、**なぜ効かないか**を言う（`it is a property of the build, not of the package`、ADR-0031）。効かないこと自体は設計として残り、それが説明されるようになった。
+
 ### 検査
 
-`apps/dsp` の
-`the error for a missing toolchain mentions the declaration a dependency already carries`。
-known_issue F-054 である。診断そのもの（error の行と続く `= note:`）だけを
-取り出して見ている——直後の `toolchain-mismatch` には依存の名前があるので、
-そこまで含めると「言及している」と誤って読める。
+`apps/dsp` の5節。
 
-対照として、依存の宣言だけでは組めないこと、およびその宣言を dowel が
-読んでいることは、現況を固定する通常の検査として置いてある。
+- `the error for a missing toolchain mentions the declaration a dependency already carries`
+- `quoting the value, so the line to write is in front of the reader`
+- `and why it does not apply, which is what makes the refusal read as a design`
+
+診断そのもの（error の行と続く `= note:`）だけを取り出して見ている——直後の
+`toolchain-mismatch` にも依存の名前があるので、そこまで含めると「言及して
+いる」と誤って読める。利用者が最初に読む塊が答を指しているかが問題である。
+
+依存の宣言だけでは組めないこと自体は、設計として通常の検査に残してある。
+
 
 ## F-055
 
@@ -3880,7 +3950,7 @@ known_issue F-054 である。診断そのもの（error の行と続く `= note
 **目標を三つ組で絞れないため、複数の三つ組を支えるライブラリが自分の検査を
 持てない。使う側の `build` が依存の `test` を組み、組めない三つ組では落ちる。**
 
-種別: 要望。未修正（`e12bac7`）。
+種別: 要望。`9858932` で修正（`e12bac7` で観測）。
 
 ### 観測
 
@@ -3945,17 +4015,29 @@ test dsp-fw:onhw ... ok (5009ms)
 そして三つ組が1つなら、これは余計なものが組まれるだけで無害である。
 **組めない三つ組が混じって初めて**落ちる。
 
+### 修正
+
+期待の両方が入った。使う側の `build` / `test` は依存の `test` を組まなくなり、目標ごとに `targets` で三つ組を絞れるようになった。圏外の三つ組では計画に**現れず**、それでも名指しは `unsupported-target` で断られる——名指しは要求であり、黙って何も作らない build は成功に読めるためである。
+
 ### 検査
 
-`apps/dsp` の `building a consumer does not build the dependency's own tests`。
-known_issue F-055 である。
+`apps/dsp` の6節。`targets` を実際に使う形へ書き換えてある。
 
-対照として、名指しすればベアメタルの検査が通ること（同じ算法が同じ答を
-出すこと）は通常の検査として置いてある。ホスト付きの三つ組では落ちずに
-余計に組まれるだけであることも、現況を固定する検査として置いてある。
+- `a consumer builds for a triple its dependency's tests cannot be built for`
+- `a consumer never builds the dependency's own tests, on a hosted triple either`
+- `a target outside its triples does not appear in that triple's plan`
+- `while naming it there is refused, because a build that quietly produces nothing reads as success`
+- `and on a triple it does declare, the same target builds and runs`
 
+`core` の `test.vectors` は `targets` でホストの載っている3つに絞ってあり、
+`fw` は目標を名指しせずに検査を打てる。書き換える前は `onhw` と名指しして
+避けていた。
 
----
+なお `projects/05-incremental` の計数もこの修正で変わった（依存の検査が
+含まれなくなり 9 件から 5 件へ）。公開ヘッダが検査まで波及することは、それが
+組まれる側——ライブラリ自身のパッケージ——へ移してある。`apps/jsonfmt` も
+同様で、検査はパッケージごとに走る形へ書き換えた。
+
 
 ## 所見に至らなかったもの
 

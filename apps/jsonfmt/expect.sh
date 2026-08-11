@@ -110,8 +110,17 @@ fact $? "a syntax error is refused with its byte offset"
 
 # ------------------------------------------------------------ 4. テスト
 
-ok "the tests of both packages run and pass" -C cli test
-out_has "2 passed" "both test targets are collected from one invocation" -C cli test
+# 検査はパッケージごとに走る。使う側から `dowel test` を打っても、依存の
+# 検査は集められない（F-055 の修正）。それ以前は cli から2件が走っていた。
+#
+# 依存の検査を走らせるのは依存の作者であり、使う側ではない、という形で
+# ある。ここでは両方のパッケージで実際に走ることを、別々に確かめる。
+ok "the consumer's own tests run and pass"   -C cli  test
+out_has "1 passed" "and only its own are collected" -C cli test
+
+ok "the library's tests run and pass from its own package" -C core test
+out_has "jsonfmt-core:parse" "carrying the label of the package that declares them" \
+    -C core test
 
 # テストは別パッケージの木に置いてある。実アプリではテストを1か所へ
 # まとめることが多く、それが書けるかどうかは形の自由度の問題である。
