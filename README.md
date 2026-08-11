@@ -100,11 +100,35 @@ apps/plot
   ok   a breakpoint set through dowel stops the program where the source says
   ok   a cross debug session attaches to the declared stub address
 
-total 1145 checks: 1140 passed, 0 failed, 5 known, 0 fixed
+total 1146 checks: 1141 passed, 0 failed, 5 known, 0 fixed
 ```
 
 検査名は英語で書く。実装の中身ではなく、何が固定されているかを1行で読ませる
 ためのものであり、CI の要約と掲示にもそのまま並ぶ（[docs/00-design.md](docs/00-design.md) 6節）。
+
+## 育ち方
+
+各回の結果は掲示用の枝に積んである。数の並びとしては読めるが、**どこで何が
+伸びたか**は 100 行の数字を辿っても分からない。図はそのために描く。CI が
+実行のたびに描き直し、掲示の頁の `Growth` にも同じものが出る。
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/sabas0ba/dowel_examples/gh-pages/history-dark.svg">
+  <img alt="検査数の推移。上段は総数を projects/ と apps/ と docs に分けた積み上げ、中段は xfail と fail と xpass の推移、下段は層ごとの小さな面を縦軸を共有して並べたもの。" src="https://raw.githubusercontent.com/sabas0ba/dowel_examples/gh-pages/history.svg">
+</picture>
+
+上段が総数で、検査がどこに置かれているか（`projects/` `apps/` `docs`）で
+分けてある。中段は `xfail` / `fail` / `xpass` の推移であり、
+[docs/20-ci.md](docs/20-ci.md) 4節が「見たいのは列の動きである」と言うその列を
+そのまま線にしたものである。下段は層ごとに1枚。縦軸を共有するため、**いつ
+現れたか**と**どれだけの大きさか**の双方が同じ絵から読める。
+
+層は 27 あり、色で見分けられる数を超えている。積み上げの色は系統3つにだけ
+使い、層ごとの内訳は面を並べて示す。色数を増やして解こうとすると、どの色も
+見分けられなくなる。
+
+図が示す数はすべて掲示の `History` に表として並ぶ。図は読み方をひとつ足すだけ
+であり、値へ辿る唯一の経路ではない。
 
 ## プロジェクト
 
@@ -177,7 +201,7 @@ total 1145 checks: 1140 passed, 0 failed, 5 known, 0 fixed
 
 結果は3か所に出る。ジョブ要約（直近の実行）、成果物（30 日保持）、
 そして掲示用の枝 `gh-pages` に積んだ表である。掲示には検査の全件と、
-それぞれが置かれた実体へのリンク、そして過去 100 回分の履歴が並ぶ。手動実行では
+それぞれが置かれた実体へのリンク、過去 100 回分の履歴、そしてその図が並ぶ。手動実行では
 `dowel_ref` を渡せるため、本体の修正が本スイートの検査を
 どう動かすかを、固定値を書き換える前に確かめられる。
 

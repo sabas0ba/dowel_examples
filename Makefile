@@ -17,7 +17,7 @@ report:
 	@echo
 	@cat .work/report/summary.md
 
-# 履歴から掲示用の頁を作る。CI が掲示用の枝で行うのと同じもの。
+# 履歴から掲示用の頁と図を作る。CI が掲示用の枝で行うのと同じもの。
 site:
 	python3 scripts/report.py site --history .work/report/history.json \
 	    --latest .work/report/results.json --out .work/report

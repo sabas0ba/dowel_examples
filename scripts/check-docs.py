@@ -18,6 +18,8 @@ import re
 import subprocess
 import sys
 
+import chart
+
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # 引用が検査名か、それ以外（パス、診断コード、識別子）かの区別。
@@ -177,6 +179,23 @@ def check_findings_index(report):
     )
 
 
+def check_published_chart(report):
+    """README が埋める図が、掲示が実際に書き出す図と一致すること。
+
+    図は掲示用の枝にしか無く、README からは URL で参照する。相対リンクの
+    検査（`check_links`）は URL を見ないため、名前を片方だけ変えても
+    どの検査にも当たらない。README の画像が静かに壊れるだけである。
+    """
+    referenced = set(re.findall(
+        re.escape(chart.RAW_BASE) + r"/([A-Za-z0-9._-]+\.svg)", _read("README.md")))
+    generated = set(chart.FILES.values())
+    report(
+        referenced == generated,
+        "README embeds the history chart the publication branch generates",
+        [f"referenced: {sorted(referenced)}", f"generated:  {sorted(generated)}"],
+    )
+
+
 def check_pinned_ref(report):
     """文書が引用する dowel の版が `dowel-ref` と一致すること。
 
@@ -235,6 +254,7 @@ def main():
     check_quoted_check_names(report, actual)
     check_finding_ids(report)
     check_findings_index(report)
+    check_published_chart(report)
     check_pinned_ref(report)
     return 1 if failed else 0
 

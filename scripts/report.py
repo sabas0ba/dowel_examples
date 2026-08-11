@@ -6,6 +6,7 @@
     summary.md    人間向け。GitHub Actions のジョブ要約へそのまま流せる形
     results.json  機械可読。1回の実行を1オブジェクトで表す
     index.html    掲示用。過去の実行を積んだ履歴から作る
+    history.svg   同じ履歴の図（`scripts/chart.py`）。README が埋める版
 
 サブコマンドは2つ。
 
@@ -13,7 +14,7 @@
         1回の実行をまとめる。summary.md と results.json を書く
 
     report.py site --history <history.json> [--latest <results.json>] --out <dir>
-        履歴から index.html を作る。掲示用の枝で使う。
+        履歴から index.html と history.svg を作る。掲示用の枝で使う。
         --latest を渡すと、直近の実行の内訳（検査の全件）も出す
 
 履歴の追記は `run --append <history.json>` で行う。同じ実行（run_id）が
@@ -25,6 +26,8 @@ import html
 import json
 import os
 import sys
+
+import chart
 
 # 状態の表示順。この順序が表の列の順序になる。
 STATES = ["pass", "fail", "xfail", "xpass"]
@@ -334,6 +337,15 @@ details[open] { padding-bottom:.2rem; }
 summary { cursor:pointer; font-size:.95rem; }
 summary::marker { color:var(--muted); }
 details p.links { margin:.5rem 0 .6rem; }
+
+/* 図。明暗それぞれの背景に対して選んだ2枚を持ち、頁の側で切り替える。
+   片方を機械的に反転させると、暗い側で色が検証していないものになる。 */
+.chart { display:block; width:100%; height:auto; margin:.2rem 0 .4rem; }
+.chart.dark { display:none; }
+@media (prefers-color-scheme: dark) {
+  .chart.light { display:none; }
+  .chart.dark { display:block; }
+}
 """
 
 
@@ -514,6 +526,21 @@ def render_site(history, latest=None):
             )
         out.append("</table></div>")
 
+    # ------------------------------------------------------------ 成長
+    #
+    # 下の表は各回の数を全件持つが、100 行の数字を上から下へ辿って
+    # 「どこで何が伸びたか」に気づける人はいない。図はそのためにある。
+    # 図が示す数はすべて表にもある（図は補助であり、値の唯一の経路ではない）。
+    out.append("<h2>Growth</h2>")
+    out.append(
+        "<p>How the suite grew, run by run. The top plot is the total, split by "
+        "where the checks live; the bottom grid is one plot per layer on a shared "
+        "scale, so both the arrival of a layer and its size are visible. "
+        "Every number here is also a row of the table below.</p>"
+    )
+    out.append(chart.inline(history, "light"))
+    out.append(chart.inline(history, "dark"))
+
     # ------------------------------------------------------------ 履歴
     out.append("<h2>History</h2>")
     out.append(
@@ -628,6 +655,9 @@ def main():
             latest = json.load(f)
     with open(os.path.join(args.out, "index.html"), "w", encoding="utf-8") as f:
         f.write(render_page(history, latest))
+    # 図は頁の中にも埋めるが、単体の SVG としても書き出す。README は
+    # 掲示用の枝のこのファイルを画像として参照する。
+    chart.write(history or ([for_history(latest)] if latest else []), args.out)
     return 0
 
 
