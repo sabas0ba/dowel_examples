@@ -4,8 +4,8 @@
 #
 #   scripts/publish-pages.sh <枝> <results.json>
 #
-# 枝が無ければ作る。既にあれば履歴（history.json）へ追記し、index.html を
-# 作り直す。表の実体は履歴であり、index.html はその描画にすぎない。
+# 枝が無ければ作る。既にあれば履歴（history.json）へ追記し、index.html と
+# history.svg を作り直す。実体は履歴であり、表も図もその描画にすぎない。
 #
 # 掲示用の枝は生成物だけを持つ。ソースは持たない。掲示を作り直したい場合は
 # 枝を消して、次の実行を待てばよい（history.json は失われる）。
@@ -50,7 +50,7 @@ for attempt in $(seq 1 "$ATTEMPTS"); do
     git -C "$WORK" config user.name  "github-actions[bot]"
     git -C "$WORK" config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
-    # 履歴へ積み、表を作り直す。表の実体は履歴であり、index.html は描画にすぎない。
+    # 履歴へ積み、表と図を作り直す。実体は履歴であり、描画はそこから毎回作る。
     cp "$RESULTS" "$WORK/latest.json"
     python3 "$SUITE_ROOT/scripts/report.py" append \
         --results "$RESULTS" --history "$WORK/history.json"
