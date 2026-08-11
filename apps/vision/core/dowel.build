@@ -1,0 +1,46 @@
+# 描いて、数える。片方は C の API（OpenGL）、もう片方は C++ の
+# ライブラリ（OpenCV）である。1つの成果物に両方が乗る。
+#
+# 見出しは C から使える形に保つ。`extern "C"` で囲い、面は C ABI を名乗る。
+[lib.vis]
+sources = [
+    file("src/render.cc"),
+    file("src/measure.cc"),
+]
+
+[lib.vis.public]
+includes = [dir("include")]
+# この面は C ABI である。使う側の言語を問わない。
+abi      = "c"
+
+[lib.vis.private]
+includes = [dir("src")]
+# どちらも private な依存である。使う側は GL も OpenCV も知らなくてよい。
+# それでもリンクの閉包には乗る。
+deps      = [dep("osmesa"), dep("opencv4")]
+flags     = [
+    "-Wall", "-Wextra",
+    "-fsanitize=address,undefined" when feature.sanitize,
+    "-fno-omit-frame-pointer"      when feature.sanitize,
+]
+cxx_std   = "c++17"
+link_flags = ["-fsanitize=address,undefined" when feature.sanitize]
+
+[test.unit]
+sources = [file("../tests/unit.c")]
+
+[test.unit.private]
+deps     = [target("vis")]
+c_std    = "c11"
+abi      = "gnu11"
+flags    = ["-fsanitize=address,undefined" when feature.sanitize]
+
+# 計装した構成では、下敷きのライブラリが返さない割り当てを黙らせたい。
+# LeakSanitizer にそれを教えるのは環境変数だけであり、`env` がその口である。
+# 相対で書けるのは case の作業ディレクトリがパッケージの根と約束されている
+# ためで、置き場所を実行のしかたに合わせて書き換えずに済む。
+[test.unit.cases]
+blank     = { args = ["blank"],     env = { LSAN_OPTIONS = "suppressions=lsan.supp" } }
+triangle  = { args = ["triangle"],  env = { LSAN_OPTIONS = "suppressions=lsan.supp" } }
+threshold = { args = ["threshold"], env = { LSAN_OPTIONS = "suppressions=lsan.supp" } }
+resize    = { args = ["resize"],    env = { LSAN_OPTIONS = "suppressions=lsan.supp" } }

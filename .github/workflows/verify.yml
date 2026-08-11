@@ -110,12 +110,20 @@ jobs:
         # cairo と X11 は apps/plot が pkg-config 経由で引き、xvfb は
         # その窓を実際に開くために使う（表示の無い機械で GUI を走らせる）。
         # gdb と gdb-multiarch は 21-debug が本物のデバッガを繋ぐために使う。
+        #
+        # OSMesa と OpenCV は apps/vision が引く。ここまでで最大の依存であり、
+        # OpenCV の .pc は 55 個のリンク旗を出す。OSMesa は表示の無い機械でも
+        # GL の文脈を作れるので、描いたものを実際に読み返せる。
+        # mingw と wine は apps/winapp が Windows 向けに組んで走らせるために
+        # 使う。ここまでのクロスは同じ族のコンパイラだったが、Windows は
+        # 実行ファイルの綴りが変わる対象である。
         run: |
           sudo apt-get update -qq
           sudo apt-get install -y -qq ninja-build jq cmake pkg-config gcc g++ clang \
               gcc-aarch64-linux-gnu g++-aarch64-linux-gnu qemu-user-static \
               gcc-arm-none-eabi qemu-system-arm xvfb libcairo2-dev libx11-dev \
-              gdb gdb-multiarch
+              gdb gdb-multiarch libosmesa6-dev libopencv-dev \
+              gcc-mingw-w64-x86-64 wine wine64
           ninja --version
           jq --version
           cmake --version | head -1
@@ -130,6 +138,9 @@ jobs:
           Xvfb -help 2>&1 | head -1
           gdb --version | head -1
           gdb-multiarch --version | head -1
+          pkg-config --modversion osmesa opencv4 | paste -sd' ' -
+          x86_64-w64-mingw32-gcc --version | head -1
+          wine --version
           clang --version | head -1
           g++ --version | head -1
           aarch64-linux-gnu-gcc --version | head -1

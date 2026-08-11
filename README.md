@@ -10,7 +10,7 @@ dowel 本体は自分自身を内側から検査している（`crates/*/tests/`
 仕様と実装の食い違いを仕様の側から見つけられる。
 
 見つけたものは [docs/10-findings.md](docs/10-findings.md) に記録し、本体へ報告する。
-これまでに 49 件を報告し、44 件が修正された。
+これまでに 53 件を報告し、44 件が修正された。
 
 ## 走らせる
 
@@ -37,7 +37,10 @@ C++ とクロスの層は `g++` / `clang++` / `aarch64-linux-gnu-g++` /
 `objcopy`（クロスの側も）を使う。組み込みの層（`apps/blink`）は
 `arm-none-eabi-gcc` でベアメタルを組み、`qemu-system-arm` で**それを実際に
 走らせる**。GUI の層（`apps/plot`）は cairo と X11 を pkg-config で引き、
-`xvfb-run` で**本当に窓を開く**。
+`xvfb-run` で**本当に窓を開く**。大きい依存の層（`apps/vision`）は OSMesa と
+OpenCV を引く（表示の無い機械でも GL の文脈を作れるので、描いたものを読み
+返せる）。Windows の層（`apps/winapp`）は `x86_64-w64-mingw32-gcc` で組み、
+`wine` で**それを走らせる**。
 
 `09-acquisition` は `dowelup` と dowel の**作業木**も要る。取得を検査する層で
 あり、上流にあたる git リポジトリを手元へ複製して相手にするためである
@@ -56,10 +59,12 @@ DOWELUP=/path/to/dowelup DOWEL_SRC=/path/to/dowel ./run.sh
 ## 出力
 
 1 検査 1 行。本体が直していない事項に対する検査は `xfail` として登録する。
-本体側が直ると `XPASS` になって落ち、宣言を外すべきことが分かる。現在は 5 件で、
-[F-011](docs/10-findings.md#f-011) の残っている側と、デバッグ機能について
+本体側が直ると `XPASS` になって落ち、宣言を外すべきことが分かる。現在は 14 件で、
+[F-011](docs/10-findings.md#f-011) の残っている側、デバッグ機能について
 見つけた [F-046](docs/10-findings.md#f-046) から
-[F-049](docs/10-findings.md#f-049) に対応する。
+[F-049](docs/10-findings.md#f-049)、そして実践的なアプリケーションを書く過程で
+見つけた [F-050](docs/10-findings.md#f-050) から
+[F-053](docs/10-findings.md#f-053) に対応する。
 
 直った所見の検査は `known_issue` を外すだけでは足りない。**新しい機構を実際に
 使う形へ書き換える**。書き換えないと、直ったことを確かめたことにならない。
@@ -145,6 +150,8 @@ total 1145 checks: 1140 passed, 0 failed, 5 known, 0 fixed
 | [blink](apps/blink/) | 組み込み。Cortex-M4F のベアメタル、ベクタ表、書き込み用の像、qemu 上での実行 | 無し（`arm-none-eabi`） |
 | [hashx](apps/hashx/) | ライブラリ。配る側。面の可視性、C と C++ の双方の利用者、出所の切り替え | 無し |
 | [plot](apps/plot/) | GUI。描画と窓の分離、任意の依存、Xvfb の上で本当に窓を開く | cairo / X11 |
+| [vision](apps/vision/) | 大きい依存。1つの `.pc` が 55 個のリンク旗を出す。C++ の中身に C の面 | OSMesa / OpenCV |
+| [winapp](apps/winapp/) | Windows。対象ごとの実装、`.exe` の綴り、wine で走らせる、MSVC の族 | 無し（`mingw` / `wine`） |
 
 どれも**組めたことでは終わらせない**。整形結果は文字単位で見て、サーバには
 本物のソケットで接続し、ファームウェアは qemu の上で走らせる。加えて、
@@ -157,7 +164,9 @@ total 1145 checks: 1140 passed, 0 failed, 5 known, 0 fixed
 [F-027](docs/10-findings.md#f-027) は `[toolchain]` と `[runner]` を続けて
 書いて初めて、[F-028](docs/10-findings.md#f-028) は C のライブラリを C++ から
 呼んで初めて、[F-031](docs/10-findings.md#f-031) は機能で実装を選ぶ木を
-2つの分野で書いて初めて出た。
+2つの分野で書いて初めて出た。[F-050](docs/10-findings.md#f-050) から
+[F-053](docs/10-findings.md#f-053) の4件は、実行ファイルに拡張子が付く対象を
+選び、対象ごとに実装が分かれる木を書いて初めて出ている。
 
 プロジェクトのほかに `docs` の段がある。文書が引用する検査名が実在するか、
 リンクが解決するか、索引が中身と一致するかを機械的に見る。文書の不整合は

@@ -1,0 +1,19 @@
+[package]
+name    = "vision-core"
+version = "0.3.0"
+edition = "2026"
+
+[features]
+default  = []
+# 検査用。実行時の誤りを黙らせずに落とす。
+sanitize = []
+
+# 描画。OSMesa は表示を持たない機械でも GL の文脈を作れる。
+[[dependencies]]
+name    = "osmesa"
+version = "8.0"
+
+# 画像処理。1つの .pc が 50 を超えるリンク旗を出す。
+[[dependencies]]
+name    = "opencv4"
+version = "4.5"
