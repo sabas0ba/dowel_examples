@@ -284,3 +284,111 @@ OUT=$cxx
 RC=0
 printf '%s' "$cxx" | grep -q 'DEMOKIT'
 fact $? "but a public system dependency also hands its defines to the dependent"
+
+# ------------------------------------------------------------ 書庫の依存（ADR-0029）
+#
+# `url` + `sha256` で、書庫を取ってきて展開する依存が書ける。`version` が
+# 環境に委ねるのに対し、こちらは**内容そのもの**で固定する。
+#
+# 相手にする書庫は手元で作る。実際の網には触れない——落ちたときに直すのが
+# dowel なのか回線なのかを判断できなくなる。`file://` で取れるので、
+# 取得の経路そのものは本物のまま通せる。
+#
+# ここで見るのは3つ。
+#
+#   1. 取れて、展開されて、公開の面が届くこと
+#   2. **固定されていなければ拒むこと。** URL は名前であり、名前の後ろの
+#      バイトは明日変わりうる
+#   3. 一度取ったら網に触らないこと
+
+ARCHIVE=$PWD/greet-1.0.tar.gz
+(cd packed && tar czf "$ARCHIVE" greet-1.0)
+SUM=$(sha256sum "$ARCHIVE" | cut -d' ' -f1)
+
+# pin <sha256> [url] — archived/dowel.toml の依存を書き換える。
+# sha256 が空なら省く。
+pin() {
+    local sum=$1 url=${2:-file://$ARCHIVE}
+    {
+        printf '[package]\nname    = "archived"\nversion = "0.1.0"\nedition = "2026"\n\n'
+        printf '[[dependencies]]\nname = "greet"\nurl  = "%s"\n' "$url"
+        [ -n "$sum" ] && printf 'sha256 = "%s"\n' "$sum"
+    } >archived/dowel.toml
+    rm -rf archived/.dowel
+}
+
+pin "$SUM"
+ok "a package declared as a pinned archive builds"        -C archived build --no-compdb
+prints "" "and what it built runs" "$(cd archived && artifact archived)"
+
+# 展開先は内容の指紋で名づけられる。版の名前ではない——同じ版の名前で
+# 中身が変われば、別のものとして置かれてほしい。
+d=$(find archived/.dowel/deps -maxdepth 1 -mindepth 1 -type d 2>/dev/null | head -1)
+_last_cmd="ls archived/.dowel/deps"; OUT="${d:-(none)}"; RC=0
+printf '%s' "$d" | grep -q "greet-${SUM:0:12}"
+fact $? "unpacked into a directory named for the digest of what was fetched"
+
+# 書庫の中の唯一の最上位ディレクトリは剥がれる。`name-version/` で包むのが
+# 慣習であり、剥がさなければ利用者が毎回その1階層を書くことになる。
+_last_cmd="ls \$deps/greet-*"; OUT=$(ls "$d" 2>&1 | paste -sd' ' -); RC=0
+[ -f "$d/dowel.toml" ]
+fact $? "with the single top-level directory stripped, as the usual wrapper is"
+
+# 公開の面が届く。取ってきたものが依存として本当に効いていること。
+# （`args_have` は `-C` を渡さないので、ここは `cc_args` を直に使う。
+# ソースの側にも `#error` を置いてあるので、届かなければ翻訳でも落ちる。）
+got=$(cc_args archived:archived -C archived)
+_last_cmd="cc_args archived:archived -C archived"; OUT="$got"; RC=0
+printf '%s' "$got" | grep -q 'GREET_FROM_ARCHIVE'
+fact $? "the fetched package's public defines reach the dependent"
+
+# ------------------------------------------------------------ 固定されていなければ拒む
+
+pin ""
+diag unpinned-dependency "an archive without a digest is refused" -C archived check
+run -C archived check
+_last_cmd="dowel check  # sha256 が無い"; OUT=$(printf '%s' "$OUT" | grep -m4 'note\|error'); RC=0
+printf '%s' "$OUT" | grep -qi 'different bytes tomorrow'
+fact $? "saying why a URL alone is not a pin"
+
+pin "abc123"
+diag unpinned-dependency "a digest that is not 64 hex digits is refused too" -C archived check
+run -C archived check
+_last_cmd="dowel check  # 短い sha256"; OUT=$(printf '%s' "$OUT" | grep -m3 'expected\|error'); RC=0
+printf '%s' "$OUT" | grep -q '64 hexadecimal'
+fact $? "naming the shape it wanted"
+
+# 指紋が合わなければ、展開する前に止まる。両方の値を出す——片方だけでは
+# 「どちらが正しいのか」を利用者が決められない。
+pin "0000000000000000000000000000000000000000000000000000000000000000"
+run -C archived build --no-compdb
+said=$OUT
+_last_cmd="dowel build  # 指紋が合わない"; OUT="$said"; RC=0
+printf '%s' "$said" | grep -q 'expected 0000' && printf '%s' "$said" | grep -q "received $SUM"
+fact $? "a digest that does not match reports both what was expected and what arrived"
+
+_last_cmd="ls archived/.dowel/deps"; RC=0
+OUT=$(ls archived/.dowel/deps 2>&1)
+[ ! -d "archived/.dowel/deps" ] || [ -z "$(ls -A archived/.dowel/deps 2>/dev/null)" ]
+fact $? "and nothing is unpacked, because the check happens before the archive is opened"
+
+# 取れない先も、直し方の分かる形で拒む。
+pin "$SUM" "file://$PWD/no-such-archive.tar.gz"
+diag unfetchable-dependency "an archive that cannot be fetched is refused" -C archived check
+
+# ------------------------------------------------------------ 一度取ったら触らない
+
+pin "$SUM"
+ok "the archive is fetched once" -C archived build --no-compdb
+
+mv "$ARCHIVE" "$ARCHIVE.moved"
+ok "and a later build never reaches for it again" -C archived build --no-compdb
+runs_actions 0 "which is a build that runs nothing, having everything already" \
+    -C archived --no-compdb
+mv "$ARCHIVE.moved" "$ARCHIVE"
+
+# 展開したものを消すと、また取りに行く。消しても壊れないことの対照であり、
+# 「触らない」が「二度と取れない」ではないことの確認でもある。
+rm -rf archived/.dowel/deps
+ok "removing what was unpacked makes the next build fetch it again" \
+    -C archived build --no-compdb

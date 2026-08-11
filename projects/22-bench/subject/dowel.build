@@ -1,0 +1,23 @@
+# 測る対象。`bench` 種別は `dowel bench` が**過程まるごとの実時間**を測る
+# （ADR-0025）。枠組みは課されず、読まれもしない——C には測定結果の綴りに
+# 慣習が無く、枠組みごとに1つ形式を解釈するのが ADR の拒む絡まりである。
+# 過程の外側から測った数なら、どの実行ファイルにも同じ物差しが当たる。
+[bench.spin]
+sources = [file("src/spin.c")]
+
+# 事例は test と同じ形である。ただし `should_fail` は無い——測るのであって
+# 判定しないので、覆す判定が無い。
+[bench.spin.cases]
+small = { args = ["small"] }
+big   = { args = ["big"] }
+# 速さに判定は無い。遅くても、走り切れば測定である。
+slow  = { args = ["slow"] }
+
+# 判定のある側。`dowel bench` はこれを走らせないし、`dowel test` は
+# 上を走らせない。同じ木に両方あることが、その分離の観測になる。
+[test.t]
+sources = [file("tests/t.c")]
+
+# 始めるものが無い側。測れない。
+[lib.quiet]
+sources = [file("src/quiet.c")]

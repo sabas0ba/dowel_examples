@@ -1,0 +1,7 @@
+[package]
+name    = "archived"
+version = "0.1.0"
+edition = "2026"
+
+# 書庫の依存。expect.sh が url と sha256 を書き込む——道は手元の絶対パスに
+# なるので、木に固定できない。

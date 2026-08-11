@@ -138,3 +138,55 @@ consumer could read`）。段が来たときに何が変わるかは、この1�
 「機能フラグが答を選ばない」はライブラリ特有である。`small` は CRC の表を
 持つ版と都度計算する版を切り替えるが、利用者から見て値が違ったら、それは
 構成ではなく故障である。両方の構成で同じベクタを通している。
+
+## 共有として配る（ADR-0030）
+
+ここまでこのライブラリが作れたのは静的な書庫だけだった。書庫は「その木の
+中でしか意味がない」形であり、dowel を使わない相手へ渡すには足りない。
+`--features=shared` で共有ライブラリになる。
+
+```toml
+linkage = "shared" when feature.shared
+exports = ["hashx_fnv1a", "hashx_crc32", "hashx_crc_begin",
+           "hashx_crc_feed", "hashx_crc_end", "hashx_version"] when feature.shared
+```
+
+`exports` に既定は無い。**平面ごとに意味が逆だからである**——ELF と Mach-O
+では `static` でない名前がすべて出るが、Windows では何も出ない。どちらを
+既定にしても、同じマニフェストが2つの違う面を記述することになる。だから
+一覧を要求し、リンカごとの形（version script / シンボル一覧 / `.def`）は
+その1つの宣言から作る。省くと `missing-exports` で拒まれる。
+
+名前は**そのまま**一致する。接頭辞ではない——`hashx_crc` と書いても
+`hashx_crc_end` は出ない。書き落とせば、使う側のリンクで気づく。
+
+| | 静的（既定） | `--features=shared` |
+|---|---|---|
+| 成果物 | `libhashx.a` | `libhashx.so` |
+| 閉包の翻訳 | そのまま | すべて `-fPIC` |
+| 使う側の `NEEDED` | 無し | `libhashx.so` |
+| 走らせ方 | そのまま | `runpath` が木の `lib/` を指すのでそのまま |
+
+答は配られ方で変わらない。`hashsum < abc` は両方で同じ行を出す——ここが
+利用者から見た「同じライブラリ」の意味である。
+
+### 関門: 自分の検査が組めない（[F-056](../../docs/10-findings.md#f-056)、[#134](https://github.com/sabas0ba/dowel/issues/134)）
+
+このライブラリの検査は内部の名前（`hx_crc_step`）を直に呼ぶ。公開の面だけを
+叩く検査では、面の後ろにある表の構築を覆えないためである。
+
+共有にすると、それが繋がらなくなる。
+
+```console
+$ dowel -C lib test --features=shared
+… ld: undefined reference to `hx_crc_step'
+```
+
+共有ライブラリとしては正しい振る舞いである。足りないのは**内側へ繋ぐ手立て**
+の方で、いま残る道は「面を壊す（内部の名前を `exports` に足す）」「ソースの
+一覧を2か所に持つ」「共有では検査を諦める」しかない。CMake の `OBJECT`
+ライブラリ、Meson の `objects:` がこの役を果たしている。
+
+検査は静的の側で同じものが通ること、共有の側でも**使う側**は組めて走ること
+を対照に置いてある。壊れているのが配られ方ではなく内側への繋ぎ方であることが、
+並びから読める形にしてある。

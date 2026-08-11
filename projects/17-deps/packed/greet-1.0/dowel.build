@@ -1,0 +1,6 @@
+[lib.greet]
+sources = [file("src/greet.c")]
+
+[lib.greet.public]
+includes = [dir("src")]
+defines  = { GREET_FROM_ARCHIVE = 1 }

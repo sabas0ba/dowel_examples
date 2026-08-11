@@ -312,3 +312,112 @@ counts "$PWD/../bd-release/compile_commands.json"
 [ "$RC" = 0 ] && [ "$DIFF" = 0 ]
 fact $? "verify ignores the build type on both sides, so any pairing is clean"
 cd .. || exit 1
+
+# ------------------------------------------------------------ Meson からの移行
+#
+# 移行元は CMake だけではない。Meson は `build/meson-info/` を自分で書くので、
+# 問い合わせを置く手順が要らない。どちらから来たかは**ディレクトリを見て**
+# 決まる（`--from=` は無い）。
+#
+# 渡す情報の形が違う。CMake は引数を仕分け済みで渡し、木の中の依存を名指し
+# する。Meson は目標ごとに `parameters` 配列を1本渡すだけなので、仕分けは
+# dowel が行い、依存の辺は分からないままになる（文書に明記されている）。
+#
+# その仕分けがまだ粗い。配列にはリンクと書庫の引数も混ざっており、それが
+# 翻訳の `flags` に入るため、**下書きがそのままでは組めない**（F-057）。
+
+MESON_SRC=$PWD/meson-shapes
+MESON_BUILD=$PWD/meson-build
+
+command -v meson >/dev/null 2>&1 || {
+    printf 'meson is missing; the migration layer needs it\n' >&2
+    exit 2
+}
+
+rm -rf "$MESON_BUILD" "$MESON_SRC/dowel.toml" "$MESON_SRC/dowel.build"
+sh_run meson setup "$MESON_BUILD" "$MESON_SRC"
+_last_cmd="meson setup"
+[ -d "$MESON_BUILD/meson-info" ]
+fact $? "meson writes its introspection without being asked, unlike CMake's File API"
+
+ok "import reads a Meson build directory" -C "$MESON_SRC" migrate import "$MESON_BUILD"
+
+draft=$(cat "$MESON_SRC/dowel.build" 2>/dev/null)
+_last_cmd="cat dowel.build"; OUT="$draft"; RC=0
+printf '%s' "$draft" | grep -q 'UNVERIFIED DRAFT'
+fact $? "and the draft says it is unverified, the same as one imported from CMake"
+
+# 移行元の種別は書かれる。どちらから来たかで下書きの限界が違うので、
+# 読む側にそれが分からなければ、何を疑えばよいかが決まらない。
+_last_cmd="cat dowel.build | 見出し"; OUT=$(printf '%s' "$draft" | head -12); RC=0
+printf '%s' "$draft" | grep -qi 'meson'
+fact $? "naming Meson as where it came from"
+
+# 写るもの。ソース、include、define。
+_last_cmd="cat dowel.build"; OUT="$draft"; RC=0
+printf '%s' "$draft" | grep -q 'src/area.c' && printf '%s' "$draft" | grep -q 'src/perim.c'
+fact $? "the sources of each target are listed explicitly"
+
+_last_cmd="cat dowel.build"; OUT="$draft"; RC=0
+printf '%s' "$draft" | grep -q 'SHAPES_BUILD' && printf '%s' "$draft" | grep -q 'TOOL'
+fact $? "with the defines sorted out of the parameters array"
+
+_last_cmd="cat dowel.build"; OUT="$draft"; RC=0
+printf '%s' "$draft" | grep -q 'dir("include")'
+fact $? "and the include directories too"
+
+# 構成の旗は写らない。Release から取り込んだ下書きが、最適化された NDEBUG の
+# 「debug」を作ることになるためである。
+# 見出しの注記には NDEBUG の語が出るので、宣言の行だけを見る。
+_last_cmd="cat dowel.build | 宣言の行の -O / NDEBUG"
+OUT=$(printf '%s' "$draft" | grep -v '^#' | grep '^flags')
+RC=0
+! printf '%s' "$draft" | grep -v '^#' | grep -qE '"-O[0-9s]"|NDEBUG'
+fact $? "while the configuration-level flags are not, since dowel's own --config supplies them"
+
+# 依存の辺は空のまま。Meson の introspection がリンクの関係を言わないので、
+# 出力ファイル名から推測すれば、**未検証の下書きに誤った辺**が入る。
+_last_cmd="cat dowel.build | deps"; OUT="$draft"; RC=0
+! printf '%s' "$draft" | grep -q 'deps.*target('
+fact $? "and deps is left empty, because Meson does not say which target links which"
+
+# ------------------------------------------------------------ 仕分けが粗い（F-057）
+
+_last_cmd="cat dowel.build | flags"
+OUT=$(printf '%s' "$draft" | grep '^flags')
+RC=0
+known_issue F-057
+! printf '%s' "$draft" | grep -qE '^flags.*(-Wl,|\.a"|"csrDT")'
+fact $? "the compile flags carry nothing that belongs to the link or the archiver"
+
+run -C "$MESON_SRC" build --no-compdb
+_last_cmd="dowel build  # Meson から取り込んだ下書き"
+OUT=$(printf '%s' "$OUT" | grep -m3 'error\|not found')
+known_issue F-057
+[ "$RC" -eq 0 ]
+fact $? "a draft imported from Meson builds without editing"
+
+# 対照。`verify` は差分として捉える。安全網は働いている。
+run -C "$MESON_SRC" migrate verify "$MESON_BUILD/compile_commands.json"
+_last_cmd="dowel migrate verify"; OUT=$(printf '%s' "$OUT" | grep -m4 '^  +'); RC=0
+printf '%s' "$OUT" | grep -q 'in dowel, not in the reference'
+fact $? "though verify does report them as arguments the old build never had"
+
+# 対照。同じ木を CMake から取り込めば、そのまま組める。壊れているのが
+# 移行そのものではなく Meson 側の仕分けであることが、これで読める。
+rm -rf "$MESON_SRC/dowel.toml" "$MESON_SRC/dowel.build" "$MESON_SRC/cm"
+cat >"$MESON_SRC/CMakeLists.txt" <<'CMAKE'
+cmake_minimum_required(VERSION 3.20)
+project(shapes C)
+add_library(shapes STATIC src/area.c src/perim.c)
+target_include_directories(shapes PRIVATE include)
+target_compile_definitions(shapes PRIVATE SHAPES_BUILD=1)
+add_executable(shapetool src/main.c)
+target_include_directories(shapetool PRIVATE include)
+target_link_libraries(shapetool shapes)
+CMAKE
+configure "$MESON_SRC" "$MESON_SRC/cm" Debug
+ok "the same tree imports from CMake as well" -C "$MESON_SRC" migrate import "$MESON_SRC/cm"
+ok "and that draft builds without editing" -C "$MESON_SRC" build --no-compdb
+rm -f "$MESON_SRC/CMakeLists.txt"
+rm -rf "$MESON_SRC/cm" "$MESON_BUILD"

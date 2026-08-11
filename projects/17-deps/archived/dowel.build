@@ -1,0 +1,5 @@
+[bin.archived]
+sources = [file("src/main.c")]
+
+[bin.archived.private]
+deps = [dep("greet")]

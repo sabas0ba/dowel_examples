@@ -109,7 +109,7 @@ export DOWELUP DOWEL_SRC
 #
 # 揃っていなければ始めない。環境によって走る検査が変わると、結果を過去の
 # 実行と比べられなくなる。
-for tool in cc ninja jq git cmake pkg-config gcc gcc-ar objcopy readelf g++ clang clang++ \
+for tool in cc ninja jq git cmake meson pkg-config gcc gcc-ar objcopy readelf g++ clang clang++ \
              aarch64-linux-gnu-gcc aarch64-linux-gnu-g++ aarch64-linux-gnu-objcopy \
              arm-none-eabi-gcc arm-none-eabi-objcopy qemu-system-arm \
              qemu-aarch64-static xvfb-run gdb gdb-multiarch \
@@ -131,6 +131,7 @@ migration layers
   qemu-system-arm              apps/blink runs that firmware on an emulated board
   qemu-aarch64-static          11-cross and 15-cpp run what they compiled
   cmake                        16-migrate imports from a real CMake build
+  meson                        16-migrate imports from a real Meson build too
   pkg-config                   17-deps resolves system packages through it
   xvfb-run                     apps/plot opens a real window on a virtual display
   gdb gdb-multiarch            21-debug attaches a real debugger, host and cross
@@ -147,7 +148,7 @@ with no display at all.
 
 on debian and ubuntu:
 
-  apt-get install -y ninja-build jq cmake pkg-config gcc g++ clang \
+  apt-get install -y ninja-build jq cmake meson pkg-config gcc g++ clang \
       gcc-aarch64-linux-gnu g++-aarch64-linux-gnu qemu-user-static \
       gcc-arm-none-eabi qemu-system-arm xvfb libcairo2-dev libx11-dev \
       gdb gdb-multiarch libosmesa6-dev libopencv-dev \

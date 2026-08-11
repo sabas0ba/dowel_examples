@@ -10,7 +10,7 @@ dowel 本体は自分自身を内側から検査している（`crates/*/tests/`
 仕様と実装の食い違いを仕様の側から見つけられる。
 
 見つけたものは [docs/10-findings.md](docs/10-findings.md) に記録し、本体へ報告する。
-これまでに 55 件を報告し、54 件が修正された。
+これまでに 57 件を報告し、54 件が修正された。
 
 ## 走らせる
 
@@ -61,8 +61,10 @@ DOWELUP=/path/to/dowelup DOWEL_SRC=/path/to/dowel ./run.sh
 ## 出力
 
 1 検査 1 行。本体が直していない事項に対する検査は `xfail` として登録する。
-本体側が直ると `XPASS` になって落ち、宣言を外すべきことが分かる。現在は 2 件で、
-どちらも [F-011](docs/10-findings.md#f-011) の残っている側である。
+本体側が直ると `XPASS` になって落ち、宣言を外すべきことが分かる。現在は 4 件で、
+[F-011](docs/10-findings.md#f-011) の残っている側と、新機能を使ってみて出た
+[F-056](docs/10-findings.md#f-056)（共有ライブラリ）と
+[F-057](docs/10-findings.md#f-057)（Meson からの移行）である。
 
 直前の回では 16 件あった。デバッグ機能について見つけた
 [F-046](docs/10-findings.md#f-046) から [F-049](docs/10-findings.md#f-049)、
@@ -164,6 +166,8 @@ total 1146 checks: 1141 passed, 0 failed, 5 known, 0 fixed
 | [19-artifacts](projects/19-artifacts/) | 成果物から別の成果物を作る。生イメージと HEX、命令の形、増分、クロス |
 | [20-cases](projects/20-cases/) | 1本の実行ファイルから複数のテストを登録する。宣言・選択・時間切れ・語彙 |
 | [21-debug](projects/21-debug/) | 宣言されたデバッガとスタブ。本物の gdb で止め、--dap が同じ事実を書き出すこと |
+| [22-bench](projects/22-bench/) | 測るための種別。速さに判定は無く、走り切れなければ数を出さないこと |
+| [23-probe](projects/23-probe/) | 道具に訊いたことを利用者の cache へ。訊き直さず、道具を替えれば鍵が変わること |
 
 ## アプリケーション
 
