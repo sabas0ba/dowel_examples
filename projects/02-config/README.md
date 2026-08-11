@@ -13,6 +13,7 @@ app ──private──> probe
 | `match host.arch`（有限・網羅） | `app` の `private.flags` |
 | `match cfg.target`（開いた値域・`_` 必須） | `probe` の `private.link_flags` |
 | 後置 `when feature.<name>` | `probe` の `private.flags` |
+| `when` の合成（`and` / `or` / `not` / 括弧） | `app` の `private.c_flags` |
 
 ## 何を固定するか
 
@@ -33,6 +34,34 @@ app ──private──> probe
    ビルドディレクトリになる。入らないと、機能を切り替えた成果物が混ざる
 6. **`compile_commands.json` に具体化後の値が入る。** 言語サーバに渡るのは
    この内容であり、ここが崩れれば補完と診断が同じだけ崩れる
+7. **述語が合成できる。** `and` / `or` / `not` と括弧。優先順位は
+   not > and > or
+
+## 述語の合成（[ADR-0032](https://github.com/sabas0ba/dowel/blob/main/docs/adr/0032-predicate-composition.md)）
+
+```toml
+c_flags = [
+    "-DP_EITHER" when target.os == "linux" or target.os == "macos",
+    "-DP_NOTWIN" when not target.os == "windows",
+    "-DP_BOTH"   when feature.trace and not feature.quiet,
+    "-DP_PAREN"  when (target.os == "linux" or target.os == "macos") and cfg.opt == "debug",
+]
+```
+
+`not` が要るのは「Windows 以外のどこでも」を正しく保つためである。他の値を
+並べる書き方は、`target.os` に語が1つ足された日に**黙って覆わなくなる**。
+数え上げは語彙の変化に追随しない。
+
+検査の書き方で2つ気をつけている。
+
+- **決して真にならない述語を1つ混ぜてある。** 真になるものだけ並べると、
+  「何を書いても真」の実装でも検査が通る
+- **優先順位は括弧を書かない式から読む。** `a and not b or b` に対し、
+  片側だけを反転させる機能を立てると、前半が偽になり後半で真に戻る。
+  括弧を書いてしまうと、確かめているのは括弧であって優先順位ではない
+
+語彙の検査は葉まで届く。合成の中に隠れた綴り違いは、単独のときと同じに
+`unknown-pattern` で拒まれる——ここが緩いと、合成は誤りを隠す場所になる。
 
 主張の大半は C 側の `#error` と実行時の比較に書いてある。
 伝播しないことの検査だけは、値の不在でしか観測できないため
