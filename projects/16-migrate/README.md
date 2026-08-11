@@ -79,3 +79,43 @@ dowel の渡した引数なのかが分からなくなる。`__OPTIMIZE__` は g
 
 移行の途中では、まだ移していないファイルも dowel 側にしかないテストも普通に
 居る。落とすのは「移したつもりで違うものを作っている」場合だけである。
+
+## Meson から
+
+移行元は CMake だけではない。Meson は `build/meson-info/` を自分で書くので、
+File API のような問い合わせを置く手順が要らない。どちらから来たかは
+**ディレクトリを見て**決まる（`--from=` は無い）。
+
+渡す情報の形が違う。
+
+| | CMake | Meson |
+|---|---|---|
+| 引数 | `defines` / `includes` / 断片に仕分け済み | `parameters` 配列1本。仕分けは dowel が行う |
+| 依存の辺 | `dependencies` を名指しする → `target(...)` | 言わない。`deps` は空のまま |
+| 生成されたソース | — | 飛ばした旨をコメントで残す |
+
+`deps` を推測しない判断は正しいと思う。出力ファイル名から起こせば、
+**既に未検証である下書き**に誤った辺が入る。
+
+### 関門: 仕分けが粗い（[F-057](../../docs/10-findings.md#f-057)、[#135](https://github.com/sabas0ba/dowel/issues/135)）
+
+`parameters` には翻訳の引数だけでなく、リンクと書庫の引数も入っている。
+それが翻訳の `flags` に落ちるため、**下書きがそのままでは組めない**。
+
+```toml
+flags = ["…", "-std=c11", "-fPIC", "csrDT"]                     # ar の引数文字列
+flags = ["…", "-Wl,--start-group", "libshapes.a", "-Wl,--end-group"]
+```
+
+```console
+$ dowel build
+cc: error: libshapes.a: linker input file not found
+```
+
+同じ木を CMake から取り込めば、そのまま組める。`expect.sh` はその対照を
+置いてあり、壊れているのが移行そのものではなく Meson 側の仕分けであることが
+読める形にしてある。
+
+`dowel migrate verify` はこれを差分として捉える。安全網は働いているが、
+`verify` は「写した結果が元と同じ翻訳になるか」の答合わせであって、下書きが
+組めない状態の説明ではない。

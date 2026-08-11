@@ -1,0 +1,8 @@
+[package]
+name    = "subject"
+version = "0.1.0"
+edition = "2026"
+
+# 名乗りを差し替えたコンパイラ。expect.sh が PATH の先頭に置く。
+[toolchain]
+c = "mycc"

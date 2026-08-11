@@ -20,3 +20,24 @@ flags = match host.arch {
 }
 
 link_flags = ["-DUNUSED_LINK_FLAG=0" when feature.quiet]
+
+# 述語の合成（ADR-0032）。`and` / `or` / `not` と括弧が使える。
+#
+# `not` が要るのは「Windows 以外のどこでも」を正しく保つためである。
+# 他の値を並べる書き方は、`target.os` に語が1つ足された日に**黙って
+# 覆わなくなる**。数え上げは語彙の変化に追随しない。
+#
+# 演算子が語（記号ではない）なのは、`when` / `match` / `glob` と揃える
+# ためである。優先順位は not > and > or で、括弧で上書きできる。
+c_flags = [
+    "-DP_EITHER" when target.os == "linux" or target.os == "macos",
+    "-DP_NOTWIN" when not target.os == "windows",
+    "-DP_BOTH"   when feature.trace and not feature.quiet,
+    "-DP_PAREN"  when (target.os == "linux" or target.os == "macos") and cfg.opt == "debug",
+    # 優先順位。括弧が無ければ not > and > or なので、これは
+    # `(trace and (not quiet)) or quiet` である。
+    "-DP_PREC"   when feature.trace and not feature.quiet or feature.quiet,
+    # 偽になる側も1つ置く。真になるものだけ並べると、述語が「常に真」でも
+    # 検査が通ってしまう。
+    "-DP_NEVER"  when target.os == "windows" and target.os == "linux",
+]

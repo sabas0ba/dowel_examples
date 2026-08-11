@@ -103,7 +103,9 @@ jobs:
         # `cc` だけでは、実際に検査されるのがその機械の既定のコンパイラ
         # 1つだけになる。
         #
-        # cmake は 16-migrate が移行元を構成するために使う。
+        # cmake と meson は 16-migrate が移行元を構成するために使う。
+        # 渡す情報の形が違うので、両方を相手にしないと片方の仕分けの誤りが
+        # 見えない（docs/10-findings.md F-057）。
         # pkg-config は 17-deps が version 依存の解決先として使う。
         # arm-none-eabi は apps/blink がベアメタルを組むために使い、
         # qemu-system-arm はそれを実際の基板の代わりに走らせるために使う。
@@ -122,7 +124,7 @@ jobs:
         # 実行ファイルの綴りが変わる対象である。
         run: |
           sudo apt-get update -qq
-          sudo apt-get install -y -qq ninja-build jq cmake pkg-config gcc g++ clang \
+          sudo apt-get install -y -qq ninja-build jq cmake meson pkg-config gcc g++ clang \
               gcc-aarch64-linux-gnu g++-aarch64-linux-gnu qemu-user-static \
               gcc-arm-none-eabi qemu-system-arm xvfb libcairo2-dev libx11-dev \
               gdb gdb-multiarch libosmesa6-dev libopencv-dev \
@@ -130,6 +132,7 @@ jobs:
           ninja --version
           jq --version
           cmake --version | head -1
+          meson --version
           pkg-config --version
           gcc --version | head -1
           gcc-ar --version | head -1

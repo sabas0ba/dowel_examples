@@ -1,0 +1,2 @@
+[bin.other]
+sources = [file("src/main.c")]

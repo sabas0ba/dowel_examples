@@ -353,3 +353,131 @@ not_rebuilt "crc32.c" "while the library's other translation units are left alon
 printf '\n/* touched */\n' >>lib/include/hashx/hashx.h
 build_direct -C cxxtool --no-compdb
 rebuilt "main.cpp" "editing the public header recompiles the consumer that includes it"
+
+# ------------------------------------------------------------ 10. 共有として配る（ADR-0030）
+#
+# ここまでライブラリが作れたのは静的な書庫だけだった。書庫は「その木の中で
+# しか意味がない」形であり、dowel を使わない相手へ渡すには足りない。
+# `linkage = "shared"` で共有ライブラリが作れる。
+#
+# 見るのは3つ。
+#
+#   1. **面が宣言で決まる。** `exports` に既定は無い。平面ごとに意味が逆
+#      （ELF は全部出る、Windows は何も出ない）なので、既定を置けば同じ
+#      マニフェストが2つの違う面を記述することになる
+#   2. **閉包が位置独立で組まれる。** 共有の中に入る翻訳単位はすべて -fPIC
+#   3. **組んだ木の中で走る。** 実行ファイルは lib/ を指す runpath を持つ
+
+SO=$(find ctool/.dowel/build -name 'libhashx.so' 2>/dev/null | head -1)
+
+ok "the library builds as a shared object" -C ctool build --features=shared --no-compdb
+SO=$(find ctool/.dowel/build -name 'libhashx.so' | head -1)
+_last_cmd="find libhashx.so"; OUT="${SO:-(absent)}"; RC=0
+[ -n "$SO" ]
+fact $? "producing a shared object where the default configuration produces an archive"
+
+# 既定の側は書庫のままである。同じ木、同じソース、違う配られ方。
+"$DOWEL" -C ctool build --no-compdb >/dev/null 2>&1
+A=$(find ctool/.dowel/build -name 'libhashx.a' | head -1)
+_last_cmd="find libhashx.a"; OUT="${A:-(absent)}"; RC=0
+[ -n "$A" ]
+fact $? "while the default configuration still produces the archive it always did"
+
+# ---- 面は宣言で決まる
+
+exported=$(nm -D --defined-only "$SO" 2>/dev/null | awk '{print $3}' | grep -E '^hashx_' | sort | paste -sd' ' -)
+_last_cmd="nm -D --defined-only libhashx.so | hashx_*"; OUT="$exported"; RC=0
+printf '%s' "$exported" | grep -q 'hashx_fnv1a' && printf '%s' "$exported" | grep -q 'hashx_version'
+fact $? "the names the manifest lists are the ones the object exports"
+
+# 中の名前は出ない。`-fvisibility=hidden` と `exports` の両方が効いている。
+inner=$(nm -D --defined-only "$SO" 2>/dev/null | awk '{print $3}' | grep -c '^hx_')
+_last_cmd="nm -D --defined-only libhashx.so | hx_*"
+OUT="internal names exported: ${inner:-?}"$'\n'"$exported"
+RC=0
+[ "${inner:-1}" = 0 ]
+fact $? "and the internal ones are not, so the interface is what was declared"
+
+# 一覧を省くと拒まれる。既定を置かない、という設計がそのまま診断になる。
+cp lib/dowel.build lib/dowel.build.keep
+python3 - <<'PY'
+import re
+p = "lib/dowel.build"
+t = open(p, encoding="utf-8").read()
+t = re.sub(r'exports = \[.*?\] when feature\.shared\n', '', t, flags=re.S)
+open(p, "w", encoding="utf-8").write(t)
+PY
+diag missing-exports "a shared library with no exports declared is refused" \
+    -C ctool check --features=shared
+run -C ctool check --features=shared
+_last_cmd="dowel check  # exports を消した"; OUT=$(printf '%s' "$OUT" | grep -m4 'note\|error'); RC=0
+printf '%s' "$OUT" | grep -qi 'everything on ELF and nothing on Windows'
+fact $? "saying why there is no default, which is that the platforms disagree"
+mv lib/dowel.build.keep lib/dowel.build
+
+# ---- 閉包が位置独立で組まれる
+
+pic=$("$DOWEL" -C ctool graph --kind=action --format=json --features=shared 2>/dev/null |
+      jq -r '.steps[] | select(.kind == "cc" and .target == "hashx:hashx")
+             | ([.arguments[] | select(. == "-fPIC")] | length)' | sort -u | paste -sd' ' -)
+_last_cmd="graph --features=shared | hashx:hashx の -fPIC"; OUT="-fPIC per unit: $pic"; RC=0
+[ "$pic" = 1 ]
+fact $? "every translation unit inside the shared library is compiled position-independent"
+
+# 既定の構成では付かない。位置独立は共有にするから要るのであって、
+# 常に付けるものではない（付ければ、要らない木まで遅くなる）。
+pic=$("$DOWEL" -C ctool graph --kind=action --format=json 2>/dev/null |
+      jq -r '[.steps[] | select(.kind == "cc" and .target == "hashx:hashx")
+             | .arguments[] | select(. == "-fPIC")] | length')
+_last_cmd="graph（既定） | hashx:hashx の -fPIC"; OUT="-fPIC occurrences: $pic"; RC=0
+[ "$pic" = 0 ]
+fact $? "and is not, when the same library is built as an archive"
+
+# ---- 組んだ木の中で走る
+
+"$DOWEL" -C ctool build --features=shared --no-compdb >/dev/null 2>&1
+bin=$(find ctool/.dowel/build -path '*shared*/bin/hashsum' -type f | head -1)
+needed=$(readelf -d "${bin:-/nonexistent}" 2>/dev/null | sed -n 's/.*Shared library: \[\(.*\)\]/\1/p' | paste -sd' ' -)
+_last_cmd="readelf -d hashsum | NEEDED"; OUT="$needed"; RC=0
+printf '%s' "$needed" | grep -q 'libhashx.so'
+fact $? "a consumer of the shared library records it as needed at run time"
+
+rpath=$(readelf -d "${bin:-/nonexistent}" 2>/dev/null | sed -n 's/.*R\(UN\)\?PATH.*\[\(.*\)\]/\2/p')
+_last_cmd="readelf -d hashsum | RUNPATH"; OUT="${rpath:-(none)}"; RC=0
+printf '%s' "$rpath" | grep -q '/lib$'
+fact $? "and a run-time search path pointing at the build tree's lib directory"
+
+said=$("${bin:-/nonexistent}" --version 2>&1)
+_last_cmd="hashsum --version  # 共有の構成"; OUT="$said"; RC=0
+printf '%s' "$said" | grep -q "hashx $(sed -n 's/^version *= *"\(.*\)"/\1/p' lib/dowel.toml)"
+fact $? "so it runs straight out of the build tree, without being told where to look"
+
+# 答は配られ方で変わらない。ここが利用者から見た「同じライブラリ」の意味である。
+plain_bin=$(find ctool/.dowel/build -path '*-debug/bin/hashsum' -type f | head -1)
+a=$(printf 'abc' | "${plain_bin:-/nonexistent}" 2>&1)
+b=$(printf 'abc' | "${bin:-/nonexistent}" 2>&1)
+_last_cmd="hashsum < abc   静的 vs 共有"
+OUT="static: $a"$'\n'"shared: $b"
+RC=0
+[ -n "$a" ] && [ "$a" = "$b" ]
+fact $? "and answers exactly what the archive-linked build answers"
+
+# ライブラリ自身の検査は、共有にすると繋がらなくなる。内部の名前が
+# `exports` に無いためで、共有ライブラリとしては正しい振る舞いである。
+# 足りないのは**内側へ繋ぐ手立て**の方で、いま利用者に残る道は
+# 「面を壊す」「ソースの一覧を2か所に持つ」「諦める」しかない
+# （[F-056](../../docs/10-findings.md#f-056)）。
+run -C lib test --features=shared
+_last_cmd="dowel -C lib test --features=shared"
+OUT=$(printf '%s' "$OUT" | grep -m3 'undefined reference\|error')
+known_issue F-056
+[ "$RC" -eq 0 ]
+fact $? "the library's own tests still link when it is built shared"
+
+# 静的の側では通る。差は配られ方だけであり、検査の書き方ではない。
+ok "while the same tests pass when it is built as an archive" -C lib test
+
+# 使う側は共有でも通る。壊れているのが面ではなく内側への繋ぎ方である
+# ことが、この対照で読める。
+ok "and the consumers build and run against the shared object" \
+    -C cxxtool build --features=shared --no-compdb

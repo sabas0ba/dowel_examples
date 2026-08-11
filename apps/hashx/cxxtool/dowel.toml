@@ -3,6 +3,12 @@ name    = "hashx-cxxtool"
 version = "0.1.0"
 edition = "2026"
 
+[features]
+default = []
+# ライブラリを共有として組む版へ転送する。使う側は自分では何も変えない
+# ——変わるのは配られる形だけである。
+shared  = ["hashx/shared"]
+
 [[dependencies]]
 name = "hashx"
 path = "../lib"

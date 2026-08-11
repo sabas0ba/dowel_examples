@@ -8,6 +8,27 @@ sources = [
     file("src/version.c"),
 ]
 
+# 共有として配る版。`exports` に既定は無く、省くと `missing-exports` で
+# 拒まれる（ADR-0030）。既定を置かないのは、**平面ごとに意味が逆だから**
+# である——ELF と Mach-O では `static` でない名前がすべて出るが、Windows
+# では何も出ない。どちらを既定にしても、同じマニフェストが2つの違う面を
+# 記述することになる。だから一覧を要求し、リンカごとの形（version script /
+# シンボル一覧 / `.def`）はその1つの宣言から作る。
+#
+# 名前はリンカが見るとおりに書く。ここは C なので関数名そのままである。
+linkage = "shared" when feature.shared
+# 名前は**そのまま**一致する。接頭辞ではない——`hashx_crc` と書いても
+# `hashx_crc_end` は出ない（`hashx_crc` はそもそも型であって記号ではない）。
+# 書き落とせば、使う側のリンクで `undefined reference` として出る。
+exports = [
+    "hashx_fnv1a",
+    "hashx_crc32",
+    "hashx_crc_begin",
+    "hashx_crc_feed",
+    "hashx_crc_end",
+    "hashx_version",
+] when feature.shared
+
 [lib.hashx.public]
 includes = [dir("include")]
 # この面は C ABI である。見出しは `extern "C"` で囲ってあり、境界を跨いだ

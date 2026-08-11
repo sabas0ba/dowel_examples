@@ -1,0 +1,14 @@
+#!/bin/sh
+# 自分を x86_64-pc-linux-gnu と名乗るコンパイラ。
+#
+# 実在する綴りである（Debian 系の gcc がこう答える機械がある）。dowel が
+# 組まれたときの綴りは x86_64-unknown-linux-gnu であり、両者は違う。
+# **道具に訊かなければ**、この機械の利用者が自分の gcc の綴りを --target
+# に渡した瞬間、存在しえない runner を求められることになる。
+#
+# 翻訳そのものは本物に任せる。ここで差し替えたいのは名乗りだけである。
+if [ "$1" = "-dumpmachine" ]; then
+    echo x86_64-pc-linux-gnu
+    exit 0
+fi
+exec /usr/bin/cc "$@"
