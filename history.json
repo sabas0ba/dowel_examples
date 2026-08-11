@@ -6846,5 +6846,541 @@
   "total": 1146,
   "ok": true,
   "attention": []
+ },
+ {
+  "run_id": "31453208030",
+  "run_attempt": "1",
+  "run_url": "https://github.com/sabas0ba/dowel_examples/actions/runs/31453208030",
+  "commit": "e0afaf9fb4a326208a14d625a5488ab3639b0191",
+  "branch": "main",
+  "started_at": "2026-08-11T02:45:33Z",
+  "dowel_version": "dowel 0.0.1",
+  "dowel_ref": "e12bac762dfd14f0ca5529913464e03590863162",
+  "dowel_commit": "e12bac762dfd14f0ca5529913464e03590863162",
+  "cc": "cc (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0",
+  "ninja": "1.13.2",
+  "projects": [
+   {
+    "name": "01-minimal",
+    "root": "projects",
+    "duration_ms": 244,
+    "counts": {
+     "pass": 10,
+     "fail": 0,
+     "xfail": 0,
+     "xpass": 0
+    },
+    "total": 10,
+    "ok": true,
+    "packages": [
+     "hello"
+    ]
+   },
+   {
+    "name": "02-config",
+    "root": "projects",
+    "duration_ms": 903,
+    "counts": {
+     "pass": 21,
+     "fail": 0,
+     "xfail": 0,
+     "xpass": 0
+    },
+    "total": 21,
+    "ok": true,
+    "packages": [
+     "app",
+     "probe"
+    ]
+   },
+   {
+    "name": "03-features",
+    "root": "projects",
+    "duration_ms": 279,
+    "counts": {
+     "pass": 17,
+     "fail": 0,
+     "xfail": 0,
+     "xpass": 0
+    },
+    "total": 17,
+    "ok": true,
+    "packages": [
+     "app",
+     "json",
+     "missing-optional",
+     "undeclared",
+     "xml"
+    ]
+   },
+   {
+    "name": "04-diagnostics",
+    "root": "projects",
+    "duration_ms": 556,
+    "counts": {
+     "pass": 70,
+     "fail": 0,
+     "xfail": 4,
+     "xpass": 0
+    },
+    "total": 74,
+    "ok": true,
+    "packages": [
+     "cases/abi-mismatch/app",
+     "cases/abi-mismatch/lib",
+     "cases/dependency-cycle",
+     "cases/duplicate-target",
+     "cases/duplicate-target-shared",
+     "cases/empty-glob",
+     "cases/incomplete-runner",
+     "cases/invalid-source",
+     "cases/merge-conflict/app",
+     "cases/merge-conflict/lib",
+     "cases/missing-field",
+     "cases/missing-manifest",
+     "cases/missing-toolchain",
+     "cases/non-exhaustive-match",
+     "cases/type-mismatch",
+     "cases/undeclared-dependency",
+     "cases/unknown-cfg-key",
+     "cases/unknown-feature",
+     "cases/unknown-function",
+     "cases/unknown-kind",
+     "cases/unknown-property",
+     "cases/unknown-target",
+     "cases/unresolved-path"
+    ]
+   },
+   {
+    "name": "05-incremental",
+    "root": "projects",
+    "duration_ms": 1784,
+    "counts": {
+     "pass": 48,
+     "fail": 0,
+     "xfail": 0,
+     "xpass": 0
+    },
+    "total": 48,
+    "ok": true,
+    "packages": [
+     "app",
+     "core",
+     "crossing"
+    ]
+   },
+   {
+    "name": "06-runner",
+    "root": "projects",
+    "duration_ms": 379,
+    "counts": {
+     "pass": 17,
+     "fail": 0,
+     "xfail": 0,
+     "xpass": 0
+    },
+    "total": 17,
+    "ok": true,
+    "packages": [
+     "crossed",
+     "plain",
+     "transferred"
+    ]
+   },
+   {
+    "name": "07-robustness",
+    "root": "projects",
+    "duration_ms": 1359,
+    "counts": {
+     "pass": 145,
+     "fail": 0,
+     "xfail": 0,
+     "xpass": 0
+    },
+    "total": 145,
+    "ok": true,
+    "packages": [
+     "subject"
+    ]
+   },
+   {
+    "name": "08-lsp",
+    "root": "projects",
+    "duration_ms": 12767,
+    "counts": {
+     "pass": 110,
+     "fail": 0,
+     "xfail": 0,
+     "xpass": 0
+    },
+    "total": 110,
+    "ok": true,
+    "packages": [
+     "subject"
+    ]
+   },
+   {
+    "name": "09-acquisition",
+    "root": "projects",
+    "duration_ms": 21898,
+    "counts": {
+     "pass": 66,
+     "fail": 0,
+     "xfail": 1,
+     "xpass": 0
+    },
+    "total": 67,
+    "ok": true,
+    "packages": []
+   },
+   {
+    "name": "10-toolchain",
+    "root": "projects",
+    "duration_ms": 2233,
+    "counts": {
+     "pass": 31,
+     "fail": 0,
+     "xfail": 0,
+     "xpass": 0
+    },
+    "total": 31,
+    "ok": true,
+    "packages": [
+     "subject"
+    ]
+   },
+   {
+    "name": "11-cross",
+    "root": "projects",
+    "duration_ms": 752,
+    "counts": {
+     "pass": 17,
+     "fail": 0,
+     "xfail": 0,
+     "xpass": 0
+    },
+    "total": 17,
+    "ok": true,
+    "packages": [
+     "subject"
+    ]
+   },
+   {
+    "name": "12-store",
+    "root": "projects",
+    "duration_ms": 212,
+    "counts": {
+     "pass": 29,
+     "fail": 0,
+     "xfail": 0,
+     "xpass": 0
+    },
+    "total": 29,
+    "ok": true,
+    "packages": [
+     "subject"
+    ]
+   },
+   {
+    "name": "13-parallel",
+    "root": "projects",
+    "duration_ms": 10755,
+    "counts": {
+     "pass": 18,
+     "fail": 0,
+     "xfail": 0,
+     "xpass": 0
+    },
+    "total": 18,
+    "ok": true,
+    "packages": [
+     "subject"
+    ]
+   },
+   {
+    "name": "14-scale",
+    "root": "projects",
+    "duration_ms": 6575,
+    "counts": {
+     "pass": 17,
+     "fail": 0,
+     "xfail": 0,
+     "xpass": 0
+    },
+    "total": 17,
+    "ok": true,
+    "packages": []
+   },
+   {
+    "name": "15-cpp",
+    "root": "projects",
+    "duration_ms": 4869,
+    "counts": {
+     "pass": 70,
+     "fail": 0,
+     "xfail": 0,
+     "xpass": 0
+    },
+    "total": 70,
+    "ok": true,
+    "packages": [
+     "capp",
+     "chain/deep",
+     "chain/mid",
+     "chain/topc",
+     "cpplib",
+     "cross/xapp",
+     "cross/xlib",
+     "exts",
+     "mixed",
+     "reverse/clib",
+     "reverse/cxxapp"
+    ]
+   },
+   {
+    "name": "16-migrate",
+    "root": "projects",
+    "duration_ms": 1197,
+    "counts": {
+     "pass": 54,
+     "fail": 0,
+     "xfail": 0,
+     "xpass": 0
+    },
+    "total": 54,
+    "ok": true,
+    "packages": [
+     "normalize"
+    ]
+   },
+   {
+    "name": "17-deps",
+    "root": "projects",
+    "duration_ms": 800,
+    "counts": {
+     "pass": 51,
+     "fail": 0,
+     "xfail": 0,
+     "xpass": 0
+    },
+    "total": 51,
+    "ok": true,
+    "packages": [
+     "app",
+     "chain/mid",
+     "chain/top",
+     "gated"
+    ]
+   },
+   {
+    "name": "18-tools",
+    "root": "projects",
+    "duration_ms": 507,
+    "counts": {
+     "pass": 32,
+     "fail": 0,
+     "xfail": 0,
+     "xpass": 0
+    },
+    "total": 32,
+    "ok": true,
+    "packages": [
+     "cross",
+     "host",
+     "typo",
+     "vocab"
+    ]
+   },
+   {
+    "name": "19-artifacts",
+    "root": "projects",
+    "duration_ms": 663,
+    "counts": {
+     "pass": 35,
+     "fail": 0,
+     "xfail": 0,
+     "xpass": 0
+    },
+    "total": 35,
+    "ok": true,
+    "packages": [
+     "cross",
+     "firmware",
+     "library"
+    ]
+   },
+   {
+    "name": "20-cases",
+    "root": "projects",
+    "duration_ms": 32611,
+    "counts": {
+     "pass": 59,
+     "fail": 0,
+     "xfail": 1,
+     "xpass": 0
+    },
+    "total": 60,
+    "ok": true,
+    "packages": [
+     "subject"
+    ]
+   },
+   {
+    "name": "21-debug",
+    "root": "projects",
+    "duration_ms": 1149,
+    "counts": {
+     "pass": 26,
+     "fail": 0,
+     "xfail": 2,
+     "xpass": 0
+    },
+    "total": 28,
+    "ok": true,
+    "packages": [
+     "subject"
+    ]
+   },
+   {
+    "name": "blink",
+    "root": "apps",
+    "duration_ms": 2837,
+    "counts": {
+     "pass": 37,
+     "fail": 0,
+     "xfail": 1,
+     "xpass": 0
+    },
+    "total": 38,
+    "ok": true,
+    "packages": [
+     "."
+    ]
+   },
+   {
+    "name": "hashx",
+    "root": "apps",
+    "duration_ms": 1806,
+    "counts": {
+     "pass": 41,
+     "fail": 0,
+     "xfail": 0,
+     "xpass": 0
+    },
+    "total": 41,
+    "ok": true,
+    "packages": [
+     "ctool",
+     "cxxtool",
+     "lib"
+    ]
+   },
+   {
+    "name": "httpd",
+    "root": "apps",
+    "duration_ms": 5150,
+    "counts": {
+     "pass": 36,
+     "fail": 0,
+     "xfail": 0,
+     "xpass": 0
+    },
+    "total": 36,
+    "ok": true,
+    "packages": [
+     "."
+    ]
+   },
+   {
+    "name": "jsonfmt",
+    "root": "apps",
+    "duration_ms": 1860,
+    "counts": {
+     "pass": 37,
+     "fail": 0,
+     "xfail": 0,
+     "xpass": 0
+    },
+    "total": 37,
+    "ok": true,
+    "packages": [
+     "cli",
+     "core"
+    ]
+   },
+   {
+    "name": "plot",
+    "root": "apps",
+    "duration_ms": 4364,
+    "counts": {
+     "pass": 42,
+     "fail": 0,
+     "xfail": 0,
+     "xpass": 0
+    },
+    "total": 42,
+    "ok": true,
+    "packages": [
+     "core",
+     "ui"
+    ]
+   },
+   {
+    "name": "vision",
+    "root": "apps",
+    "duration_ms": 19304,
+    "counts": {
+     "pass": 32,
+     "fail": 0,
+     "xfail": 0,
+     "xpass": 0
+    },
+    "total": 32,
+    "ok": true,
+    "packages": [
+     "cli",
+     "core"
+    ]
+   },
+   {
+    "name": "winapp",
+    "root": "apps",
+    "duration_ms": 6431,
+    "counts": {
+     "pass": 25,
+     "fail": 0,
+     "xfail": 5,
+     "xpass": 0
+    },
+    "total": 30,
+    "ok": true,
+    "packages": [
+     "app"
+    ]
+   },
+   {
+    "name": "docs",
+    "root": "projects",
+    "duration_ms": 79,
+    "counts": {
+     "pass": 9,
+     "fail": 0,
+     "xfail": 0,
+     "xpass": 0
+    },
+    "total": 9,
+    "ok": true,
+    "packages": []
+   }
+  ],
+  "totals": {
+   "pass": 1202,
+   "fail": 0,
+   "xfail": 14,
+   "xpass": 0
+  },
+  "total": 1216,
+  "ok": true,
+  "attention": []
  }
 ]

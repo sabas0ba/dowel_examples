@@ -1,10 +1,10 @@
 {
- "run_id": "31449354954",
+ "run_id": "31453208030",
  "run_attempt": "1",
- "run_url": "https://github.com/sabas0ba/dowel_examples/actions/runs/31449354954",
- "commit": "bc08c280c2909a2e4939fc2b0cd8338bab007984",
+ "run_url": "https://github.com/sabas0ba/dowel_examples/actions/runs/31453208030",
+ "commit": "e0afaf9fb4a326208a14d625a5488ab3639b0191",
  "branch": "main",
- "started_at": "2026-08-11T01:29:09Z",
+ "started_at": "2026-08-11T02:45:33Z",
  "dowel_version": "dowel 0.0.1",
  "dowel_ref": "e12bac762dfd14f0ca5529913464e03590863162",
  "dowel_commit": "e12bac762dfd14f0ca5529913464e03590863162",
@@ -14,7 +14,7 @@
   {
    "name": "01-minimal",
    "root": "projects",
-   "duration_ms": 228,
+   "duration_ms": 244,
    "counts": {
     "pass": 10,
     "fail": 0,
@@ -72,7 +72,7 @@
   {
    "name": "02-config",
    "root": "projects",
-   "duration_ms": 928,
+   "duration_ms": 903,
    "counts": {
     "pass": 21,
     "fail": 0,
@@ -175,7 +175,7 @@
   {
    "name": "03-features",
    "root": "projects",
-   "duration_ms": 271,
+   "duration_ms": 279,
    "counts": {
     "pass": 17,
     "fail": 0,
@@ -265,14 +265,14 @@
   {
    "name": "04-diagnostics",
    "root": "projects",
-   "duration_ms": 328,
+   "duration_ms": 556,
    "counts": {
-    "pass": 66,
+    "pass": 70,
     "fail": 0,
-    "xfail": 0,
+    "xfail": 4,
     "xpass": 0
    },
-   "total": 66,
+   "total": 74,
    "ok": true,
    "checks": [
     {
@@ -538,12 +538,46 @@
     {
      "status": "pass",
      "desc": "applying the suggestion keeps the value intact"
+    },
+    {
+     "status": "xfail",
+     "desc": "check refuses two targets that share a name in one package  [F-052]"
+    },
+    {
+     "status": "pass",
+     "desc": "and the advice for naming it offers the same spelling twice"
+    },
+    {
+     "status": "xfail",
+     "desc": "and the library's public include directory reaches the sources that need it  [F-052]"
+    },
+    {
+     "status": "xfail",
+     "desc": "and a shared source does not collide in the object directory  [F-052]"
+    },
+    {
+     "status": "xfail",
+     "desc": "so the manifest's mistake is not reported in the downstream tool's words  [F-052]"
+    },
+    {
+     "status": "pass",
+     "desc": "renaming one of them makes the same tree build"
+    },
+    {
+     "status": "pass",
+     "desc": "and makes the tree that shares a source build as well"
+    },
+    {
+     "status": "pass",
+     "desc": "producing the archive that the colliding names could not, on the same sources"
     }
    ],
    "packages": [
     "cases/abi-mismatch/app",
     "cases/abi-mismatch/lib",
     "cases/dependency-cycle",
+    "cases/duplicate-target",
+    "cases/duplicate-target-shared",
     "cases/empty-glob",
     "cases/incomplete-runner",
     "cases/invalid-source",
@@ -567,7 +601,7 @@
   {
    "name": "05-incremental",
    "root": "projects",
-   "duration_ms": 1667,
+   "duration_ms": 1784,
    "counts": {
     "pass": 48,
     "fail": 0,
@@ -779,7 +813,7 @@
   {
    "name": "06-runner",
    "root": "projects",
-   "duration_ms": 358,
+   "duration_ms": 379,
    "counts": {
     "pass": 17,
     "fail": 0,
@@ -867,7 +901,7 @@
   {
    "name": "07-robustness",
    "root": "projects",
-   "duration_ms": 1263,
+   "duration_ms": 1359,
    "counts": {
     "pass": 145,
     "fail": 0,
@@ -1465,7 +1499,7 @@
   {
    "name": "08-lsp",
    "root": "projects",
-   "duration_ms": 12654,
+   "duration_ms": 12767,
    "counts": {
     "pass": 110,
     "fail": 0,
@@ -1923,7 +1957,7 @@
   {
    "name": "09-acquisition",
    "root": "projects",
-   "duration_ms": 20978,
+   "duration_ms": 21898,
    "counts": {
     "pass": 66,
     "fail": 0,
@@ -2207,7 +2241,7 @@
   {
    "name": "10-toolchain",
    "root": "projects",
-   "duration_ms": 2127,
+   "duration_ms": 2233,
    "counts": {
     "pass": 31,
     "fail": 0,
@@ -2349,7 +2383,7 @@
   {
    "name": "11-cross",
    "root": "projects",
-   "duration_ms": 587,
+   "duration_ms": 752,
    "counts": {
     "pass": 17,
     "fail": 0,
@@ -2435,7 +2469,7 @@
   {
    "name": "12-store",
    "root": "projects",
-   "duration_ms": 203,
+   "duration_ms": 212,
    "counts": {
     "pass": 29,
     "fail": 0,
@@ -2569,7 +2603,7 @@
   {
    "name": "13-parallel",
    "root": "projects",
-   "duration_ms": 10729,
+   "duration_ms": 10755,
    "counts": {
     "pass": 18,
     "fail": 0,
@@ -2659,7 +2693,7 @@
   {
    "name": "14-scale",
    "root": "projects",
-   "duration_ms": 6014,
+   "duration_ms": 6575,
    "counts": {
     "pass": 17,
     "fail": 0,
@@ -2743,7 +2777,7 @@
   {
    "name": "15-cpp",
    "root": "projects",
-   "duration_ms": 4178,
+   "duration_ms": 4869,
    "counts": {
     "pass": 70,
     "fail": 0,
@@ -3051,7 +3085,7 @@
   {
    "name": "16-migrate",
    "root": "projects",
-   "duration_ms": 1558,
+   "duration_ms": 1197,
    "counts": {
     "pass": 54,
     "fail": 0,
@@ -3285,7 +3319,7 @@
   {
    "name": "17-deps",
    "root": "projects",
-   "duration_ms": 735,
+   "duration_ms": 800,
    "counts": {
     "pass": 51,
     "fail": 0,
@@ -3510,7 +3544,7 @@
   {
    "name": "18-tools",
    "root": "projects",
-   "duration_ms": 476,
+   "duration_ms": 507,
    "counts": {
     "pass": 32,
     "fail": 0,
@@ -3659,7 +3693,7 @@
   {
    "name": "19-artifacts",
    "root": "projects",
-   "duration_ms": 622,
+   "duration_ms": 663,
    "counts": {
     "pass": 35,
     "fail": 0,
@@ -3819,7 +3853,7 @@
   {
    "name": "20-cases",
    "root": "projects",
-   "duration_ms": 32507,
+   "duration_ms": 32611,
    "counts": {
     "pass": 59,
     "fail": 0,
@@ -4077,7 +4111,7 @@
   {
    "name": "21-debug",
    "root": "projects",
-   "duration_ms": 1083,
+   "duration_ms": 1149,
    "counts": {
     "pass": 26,
     "fail": 0,
@@ -4207,7 +4241,7 @@
   {
    "name": "blink",
    "root": "apps",
-   "duration_ms": 2747,
+   "duration_ms": 2837,
    "counts": {
     "pass": 37,
     "fail": 0,
@@ -4377,7 +4411,7 @@
   {
    "name": "hashx",
    "root": "apps",
-   "duration_ms": 1719,
+   "duration_ms": 1806,
    "counts": {
     "pass": 41,
     "fail": 0,
@@ -4561,7 +4595,7 @@
   {
    "name": "httpd",
    "root": "apps",
-   "duration_ms": 4713,
+   "duration_ms": 5150,
    "counts": {
     "pass": 36,
     "fail": 0,
@@ -4723,7 +4757,7 @@
   {
    "name": "jsonfmt",
    "root": "apps",
-   "duration_ms": 1731,
+   "duration_ms": 1860,
    "counts": {
     "pass": 37,
     "fail": 0,
@@ -4890,7 +4924,7 @@
   {
    "name": "plot",
    "root": "apps",
-   "duration_ms": 1611,
+   "duration_ms": 4364,
    "counts": {
     "pass": 42,
     "fail": 0,
@@ -5075,9 +5109,294 @@
    ]
   },
   {
+   "name": "vision",
+   "root": "apps",
+   "duration_ms": 19304,
+   "counts": {
+    "pass": 32,
+    "fail": 0,
+    "xfail": 0,
+    "xpass": 0
+   },
+   "total": 32,
+   "ok": true,
+   "checks": [
+    {
+     "status": "pass",
+     "desc": "the drawing package passes check"
+    },
+    {
+     "status": "pass",
+     "desc": "and builds"
+    },
+    {
+     "status": "pass",
+     "desc": "the C consumer builds against it"
+    },
+    {
+     "status": "pass",
+     "desc": "every library a large pkg-config package names reaches the link"
+    },
+    {
+     "status": "pass",
+     "desc": "in the order the package gave them, which is what a static link reads"
+    },
+    {
+     "status": "pass",
+     "desc": "and without repeating any of them"
+    },
+    {
+     "status": "pass",
+     "desc": "a second system dependency lands on the same link line"
+    },
+    {
+     "status": "pass",
+     "desc": "the consumer's translation never sees the image library's headers"
+    },
+    {
+     "status": "pass",
+     "desc": "only the one public include directory reaches it"
+    },
+    {
+     "status": "pass",
+     "desc": "the C++ library declares the C ABI boundary, so a C consumer may differ"
+    },
+    {
+     "status": "pass",
+     "desc": "and the link runs through the C++ driver although the consumer is C"
+    },
+    {
+     "status": "pass",
+     "desc": "the C consumer is compiled to the C standard it declared"
+    },
+    {
+     "status": "pass",
+     "desc": "while the C++ library is compiled to its own"
+    },
+    {
+     "status": "pass",
+     "desc": "the artifact needs the graphics library at run time"
+    },
+    {
+     "status": "pass",
+     "desc": "and the parts of the image library it actually calls"
+    },
+    {
+     "status": "pass",
+     "desc": "though far fewer than the flags it was given, because the linker drops the rest"
+    },
+    {
+     "status": "pass",
+     "desc": "a blank render leaves the corner exactly the declared background colour"
+    },
+    {
+     "status": "pass",
+     "desc": "and nothing on it is bright"
+    },
+    {
+     "status": "pass",
+     "desc": "drawing a triangle marks some of the image but not all of it"
+    },
+    {
+     "status": "pass",
+     "desc": "and the corner stays background, because a triangle does not reach it"
+    },
+    {
+     "status": "pass",
+     "desc": "the size asked for is the size rendered"
+    },
+    {
+     "status": "pass",
+     "desc": "raising the threshold never counts more pixels, so the count is really measured"
+    },
+    {
+     "status": "pass",
+     "desc": "the library's own cases all pass"
+    },
+    {
+     "status": "pass",
+     "desc": "the instrumented configuration builds"
+    },
+    {
+     "status": "pass",
+     "desc": "and the library's cases pass under it"
+    },
+    {
+     "status": "pass",
+     "desc": "the same binary reports leaks when the suppressions the manifest named are withheld"
+    },
+    {
+     "status": "pass",
+     "desc": "and what it suppresses is one named library, not leak detection itself"
+    },
+    {
+     "status": "pass",
+     "desc": "awkward sizes and thresholds are refused or rendered, never crash"
+    },
+    {
+     "status": "pass",
+     "desc": "a second build of the consumer runs nothing"
+    },
+    {
+     "status": "pass",
+     "desc": "editing the analysis source recompiles it"
+    },
+    {
+     "status": "pass",
+     "desc": "and leaves the drawing source alone, though both use the same big library"
+    },
+    {
+     "status": "pass",
+     "desc": "while the consumer is linked again"
+    }
+   ],
+   "packages": [
+    "cli",
+    "core"
+   ]
+  },
+  {
+   "name": "winapp",
+   "root": "apps",
+   "duration_ms": 6431,
+   "counts": {
+    "pass": 25,
+    "fail": 0,
+    "xfail": 5,
+    "xpass": 0
+   },
+   "total": 30,
+   "ok": true,
+   "checks": [
+    {
+     "status": "pass",
+     "desc": "the package passes check"
+    },
+    {
+     "status": "pass",
+     "desc": "it builds for the host"
+    },
+    {
+     "status": "pass",
+     "desc": "and its cases pass there"
+    },
+    {
+     "status": "pass",
+     "desc": "the host build reports the host's line ending and separator"
+    },
+    {
+     "status": "pass",
+     "desc": "the same package builds for Windows"
+    },
+    {
+     "status": "pass",
+     "desc": "the Windows implementation is the one translated, and only it"
+    },
+    {
+     "status": "pass",
+     "desc": "while the portable source is shared, not duplicated per target"
+    },
+    {
+     "status": "pass",
+     "desc": "and the compiler is the one the triple's toolchain table named"
+    },
+    {
+     "status": "pass",
+     "desc": "the Windows build really produces an executable"
+    },
+    {
+     "status": "xfail",
+     "desc": "the artifact dowel names is the file that was written  [F-050]"
+    },
+    {
+     "status": "pass",
+     "desc": "run under wine by hand, the Windows build reports CRLF"
+    },
+    {
+     "status": "pass",
+     "desc": "and the Windows path separator"
+    },
+    {
+     "status": "pass",
+     "desc": "and a value only the Win32 API could have given it"
+    },
+    {
+     "status": "pass",
+     "desc": "a path mixing both separators is split the way Windows splits it"
+    },
+    {
+     "status": "pass",
+     "desc": "and a bare LF is normalised to the Windows line ending"
+    },
+    {
+     "status": "xfail",
+     "desc": "and a Windows target can be tested through its runner  [F-050]"
+    },
+    {
+     "status": "pass",
+     "desc": "a manifest may name cl as the compiler for the MSVC triple"
+    },
+    {
+     "status": "xfail",
+     "desc": "an MSVC toolchain can be declared, not just named  [F-051]"
+    },
+    {
+     "status": "pass",
+     "desc": "the same argument shape is correct for the GNU family, which is what it was written for"
+    },
+    {
+     "status": "xfail",
+     "desc": "a manifest can select sources by the target's operating system  [F-053]"
+    },
+    {
+     "status": "pass",
+     "desc": "enumerating triples does select correctly, which is the workaround it forces"
+    },
+    {
+     "status": "pass",
+     "desc": "and host.os is documented as the build machine, not the target"
+    },
+    {
+     "status": "pass",
+     "desc": "the two targets keep separate build directories"
+    },
+    {
+     "status": "pass",
+     "desc": "and what the Windows directory holds is a Windows executable"
+    },
+    {
+     "status": "pass",
+     "desc": "while the host directory holds an ELF one, from the same sources"
+    },
+    {
+     "status": "xfail",
+     "desc": "a second Windows build runs nothing  [F-050]"
+    },
+    {
+     "status": "pass",
+     "desc": "while a second host build of the same tree runs nothing"
+    },
+    {
+     "status": "pass",
+     "desc": "editing the Windows implementation recompiles it"
+    },
+    {
+     "status": "pass",
+     "desc": "and leaves the portable source alone"
+    },
+    {
+     "status": "pass",
+     "desc": "and the host build is untouched by it, because it never used that source"
+    }
+   ],
+   "packages": [
+    "app"
+   ]
+  },
+  {
    "name": "docs",
    "root": "projects",
-   "duration_ms": 73,
+   "duration_ms": 79,
    "counts": {
     "pass": 9,
     "fail": 0,
@@ -5128,15 +5447,35 @@
   }
  ],
  "totals": {
-  "pass": 1141,
+  "pass": 1202,
   "fail": 0,
-  "xfail": 5,
+  "xfail": 14,
   "xpass": 0
  },
- "total": 1146,
+ "total": 1216,
  "ok": true,
  "attention": [],
  "known_issues": [
+  {
+   "status": "xfail",
+   "project": "04-diagnostics",
+   "desc": "check refuses two targets that share a name in one package  [F-052]"
+  },
+  {
+   "status": "xfail",
+   "project": "04-diagnostics",
+   "desc": "and the library's public include directory reaches the sources that need it  [F-052]"
+  },
+  {
+   "status": "xfail",
+   "project": "04-diagnostics",
+   "desc": "and a shared source does not collide in the object directory  [F-052]"
+  },
+  {
+   "status": "xfail",
+   "project": "04-diagnostics",
+   "desc": "so the manifest's mistake is not reported in the downstream tool's words  [F-052]"
+  },
   {
    "status": "xfail",
    "project": "09-acquisition",
@@ -5161,6 +5500,31 @@
    "status": "xfail",
    "project": "blink",
    "desc": "the stub arguments do not break a runner that ends with the flag taking the artifact  [F-046]"
+  },
+  {
+   "status": "xfail",
+   "project": "winapp",
+   "desc": "the artifact dowel names is the file that was written  [F-050]"
+  },
+  {
+   "status": "xfail",
+   "project": "winapp",
+   "desc": "and a Windows target can be tested through its runner  [F-050]"
+  },
+  {
+   "status": "xfail",
+   "project": "winapp",
+   "desc": "an MSVC toolchain can be declared, not just named  [F-051]"
+  },
+  {
+   "status": "xfail",
+   "project": "winapp",
+   "desc": "a manifest can select sources by the target's operating system  [F-053]"
+  },
+  {
+   "status": "xfail",
+   "project": "winapp",
+   "desc": "a second Windows build runs nothing  [F-050]"
   }
  ]
 }
