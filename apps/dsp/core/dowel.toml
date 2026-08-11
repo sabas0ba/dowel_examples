@@ -1,0 +1,27 @@
+[package]
+name    = "dsp-core"
+version = "0.1.0"
+edition = "2026"
+
+# この木は**4つの三つ組へ組まれる**。宣言はここに1度だけ書き、
+# 使う側（cli / gui / fw）はどれも自分では道具立てを書かない。
+#
+# `targets` は宣言しない。手元の機械（x86_64）へも組むためである。
+# 宣言すると、そこに書いた三つ組しか受け付けなくなる。
+
+# ARM。Linux が載っている側。qemu-user で走らせる。
+[toolchain.aarch64-unknown-linux-gnu]
+c  = "aarch64-linux-gnu-gcc"
+ar = "aarch64-linux-gnu-ar"
+
+# RISC-V。同じく Linux が載っている側。
+[toolchain.riscv64gc-unknown-linux-gnu]
+c  = "riscv64-linux-gnu-gcc"
+ar = "riscv64-linux-gnu-ar"
+
+# Cortex-M4F。OS が無く、libc も無い。同じ算法をここでも組む。
+# 実体（起動コード・記憶の配置・結果の返し方）は fw/ が持つ。
+[toolchain.thumbv7em-none-eabihf]
+c       = "arm-none-eabi-gcc"
+ar      = "arm-none-eabi-ar"
+objcopy = "arm-none-eabi-objcopy"

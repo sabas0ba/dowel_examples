@@ -1,0 +1,16 @@
+# 使う側。手元でも、ARM でも、RISC-V でも同じものが組める。
+#
+#   dowel build                                        x86_64
+#   dowel build --target=aarch64-unknown-linux-gnu     ARM
+#   dowel build --target=riscv64gc-unknown-linux-gnu   RISC-V
+#
+# ここには三つ組の名前が1つも出てこない。道具立ても runner も dsp-core が
+# 持っており、依存を辿ればそのまま効く。
+[bin.dsp]
+sources = [file("src/main.c")]
+
+[bin.dsp.private]
+deps  = [dep("dsp-core")]
+c_std = "c11"
+flags = ["-Wall", "-Wextra"]
+abi   = "gnu11"

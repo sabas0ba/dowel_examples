@@ -1,0 +1,18 @@
+[package]
+name    = "dsp-gui"
+version = "0.1.0"
+edition = "2026"
+
+# 見せる側。手元の機械でだけ組む。cairo は ARM にも RISC-V にも在りうるが、
+# ここで確かめたいのは「同じ算法が重い依存を持つ使う側からも引ける」ことで
+# あって、cairo のクロスではない。
+targets = ["x86_64-unknown-linux-gnu"]
+
+[[dependencies]]
+name = "dsp-core"
+path = "../core"
+
+# 描画。pkg-config で引く。
+[[dependencies]]
+name    = "cairo"
+version = "1.16"

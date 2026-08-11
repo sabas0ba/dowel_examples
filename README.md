@@ -10,7 +10,7 @@ dowel 本体は自分自身を内側から検査している（`crates/*/tests/`
 仕様と実装の食い違いを仕様の側から見つけられる。
 
 見つけたものは [docs/10-findings.md](docs/10-findings.md) に記録し、本体へ報告する。
-これまでに 53 件を報告し、44 件が修正された。
+これまでに 55 件を報告し、44 件が修正された。
 
 ## 走らせる
 
@@ -40,7 +40,9 @@ C++ とクロスの層は `g++` / `clang++` / `aarch64-linux-gnu-g++` /
 `xvfb-run` で**本当に窓を開く**。大きい依存の層（`apps/vision`）は OSMesa と
 OpenCV を引く（表示の無い機械でも GL の文脈を作れるので、描いたものを読み
 返せる）。Windows の層（`apps/winapp`）は `x86_64-w64-mingw32-gcc` で組み、
-`wine` で**それを走らせる**。
+`wine` で**それを走らせる**。複数の三つ組の層（`apps/dsp`）は
+`riscv64-linux-gnu-gcc` と `qemu-riscv64-static` を足し、1つの算法を
+x86_64 / ARM / RISC-V / Cortex-M の4つで走らせて**同じ答が出ること**を見る。
 
 `09-acquisition` は `dowelup` と dowel の**作業木**も要る。取得を検査する層で
 あり、上流にあたる git リポジトリを手元へ複製して相手にするためである
@@ -59,12 +61,12 @@ DOWELUP=/path/to/dowelup DOWEL_SRC=/path/to/dowel ./run.sh
 ## 出力
 
 1 検査 1 行。本体が直していない事項に対する検査は `xfail` として登録する。
-本体側が直ると `XPASS` になって落ち、宣言を外すべきことが分かる。現在は 14 件で、
+本体側が直ると `XPASS` になって落ち、宣言を外すべきことが分かる。現在は 16 件で、
 [F-011](docs/10-findings.md#f-011) の残っている側、デバッグ機能について
 見つけた [F-046](docs/10-findings.md#f-046) から
 [F-049](docs/10-findings.md#f-049)、そして実践的なアプリケーションを書く過程で
 見つけた [F-050](docs/10-findings.md#f-050) から
-[F-053](docs/10-findings.md#f-053) に対応する。
+[F-055](docs/10-findings.md#f-055) に対応する。
 
 直った所見の検査は `known_issue` を外すだけでは足りない。**新しい機構を実際に
 使う形へ書き換える**。書き換えないと、直ったことを確かめたことにならない。
@@ -176,6 +178,7 @@ total 1146 checks: 1141 passed, 0 failed, 5 known, 0 fixed
 | [plot](apps/plot/) | GUI。描画と窓の分離、任意の依存、Xvfb の上で本当に窓を開く | cairo / X11 |
 | [vision](apps/vision/) | 大きい依存。1つの `.pc` が 55 個のリンク旗を出す。C++ の中身に C の面 | OSMesa / OpenCV |
 | [winapp](apps/winapp/) | Windows。対象ごとの実装、`.exe` の綴り、wine で走らせる、MSVC の族 | 無し（`mingw` / `wine`） |
+| [dsp](apps/dsp/) | 1つの算法を4つの三つ組で。x86_64 / ARM / RISC-V / ベアメタル、同じ期待値 | cairo（見せる側だけ） |
 
 どれも**組めたことでは終わらせない**。整形結果は文字単位で見て、サーバには
 本物のソケットで接続し、ファームウェアは qemu の上で走らせる。加えて、
@@ -191,6 +194,9 @@ total 1146 checks: 1141 passed, 0 failed, 5 known, 0 fixed
 2つの分野で書いて初めて出た。[F-050](docs/10-findings.md#f-050) から
 [F-053](docs/10-findings.md#f-053) の4件は、実行ファイルに拡張子が付く対象を
 選び、対象ごとに実装が分かれる木を書いて初めて出ている。
+[F-054](docs/10-findings.md#f-054) と [F-055](docs/10-findings.md#f-055) は
+さらに、**パッケージが分かれていて、かつ三つ組が複数ある**ときにしか
+現れない——どちらか一方だけの木では無害か、そもそも起きない。
 
 プロジェクトのほかに `docs` の段がある。文書が引用する検査名が実在するか、
 リンクが解決するか、索引が中身と一致するかを機械的に見る。文書の不整合は
