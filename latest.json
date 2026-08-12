@@ -1,10 +1,10 @@
 {
- "run_id": "31547922962",
+ "run_id": "31549266325",
  "run_attempt": "1",
- "run_url": "https://github.com/sabas0ba/dowel_examples/actions/runs/31547922962",
- "commit": "11d5f9f074a6cbbcbd10da9ef38d2bda41110028",
+ "run_url": "https://github.com/sabas0ba/dowel_examples/actions/runs/31549266325",
+ "commit": "e30f89612834d78904824ea0cfa696f5b5a867d8",
  "branch": "main",
- "started_at": "2026-08-11T23:51:50Z",
+ "started_at": "2026-08-12T00:12:39Z",
  "dowel_version": "dowel 0.0.1",
  "dowel_ref": "98589323fbb6a9b3731886f8158c045e03fe0ece",
  "dowel_commit": "98589323fbb6a9b3731886f8158c045e03fe0ece",
@@ -14,7 +14,7 @@
   {
    "name": "01-minimal",
    "root": "projects",
-   "duration_ms": 224,
+   "duration_ms": 284,
    "counts": {
     "pass": 10,
     "fail": 0,
@@ -72,7 +72,7 @@
   {
    "name": "02-config",
    "root": "projects",
-   "duration_ms": 617,
+   "duration_ms": 1027,
    "counts": {
     "pass": 34,
     "fail": 0,
@@ -227,7 +227,7 @@
   {
    "name": "03-features",
    "root": "projects",
-   "duration_ms": 397,
+   "duration_ms": 261,
    "counts": {
     "pass": 17,
     "fail": 0,
@@ -317,7 +317,7 @@
   {
    "name": "04-diagnostics",
    "root": "projects",
-   "duration_ms": 469,
+   "duration_ms": 431,
    "counts": {
     "pass": 75,
     "fail": 0,
@@ -656,7 +656,7 @@
   {
    "name": "05-incremental",
    "root": "projects",
-   "duration_ms": 1659,
+   "duration_ms": 1519,
    "counts": {
     "pass": 49,
     "fail": 0,
@@ -872,7 +872,7 @@
   {
    "name": "06-runner",
    "root": "projects",
-   "duration_ms": 462,
+   "duration_ms": 348,
    "counts": {
     "pass": 17,
     "fail": 0,
@@ -960,7 +960,7 @@
   {
    "name": "07-robustness",
    "root": "projects",
-   "duration_ms": 1439,
+   "duration_ms": 1276,
    "counts": {
     "pass": 145,
     "fail": 0,
@@ -1558,7 +1558,7 @@
   {
    "name": "08-lsp",
    "root": "projects",
-   "duration_ms": 13121,
+   "duration_ms": 12829,
    "counts": {
     "pass": 110,
     "fail": 0,
@@ -2016,7 +2016,7 @@
   {
    "name": "09-acquisition",
    "root": "projects",
-   "duration_ms": 24905,
+   "duration_ms": 22221,
    "counts": {
     "pass": 66,
     "fail": 0,
@@ -2300,7 +2300,7 @@
   {
    "name": "10-toolchain",
    "root": "projects",
-   "duration_ms": 1584,
+   "duration_ms": 3353,
    "counts": {
     "pass": 31,
     "fail": 0,
@@ -2442,7 +2442,7 @@
   {
    "name": "11-cross",
    "root": "projects",
-   "duration_ms": 1697,
+   "duration_ms": 682,
    "counts": {
     "pass": 17,
     "fail": 0,
@@ -2528,7 +2528,7 @@
   {
    "name": "12-store",
    "root": "projects",
-   "duration_ms": 298,
+   "duration_ms": 200,
    "counts": {
     "pass": 29,
     "fail": 0,
@@ -2662,7 +2662,7 @@
   {
    "name": "13-parallel",
    "root": "projects",
-   "duration_ms": 10802,
+   "duration_ms": 10730,
    "counts": {
     "pass": 18,
     "fail": 0,
@@ -2752,7 +2752,7 @@
   {
    "name": "14-scale",
    "root": "projects",
-   "duration_ms": 7710,
+   "duration_ms": 6097,
    "counts": {
     "pass": 17,
     "fail": 0,
@@ -2836,7 +2836,7 @@
   {
    "name": "15-cpp",
    "root": "projects",
-   "duration_ms": 3758,
+   "duration_ms": 4859,
    "counts": {
     "pass": 70,
     "fail": 0,
@@ -3144,7 +3144,7 @@
   {
    "name": "16-migrate",
    "root": "projects",
-   "duration_ms": 2147,
+   "duration_ms": 1803,
    "counts": {
     "pass": 66,
     "fail": 0,
@@ -3434,7 +3434,7 @@
   {
    "name": "17-deps",
    "root": "projects",
-   "duration_ms": 1394,
+   "duration_ms": 1059,
    "counts": {
     "pass": 67,
     "fail": 0,
@@ -3725,7 +3725,7 @@
   {
    "name": "18-tools",
    "root": "projects",
-   "duration_ms": 864,
+   "duration_ms": 487,
    "counts": {
     "pass": 32,
     "fail": 0,
@@ -3874,7 +3874,7 @@
   {
    "name": "19-artifacts",
    "root": "projects",
-   "duration_ms": 960,
+   "duration_ms": 617,
    "counts": {
     "pass": 35,
     "fail": 0,
@@ -4034,7 +4034,7 @@
   {
    "name": "20-cases",
    "root": "projects",
-   "duration_ms": 32965,
+   "duration_ms": 32491,
    "counts": {
     "pass": 62,
     "fail": 0,
@@ -4300,7 +4300,7 @@
   {
    "name": "21-debug",
    "root": "projects",
-   "duration_ms": 1285,
+   "duration_ms": 1167,
    "counts": {
     "pass": 32,
     "fail": 0,
@@ -4446,7 +4446,7 @@
   {
    "name": "22-bench",
    "root": "projects",
-   "duration_ms": 3015,
+   "duration_ms": 3259,
    "counts": {
     "pass": 34,
     "fail": 0,
@@ -4600,7 +4600,7 @@
   {
    "name": "23-probe",
    "root": "projects",
-   "duration_ms": 285,
+   "duration_ms": 215,
    "counts": {
     "pass": 23,
     "fail": 0,
@@ -4711,7 +4711,7 @@
   {
    "name": "blink",
    "root": "apps",
-   "duration_ms": 2357,
+   "duration_ms": 2823,
    "counts": {
     "pass": 39,
     "fail": 0,
@@ -4885,7 +4885,7 @@
   {
    "name": "dsp",
    "root": "apps",
-   "duration_ms": 1419,
+   "duration_ms": 1617,
    "counts": {
     "pass": 42,
     "fail": 0,
@@ -5074,7 +5074,7 @@
   {
    "name": "hashx",
    "root": "apps",
-   "duration_ms": 2449,
+   "duration_ms": 2303,
    "counts": {
     "pass": 56,
     "fail": 0,
@@ -5322,7 +5322,7 @@
   {
    "name": "httpd",
    "root": "apps",
-   "duration_ms": 4506,
+   "duration_ms": 5027,
    "counts": {
     "pass": 36,
     "fail": 0,
@@ -5484,7 +5484,7 @@
   {
    "name": "jsonfmt",
    "root": "apps",
-   "duration_ms": 1819,
+   "duration_ms": 1748,
    "counts": {
     "pass": 39,
     "fail": 0,
@@ -5659,7 +5659,7 @@
   {
    "name": "plot",
    "root": "apps",
-   "duration_ms": 2224,
+   "duration_ms": 5158,
    "counts": {
     "pass": 42,
     "fail": 0,
@@ -5846,7 +5846,7 @@
   {
    "name": "vision",
    "root": "apps",
-   "duration_ms": 14200,
+   "duration_ms": 18543,
    "counts": {
     "pass": 32,
     "fail": 0,
@@ -5993,7 +5993,7 @@
   {
    "name": "winapp",
    "root": "apps",
-   "duration_ms": 6016,
+   "duration_ms": 5976,
    "counts": {
     "pass": 38,
     "fail": 0,
@@ -6163,7 +6163,7 @@
   {
    "name": "docs",
    "root": "projects",
-   "duration_ms": 72,
+   "duration_ms": 78,
    "counts": {
     "pass": 9,
     "fail": 0,
