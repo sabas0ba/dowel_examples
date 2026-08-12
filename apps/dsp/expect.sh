@@ -165,10 +165,60 @@ OUT="library: ${lib_f:-(none)}"$'\n'"consumer: ${use_f:-(none)}"; RC=0
 [ -n "$lib_f" ] && [ "$lib_f" = "$use_f" ]
 fact $? "the machine flags the library and its consumer are built with agree, though nothing binds them"
 
-# ------------------------------------------------------------ 5. ライブラリが道具立てを持てない
+# ------------------------------------------------------------ 5. 道具立ての置き場所
 #
-# 三つ組ごとのコンパイラはライブラリの知識である。しかし置き場所は
-# 使う側にしか無い。dowel は依存の宣言を読んでいて、それでも「無い」と言う。
+# 三つ組ごとのコンパイラはライブラリの知識である。しかし依存の宣言は使う側の
+# build に効かない——道具立ては build 全体の性質であって依存の性質ではない
+# （ADR-0031）。その立場は変わらない。
+#
+# 変わったのは**写しの置き場所**である。`[package] toolchains` が1つの表を
+# 名指しできるようになった（ADR-0033、F-054 の書き味の側）。この木では
+# 3つのパッケージが `../toolchains.toml` を見る。
+
+_last_cmd="grep toolchains */dowel.toml"; RC=0
+OUT=$(grep -l 'toolchains = ' core/dowel.toml cli/dowel.toml fw/dowel.toml gui/dowel.toml 2>/dev/null | paste -sd' ' -)
+[ "$(printf '%s' "$OUT" | wc -w)" -ge 3 ]
+fact $? "the packages of this tree name one shared file instead of copying the tables"
+
+_last_cmd="grep -c toolchain toolchains.toml"; RC=0
+OUT=$(grep -c '^\[toolchain\.' toolchains.toml)
+[ "$OUT" = 3 ]
+fact $? "and that file holds the three triples they build for"
+
+# 使う側のマニフェストに道具立ては残っていない。
+_last_cmd="grep '\[toolchain' */dowel.toml"; RC=0
+OUT=$(grep -n '^\[toolchain' core/dowel.toml cli/dowel.toml fw/dowel.toml 2>&1 | paste -sd' ' -)
+[ -z "$OUT" ]
+fact $? "with none of them declaring a toolchain table of its own"
+
+# それでも効いている。名指しした表から本当にコンパイラが選ばれること。
+for pair in "$ARM_T:aarch64-linux-gnu-gcc" "$RV_T:riscv64-linux-gnu-gcc"; do
+    t=${pair%%:*}; want=${pair#*:}
+    got=$("$DOWEL" -C cli graph --kind=action --format=json --target="$t" 2>/dev/null |
+          jq -r '.steps[] | select(.kind == "cc") | .program' | sort -u | paste -sd' ' -)
+    _last_cmd="graph -C cli --target=$t | .program"; OUT="$got"; RC=0
+    [ "$got" = "$want" ]
+    fact $? "a consumer naming the file gets the compiler it declares for $t"
+done
+
+# 局所の宣言は勝つ。しかも**道具1つずつ**である——1つ替えるために表を
+# 書き直すなら、共有した意味が薄れる。
+probe=$(mktemp -d)
+cp -r cli "$probe/cli"; cp toolchains.toml "$probe/toolchains.toml"; cp -r core "$probe/core"
+printf '\n[toolchain.%s]\nc = "aarch64-linux-gnu-gcc-13"\n' "$ARM_T" >>"$probe/cli/dowel.toml"
+ar_got=$("$DOWEL" -C "$probe/cli" graph --kind=action --format=json --target=$ARM_T 2>/dev/null |
+         jq -r '.steps[] | select(.kind == "ar") | .program' | sort -u)
+_last_cmd="局所で c だけ替えた   graph | ar の program"
+OUT="ar: ${ar_got:-(none)}   (期待: 表から来たまま)"
+RC=0
+[ "$ar_got" = "aarch64-linux-gnu-ar" ]
+fact $? "declaring one tool locally leaves the others coming from the file"
+rm -rf "$probe"
+
+# ---- 依存の宣言は依然として効かない（F-054 の立場）
+#
+# 置き場所が1つになっても、**依存から降ってくるわけではない**。道具立ては
+# build 全体の性質であって依存の性質ではない（ADR-0031）。診断がそれを言う。
 
 probe=$(mktemp -d)
 mkdir -p "$probe/lib/src" "$probe/app/src"
@@ -200,34 +250,21 @@ echo 'int answer(void); int main(void){ return answer()==42?0:1; }' >"$probe/app
 
 run build --no-compdb --target=$ARM_T -C "$probe/app"
 said=$OUT
-_last_cmd="dowel build --target=$ARM_T  (toolchain declared only in the dependency)"
-OUT=$(printf '%s' "$said" | grep -m4 'error\|warning\|note')
-RC=0
+_last_cmd="dowel build --target=$ARM_T  (依存だけが道具立てを宣言している)"
+OUT=$(printf '%s' "$said" | grep -m4 'error\|warning'); RC=0
 printf '%s' "$said" | grep -q 'missing-toolchain'
 fact $? "a dependency's toolchain declaration does not reach the build that uses it"
 
-# dowel はその宣言を読んでいる。同じ出力の中で読み上げている。
-_last_cmd="the same output"; OUT=$(printf '%s' "$said" | grep -m2 'toolchain-mismatch'); RC=0
-printf '%s' "$said" | grep -q 'toolchain-mismatch'
-fact $? "though it read the declaration, and says so in the same output"
-
-# 見つけたものを言う（F-054 の修正）。診断が依存の宣言を読み上げ、値まで出し、
-# **なぜ効かないか**を言う。効かないこと自体は設計である——道具立ては build
-# 全体の性質であって依存の性質ではない（ADR-0031）。それを言わない診断は、
-# 利用者に「宣言したのに無視された」としか読めない。
-#
-# 診断そのもの（error の行と、それに続く `= note:` だけ）を取り出す。
-# 直後の `warning[toolchain-mismatch]` には依存の名前があるので、そこまで
-# 含めると「言及している」と誤って読める。見たいのは**利用者が最初に読む
-# 行が答を指しているか**である。
+# 診断そのもの（error の行と続く `= note:`）だけを取り出す。直後の
+# `toolchain-mismatch` にも依存の名前があるので、そこまで含めると
+# 「言及している」と誤って読める。
 block=$(printf '%s\n' "$said" | awk '
     /^error\[missing-toolchain\]/ { inb = 1; print; next }
     inb && /^[[:space:]]*= /        { print; next }
     inb                             { exit }
 ')
 _last_cmd="the missing-toolchain diagnostic alone, without the warnings that follow"
-OUT="$block"
-RC=0
+OUT="$block"; RC=0
 printf '%s' "$block" | grep -q 'mylib'
 fact $? "the error for a missing toolchain mentions the declaration a dependency already carries"
 
@@ -238,7 +275,6 @@ fact $? "quoting the value, so the line to write is in front of the reader"
 _last_cmd="the same diagnostic"; OUT="$block"; RC=0
 printf '%s' "$block" | grep -qi 'property of the build'
 fact $? "and why it does not apply, which is what makes the refusal read as a design"
-
 rm -rf "$probe"
 
 # ------------------------------------------------------------ 6. 目標を三つ組で絞る

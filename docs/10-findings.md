@@ -2,7 +2,7 @@
 
 本スイートが外側から見つけたもの。
 
-報告した 57 件のうち 54 件が修正されている。直ったものの記録も検査も残す。
+報告した 61 件のうち 56 件が修正されている。直ったものの記録も検査も残す。
 **何を見てどう報告したか**が、次に同種のものを見つけるときの型になるためで
 あり、消してしまうと退行したときに気づけない。
 
@@ -21,6 +21,7 @@
 | F-020（残り）、F-022 〜 F-031 | `17bd54e` | 検査の道具と、実アプリの層が最初に出した群 |
 | F-032 〜 F-045 | `e12bac7` | テストフレームワーク（`cases` / `harness`） |
 | F-046 〜 F-055 | `9858932` | デバッグ機能（ADR-0023 / ADR-0024）と、実践的なアプリが出した群 |
+| F-056 / F-057 | `c154097` | 入ったばかりの機構（共有ライブラリ、Meson 移行）を使って出た2件 |
 
 直った検査の扱いには2段階ある。**`known_issue` を外すだけでは足りない。**
 新しい機構が入った場合は、その機構を実際に使う形へ書き換える。書き換えない
@@ -39,17 +40,21 @@ F-047 はその逆側の例である。**直ったのに検査が落ち続けた
 | 所見 | 内容 |
 |---|---|
 | [F-011](#f-011)（残り） | |
-| [F-056](#f-056) | 共有にするとライブラリ自身の検査が組めない |
-| [F-057](#f-057) | Meson の移行が書庫とリンクの引数を翻訳の `flags` に混ぜる |
+| [F-058](#f-058) | `template` を宣言したパッケージが `check` を通らない |
+| [F-059](#f-059) | `schema dump` が構成の語彙を「暫定」と報せ続ける |
+| [F-060](#f-060) | 資産の取得に失敗したときの理由が空で、走っていない道具の名前が出る |
+| [F-061](#f-061) | 入った版が公開バイナリか自分で組んだものかを後から知る手立てが無い |
 
-後の2件は、共有ライブラリ（ADR-0030）と Meson からの移行という、**入った
-ばかりの機構を実際のアプリに当てて**初めて出た。
+F-058 も、**入ったばかりの機構を実際のアプリに当てて**出た。`template`
+（ADR-0035）を `apps/blink` に使った最初の `dowel check` で落ちている。
+同じ形が続いている——機構そのものは動くが、それを使った木を**普段の入口から
+触った**ときに初めて欠けが見える。
 
 ## 実アプリの層が出したもの
 
-F-050 から F-057 は `apps/vision`（大きい依存）、`apps/winapp`（Windows）、
-`apps/dsp`（1つの算法を4つの三つ組で）、`apps/hashx`（配る側のライブラリ）を
-書く過程で出た。**アプリケーションを書かないと現れない層**であり、性質を1つ
+F-050 から F-058 は `apps/vision`（大きい依存）、`apps/winapp`（Windows）、
+`apps/dsp`（1つの算法を4つの三つ組で）、`apps/hashx`（配る側のライブラリ）、
+`apps/blink`（ベアメタル）を書く・書き換える過程で出た。**アプリケーションを書かないと現れない層**であり、性質を1つ
 ずつ固定する `projects/` の側からは要求として立ち上がらなかったものである。
 
 条件が2つ重なって初めて現れるものもある。F-054 と F-055 は**パッケージが
@@ -127,8 +132,12 @@ F-050 から F-057 は `apps/vision`（大きい依存）、`apps/winapp`（Wind
 | [F-053](#f-053) | 対象の OS を指す語が無く、三つ組を数え上げるしかない | 要望 | [#115](https://github.com/sabas0ba/dowel/issues/115) | 修正済み |
 | [F-054](#f-054) | 依存の `[toolchain]` が効かず、使う側すべてが写す | 診断／要望 | [#125](https://github.com/sabas0ba/dowel/issues/125) | 修正済み |
 | [F-055](#f-055) | 目標を三つ組で絞れず、依存の `test` が使う側の build で組まれる | 要望 | [#126](https://github.com/sabas0ba/dowel/issues/126) | 修正済み |
-| [F-056](#f-056) | 共有にするとライブラリ自身の検査が組めない | 要望 | [#134](https://github.com/sabas0ba/dowel/issues/134) | 未修正 |
-| [F-057](#f-057) | Meson の移行が書庫とリンクの引数を翻訳の flags に混ぜる | 実装 | [#135](https://github.com/sabas0ba/dowel/issues/135) | 未修正 |
+| [F-056](#f-056) | 共有にするとライブラリ自身の検査が組めない | 要望 | [#134](https://github.com/sabas0ba/dowel/issues/134) | 修正済み |
+| [F-057](#f-057) | Meson の移行が書庫とリンクの引数を翻訳の flags に混ぜる | 実装 | [#135](https://github.com/sabas0ba/dowel/issues/135) | 修正済み |
+| [F-058](#f-058) | `template` を宣言したパッケージが `check` を通らない | 実装 | [#141](https://github.com/sabas0ba/dowel/issues/141) | 未修正 |
+| [F-059](#f-059) | `schema dump` が構成の語彙を「暫定」と報せ続ける | 実装 | [#143](https://github.com/sabas0ba/dowel/issues/143) | 未修正 |
+| [F-060](#f-060) | 資産の取得に失敗したときの理由が空で、走っていない道具の名前が出る | 実装 | [#145](https://github.com/sabas0ba/dowel/issues/145) | 未修正 |
+| [F-061](#f-061) | 入った版が公開バイナリか自分で組んだものかを後から知る手立てが無い | 実装 | [#146](https://github.com/sabas0ba/dowel/issues/146) | 未修正 |
 
 ---
 
@@ -4073,7 +4082,7 @@ test dsp-fw:onhw ... ok (5009ms)
 **ライブラリを共有にすると、そのライブラリ自身の検査が組めなくなる。
 内部の名前が `exports` に無いためで、実装と繋ぐ手立てが無い。**
 
-種別: 要望。未修正（`9858932`）。ADR-0030 の共有ライブラリを `apps/hashx`
+種別: 要望。`c154097` で修正（`9858932` で観測）。ADR-0030 の共有ライブラリを `apps/hashx`
 （配ることを前提にしたライブラリ）で使ってみて踏んだ。
 
 ### 観測
@@ -4131,15 +4140,29 @@ CMake の `OBJECT` ライブラリ、Meson の `objects:`、Cargo の同一ク�
 内側を見る検査は**ライブラリを配る側の木**にしか現れず、その木は普通、
 静的で書き始める。`linkage` を足す日まで、2つは出会わない。
 
+### 修正
+
+パッケージの中では共有ライブラリも静的に繋がれるようになった（ADR-0038、期待の側）。`exports` は「一緒に書かれなかったコードへの境界」であり、パッケージが配布の単位である以上、同じパッケージの兄弟は書庫の側を見る。外向きの境界は変わらない——別のパッケージの使う側は `exports` だけを見る。
+
+あわせて、`exports` に挙げた名前が実在するかを、リンクの後に `nm` で確かめるようになった（ADR-0039、`unexported-symbol`）。`apps/hashx` で `hashx_crc`（型名であって記号ではない）を挙げても黙っていた件が、これで拒まれる。
+
 ### 検査
 
-`apps/hashx` の `the library's own tests still link when it is built shared`。
-known_issue F-056 である。
+`apps/hashx` の
+`the library's own tests still link when it is built shared`、
+`and what they reach is an internal name, not something on the public surface`、
+`which still sees only what exports lists, because the boundary faces outward`。
 
-対照として、静的の構成では同じ検査が通ること、共有の構成でも**使う側**が
-組めて走ること、`exports` に挙げた名前だけが出ること、閉包が `-fPIC` で
-組まれること、`runpath` で木の中から走ることは通常の検査として置いてある。
-壊れているのが配られ方ではなく**内側への繋ぎ方**であることが並びから読める。
+境界が**外向き**であることを、内と外の両方から見ている。片方だけでは
+「面が消えた」のか「面の向きが決まった」のかを区別できない。
+
+`exports` の実在確認は
+`a name in exports that the library does not define is refused` ほか2件。
+ABI の世代（`soversion`）は
+`a shared library may declare its ABI generation` ほか3件で、宣言しなければ
+版が付かないことも対にしてある——面が変わったかどうかを決めるのは道具では
+なく作者である。
+
 
 ## F-057
 
@@ -4148,7 +4171,7 @@ known_issue F-056 である。
 **Meson からの移行が、書庫とリンクの引数を翻訳の `flags` に混ぜるため、
 下書きがそのままでは組めない。**
 
-種別: 実装。未修正（`9858932`）。
+種別: 実装。`c154097` で修正（`9858932` で観測）。
 
 ### 観測
 
@@ -4205,17 +4228,338 @@ Meson 対応のフィクスチャは、取り込みたい要素を持つ最小�
 実際に組んでみる」ところまで行かないと目に入らない——下書きは読むもので
 あって、組むものだとは限らない。
 
+### 修正
+
+`parameters` の仕分けが行き先ごとに分かれた。`-Wl,` は `link_flags` へ、書庫の名前と `ar` の引数文字列は落として**註に残す**（`# link input, not a compile flag: … — declare it as a dep`）。黙って落とさないのは、下書きが未検証だからである。
+
+下書きはまだそのままでは組めないが、理由が変わった——`flags` の混入ではなく、**書かれていない `deps`** である。これは Meson の introspection がリンクの関係を言わないことから来る文書どおりの限界であり、註がその1行を指している。
+
 ### 検査
 
 `projects/16-migrate` の
 `the compile flags carry nothing that belongs to the link or the archiver`、
-`a draft imported from Meson builds without editing`。
-いずれも known_issue F-057 である。
+`the linker's own arguments go to link_flags instead`、
+`and what was dropped is noted rather than removed silently`、
+`and says what to write instead, which is the edge Meson never reported`。
 
-対照として、取り込みが起きること・ソースと include と define が写ること・
-構成の旗は写らないこと・`deps` が空のままであること・`verify` が差分を
-挙げること、そして**同じ木を CMake から取り込めば組めること**は通常の検査
-として置いてある。
+**落としたものが註に残ること**を見ているのが要点である。下書きは未検証で
+あり、消えたものがあることは読む側に伝わっていなければならない。
+
+「Meson から取り込んだ下書きがそのまま組める」という検査は取り下げた。
+`deps` が空なのは Meson がリンクの関係を言わないためで文書どおりの限界で
+あり、2目標の木がそのまま組めることは**そもそも期待できない**。代わりに
+`so what still stops the draft is the missing edge, not the arguments` を置き、
+残る理由が変わったことを固定してある。
+
+
+## F-058
+
+報告先: [sabas0ba/dowel#141](https://github.com/sabas0ba/dowel/issues/141)
+
+**`template` を宣言したパッケージは `dowel check` を通らない。何も名指しして
+いないのに `not-a-target` が出る。**
+
+種別: 実装。未修正（`c154097`）。ADR-0035 の `template` を `apps/blink` に
+使ってみて踏んだ。
+
+### 観測
+
+```console
+$ dowel check
+error[not-a-target]: `t:warn` is a template, not something to build
+   = note: build a target that uses it, as in `use = [template("...")]`
+1 errors, 0 warnings
+$ echo $?
+1
+```
+
+ほかの入口は正しい。
+
+| 打ったもの | 結果 |
+|---|---|
+| `dowel check` | **`not-a-target` で終了状態 1** |
+| `dowel build`（名指しなし） | 通る。雛形はグラフに現れない |
+| `dowel test`（名指しなし） | 通る |
+| `dowel build warn`（名指し） | `not-a-target`。**文書どおり** |
+
+`docs/12-build-reference.md` は「**Naming one on the command line** is
+`not-a-target`」と書いている。`check` は何も名指ししていない。
+
+### なぜ問題か
+
+`check` は「評価と診断のみ。ビルドしない」入口であり、編集中や commit 前に
+誤りを洗い出す用途として置かれている。**その入口が、新機能を使った瞬間に
+必ず落ちる。**
+
+診断は「`use = [template("...")]` を使え」と助言するが、木は既にそう書いて
+いる。助言に従っても直らない。しかも `build` は通るので、何が悪いのかが
+利用者には分からない。
+
+### 期待
+
+`check` は雛形を「組むもの」として数えない。`build` と `test` が既にそう
+なっているので、同じ扱いを `check` にも、という形である。`not-a-target` は
+名指ししたときのために残す。
+
+### なぜ内側から見つからないか
+
+雛形のフィクスチャは「展開されること」「`sources` が拒まれること」「名指しが
+`not-a-target` になること」を見れば足りる。どれも `build` か、意図的に名指し
+する経路である。**何も名指しせずに `check` を打つ**のは利用者が最初にやる
+ことだが、機構のフィクスチャからは出てこない。
+
+### 検査
+
+`apps/blink` の `the bare-metal package passes check`。known_issue F-058 で
+ある。
+
+対照として、`build` と `test` が雛形があっても通ること、展開された旗が3つの
+目標すべてに届くこと、雛形がグラフに現れないこと、名指しが正しく拒まれること
+は通常の検査として置いてある。壊れているのが機構ではなく `check` の目標の
+数え方であることが、並びから読める。
+
+---
+
+## F-059
+
+報告先: [sabas0ba/dowel#143](https://github.com/sabas0ba/dowel/issues/143)
+
+**`dowel schema dump` だけが、構成の語彙を「暫定・議論中」と報せ続ける。**
+人が読む側は3か所とも「閉じた」と言っている。
+
+種別: 実装。未修正（`c154097`）。ADR-0034（構成の語彙を閉じたものとして
+確定）を確かめていて出た。
+
+### 観測
+
+```console
+$ dowel schema dump | jq -r '.cfg.status'
+provisional; under discussion as Q1 in docs/99-open-questions.md
+```
+
+| どこ | 何と言っているか |
+|---|---|
+| `docs/99-open-questions.md` Q1 | **Status: decided.**「The vocabulary is closed and grows only by an ADR」 |
+| `docs/12-build-reference.md` | 「a **closed**, dot-separated vocabulary（ADR-0034）」 |
+| `unknown-cfg-key` の診断 | 「the vocabulary is **closed**: it holds what dowel knows about a build (ADR-0034)」 |
+| **`dowel schema dump`** | **「provisional; under discussion as Q1」** |
+
+診断の側は既に直っている。同じ実行で、未知の鍵はこう拒まれる。
+
+```console
+error[unknown-cfg-key]: unknown configuration key `cfg.sanitizer`
+   = note: `cfg` accepts: cfg.opt, cfg.target
+   = note: the vocabulary is closed: it holds what dowel knows about a build (ADR-0034)
+   = note: for your own axes, declare `sanitizer` in `[features]` and write `feature.sanitizer`
+```
+
+### なぜ問題か
+
+`schema dump` は人が読むためのものではなく、**道具が読むため**のものである。
+`docs/12-build-reference.md` はこの出力を「the live version」と呼んでおり、
+言語サーバのホバーもここから来ていると読める。
+
+そこが「暫定・議論中」と言っている限り、読んだ側の合理的な判断は「この語彙
+は変わりうるので当てにしない」になる。実際には ADR で確定しており、変わる
+としても**ADR 1つにつき鍵1つ、領域つき**である。その保証こそが、道具が
+語彙を当てにしてよい理由である。
+
+### 期待
+
+`.cfg.status` を現状に合わせる。閉じていることと、どう増えるかは、道具の側
+にも要る情報である。
+
+### なぜ内側から見つからないか
+
+`schema dump` の検査は、**鍵と領域が正しく出ること**を見れば足りる。
+`status` は自由文の1行であり、機構の一部ではない。
+
+そして ADR を書くとき、直す対象は「文書」と「診断」として自然に挙がる。
+`schema dump` の文字列定数は、どちらの一覧にも入らない——出力の**形**は
+変わっておらず、中の1行だけが古くなるためである。
+
+### 検査
+
+`projects/04-diagnostics` の
+`the schema says the configuration vocabulary is closed, as the decision did`。
+known_issue F-059 である。
+
+対照として、`unknown-cfg-key` が閉じていることを述べ、`cfg` の受け付ける
+ものを並べ、`[features]` を名前まで書き換えて指すことは通常の検査として
+置いてある。壊れているのが語彙そのものではなく、その**報せ方が1か所だけ
+古い**ことが並びから読める。
+
+---
+
+## F-060
+
+報告先: [sabas0ba/dowel#145](https://github.com/sabas0ba/dowel/issues/145)
+
+**`dowelup` が release 資産の取得に失敗したとき、理由の欄が空で出る。**
+しかも PATH に無い道具の名前が入る。
+
+種別: 実装。未修正（`c154097`）。ADR-0036（release 資産からの取得）を
+`projects/09-acquisition` に当てて出た。
+
+### 観測
+
+```console
+$ dowelup install 0.9.0
+fetching file:///tmp/up/upstream/releases/download/v0.9.0/dowel-v0.9.0-x86_64-unknown-linux-gnu.tar.gz
+no usable release asset (wget failed: ); building from source
+```
+
+同じ括弧に、他の原因なら理由が入る。**取得の失敗だけが空である。**
+
+| 何が起きたか | 括弧の中 |
+|---|---|
+| 資産が取れない | **`wget failed: `**（空） |
+| `wget` も `curl` も PATH に無い | `cannot run wget: No such file or directory (os error 2)` |
+| 展開に失敗 | `tar failed: ...`（`tar` の stderr がそのまま） |
+| checksum 不一致 | expected と actual の両方 |
+| 中身に `dowel` が無い | 展開先の path つきで拒む |
+
+`curl` だけを置き `wget` を外しても、文言は `wget failed: ` のままである。
+両方試して最後の失敗を報せる形に見えるが、利用者から見ると**入れていない
+道具の名前で、理由なく失敗したと言われる**ことになる。
+
+### なぜ問題か
+
+取得の失敗は、この機能で**最も原因が広く、しかも利用者の機械の側にある**
+種類の失敗である。proxy、TLS、DNS、404、企業内の遮断、mirror の古さ。
+どれも理由の1行があれば当たりが付く。
+
+しかも失敗は静かに退避する（ADR-0036 の決定どおり）。cargo のある機械では
+そのまま組み上がって終わり、**資産が一度も取れていないことに気づけない。**
+cargo の無い機械では、最後に残る言葉がこうなる。
+
+```console
+no usable release asset (wget failed: ); building from source
+error: cannot start cargo: No such file or directory (os error 2)
+```
+
+利用者の実際の問題は「資産が取れなかった」ことだが、最後の行は
+「cargo が無い」と言う。**ADR-0036 が取り除こうとした要求そのものを、
+原因として指してしまう。**
+
+### 期待
+
+取得の道具の stderr を捕まえて括弧に入れる。`tar failed:` が既にその形で
+ある。名前は実際に走らせた道具のものにし、両方試すなら両方の理由を出す。
+資産の経路を諦めた理由が、最後の失敗まで持ち越されるとなおよい。
+
+### なぜ内側から見つからないか
+
+e2e は ADR-0036 が書いているとおり**同じ配置を組み立てて**確かめる形に
+なっているはずで、そこでは資産は必ず在る。無い場合の経路は「退避すること」
+を見れば足り、退避したことは終了状態と後続の成功で分かる。**括弧の中身は
+退避の判定に関わらないため、空でも検査は通る。**
+
+理由が空になるのは、取得の道具を静かに走らせる決定と、文言の書式が別々に
+正しいためである。両方を同時に見る位置は、失敗を実際に起こして**文言を
+読む**側にしかない。
+
+### 検査
+
+`projects/09-acquisition` の `a failed fetch says why it failed`。
+known_issue F-060 である。
+
+対照として、資産が在るときに取れること、checksum が合わないもの・checksum
+の無いもの・`dowel` を含まないものがそれぞれ理由付きで拒まれること、
+どの場合も組む側へ退避することは通常の検査として置いてある。壊れているのが
+退避の判断ではなく**理由の伝え方**であることが、並びから読める。
+
+---
+
+## F-061
+
+報告先: [sabas0ba/dowel#146](https://github.com/sabas0ba/dowel/issues/146)
+
+**入った版が「公開バイナリ」と「自分で組んだもの」のどちらなのかを、後から
+知る手立てが無い。** `install` は経路を1行で言うが、それは流れて消える
+stderr だけである。
+
+種別: 実装。未修正（`c154097`）。ADR-0036 を確かめていて出た。
+
+### 観測
+
+```console
+$ dowelup install 0.9.0
+installed c154097... from a release asset (verified by sha256)
+
+$ dowelup install 0.9.0 --from-source
+installed c154097... built from source
+```
+
+入った後の状態は**バイト単位で同じ**である。
+
+```console
+$ cat $DOWELUP_HOME/versions/c154097.../origin     # どちらの場合も
+sha=c1540974ad02ef56fd17e669fa7052c384138873
+spec=0.9.0
+url=/tmp/up/upstream.git
+
+$ dowelup list
+* c1540974ad02ef56fd17e669fa7052c384138873  0.9.0
+```
+
+`which` も同じで、`$DOWELUP_HOME` 全体に経路を示す語は無い。
+
+### なぜ問題か
+
+ADR-0036 は2つの経路の違いを**信用の根**に置いている。組んだ側は
+「そのバイナリがそのコミットから出たこと」を証明し、取った側は
+「配られたバイトが公開者の listed と一致すること」しか証明しない。
+そして「prebuilt がその sha から組まれたかは確かめられない。それが要るなら
+`--from-source`」と書いている。つまり **`--from-source` を使ったかどうかが、
+その版について言えることを決める。**
+
+その1点が記録されていない。`origin` は「どこから来たか」を残すために在る
+ファイルで、指定子と上流は書いているのに、来かたは書いていない。
+
+退避があるため、これは意図せず起きる。資産が無い・checksum が合わない・
+中身が壊れている場合は黙って組む側に回る。**逆向きの退避は無い**ので
+「組んだつもりが取っていた」は起きないが、「取ったつもりが組んでいた」は
+普通に起きる。cargo のある機械では成功して終わるため、気づく機会が無い。
+
+CI で「公開した資産そのものを検証する」ことをしたい場合、取ることを要求
+する手立ても、取れたかを後から確かめる手立ても無い。資産が壊れた日に、
+その CI は黙ってソースビルドを検証して緑になる。
+
+### 期待
+
+`origin` に `from=asset` / `from=source` の1行を足す。既にある仕組みへの
+最小の追加である。そのうえで `list` か `which` が読めれば、利用者側から
+確かめられる。
+
+### なぜ内側から見つからないか
+
+`install` の検査は、**経路を選べていること**と**入ったものが動くこと**を
+見れば足りる。どちらも `install` の出力と `versions/<sha>/bin/dowel` で
+確かめられ、`origin` の中身は関わらない。
+
+`origin` の側の検査は「同じ sha を別の指定子で入れたときに追記される」こと
+（[F-013](#f-013) で直った側）に向いており、そこに経路を書く理由は
+ADR-0036 が入るまで存在しなかった。**新しい列が要ることは、新しい経路を
+足した側からしか見えない。**
+
+### 検査
+
+`projects/09-acquisition` の
+`the record of an installed version says which way it arrived` と
+`the listing says which way each version arrived`。どちらも known_issue
+F-061 である。
+
+対照として、cargo を呼ばずに release が入ること、`stable` と `tag:` も同じ
+経路を通ること、`nightly` は資産を探しにも行かないこと、`--from-source` が
+資産があっても組む側を選ぶことは通常の検査として置いてある。**経路の選択
+そのものは正しく働いており、欠けているのはその事実が残らないこと**だと
+並びから読める。
+
+cargo を呼ばなかったことは、出力の文言ではなく**痕跡の不在**で見ている。
+PATH から `cargo` を消すのではなく、呼ばれたら印を残して落ちるものを前に
+置き、印が無いことを確かめる。PATH を削ると git などが巻き添えになるうえ、
+「呼ばれなかった」ことを直接は見られない。
 
 ---
 

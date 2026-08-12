@@ -1,0 +1,19 @@
+# 三つ組ごとの道具立て。**この木の3つのパッケージが同じものを見る**
+# （ADR-0033）。
+#
+# 以前は使う側それぞれが同じ表を書き写していた。支える三つ組の数 × 使う側の
+# 数だけ写しが増え、食い違っても警告で済む——道具立ては build 全体の性質で
+# あって依存の性質ではない（ADR-0031）ため、依存の宣言は降ってこない。
+# その立場は変わらないまま、**写しの置き場所が1つになった**。
+[toolchain.aarch64-unknown-linux-gnu]
+c  = "aarch64-linux-gnu-gcc"
+ar = "aarch64-linux-gnu-ar"
+
+[toolchain.riscv64gc-unknown-linux-gnu]
+c  = "riscv64-linux-gnu-gcc"
+ar = "riscv64-linux-gnu-ar"
+
+[toolchain.thumbv7em-none-eabihf]
+c       = "arm-none-eabi-gcc"
+ar      = "arm-none-eabi-ar"
+objcopy = "arm-none-eabi-objcopy"
