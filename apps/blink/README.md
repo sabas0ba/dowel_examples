@@ -154,3 +154,59 @@ targets = ["thumbv7em-none-eabihf"]
 | 道具の選択 | `c` / `ar` / `objcopy` を triple ごとに |
 | `runner` | 組んだ像が実機（qemu）の上で本当に走ること |
 | 増分 | 周辺機器のソースを触って、像が作り直され、隣が組み直されないこと |
+
+## 設定を束ねる（[ADR-0035](https://github.com/sabas0ba/dowel/blob/main/docs/adr/0035-template-kind.md)）
+
+機械の旗はこの木の3つの目標すべてに要る。
+
+```
+-mcpu=cortex-m4 -mthumb -mfloat-abi=hard -mfpu=fpv4-sp-d16
+-ffreestanding -fno-builtin -nostdinc
+```
+
+以前は3か所へ書き写していた。同じ値でなければ呼び出し規約の違うものが混ざる
+のに、揃っていることを確かめる手立ては無かった。`template` がそれを1か所に
+する。
+
+```toml
+[template.cortex_m4f]
+
+[template.cortex_m4f.private]
+flags = ["-mcpu=cortex-m4", …]
+
+[lib.bl]
+use     = [template("cortex_m4f")]
+sources = [...]
+```
+
+雛形は**目標ではない**。`sources` も `linkage` も書けず、成果物も出さず、
+グラフにも現れない。設定だけを持つ。
+
+展開は「元の塊へ」入る——`private` は使う側の `private` に、`public` は
+`public` になる。ソースを持たないライブラリでは代われない理由がここにある。
+`public` だけが伝播するので、依存を通して設定を配ると下流すべてへ公開する
+ことになってしまう。
+
+置く値は目標自身の値の**前**に来る。`append` は順序を保ち、`replace` は目標が
+勝つ。検査は、束ねた宣言ではなく**出てきた引数**が3つの目標で一致することを
+見ている——束ねたことと効いていることは別である。
+
+リンクの側は別の雛形にしてある。書庫を作るだけの `lib.bl` には要らない。
+束ねるとは「同じものを配る」ことであって「全部に配る」ことではない。
+
+### 関門: `check` が落ちる（[F-058](../../docs/10-findings.md#f-058)、[#141](https://github.com/sabas0ba/dowel/issues/141)）
+
+雛形を宣言すると、そのパッケージは `dowel check` を通らない。
+
+```console
+$ dowel check
+error[not-a-target]: `blink:cortex_m4f` is a template, not something to build
+   = note: build a target that uses it, as in `use = [template("...")]`
+```
+
+何も名指ししていない。文書は「**名指ししたとき**が `not-a-target`」と書いて
+おり、`build` と `test` は正しく通る。助言に従っても直らない——木は既に
+`use = [template("...")]` と書いてある。
+
+検査は `build` と `test` が通ることを対照に置いてあるので、壊れているのが
+機構ではなく `check` の目標の数え方であることが読める。

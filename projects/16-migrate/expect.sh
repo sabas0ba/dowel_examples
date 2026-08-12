@@ -381,27 +381,59 @@ _last_cmd="cat dowel.build | deps"; OUT="$draft"; RC=0
 ! printf '%s' "$draft" | grep -q 'deps.*target('
 fact $? "and deps is left empty, because Meson does not say which target links which"
 
-# ------------------------------------------------------------ 仕分けが粗い（F-057）
+# ------------------------------------------------------------ 引数の仕分け
+#
+# `parameters` には翻訳の引数だけでなく、リンクと書庫の引数も混ざっている。
+# かつてはそれが丸ごと翻訳の `flags` に入り、下書きがそのままでは組めな
+# かった（F-057）。いまは行き先ごとに分けられる。
 
 _last_cmd="cat dowel.build | flags"
 OUT=$(printf '%s' "$draft" | grep '^flags')
 RC=0
-known_issue F-057
 ! printf '%s' "$draft" | grep -qE '^flags.*(-Wl,|\.a"|"csrDT")'
 fact $? "the compile flags carry nothing that belongs to the link or the archiver"
 
+_last_cmd="cat dowel.build | link_flags"
+OUT=$(printf '%s' "$draft" | grep '^link_flags')
+RC=0
+printf '%s' "$draft" | grep -qE '^link_flags.*-Wl,'
+fact $? "the linker's own arguments go to link_flags instead"
+
+# 落としたものは**黙って**落とさない。下書きは未検証であり、消えたものが
+# あることは読む側に伝わっていなければならない。
+_last_cmd="cat dowel.build | 落としたものの註"
+OUT=$(printf '%s' "$draft" | grep -i 'link input')
+RC=0
+printf '%s' "$draft" | grep -qi 'link input, not a compile flag'
+fact $? "and what was dropped is noted rather than removed silently"
+
+_last_cmd="同じ註"; OUT=$(printf '%s' "$draft" | grep -i 'link input'); RC=0
+printf '%s' "$draft" | grep -q 'libshapes.a' && printf '%s' "$draft" | grep -q 'csrDT'
+fact $? "naming both the archive it saw and the archiver's argument string"
+
+# 註は行き先も言う。`deps` が空なのは Meson がリンクの関係を言わないためで
+# あり（上で見た）、手で書くしかない。何を書けばよいかが註に出ている。
+_last_cmd="同じ註"; OUT=$(printf '%s' "$draft" | grep -i 'link input'); RC=0
+printf '%s' "$draft" | grep -qi 'declare it as a dep'
+fact $? "and says what to write instead, which is the edge Meson never reported"
+
+# 下書きはまだそのままでは組めない。ただし理由が変わった——`flags` の
+# 混入ではなく、**書かれていない `deps`** である。これは文書どおりの限界で
+# あり、註がその1行を指している。
 run -C "$MESON_SRC" build --no-compdb
 _last_cmd="dowel build  # Meson から取り込んだ下書き"
-OUT=$(printf '%s' "$OUT" | grep -m3 'error\|not found')
-known_issue F-057
-[ "$RC" -eq 0 ]
-fact $? "a draft imported from Meson builds without editing"
+OUT=$(printf '%s' "$OUT" | grep -m3 'undefined reference\|error')
+RC=0
+printf '%s' "$OUT" | grep -q 'undefined reference'
+fact $? "so what still stops the draft is the missing edge, not the arguments"
 
-# 対照。`verify` は差分として捉える。安全網は働いている。
+# `verify` は残る差分を挙げる。ここでは `-Wall` が参照側に2つ（Meson の
+# 既定の警告水準と、明示した `c_args`）あり、dowel は1つに畳んでいる。
+# 安全網が働いていることの確認であって、畳んだこと自体は誤りではない。
 run -C "$MESON_SRC" migrate verify "$MESON_BUILD/compile_commands.json"
-_last_cmd="dowel migrate verify"; OUT=$(printf '%s' "$OUT" | grep -m4 '^  +'); RC=0
-printf '%s' "$OUT" | grep -q 'in dowel, not in the reference'
-fact $? "though verify does report them as arguments the old build never had"
+_last_cmd="dowel migrate verify"; OUT=$(printf '%s' "$OUT" | grep -m4 '^  [-+]'); RC=0
+printf '%s' "$OUT" | grep -q 'in the reference, not in dowel'
+fact $? "while verify still reports what differs, which is what makes the draft checkable"
 
 # 対照。同じ木を CMake から取り込めば、そのまま組める。壊れているのが
 # 移行そのものではなく Meson 側の仕分けであることが、これで読める。

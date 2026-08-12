@@ -411,7 +411,7 @@ diag missing-exports "a shared library with no exports declared is refused" \
     -C ctool check --features=shared
 run -C ctool check --features=shared
 _last_cmd="dowel check  # exports を消した"; OUT=$(printf '%s' "$OUT" | grep -m4 'note\|error'); RC=0
-printf '%s' "$OUT" | grep -qi 'everything on ELF and nothing on Windows'
+printf '%s' "$OUT" | grep -qi 'everything on ELF' && printf '%s' "$OUT" | grep -qi 'nothing on Windows'
 fact $? "saying why there is no default, which is that the platforms disagree"
 mv lib/dowel.build.keep lib/dowel.build
 
@@ -462,22 +462,84 @@ RC=0
 [ -n "$a" ] && [ "$a" = "$b" ]
 fact $? "and answers exactly what the archive-linked build answers"
 
-# ライブラリ自身の検査は、共有にすると繋がらなくなる。内部の名前が
-# `exports` に無いためで、共有ライブラリとしては正しい振る舞いである。
-# 足りないのは**内側へ繋ぐ手立て**の方で、いま利用者に残る道は
-# 「面を壊す」「ソースの一覧を2か所に持つ」「諦める」しかない
-# （[F-056](../../docs/10-findings.md#f-056)）。
-run -C lib test --features=shared
-_last_cmd="dowel -C lib test --features=shared"
-OUT=$(printf '%s' "$OUT" | grep -m3 'undefined reference\|error')
-known_issue F-056
-[ "$RC" -eq 0 ]
-fact $? "the library's own tests still link when it is built shared"
+# ---- 面は外向きである（ADR-0038）
+#
+# **パッケージの中では、共有ライブラリも静的に繋がれる。** `exports` は
+# 「一緒に書かれなかったコードへの境界」であり、パッケージが配布の単位で
+# ある以上、同じパッケージの兄弟は書庫の側を見る。
+#
+# これが無いと、ライブラリ自身の検査が内側に届かなくなる。公開の面だけを
+# 叩く検査では、面の後ろにある表の構築を覆えない（F-056）。
 
-# 静的の側では通る。差は配られ方だけであり、検査の書き方ではない。
-ok "while the same tests pass when it is built as an archive" -C lib test
+ok "the library's own tests still link when it is built shared" -C lib test --features=shared
+ok "while the same tests pass when it is built as an archive"  -C lib test
 
-# 使う側は共有でも通る。壊れているのが面ではなく内側への繋ぎ方である
-# ことが、この対照で読める。
+# 内側に届いていること。この検査は内部の名前を直に呼んでいる。
+_last_cmd="grep hx_crc_step tests/unit.c"; RC=0
+OUT=$(grep -n 'hx_crc_step' tests/unit.c | head -1)
+[ -n "$OUT" ]
+fact $? "and what they reach is an internal name, not something on the public surface"
+
+# 外向きの境界はそのままである。別のパッケージの使う側は `exports` だけを見る。
 ok "and the consumers build and run against the shared object" \
     -C cxxtool build --features=shared --no-compdb
+
+inner=$(nm -D --defined-only "$SO" 2>/dev/null | awk '{print $3}' | grep -c '^hx_')
+_last_cmd="nm -D libhashx.so | hx_*"; OUT="internal names exported: ${inner:-?}"; RC=0
+[ "${inner:-1}" = 0 ]
+fact $? "which still sees only what exports lists, because the boundary faces outward"
+
+# ---- 挙げた名前が実在すること（ADR-0039）
+#
+# 綴り違いは、使う側がリンクに失敗するまで黙っている。リンクの後に `nm` で
+# 確かめる。
+
+cp lib/dowel.build lib/dowel.build.keep
+sed -i 's/"hashx_version",/"hashx_version",\n    "hashx_nosuch",/' lib/dowel.build
+run -C ctool build --features=shared --no-compdb
+said=$OUT
+_last_cmd="dowel build  # exports に実在しない名前"
+OUT=$(printf '%s' "$said" | grep -m4 'error\|note'); RC=0
+printf '%s' "$said" | grep -q 'unexported-symbol'
+fact $? "a name in exports that the library does not define is refused"
+
+_last_cmd="同じ診断"; OUT=$(printf '%s' "$said" | grep -m4 'note'); RC=0
+printf '%s' "$said" | grep -q 'hashx_nosuch' && printf '%s' "$said" | grep -qi 'nm'
+fact $? "naming it, and saying which tool was asked"
+
+_last_cmd="同じ診断"; OUT=$(printf '%s' "$said" | grep -m4 'note'); RC=0
+printf '%s' "$said" | grep -qi 'silent until a consumer fails to link'
+fact $? "and why it matters, which is that the mistake is otherwise invisible until then"
+mv lib/dowel.build.keep lib/dowel.build
+
+# ---- ABI の世代（ADR-0040）
+#
+# 配るなら、面が変わったことを名前で言えなければならない。`soversion` が
+# ファイル名と soname に入る。
+
+cp lib/dowel.build lib/dowel.build.keep
+sed -i 's/^linkage = "shared" when feature.shared/linkage   = "shared" when feature.shared\nsoversion = 3        when feature.shared/' lib/dowel.build
+ok "a shared library may declare its ABI generation" -C ctool build --features=shared --no-compdb
+
+so3=$(find ctool/.dowel/build -name 'libhashx.so.3' | head -1)
+_last_cmd="find libhashx.so.3"; OUT="${so3:-(absent)}"; RC=0
+[ -n "$so3" ]
+fact $? "which enters the file name"
+
+name=$(readelf -d "${so3:-/nonexistent}" 2>/dev/null | sed -n 's/.*SONAME.*\[\(.*\)\]/\1/p')
+_last_cmd="readelf -d libhashx.so.3 | SONAME"; OUT="${name:-(none)}"; RC=0
+[ "$name" = "libhashx.so.3" ]
+fact $? "and the soname, which is what a consumer records"
+
+_last_cmd="ls lib/"; RC=0
+OUT=$(ls "$(dirname "${so3:-/nonexistent}")" 2>&1 | paste -sd' ' -)
+[ -e "$(dirname "$so3")/libhashx.so" ]
+fact $? "with the plain name left beside it, so linking by -lhashx still works"
+
+# 宣言しなければ版は付かない。dowel は面が変わったかどうかを決めない。
+mv lib/dowel.build.keep lib/dowel.build
+ok "declaring nothing keeps the plain name" -C ctool build --features=shared --no-compdb
+plain=$(find ctool/.dowel/build -name 'libhashx.so' | head -1)
+_last_cmd="find libhashx.so"; OUT="${plain:-(absent)}"; RC=0
+[ -n "$plain" ]
+fact $? "because when the ABI generation changes is the author's call, not the tool's"

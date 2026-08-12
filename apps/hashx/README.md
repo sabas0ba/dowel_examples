@@ -170,23 +170,51 @@ exports = ["hashx_fnv1a", "hashx_crc32", "hashx_crc_begin",
 答は配られ方で変わらない。`hashsum < abc` は両方で同じ行を出す——ここが
 利用者から見た「同じライブラリ」の意味である。
 
-### 関門: 自分の検査が組めない（[F-056](../../docs/10-findings.md#f-056)、[#134](https://github.com/sabas0ba/dowel/issues/134)）
+### 面は外向きである（[ADR-0038](https://github.com/sabas0ba/dowel/blob/main/docs/adr/0038-shared-inside-its-package.md)）
 
 このライブラリの検査は内部の名前（`hx_crc_step`）を直に呼ぶ。公開の面だけを
 叩く検査では、面の後ろにある表の構築を覆えないためである。
 
-共有にすると、それが繋がらなくなる。
+**パッケージの中では、共有ライブラリも静的に繋がれる。** `exports` は
+「一緒に書かれなかったコードへの境界」であり、パッケージが配布の単位である
+以上、同じパッケージの兄弟は書庫の側を見る。
+
+| どこから見るか | 見えるもの |
+|---|---|
+| 同じパッケージの `test` | 全部（書庫に繋がる） |
+| 別のパッケージの使う側（`dep(...)`） | `exports` に挙げたものだけ |
+
+一時はここが繋がらず、共有にするとライブラリ自身の検査が組めなかった
+（[F-056](../../docs/10-findings.md#f-056)、`c154097` で修正）。境界が
+**外向き**であることを、検査は内と外の両方から見ている——片方だけでは
+「面が消えた」のか「面の向きが決まった」のかを区別できない。
+
+### 挙げた名前が実在すること（[ADR-0039](https://github.com/sabas0ba/dowel/blob/main/docs/adr/0039-exports-are-checked.md)）
 
 ```console
-$ dowel -C lib test --features=shared
-… ld: undefined reference to `hx_crc_step'
+$ dowel build --features=shared
+error[unexported-symbol]: `hashx_nosuch` is declared in `exports` but the library does not export it
+   = note: asked `nm` about …/lib/libhashx.so
+   = note: a misspelling here is silent until a consumer fails to link against it
 ```
 
-共有ライブラリとしては正しい振る舞いである。足りないのは**内側へ繋ぐ手立て**
-の方で、いま残る道は「面を壊す（内部の名前を `exports` に足す）」「ソースの
-一覧を2か所に持つ」「共有では検査を諦める」しかない。CMake の `OBJECT`
-ライブラリ、Meson の `objects:` がこの役を果たしている。
+リンクの後に `nm` で確かめる。以前は `hashx_crc`（型名であって記号ではない）
+を挙げても黙っていた。綴り違いは、使う側がリンクに失敗するまで現れない。
 
-検査は静的の側で同じものが通ること、共有の側でも**使う側**は組めて走ること
-を対照に置いてある。壊れているのが配られ方ではなく内側への繋ぎ方であることが、
-並びから読める形にしてある。
+### ABI の世代（[ADR-0040](https://github.com/sabas0ba/dowel/blob/main/docs/adr/0040-shared-library-version.md)）
+
+配るなら、面が変わったことを名前で言えなければならない。
+
+```toml
+soversion = 3 when feature.shared
+```
+
+```console
+$ ls lib/
+libhashx.so   libhashx.so.3
+$ readelf -d libhashx.so.3 | grep SONAME
+Library soname: [libhashx.so.3]
+```
+
+素の名前は隣に残るので、`-lhashx` でのリンクはそのまま通る。宣言しなければ
+版は付かない——**面が変わったかどうかを決めるのは道具ではなく作者**である。

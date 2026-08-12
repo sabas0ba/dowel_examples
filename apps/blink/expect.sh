@@ -75,6 +75,10 @@ PY
 
 # ------------------------------------------------------------ 1. 組める
 
+# `template` を宣言したパッケージは `check` を通らない。何も名指ししていない
+# のに `not-a-target` が出る（[F-058](../../docs/10-findings.md#f-058)）。
+# `build` と `test` は通るので、壊れているのは目標の数え方の側である。
+known_issue F-058
 ok "the bare-metal package passes check" check --target=$TRIPLE
 ok "and builds"                          build --no-compdb --target=$TRIPLE
 
@@ -355,3 +359,79 @@ build_direct --target=$TRIPLE --no-compdb
 rebuilt "gpio.c"  "editing a peripheral source recompiles it"
 rebuilt "OBJCOPY" "and the image is derived again"
 not_rebuilt "delay.c" "while its neighbour is left alone"
+
+# ------------------------------------------------------------ 8. 設定を束ねる（ADR-0035）
+#
+# 機械の旗はこの木の3つの目標すべてに要る。以前は3か所へ書き写していた——
+# 同じ値でなければ呼び出し規約の違うものが混ざるのに、揃っていることを
+# 確かめる手立ては無かった。`template` がそれを1か所にする。
+
+_last_cmd="grep template dowel.build"; RC=0
+OUT=$(grep -n 'template\|^use' dowel.build | head -6)
+[ -n "$OUT" ]
+fact $? "the machine flags are declared once, in a template"
+
+# 3つの目標すべてに、同じ旗が届いていること。束ねたことが**効いている**
+# ことは、束ねた宣言ではなく出てきた引数で見る。
+mflags() {
+    "$DOWEL" graph --kind=action --format=json --target=$TRIPLE 2>/dev/null |
+        jq -r --arg t "$1" '.steps[] | select(.kind == "cc" and .target == $t)
+               | [.arguments[] | select(startswith("-mcpu") or startswith("-mfpu")
+                 or . == "-mthumb" or . == "-ffreestanding")] | join(" ")' | sort -u
+}
+a=$(mflags "blink:bl"); b=$(mflags "blink:firmware"); c=$(mflags "blink:onhw")
+_last_cmd="graph | 3つの目標の機械の旗"
+OUT="lib.bl:        ${a:-(none)}"$'\n'"bin.firmware:  ${b:-(none)}"$'\n'"test.onhw:     ${c:-(none)}"
+RC=0
+[ -n "$a" ] && [ "$a" = "$b" ] && [ "$b" = "$c" ]
+fact $? "and every target that uses it is compiled with exactly those flags"
+
+# リンクする2つだけが、リンクの側の雛形も使う。書庫を作るだけの lib には
+# 要らない——束ねるとは「同じものを配る」ことであって「全部に配る」ことでは
+# ない。
+lf=$("$DOWEL" graph --kind=action --format=json --target=$TRIPLE 2>/dev/null |
+     jq -r '[.steps[] | select(.kind == "link") | .arguments[] | select(. == "-nostdlib")] | length')
+_last_cmd="graph | link の -nostdlib の数"; OUT="links carrying -nostdlib: $lf"; RC=0
+[ "$lf" = 2 ]
+fact $? "while the link-side template reaches only the two targets that link"
+
+# 雛形は目標ではない。成果物を出さず、グラフにも現れない。
+n=$("$DOWEL" graph --kind=action --format=json --target=$TRIPLE 2>/dev/null |
+    jq -r '[.steps[] | select(.target | test("cortex"))] | length')
+_last_cmd="graph | 雛形の名前を持つ手順"; OUT="steps: $n"; RC=0
+[ "$n" = 0 ]
+fact $? "and the template itself produces nothing, being settings and not a target"
+
+# 目標の宣言は雛形に勝つ。展開は目標自身の値の**前**に置かれるので、
+# `append` は順序を保ち、`replace` は目標が勝つ。
+cp dowel.build dowel.build.keep
+sed -i 's|^\[test.onhw.private\]|[test.onhw.private]\nflags = ["-DFROM_TARGET"]|' dowel.build
+got=$("$DOWEL" graph --kind=action --format=json --target=$TRIPLE 2>/dev/null |
+      jq -r '.steps[] | select(.kind == "cc" and .target == "blink:onhw") | .arguments | join(" ")' | head -1)
+_last_cmd="graph | onhw の引数（目標側にも flags を足した）"
+OUT=$(printf '%s' "$got" | tr ' ' '\n' | grep -E '^-(m|f|D)' | paste -sd' ' -)
+RC=0
+printf '%s' "$got" | grep -q -- '-mcpu=cortex-m4' && printf '%s' "$got" | grep -q -- '-DFROM_TARGET'
+fact $? "a target's own values are merged with the template's, not replaced by them"
+
+pos_t=$(printf '%s' "$got" | tr ' ' '\n' | grep -n -- '-mthumb' | head -1 | cut -d: -f1)
+pos_o=$(printf '%s' "$got" | tr ' ' '\n' | grep -n -- '-DFROM_TARGET' | head -1 | cut -d: -f1)
+_last_cmd="graph | 雛形の旗と目標の旗の位置"
+OUT="template flag at $pos_t, target flag at $pos_o"; RC=0
+[ -n "$pos_t" ] && [ -n "$pos_o" ] && [ "$pos_t" -lt "$pos_o" ]
+fact $? "with the template's placed first, which is what lets the target win a replace"
+mv dowel.build.keep dowel.build
+
+# 雛形は目標ではないので、目標の骨格は書けない。
+cp dowel.build dowel.build.keep
+sed -i 's|^\[template.cortex_m4f\]$|[template.cortex_m4f]\nsources = [file("src/gpio.c")]|' dowel.build
+fails "a template may not declare sources, the root block saying what a target is" \
+    build --target=$TRIPLE
+mv dowel.build.keep dowel.build
+
+# `check` はいま雛形があるだけで落ちるので、上は `build` で見ている。
+# 対照として、`build` と `test` は雛形があっても通ることを固定しておく——
+# 壊れているのが機構ではなく `check` の数え方であることが読める。
+ok "while build itself is untroubled by the templates beside it" \
+    build --target=$TRIPLE --no-compdb
+ok "and so is test"  test --target=$TRIPLE --no-compdb
