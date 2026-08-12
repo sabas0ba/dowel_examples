@@ -187,3 +187,126 @@ ok "check still passes after gc" -C subject check
 
 rm -rf "$SUBJECT/.cache-good"
 manifest "$GOOD"
+
+# ------------------------------------------------------- 肥大と収集（ADR-0037）
+#
+# 2つ育つ。**値の記録**は追記のみなので、同じ鍵を上書きすると古いバイトが
+# 残る。**ビルドディレクトリ**は構成ごとにあり、debug と release を往復
+# すれば前の方が丸ごと残る。後者の方が桁が大きい。
+#
+# 既定は**報せるだけ**である。圧縮はファイルを書き直すので、利用者が
+# 頼んでいない時間を build が使うことになる。
+
+# dead — 到達できないバイト数。
+dead() { "$DOWEL" -C subject cache info 2>/dev/null | sed -n 's/^dead *\([0-9]*\).*/\1/p'; }
+# builds_n — ビルドディレクトリの数。
+builds_n() { "$DOWEL" -C subject cache info 2>/dev/null | sed -n 's/^builds .* in \([0-9]*\) configuration.*/\1/p'; }
+
+# 記録を太らせる。マニフェストを繰り返し変えると、評価の結果が上書きされる。
+i=1
+while [ "$i" -le 25 ]; do
+    manifest "$GOOD
+[bin.subject.public]
+defines = { CHURN = $i }
+"
+    "$DOWEL" -C subject build --no-compdb >/dev/null 2>&1
+    i=$((i + 1))
+done
+
+d=$(dead)
+_last_cmd="dowel cache info | dead"; OUT="dead: ${d:-?} bytes"; RC=0
+[ -n "$d" ] && [ "$d" -gt 0 ]
+fact $? "overwriting a key leaves bytes behind, and cache info reports them as dead"
+
+# 予算は生きているバイトそのものである。木の大きさに追随するので、
+# 1つのリポジトリに合う固定値を選ぶ必要が無い。
+manifest "$GOOD
+[bin.subject.public]
+defines = { CHURN = 99 }
+"
+run -C subject build --no-compdb
+said=$OUT
+_last_cmd="dowel build  # 予算を超えている"; OUT=$(printf '%s' "$said" | grep -i 'note:'); RC=0
+printf '%s' "$said" | grep -q 'no longer reachable'
+fact $? "a run that ends over budget says so"
+
+_last_cmd="同じ報せ"; OUT=$(printf '%s' "$said" | grep -i 'note:'); RC=0
+printf '%s' "$said" | grep -q 'cache gc' && printf '%s' "$said" | grep -q 'DOWEL_CACHE'
+fact $? "naming both how to collect it once and how to make it automatic"
+
+# 黙らせられる。報せは既定であって強制ではない。
+manifest "$GOOD
+[bin.subject.public]
+defines = { CHURN = 98 }
+"
+_last_cmd="DOWEL_CACHE=off dowel build"; RC=0
+OUT=$(DOWEL_CACHE=off "$DOWEL" -C subject build --no-compdb 2>&1 | grep -i 'note:.*reachable')
+[ -z "$OUT" ]
+fact $? "and DOWEL_CACHE=off stops saying it"
+
+# 頼めば集める。既定が集めないのは、圧縮がファイルを書き直すからである。
+before=$(dead)
+manifest "$GOOD
+[bin.subject.public]
+defines = { CHURN = 97 }
+"
+DOWEL_CACHE=gc "$DOWEL" -C subject build --no-compdb >/dev/null 2>&1
+after=$(dead)
+_last_cmd="DOWEL_CACHE=gc dowel build"
+OUT="dead: ${before:-?} -> ${after:-?}"; RC=0
+[ -n "$before" ] && [ "$before" -gt 0 ] && [ "${after:-1}" = 0 ]
+fact $? "while DOWEL_CACHE=gc compacts in place, which is what the note offers"
+
+ok "and the tree still builds after it" -C subject build --no-compdb
+
+# ------------------------------------------------------- ビルドディレクトリ
+#
+# こちらが桁の大きい方である。構成ごとに1つ残る。
+
+"$DOWEL" -C subject build --no-compdb --config=release >/dev/null 2>&1
+n=$(builds_n)
+_last_cmd="dowel cache info | builds"; RC=0
+OUT=$("$DOWEL" -C subject cache info 2>/dev/null | sed -n '/^builds/,/^facts/p' | head -4)
+[ "${n:-0}" -ge 2 ]
+fact $? "cache info counts the build directories, one per configuration"
+
+# 数だけでは片づけられない。**いつ書かれたか**が要る。
+_last_cmd="dowel cache info | builds の各行"; RC=0
+OUT=$("$DOWEL" -C subject cache info 2>/dev/null | grep -E '^  x86_64' | head -3)
+printf '%s' "$OUT" | grep -qE '[0-9]+ days'
+fact $? "with how long ago each was written, which is what selects one for removal"
+
+# 数を渡さなければ触らない。「今のもの以外」は、2つの構成を日々往復して
+# いる利用者の片方を消すことになる。
+before=$(builds_n)
+"$DOWEL" -C subject cache gc >/dev/null 2>&1
+after=$(builds_n)
+_last_cmd="dowel cache gc  # 日数を渡さない"
+OUT="configurations: ${before:-?} -> ${after:-?}"; RC=0
+[ "$before" = "$after" ]
+fact $? "gc without a number leaves them all, since nobody said which are unused"
+
+# 古いものは消せる。ここでは release の側を 60 日前に見せかける。
+old=$(find subject/.dowel/build -maxdepth 1 -mindepth 1 -type d -name '*release*' | head -1)
+find "$old" -exec touch -d '60 days ago' {} + 2>/dev/null
+touch -d '60 days ago' "$old"
+
+run -C subject cache gc --older-than=30
+said=$OUT
+_last_cmd="dowel cache gc --older-than=30"; OUT="$said"; RC=0
+printf '%s' "$said" | grep -q 'release'
+fact $? "gc with a number removes a configuration nobody has built in that long"
+
+n=$(builds_n)
+_last_cmd="dowel cache info | builds"; OUT="configurations left: ${n:-?}"; RC=0
+[ "${n:-0}" = 1 ]
+fact $? "leaving the one that is still in use"
+
+# 消しても失われない。ビルドディレクトリの中身は組み直せる。
+ok "and what was removed builds again" -C subject build --no-compdb --config=release
+
+# 掃除はマニフェストを読まない。壊れた木でも片づけられなければ意味が無い。
+manifest 'this is not a manifest {{{'
+ok "cache info works even when the manifest is broken" -C subject cache info
+ok "and so does gc"                                    -C subject cache gc
+manifest "$GOOD"

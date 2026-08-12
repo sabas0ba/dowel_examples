@@ -159,3 +159,61 @@ got=$("$DOWEL" -C renamed graph --kind=action --format=json 2>/dev/null |
 _last_cmd="graph | cc の引数（renamed）"; OUT="$got"; RC=0
 printf '%s' "$got" | grep -q -- '-I'
 fact $? "with the library's public include directory reaching the sources that need it"
+
+# ------------------------------------------------------- 語彙は閉じている（ADR-0034）
+#
+# `cfg` / `host` / `target` / `tc` は閉じた集合であり、ADR 1つにつき鍵1つ、
+# 領域つきでしか増えない。プロジェクト自身の軸は `[features]` の側に置く
+# ——dowel が知っていることを dowel が宣言し、残りをパッケージが宣言する、
+# という二層である。
+#
+# ここで見るのは、**拒むことより導くこと**である。語彙に無い鍵を書いた
+# 利用者が次に何をすればよいかは、閉じていると言うだけでは決まらない。
+
+probe=$(mktemp -d)
+mkdir -p "$probe/src"
+cat >"$probe/dowel.toml" <<'TOML'
+[package]
+name = "vocab"
+version = "0.1.0"
+edition = "2026"
+TOML
+printf 'int main(void){ return 0; }\n' >"$probe/src/main.c"
+printf '[bin.app]\nsources = [file("src/main.c")]\n\n[bin.app.private]\nflags = ["-DX" when cfg.sanitizer == "asan"]\n' \
+    >"$probe/dowel.build"
+
+diag unknown-cfg-key "a key outside the vocabulary is refused" -C "$probe" check
+
+run -C "$probe" check
+said=$OUT
+_last_cmd="dowel check  # cfg.sanitizer"; OUT=$(printf '%s' "$said" | grep -m5 'note\|error'); RC=0
+printf '%s' "$said" | grep -qi 'vocabulary is closed'
+fact $? "saying the vocabulary is closed, rather than that this name is merely unrecognised"
+
+_last_cmd="同じ診断"; OUT=$(printf '%s' "$said" | grep -m5 'note'); RC=0
+printf '%s' "$said" | grep -q 'cfg accepts\|`cfg` accepts'
+fact $? "listing what that namespace does accept"
+
+# ここが要点である。自分の軸は機能フラグの側にある、と行き先を言う。
+_last_cmd="同じ診断"; OUT=$(printf '%s' "$said" | grep -m5 'note'); RC=0
+printf '%s' "$said" | grep -q '\[features\]' && printf '%s' "$said" | grep -q 'feature.sanitizer'
+fact $? "and where a project's own axis belongs, spelled with the name that was written"
+
+rm -rf "$probe"
+
+# 語彙の状態は機械可読の側にも出る。`schema dump` は文書が「the live
+# version」と呼ぶものであり、言語サーバもここを読む。決定と食い違っていると、
+# 読んだ側の合理的な判断は「当てにしない」になる
+# （[F-059](../../docs/10-findings.md#f-059)）。
+got=$("$DOWEL" schema dump 2>/dev/null | jq -r '.cfg.status')
+_last_cmd="dowel schema dump | .cfg.status"; OUT="$got"; RC=0
+known_issue F-059
+printf '%s' "$got" | grep -qi 'closed'
+fact $? "the schema says the configuration vocabulary is closed, as the decision did"
+
+# 語彙そのものは正しい。壊れているのは報せ方の1行だけである。
+keys=$("$DOWEL" schema dump 2>/dev/null | jq -r '.cfg.keys[].name' | paste -sd' ' -)
+_last_cmd="dowel schema dump | .cfg.keys"; OUT="$keys"; RC=0
+printf '%s' "$keys" | grep -qw 'cfg.opt' && printf '%s' "$keys" | grep -qw 'target.os' &&
+    ! printf '%s' "$keys" | grep -qw 'cfg.sanitizer'
+fact $? "while the vocabulary it lists is the one the diagnostic enforces"
