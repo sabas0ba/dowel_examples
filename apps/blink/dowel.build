@@ -28,8 +28,16 @@ flags = [
     "-ffreestanding",       # 標準ライブラリの存在を仮定しない
     "-fno-builtin",         # memcpy 等への置き換えを禁じる
     "-nostdinc",            # 系の見出しを探しに行かせない
-    "-std=gnu11", "-Wall", "-Wextra",
+    "-Wall", "-Wextra",
 ]
+# 方言は C のものである。以前は上の一覧に `-std=gnu11` を混ぜていた。
+# ソースが C だけのうちは同じことだったが、起動コードを `.S` へ移した
+# 時点で、それは C でないファイルに C の方言を告げる指定になった
+# （ADR-0048）。**言語ごとの置き場が在るのは、このためである。**
+#
+# `c_std` は ISO の名前しか受けない（c89 / c99 / c11 / c17 / c23）。
+# この木が要るのは GNU 方言なので、C 専用の一覧の側に置く。
+c_flags = ["-std=gnu11"]
 
 # リンクする2つの目標が使う。書庫を作るだけの lib.bl には要らない。
 [template.cortex_m4f_link]
@@ -63,7 +71,7 @@ abi      = "thumbv7em-hard"
 [bin.firmware]
 use     = [template("cortex_m4f"), template("cortex_m4f_link")]
 sources = [
-    file("src/vectors.c"),
+    file("src/vectors.S"),
     file("src/main.c"),
 ]
 

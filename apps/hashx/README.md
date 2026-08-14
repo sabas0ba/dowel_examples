@@ -218,3 +218,48 @@ Library soname: [libhashx.so.3]
 
 素の名前は隣に残るので、`-lhashx` でのリンクはそのまま通る。宣言しなければ
 版は付かない——**面が変わったかどうかを決めるのは道具ではなく作者**である。
+
+
+## 配る（[ADR-0041](https://github.com/sabas0ba/dowel/blob/main/docs/adr/0041-install.md) / [ADR-0043](https://github.com/sabas0ba/dowel/blob/main/docs/adr/0043-pkgconfig-generation.md)）
+
+ここまでの「配る先」は木の中の話だった。書庫も共有ライブラリも
+`.dowel/build/` の下に出るだけで、**置く先が無かった**。
+
+```console
+$ dowel install --features=shared --prefix=/opt/hashx
+installed: /opt/hashx/include/hashx/hashx.h
+installed: /opt/hashx/lib/libhashx.so
+installed: /opt/hashx/lib/pkgconfig/hashx.pc
+```
+
+同じマニフェストから2つの配り方が出る。機能フラグが変えるのは**配られる
+形**であり、使う側の書き方ではない。
+
+そして繋がる。**このライブラリにとってはこれが存在理由そのもの**である
+——相手のビルドシステムは CMake かも Meson かも Makefile かもしれず、
+dowel は入っていない。
+
+```console
+$ cc consumer.c $(pkg-config --cflags --libs hashx)
+```
+
+`[package] description` を宣言してある。無ければパッケージ名が代わりに
+立つが、それは「名前を2度書いた」記述子であり、引いた相手に何も伝えない。
+
+## C ABI の面を、C でない実行時から
+
+配る相手は C や C++ とは限らない。`extern "C"` の面を作る理由の半分はそこに
+ある——Python も Rust も Go も、**見出しを読まず、翻訳もせず、実行時に名前で
+引く**。
+
+`ffi.py` が ctypes で共有ライブラリを開き、一度に渡す側と少しずつ渡す側の
+両方を呼ぶ。その立場から見ると宣言は何の役にも立たない。引けるかどうかは
+**成果物が外へ出している名前だけ**が決める。
+
+| 見るもの | 期待 |
+|---|---|
+| 公開した6つ | 引ける。答は C の利用者と同じ |
+| `hx_crc_step`（`exports` に無い） | 引けない |
+| 同じ名前を書庫の側で | 在る——面は**作られた**ものであって、たまたま無いのではない |
+
+prefix ごと別の場所へ移し、ビルド木を消しても、翻訳も結合も実行も通る。

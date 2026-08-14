@@ -189,12 +189,12 @@ total 1146 checks: 1141 passed, 0 failed, 5 known, 0 fixed
 |---|---|---|
 | [jsonfmt](apps/jsonfmt/) | 依存を持たない CLI。解析と整形 | 無し |
 | [httpd](apps/httpd/) | システムプログラミング。ソケット、シグナル、待ち方の選択 | 無し（libc のみ） |
-| [blink](apps/blink/) | 組み込み。Cortex-M4F のベアメタル、ベクタ表、書き込み用の像、qemu 上での実行 | 無し（`arm-none-eabi`） |
-| [hashx](apps/hashx/) | ライブラリ。配る側。面の可視性、C と C++ の双方の利用者、出所の切り替え | 無し |
+| [blink](apps/blink/) | 組み込み。Cortex-M4F のベアメタル、アセンブリの起動コード、書き込み用の像、qemu 上での実行 | 無し（`arm-none-eabi`） |
+| [hashx](apps/hashx/) | ライブラリ。配る側。面の可視性、C・C++・ctypes からの利用、install と pkg-config | 無し |
 | [plot](apps/plot/) | GUI。描画と窓の分離、任意の依存、Xvfb の上で本当に窓を開く | cairo / X11 |
 | [vision](apps/vision/) | 大きい依存。1つの `.pc` が 55 個のリンク旗を出す。C++ の中身に C の面 | OSMesa / OpenCV |
 | [winapp](apps/winapp/) | Windows。対象ごとの実装、`.exe` の綴り、wine で走らせる、MSVC の族 | 無し（`mingw` / `wine`） |
-| [dsp](apps/dsp/) | 1つの算法を4つの三つ組で。x86_64 / ARM / RISC-V / ベアメタル、同じ期待値 | cairo（見せる側だけ） |
+| [dsp](apps/dsp/) | 1つの算法を4つの三つ組で。x86_64 / ARM / RISC-V / ベアメタル、同じ期待値、別の三つ組への install | cairo（見せる側だけ） |
 
 どれも**組めたことでは終わらせない**。整形結果は文字単位で見て、サーバには
 本物のソケットで接続し、ファームウェアは qemu の上で走らせる。加えて、

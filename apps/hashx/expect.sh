@@ -308,17 +308,22 @@ fact $v "and the kinds it does offer, which the diagnostic lists, hold nothing f
 
 mv lib/dowel.build.keep lib/dowel.build
 
-# 出来上がるものを数える。今日の答は「静的な書庫が1つ」であり、
-# 共有オブジェクトも pkg-config の .pc も CMake の設定も出ない。
-# dowel を使わない相手に渡せるのは、書庫と見出しを手で運ぶ形だけである。
+# 出来上がるものを数える。既定の機能で組んだビルド木には、静的な書庫が
+# 1つ在るだけである——`.pc` も CMake の設定も出ない。
+#
+# それでよい。**配るための形は組むことの副産物ではなく、`install` が出す
+# ものになった**（ADR-0041 / ADR-0043）。下の 11 節がその側を見る。
+# ここで固定しているのは、木の中に居る限り相手が拾えるものは無い、
+# という境目である。
+rm -rf lib/.dowel
 "$DOWEL" -C lib build --no-compdb >/dev/null 2>&1
 n=$(find lib/.dowel/build \( -name '*.so' -o -name '*.so.*' -o -name '*.pc' \
                              -o -name '*Config.cmake' \) 2>/dev/null | wc -l)
 [ "${n:-1}" = 0 ]
 v=$?
 RC=0; _last_cmd="find lib/.dowel/build -name '*.so' -o -name '*.pc' -o -name '*Config.cmake'"
-OUT="what a foreign consumer could pick up: $n file(s)"$'\n'"$(find lib/.dowel/build -type f -name 'lib*' | sed 's|.*/build/||' | sort)"
-fact $v "what a build produces today is one static archive and nothing a foreign consumer could read"
+OUT="what a foreign consumer could pick up from the build tree: $n file(s)"$'\n'"$(find lib/.dowel/build -type f -name 'lib*' | sed 's|.*/build/||' | sort)"
+fact $v "a build tree offers a foreign consumer nothing, the distribution being what install writes"
 
 # ------------------------------------------------------------ 8. 構成が答を変えないこと
 #
@@ -543,3 +548,148 @@ plain=$(find ctool/.dowel/build -name 'libhashx.so' | head -1)
 _last_cmd="find libhashx.so"; OUT="${plain:-(absent)}"; RC=0
 [ -n "$plain" ]
 fact $? "because when the ABI generation changes is the author's call, not the tool's"
+
+# ------------------------------------------------------------ 11. 配る（ADR-0041 / ADR-0043）
+#
+# ここまでの「配る先」は木の中の話だった。書庫も共有ライブラリも
+# `.dowel/build/` の下に出るだけで、置く先が無い。`dowel install` がその
+# 先であり、`.pc` がそこを**引けるようにする**ものである。
+#
+# このライブラリにとっては、これが存在理由そのものである。相手のビルド
+# システムは CMake かも Meson かも Makefile かもしれず、dowel は入って
+# いない。**繋がらなければ配る意味が無い。**
+
+PFX=$PWD/prefix
+pc() { PKG_CONFIG_PATH="$PFX/lib/pkgconfig" PKG_CONFIG_LIBDIR="$PFX/lib/pkgconfig" \
+       pkg-config "$@" 2>&1; }
+
+rm -rf "$PFX"
+ok "the library installs into a prefix" \
+   -C lib install --features=shared --prefix="$PFX"
+
+for f in lib/libhashx.so include/hashx/hashx.h lib/pkgconfig/hashx.pc; do
+    if [ -e "$PFX/$f" ]; then fact 0 "installing writes $f"
+    else                      fact 1 "installing writes $f"; fi
+done
+
+# 見出しは公開したディレクトリの形のまま出る。`hashx/hashx.h` で取り込む
+# のが面の綴りであり、平らに並べ直すと使う側の `#include` が変わる。
+if [ -e "$PFX/include/hashx/hashx.h" ] && [ ! -e "$PFX/include/hashx.h" ]; then
+    fact 0 "and keeps the directory shape the header is included through"
+else
+    fact 1 "and keeps the directory shape the header is included through"
+fi
+
+# 中は渡らない。`src/internal.h` は private の側にしか無い。
+if [ -e "$PFX/include/internal.h" ] || [ -e "$PFX/include/hashx/internal.h" ]; then
+    fact 1 "while what is private stays behind"
+else
+    fact 0 "while what is private stays behind"
+fi
+
+# 同じマニフェストから2つの配り方が出る。機能フラグは**配られる形**を
+# 変えるものであり、使う側の書き方は変わらない。
+rm -rf "$PFX.static"
+ok "the same manifest installs a static distribution too" \
+   -C lib install --prefix="$PFX.static"
+if [ -e "$PFX.static/lib/libhashx.a" ] && [ ! -e "$PFX.static/lib/libhashx.so" ]; then
+    fact 0 "and what lands there is the archive, the feature deciding the form"
+else
+    fact 1 "and what lands there is the archive, the feature deciding the form"
+fi
+rm -rf "$PFX.static"
+
+# 記述子。`public` 区画を別の記法で書いたものである。
+PC=$PFX/lib/pkgconfig/hashx.pc
+_last_cmd="cat prefix/lib/pkgconfig/hashx.pc"; OUT=$(cat "$PC" 2>&1); RC=0
+said=$OUT
+printf '%s' "$said" | grep -q '^Version: 0.4.0$'
+fact $? "the descriptor carries the one version this package declares"
+printf '%s' "$said" | grep -q '^Description: small,'
+fact $? "and the description, which pkg-config requires of a valid file"
+
+assert "the descriptor validates as pkg-config input" \
+       env PKG_CONFIG_PATH="$PFX/lib/pkgconfig" PKG_CONFIG_LIBDIR="$PFX/lib/pkgconfig" \
+           pkg-config --validate hashx
+
+# そして繋がる。ここが ADR-0043 の在る理由であり、このライブラリの
+# 存在理由でもある。
+FLAGS=$(pc --cflags --libs hashx)
+_last_cmd="cc consumer.c \$(pkg-config --cflags --libs hashx)"
+OUT=$(cc consumer.c -o "$PWD/consumer.bin" $FLAGS 2>&1); RC=$?
+[ "$RC" -eq 0 ]
+fact $? "a consumer that never heard of dowel compiles and links against it"
+
+prints "a26a2f48 c4e50d81 c4e50d81 0.4.0" \
+       "and the program it produced gives the answers this suite fixed elsewhere" \
+       env LD_LIBRARY_PATH="$PFX/lib" "$PWD/consumer.bin"
+
+# 版は問うて得る。見出しの側のマクロは写しであり、写しはずれる（F-030）。
+# 配った先でも同じ規則であることを、上の1行の末尾が示している。
+
+# ------------------------------------------------------------ 12. C ABI の面を、C でない実行時から
+#
+# 配る相手は C や C++ とは限らない。`extern "C"` の面を作る理由の半分は
+# そこにある——Python も Rust も Go も、見出しを読まず、翻訳もせず、
+# **実行時に名前で引く**。
+#
+# その立場から見ると、宣言は何の役にも立たない。引けるかどうかは成果物が
+# 外へ出している名前だけが決める。`exports` と `-fvisibility=hidden` が
+# 本当に面を決めているなら、ここで観測できる。
+
+_last_cmd="python3 ffi.py prefix/lib/libhashx.so"
+OUT=$(python3 ffi.py "$PFX/lib/libhashx.so" 2>&1); RC=$?
+[ "$RC" -eq 0 ]
+fact $? "a runtime that is neither C nor C++ can load the installed library"
+
+prints "a26a2f48 c4e50d81 c4e50d81 0.4.0" \
+       "and gets the same answers, the boundary being an ABI and not a language" \
+       python3 ffi.py "$PFX/lib/libhashx.so"
+
+# 面の裏側は引けない。`hx_crc_step` は `static` ではないので目的ファイルには
+# 在るが、`exports` に無いので共有ライブラリの動的表には出ない。
+_last_cmd="python3 -c 'ctypes.CDLL(...).hx_crc_step'"
+OUT=$(python3 -c '
+import ctypes, sys
+lib = ctypes.CDLL(sys.argv[1])
+try:
+    lib.hx_crc_step
+    print("reachable")
+except AttributeError:
+    print("not reachable")
+' "$PFX/lib/libhashx.so" 2>&1); RC=0
+[ "$OUT" = "not reachable" ]
+fact $? "while a name the library did not export is not reachable from there either"
+
+# 対照。同じ名前が、静的な書庫の側には在る。面が「作られた」ものであって
+# 「たまたま無い」のではないことは、これが無いと言えない。
+_last_cmd="nm libhashx.a | hx_crc_step"
+OUT=$(nm "$AR_PATH" 2>/dev/null | grep 'hx_crc_step'); RC=0
+printf '%s' "$OUT" | grep -q 'hx_crc_step'
+fact $? "and that name does exist in the archive, so the surface was made, not merely absent"
+
+# ------------------------------------------------------------ 13. 配った木は動かせる（ADR-0041）
+#
+# 共有ライブラリを繋いだ成果物はビルド木への絶対パスを記録する。写しただけ
+# では、木が在る間だけ動く。壊れるのは受け取った側の機械である。
+
+MOVED=$PWD/moved
+rm -rf "$MOVED"; cp -a "$PFX" "$MOVED"
+rm -rf lib/.dowel ctool/.dowel
+
+_last_cmd="cc consumer.c against the moved prefix"
+MFLAGS=$(PKG_CONFIG_PATH="$MOVED/lib/pkgconfig" PKG_CONFIG_LIBDIR="$MOVED/lib/pkgconfig" \
+         pkg-config --cflags --libs hashx 2>&1)
+OUT=$(cc consumer.c -o "$PWD/moved.bin" $MFLAGS 2>&1); RC=$?
+[ "$RC" -eq 0 ]
+fact $? "a consumer builds against the prefix after it is moved and the build tree is gone"
+
+prints "a26a2f48 c4e50d81 c4e50d81 0.4.0" \
+       "and what it produced still runs" \
+       env LD_LIBRARY_PATH="$MOVED/lib" "$PWD/moved.bin"
+
+prints "a26a2f48 c4e50d81 c4e50d81 0.4.0" \
+       "as does loading the moved library from a foreign runtime" \
+       python3 ffi.py "$MOVED/lib/libhashx.so"
+
+rm -rf "$PFX" "$MOVED" "$PWD/consumer.bin" "$PWD/moved.bin"

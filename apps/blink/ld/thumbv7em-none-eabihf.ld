@@ -29,6 +29,24 @@ SECTIONS
         *(.rodata*)
     } > FLASH
 
-    .data : { *(.data*) } > RAM AT> FLASH
-    .bss  : { *(.bss*) *(COMMON) } > RAM
+    /* 起動コードが写す範囲と埋める範囲。libc も起動コードも無いので、
+       `.data` を flash から RAM へ写すのも `.bss` を 0 にするのも
+       src/vectors.S の仕事である。その両端をここで与える。 */
+    .data : {
+        . = ALIGN(4);
+        __data_start__ = .;
+        *(.data*)
+        . = ALIGN(4);
+        __data_end__ = .;
+    } > RAM AT> FLASH
+    __data_load__ = LOADADDR(.data);
+
+    .bss : {
+        . = ALIGN(4);
+        __bss_start__ = .;
+        *(.bss*)
+        *(COMMON)
+        . = ALIGN(4);
+        __bss_end__ = .;
+    } > RAM
 }
