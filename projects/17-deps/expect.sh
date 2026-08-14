@@ -392,3 +392,73 @@ mv "$ARCHIVE.moved" "$ARCHIVE"
 rm -rf archived/.dowel/deps
 ok "removing what was unpacked makes the next build fetch it again" \
     -C archived build --no-compdb
+
+# ------------------------------------------------------------ 6. offline（ADR-0045）
+#
+# 取ってきたものは一度きりで、以降は完了の印を読む。だから「全部揃っている
+# 木は、たまたまネットワーク無しでも通る」。誰もそう言っておらず、誰も
+# 確かめておらず、そうでなくなったときに誰も教えない。3つが従う。
+#
+#   ・入力が足りないことが、ネットワークの故障として読める
+#   ・備える手立てが無い。全部組んでみる以外に確かめようがない
+#   ・保証が無い。「触れなかった」が性質ではなく、たぶんそうだった、になる
+#
+# 決定は「offline は、そうであるよう告げられる様式であって、たまたま
+# そうなっている状態ではない」。
+
+pin "$SUM"
+rm -rf archived/.dowel
+
+# 足りないものは `needs-fetch` である。取りに行って失敗した
+# `unfetchable-dependency` とは原因が違い、直し方も違う。
+diag needs-fetch "a dependency that is not fetched is refused under --offline" \
+    -C archived check --offline
+out_has "would come from" "and says where it would have come from" \
+    -C archived check --offline
+out_has "dowel fetch" "and how to get it" -C archived check --offline
+
+# 環境変数でも同じこと。隔離した容器や CI の仕事は一度だけ置きたい——
+# 全ての呼び出しに旗を足す形だと、足し忘れた1つが網を破る。
+_last_cmd="DOWEL_OFFLINE=1 dowel check"
+OUT=$(DOWEL_OFFLINE=1 "$DOWEL" -C archived check 2>&1); RC=$?
+printf '%s' "$OUT" | grep -q 'needs-fetch'
+fact $? "the environment variable does the same as the flag"
+
+# `dowel fetch` は取ってきて止まる。「offline へ行ける」ことを、
+# 推し量るのではなく見られるようにするための入口である。
+ok "fetch acquires what the build needs" -C archived fetch
+out_has "ready:" "and lists what is now present" -C archived fetch
+out_has "--offline" "and says that the build can now run offline" -C archived fetch
+
+n=$(find archived/.dowel -name '*.o' 2>/dev/null | wc -l)
+_last_cmd="find archived/.dowel -name '*.o'"; OUT="$n object files"; RC=0
+[ "$n" -eq 0 ]
+fact $? "fetch compiles nothing"
+
+ok "the build then runs with --offline"       -C archived build --offline --no-compdb
+ok "and so does check"                        -C archived check --offline
+
+# 取ってきた先が消えても、取りに行かない。offline は「無い物は無い」で
+# あって、「無ければ取りに行く」ではない。
+rm -rf archived/.dowel/deps
+diag needs-fetch "removing what was unpacked brings needs-fetch back" \
+    -C archived check --offline
+ok "and fetching once makes it work again" -C archived fetch
+
+# offline はネットワークについての様式であり、「することを減らす」ことでは
+# ない。システムの依存の解決は手元の処理を起こして手元のファイルを読む。
+# これを拒むと、旗の意味が変わってしまう。
+ok "--offline says nothing about resolving a system dependency" \
+    -C app check --offline
+
+# 取りに行って失敗したものとは、別の符号で分ける。前者は上流や経路の話で
+# あり、後者は「何も試していない」である。自動化した側が、再試行すべきか
+# どうかをここで判断する。
+pin "$SUM" "file://$PWD/no-such-archive.tar.gz"
+rm -rf archived/.dowel
+diag unfetchable-dependency "a fetch that was tried and failed has its own code" \
+    -C archived check
+diag needs-fetch "while the same tree under --offline reports nothing was tried" \
+    -C archived check --offline
+fails "fetch fails when it cannot acquire what it was asked for" -C archived fetch
+pin "$SUM"

@@ -2,7 +2,7 @@
 
 本スイートが外側から見つけたもの。
 
-報告した 61 件のうち 56 件が修正されている。直ったものの記録も検査も残す。
+報告した 66 件のうち 60 件が修正されている。直ったものの記録も検査も残す。
 **何を見てどう報告したか**が、次に同種のものを見つけるときの型になるためで
 あり、消してしまうと退行したときに気づけない。
 
@@ -22,6 +22,7 @@
 | F-032 〜 F-045 | `e12bac7` | テストフレームワーク（`cases` / `harness`） |
 | F-046 〜 F-055 | `9858932` | デバッグ機能（ADR-0023 / ADR-0024）と、実践的なアプリが出した群 |
 | F-056 / F-057 | `c154097` | 入ったばかりの機構（共有ライブラリ、Meson 移行）を使って出た2件 |
+| F-058 〜 F-061 | `0511d5e` | 雛形と `check`、そして dowel が自分について報せることの3点 |
 
 直った検査の扱いには2段階ある。**`known_issue` を外すだけでは足りない。**
 新しい機構が入った場合は、その機構を実際に使う形へ書き換える。書き換えない
@@ -40,15 +41,21 @@ F-047 はその逆側の例である。**直ったのに検査が落ち続けた
 | 所見 | 内容 |
 |---|---|
 | [F-011](#f-011)（残り） | |
-| [F-058](#f-058) | `template` を宣言したパッケージが `check` を通らない |
-| [F-059](#f-059) | `schema dump` が構成の語彙を「暫定」と報せ続ける |
-| [F-060](#f-060) | 資産の取得に失敗したときの理由が空で、走っていない道具の名前が出る |
-| [F-061](#f-061) | 入った版が公開バイナリか自分で組んだものかを後から知る手立てが無い |
+| [F-062](#f-062) | install が出す `.pc` が同じパッケージの兄弟を名指さない |
+| [F-063](#f-063) | 翻訳しない綴りのソースが目的ファイルを書かずに成功する |
+| [F-064](#f-064) | `abi-mismatch` が目標の数だけ出るのに、文面に目標名が無い |
+| [F-065](#f-065) | `dowel fetch` が toolchain を数えず一覧にも出さない |
+| [F-066](#f-066) | 転送の記録の自己修復が、その動機になっている場面で働かない |
 
-F-058 も、**入ったばかりの機構を実際のアプリに当てて**出た。`template`
-（ADR-0035）を `apps/blink` に使った最初の `dowel check` で落ちている。
-同じ形が続いている——機構そのものは動くが、それを使った木を**普段の入口から
-触った**ときに初めて欠けが見える。
+5件とも、**入ったばかりの機構を最初に触ったとき**に出た。F-062 は
+`dowel install` を2つのライブラリを持つパッケージへ、F-063 は手元の `.asm`
+を `sources` へ、F-065 は cross の木で `dowel fetch` を打って、F-066 は板から
+成果物が消えた場面を作って。同じ形が続いている——**機構そのものは動くが、
+それを使った木を普段の入口から触った**ときに初めて欠けが見える。
+
+そして今回は、そのうち4件が**報せ方**の側だった。記述子が下を名指さない、
+理由が持ち越されない、目標名が入っていない、数が 0 と出る。どれも中の判断は
+正しく、外へ出る1行だけが足りていない。
 
 ## 実アプリの層が出したもの
 
@@ -137,7 +144,12 @@ F-050 から F-058 は `apps/vision`（大きい依存）、`apps/winapp`（Wind
 | [F-058](#f-058) | `template` を宣言したパッケージが `check` を通らない | 実装 | [#141](https://github.com/sabas0ba/dowel/issues/141) | 未修正 |
 | [F-059](#f-059) | `schema dump` が構成の語彙を「暫定」と報せ続ける | 実装 | [#143](https://github.com/sabas0ba/dowel/issues/143) | 未修正 |
 | [F-060](#f-060) | 資産の取得に失敗したときの理由が空で、走っていない道具の名前が出る | 実装 | [#145](https://github.com/sabas0ba/dowel/issues/145) | 未修正 |
-| [F-061](#f-061) | 入った版が公開バイナリか自分で組んだものかを後から知る手立てが無い | 実装 | [#146](https://github.com/sabas0ba/dowel/issues/146) | 未修正 |
+| [F-061](#f-061) | 入った版が公開バイナリか自分で組んだものかを後から知る手立てが無い | 実装 | [#146](https://github.com/sabas0ba/dowel/issues/146) | 修正済み |
+| [F-062](#f-062) | install が出す `.pc` が同じパッケージの兄弟を名指さない | 実装 | [#156](https://github.com/sabas0ba/dowel/issues/156) | 未修正 |
+| [F-063](#f-063) | 翻訳しない綴りのソースが目的ファイルを書かずに成功する | 実装 | [#157](https://github.com/sabas0ba/dowel/issues/157) | 未修正 |
+| [F-064](#f-064) | `abi-mismatch` が目標の数だけ出るのに、文面に目標名が無い | 実装 | [#158](https://github.com/sabas0ba/dowel/issues/158) | 未修正 |
+| [F-065](#f-065) | `dowel fetch` が toolchain を数えず一覧にも出さない | 実装 | [#159](https://github.com/sabas0ba/dowel/issues/159) | 未修正 |
+| [F-066](#f-066) | 転送の記録の自己修復が、その動機になっている場面で働かない | 実装 | [#160](https://github.com/sabas0ba/dowel/issues/160) | 未修正 |
 
 ---
 
@@ -4259,7 +4271,7 @@ Meson 対応のフィクスチャは、取り込みたい要素を持つ最小�
 **`template` を宣言したパッケージは `dowel check` を通らない。何も名指しして
 いないのに `not-a-target` が出る。**
 
-種別: 実装。未修正（`c154097`）。ADR-0035 の `template` を `apps/blink` に
+種別: 実装。`0511d5e` で修正（`c154097` で観測）。ADR-0035 の `template` を `apps/blink` に
 使ってみて踏んだ。
 
 ### 観測
@@ -4327,7 +4339,7 @@ $ echo $?
 **`dowel schema dump` だけが、構成の語彙を「暫定・議論中」と報せ続ける。**
 人が読む側は3か所とも「閉じた」と言っている。
 
-種別: 実装。未修正（`c154097`）。ADR-0034（構成の語彙を閉じたものとして
+種別: 実装。`0511d5e` で修正（`c154097` で観測）。ADR-0034（構成の語彙を閉じたものとして
 確定）を確かめていて出た。
 
 ### 観測
@@ -4398,7 +4410,7 @@ known_issue F-059 である。
 **`dowelup` が release 資産の取得に失敗したとき、理由の欄が空で出る。**
 しかも PATH に無い道具の名前が入る。
 
-種別: 実装。未修正（`c154097`）。ADR-0036（release 資産からの取得）を
+種別: 実装。`0511d5e` で修正（`c154097` で観測）。ADR-0036（release 資産からの取得）を
 `projects/09-acquisition` に当てて出た。
 
 ### 観測
@@ -4459,10 +4471,19 @@ e2e は ADR-0036 が書いているとおり**同じ配置を組み立てて**�
 正しいためである。両方を同時に見る位置は、失敗を実際に起こして**文言を
 読む**側にしかない。
 
+### 修正
+
+`wget --quiet` は進捗と一緒に誤りも黙らせていた。`--no-verbose` に替え、
+**全ての試行の理由を集める**。そして資産の経路を諦めた理由は、続く
+ソースビルドの失敗まで持ち越される。
+
 ### 検査
 
-`projects/09-acquisition` の `a failed fetch says why it failed`。
-known_issue F-060 である。
+`projects/09-acquisition` の `a failed fetch says why it failed`、
+`a failed fetch says what each tool it tried reported`、
+`the reason the asset path was abandoned survives into the failure`、
+`a checksum mismatch also survives into the failure`、
+`the surviving reason is the mismatch itself, not a generic one`。
 
 対照として、資産が在るときに取れること、checksum が合わないもの・checksum
 の無いもの・`dowel` を含まないものがそれぞれ理由付きで拒まれること、
@@ -4479,7 +4500,7 @@ known_issue F-060 である。
 知る手立てが無い。** `install` は経路を1行で言うが、それは流れて消える
 stderr だけである。
 
-種別: 実装。未修正（`c154097`）。ADR-0036 を確かめていて出た。
+種別: 実装。`0511d5e` で修正（`c154097` で観測）。ADR-0036 を確かめていて出た。
 
 ### 観測
 
@@ -4495,12 +4516,12 @@ installed c154097... built from source
 
 ```console
 $ cat $DOWELUP_HOME/versions/c154097.../origin     # どちらの場合も
-sha=c1540974ad02ef56fd17e669fa7052c384138873
+sha=c1540974ad02…（同じ40桁）
 spec=0.9.0
 url=/tmp/up/upstream.git
 
 $ dowelup list
-* c1540974ad02ef56fd17e669fa7052c384138873  0.9.0
+* c1540974ad02…（同じ40桁）  0.9.0
 ```
 
 `which` も同じで、`$DOWELUP_HOME` 全体に経路を示す語は無い。
@@ -4543,23 +4564,434 @@ CI で「公開した資産そのものを検証する」ことをしたい場�
 ADR-0036 が入るまで存在しなかった。**新しい列が要ることは、新しい経路を
 足した側からしか見えない。**
 
+### 修正
+
+`origin` に `from=asset` / `from=source` が入り、資産の場合は検めた
+`asset_sha256` も残る。`dowelup list` が印を出し、`which` が digest まで
+述べる。**経路は積まない**——ディスクの1つの実体は1つの来かたで届いている
+ので、既に在る実体を別の指定子で引き当てただけのときは記録を保つ。
+
 ### 検査
 
 `projects/09-acquisition` の
-`the record of an installed version says which way it arrived` と
-`the listing says which way each version arrived`。どちらも known_issue
-F-061 である。
+`the record of a version taken from an asset says so`、
+`the record keeps the digest that was verified`、
+`the listing marks a version that arrived as a published binary`、
+`which says which way the binary that would run here arrived`、
+`which states the digest for a version taken from an asset`。
 
-対照として、cargo を呼ばずに release が入ること、`stable` と `tag:` も同じ
-経路を通ること、`nightly` は資産を探しにも行かないこと、`--from-source` が
-資産があっても組む側を選ぶことは通常の検査として置いてある。**経路の選択
-そのものは正しく働いており、欠けているのはその事実が残らないこと**だと
-並びから読める。
+対照は組んだ側に置いた——`the record of a version built from source says so`、
+`a version built from source carries no asset digest`、
+`the listing marks a version that was built from source`。これが無いと、
+上の文言が経路を見ているのか、常に出ているだけなのかを区別できない。
+
+積まないことは別に見る。
+`resolving an installed version again records one arrival, not two`。
+併せて `resolving an installed version again keeps the way it first arrived`
+と、新しい指定子は足されること。
+
+cargo を呼ばずに release が入ること、`stable` と `tag:` も同じ経路を通る
+こと、`nightly` は資産を探しにも行かないこと、`--from-source` が資産が
+あっても組む側を選ぶことは、以前から通常の検査として置いてある。
 
 cargo を呼ばなかったことは、出力の文言ではなく**痕跡の不在**で見ている。
 PATH から `cargo` を消すのではなく、呼ばれたら印を残して落ちるものを前に
 置き、印が無いことを確かめる。PATH を削ると git などが巻き添えになるうえ、
 「呼ばれなかった」ことを直接は見られない。
+
+---
+
+## F-062
+
+報告先: [sabas0ba/dowel#156](https://github.com/sabas0ba/dowel/issues/156)
+
+**install が出す `.pc` が、同じパッケージの兄弟ライブラリを名指さない。**
+pkg-config だけを頼りにする使う側の結合が、未定義参照で落ちる。
+
+種別: 実装。未修正（`0511d5e`）。ADR-0041 と ADR-0043 を
+`projects/24-install` に当てて出た。
+
+### 観測
+
+1つのパッケージに、下（`base`）と上（`top`）の2つの `lib` を置く。両方とも
+同じ実行で install され、`base.pc` は `top.pc` の隣に書かれている。
+
+```
+Name: top
+Version: 0.1.0
+Cflags: -I${includedir}
+Libs: -L${libdir} -ltop
+```
+
+`Requires` の行が無い。`Libs` にも `-lbase` は無く、`base` が公表している
+`-lm` も来ていない。
+
+```console
+$ cc consumer.c -o consumer $(pkg-config --cflags --libs top)
+/usr/bin/ld: libtop.a(src_top.c.o): in function `top_area':
+src/top.c:3: undefined reference to `base_area'
+```
+
+### 共有にすると通ってしまう
+
+同じ木で `linkage = "shared"` にすると、記述子は**同じまま**で結合も実行も
+通る。`libtop.so` の `DT_NEEDED` が `libbase.so` を連れてくるためである。
+**1行変えただけで、配った面が通ったり通らなかったりする。**
+
+### なぜ問題か
+
+ADR-0043 は「`Requires` は確かに在るものだけを名指す。dowel パッケージの依存
+は、同じ実行で install したときだけ入れる——名指した `.pc` が在るからである」
+と書いている。この条件は**ここでしか満たされない**。`dowel install` が出す
+のは現在のパッケージの `bin` と `lib` なので（ADR-0041）、別パッケージの
+`dep()` が同じ実行で install されることは無い。つまり節が想定している状況は
+実装が唯一作り出せる状況であって、そこで入っていない。
+
+システムの依存の側は正しく動く（`Requires: zlib >= 1.2`）。
+
+そして ADR-0043 が在る理由——「dowel を知らない使う側が dowel 無しで繋げる」
+——が、複数のライブラリを持つパッケージで成り立たない。しかも失敗するのは
+使う側の結合段であり、名前も知らないライブラリの記号を、リンカの言葉で
+告げられる。
+
+### 期待
+
+`top.pc` が下を名指す。`Requires: base` の形なら、`base` の `Cflags`（公開の
+定義や旗）も一緒に届くので、`public` 区画を写すという ADR-0043 の考え方に
+沿う。静的な書庫は依存の順に並ぶ必要があるので、並べる順は結合順である。
+
+### なぜ内側から見つからないか
+
+ADR-0043 の e2e は「`pkg-config --validate` を通し、刷られた引数でプログラム
+を翻訳する」と書かれている。それは**1つのライブラリ**で足りる——`Requires`
+を空にしても validate は通り、単独なら結合も通る。
+
+規則を試すには、**同じパッケージに2つの `lib` があって、片方がもう片方に
+乗っていて、しかも静的である**という3つが同時に要る。機構のフィクスチャに
+その3つを置く理由が無い。共有で組んでいる限り `DT_NEEDED` が隠すことも、
+気づきにくさに効いている。
+
+### 検査
+
+`projects/24-install` の
+`a consumer links against an installed library that sits on a sibling` と
+`the descriptor of a library that sits on a sibling names what it requires`。
+どちらも known_issue F-062 である。
+
+対照として、単独のライブラリなら dowel 無しで翻訳・結合・実行まで通ること、
+下の実体を手で足せば同じ木で通ることを通常の検査として置いてある。壊れて
+いるのが繋がり方ではなく、**記述子が下を名指していないこと**だと並びから
+読める。
+
+---
+
+## F-063
+
+報告先: [sabas0ba/dowel#157](https://github.com/sabas0ba/dowel/issues/157)
+
+**`cc` が翻訳できない綴りのソースが、終了状態 0 で目的ファイルを書かずに
+通り、結合が「そんなファイルは無い」で落ちる。** `check` は通り、増分ビルド
+は収束しない。
+
+種別: 実装。未修正（`0511d5e`）。ADR-0048（アセンブリを第3の言語として）を
+`projects/25-asm` に当てて出た。
+
+### 観測
+
+```console
+$ dowel check
+check passed: 1 packages, 1 targets
+
+$ dowel build
+error: LINK bin/app failed
+--- stderr ---
+/usr/bin/ld: cannot find /.../obj/asm/app/src_other.asm.o: No such file or directory
+```
+
+`.asm` に限らない。「C++ の綴りでなければ C」という規則により、`cc` の知らない
+綴りはすべてここへ来る。原因は `cc` の側にある。
+
+```console
+$ cc -c /tmp/t.asm -o /tmp/t.o
+cc: warning: /tmp/t.asm: linker input file unused because linking not done
+$ echo $?
+0
+$ ls /tmp/t.o
+ls: cannot access '/tmp/t.o': No such file or directory
+```
+
+**警告つきの成功**であり、出力は書かれない。dowel はこの警告を利用者に
+見せていない（成功したアクションの出力であるため）。
+
+そして現れない出力を宣言したアクションは常に古いままなので、何も変えずに
+2度組んでも毎回同じ翻訳が走る。
+
+### なぜ問題か
+
+ADR-0048 は `.asm` について「認識すれば、そもそも動くはずのない道具からの
+分かりにくい失敗が出る」から認識しない、と決めている。判断そのものは
+そのとおりだが、認識しないことで実際に出るのは**より読みにくい失敗**である。
+
+| | 利用者が受け取るもの |
+|---|---|
+| 認識した場合（避けた形） | アセンブラの、その綴りについての誤り |
+| いまの形 | **結合器の、ビルドディレクトリの中のパスについての誤り** |
+
+後者にはソースの名前も行も診断コードも無い。そして issue #50 が「翻訳器が
+無いことは計画の段で言う。結合まで持ち越すと1段遅れて返る」と決めた論法が
+そのまま当てはまる。ここで持ち越されているのは**翻訳できない綴り**である。
+
+ADR-0048 自身が、`.s` に依存ファイルを要求していた件について「現れない出力
+を宣言することは、増分ビルドが収束しなくなる形」と書いている。同じ形が目的
+ファイルの側に残っている。
+
+### 期待
+
+計画の段で拒む（`sources` の綴りはマニフェストを読んだ時点で分かる）か、
+翻訳の段で「宣言した出力が現れなかった」ことを失敗にする。前者があっても、
+外から与えられた綴りに対する網として後者も要る。
+
+### なぜ内側から見つからないか
+
+ADR-0048 のフィクスチャは `.s` と `.S` と `.c` を持つ。`.asm` は**認識しないと
+決めた**ものなので入れる理由が無い——決定が「何もしない」であるとき、
+何もしないことの検査は書きにくい。
+
+そして `cc` の「警告つき成功・出力なし」は通常の翻訳では起きない。当たるには
+**わざと組めない綴りを渡す**必要がある。外から見ると、`sources` に置ける
+綴りの境目は最初に触るところである。
+
+### 検査
+
+`projects/25-asm` の `and says which source produced no object`、
+`check refuses a source the C driver cannot compile`、
+`a build that failed this way still converges`。いずれも known_issue F-063。
+
+対照として、`.s` と `.S` が正しく組まれること、言語ごとの旗の仕分け、
+`-Wa,--noexecstack` が出てきた実行ファイルの `GNU_STACK` に効いていること、
+`.S` だけが依存ファイルを持ち3つの背骨すべてで収束することを通常の検査と
+して置いてある。**新しい言語の側は動いていて、欠けているのは境目の扱い**だ
+と並びから読める。
+
+---
+
+## F-064
+
+報告先: [sabas0ba/dowel#158](https://github.com/sabas0ba/dowel/issues/158)
+
+**宣言1つに対して `abi-mismatch` が「札を受け取る目標の数 + 1」回出る。**
+文面も位置も同じで、目標の名前がどこにも入っていない。
+
+種別: 実装。未修正（`0511d5e`）。ADR-0042 の成分を ADR-0049 の `prebuilt` と
+合わせて確かめていて出た。
+
+### 観測
+
+gnu の三つ組で `abi = { libc = "musl" }` を1つ書くと、同じ error が並ぶ。
+
+```console
+error[abi-mismatch]: this surface requires `libc = "musl"` but the build is `gnu`
+ --> dowel.build:6:23
+   = note: the target triple is `x86_64-unknown-linux-gnu`
+   = note: nothing later refuses this; the link succeeds and the failure is at run time
+error[abi-mismatch]: this surface requires `libc = "musl"` but the build is `gnu`
+ --> dowel.build:6:23
+   ...
+```
+
+| 使う側の目標 | 件数 |
+|---|---|
+| 0 | 1 |
+| 1 | 2 |
+| 2 | 3 |
+
+### なぜ問題か
+
+出し方そのものは筋が通っている——合成後の札は目標ごとに在り、それぞれが
+ビルドと照合される。破綻しているのは**文面**である。`this surface` がどの
+目標のことかを言わないため、2つのレコードを区別する材料が無い。**正しい
+N 件が、同じ誤りの写し N 件として届く。**
+
+編集器では1つの文字の上に同一の波線が N 本重なる。件数はグラフの形について
+増えるので、広く使われるライブラリで札を1つ間違えると出力が埋まる。
+そして「1つ直せば全部消える」のか「N 箇所直すところがある」のかが決まらない。
+
+同じ `abi-mismatch` でも、**札どうしの比較**の側は2つの宣言の位置を両方
+指すので、複数出ても読み分けられる。ビルドとの照合の側だけが手がかりを
+持っていない。
+
+### 期待
+
+文面に目標を入れるか、宣言ごとに1件へ畳む。後者の方が、この検査の性質
+（`libc` はビルドから導ける唯一の成分であり、ビルドは一様である——ADR-0031）
+に合う。
+
+### なぜ内側から見つからないか
+
+この診断のフィクスチャは**出ること**を見れば足りる。件数は使う側の数に
+ついて増えるため、**使う側が1つ以上ある木**でしか差が現れない。そして
+「ビルドとの照合」は ADR-0042 が足した新しい規則なので、既に在った
+「札どうしの比較」の文面と揃っているかどうかは、2つを1つの木で並べて
+読まないと分からない。
+
+### 検査
+
+`projects/26-prebuilt` の `one wrong declaration produces one diagnostic`。
+known_issue F-064 である。
+
+対照として、拒むこと自体・要求と実際の三つ組を述べること・合っていれば
+通ること・相手が名指さない成分は制約にならないことを通常の検査として
+置いてある。**壊れているのが検査ではなく報せ方**だと並びから読める。
+
+---
+
+## F-065
+
+報告先: [sabas0ba/dowel#159](https://github.com/sabas0ba/dowel/issues/159)
+
+**`dowel fetch` は toolchain を取ってくるのに、取ってきたと言わない。**
+依存の無い木では「fetched 0 package(s)」とだけ出る。
+
+種別: 実装。未修正（`0511d5e`）。ADR-0044 と ADR-0045 を合わせて確かめて
+いて出た。
+
+### 観測
+
+```console
+$ rm -rf $XDG_CACHE_HOME/dowel/toolchains
+$ dowel fetch
+fetched 0 package(s); the build can now run with --offline
+
+$ find $XDG_CACHE_HOME/dowel/toolchains -mindepth 1 -maxdepth 1
+/.../cache/dowel/toolchains/7e5b1e042540      # 取れている
+
+$ dowel check --offline
+check passed: 1 packages, 1 targets
+```
+
+依存の側はちゃんと数えられ、`ready:` の行も出る。**toolchain だけが数にも
+一覧にも入っていない。**
+
+### なぜ問題か
+
+ADR-0045 は `fetch` を「取ってきて止まる。**今ここに在るものを一覧するので、
+offline へ行けることが推し量るのではなく見られる**」ものとして置いた。
+toolchain はその2つの段の片方として明示されている。
+
+cross の木では、**取ってくるものが toolchain だけ**という形が普通である
+（依存はすべて `path`、道具立てだけ書庫）。その木の利用者が読む唯一の行が
+「fetched 0 package(s)」になる。素直な解釈は「何も要らなかった」であり、
+数百 MB を落とした直後でも同じ行が出る。
+
+隔離した環境を用意する側から見ると、確かめようが無いということである。
+
+### 併せて
+
+toolchain の取得が失敗すると、その診断のあとに `missing-toolchain` が続く。
+2つ目は1つ目の帰結だが**別の直し方を指す**——「翻訳器が PATH に無い」と
+読める。ADR-0044 が `missing-toolchain` に与えた役割は「取ってきたものの中に
+`bin/…-gcc` が無い」場合であり、取得そのものが成立していない場合ではない。
+
+### 期待
+
+toolchain も数え、一覧に出す。行の形は依存に揃えるのが自然である。
+
+### なぜ内側から見つからないか
+
+`fetch` のフィクスチャは**取れていること**を見れば足りる。取れたかどうかは
+後続の `--offline` が通ることで確かめられ、要約の行は関わらない。
+
+そして toolchain の取得（ADR-0044）と `fetch`（ADR-0045）は別の決定である。
+**要約を書く側から見ると、数える対象は依存**であり、toolchain が同じ経路を
+通ることは2つの決定を跨いで読まないと出てこない。
+
+### 検査
+
+`projects/10-toolchain` の `fetch counts the toolchain it acquired` と
+`and lists it among what is now present`。どちらも known_issue F-065。
+
+対照として、取ってきた書庫の中から翻訳器が解決されること、利用者のキャッシュ
+へ入って木の中には入らないこと、2度目は書庫を消しても組めること、
+`sysroot()` がその中を指すこと、digest が合わなければ止まること、
+`--offline` で `needs-fetch` になり `fetch` の後に通ることを通常の検査として
+置いてある。**取得そのものは働いていて、欠けているのは報せ方**だと並びから
+読める。
+
+---
+
+## F-066
+
+報告先: [sabas0ba/dowel#160](https://github.com/sabas0ba/dowel/issues/160)
+
+**転送の記録の自己修復が、その動機になっている場面——対象機から成果物が
+消えた——では働かない。** 記録は残り、次の実行も送らないので、手で記録を
+消すまで失敗し続ける。
+
+種別: 実装。未修正（`0511d5e`）。ADR-0046 を `projects/06-runner` に当てて
+出た。
+
+### 観測
+
+```console
+$ dowel test --target=aarch64-unknown-linux-gnu     # 1回目：転送して通る
+$ rm -f remote/remote_test                          # 対象機の側で消えた
+
+$ dowel test --target=aarch64-unknown-linux-gnu
+test result: FAILED. 0 passed; 1 failed
+
+$ dowel test --target=aarch64-unknown-linux-gnu     # 「気づいた次の実行」
+test result: FAILED. 0 passed; 1 failed             # 直らない
+```
+
+転送の回数を対象機の側で数えると、消した後は一度も増えない。機械可読の側を
+見ると `"launch_error": null` であり、`"exit_status": 1` である。dowel が
+起こしたのは**手元の運び手**（`ssh` / `sh`）で、それは問題なく始まっている。
+
+仕組みそのものは働く。`command` に書いた道具が無い場合はちゃんと
+`launch_error` になり、記録も捨てられ、次の実行が送り直す。
+
+### なぜ問題か
+
+`transfer` を持つランナーで `launch_error` が立つのは、事実上「運び手が手元に
+無い」場合だけである。それは構成の誤りで、一度直せば二度と起きない。一方
+**対象機の状態が変わることは運用のたびに起こる**——板を配り直す、`/tmp` が
+消える、誰かが片付ける、イメージを焼き直す。そちらは常に「運び手は起動し、
+向こう側が非零で返る」形になる。
+
+結果として、ADR が「no cost で自己修復する」と述べた性質が、**その動機に
+なっている場面でだけ効かない**。出力のどこにも「転送を飛ばしている」とは
+書いておらず、`.dowel/build/<triple>/transfers` を知らなければ直せない。
+
+### 期待
+
+失敗した実行は記録を捨てる、失敗の出力に飛ばしたことを書く、明示的に送り
+直す手立てを置く——いずれも「対象機を見に行かない」という前提を崩さない。
+
+### なぜ内側から見つからないか
+
+この決定のフィクスチャは**飛ばすこと**と**指紋が変われば送ること**を見れば
+足りる。`launch_error` の側は、起こすのが簡単な形——`command` に無い名前を
+書く——で試せて、それは通る。**通るので、そこで止まる。**
+
+「対象機から成果物が消えた」を再現するには、転送先を実際に持つ木を組み立て
+て、そこから**手で消す**必要がある。機構のフィクスチャに、自分が書いた
+ファイルを消す段を置く理由が無い。
+
+### 検査
+
+`projects/06-runner` の
+`a machine that lost the artifact recovers on the run after the one that noticed`。
+併せて `and the tests pass again without the record being touched by hand`。
+どちらも known_issue F-066。
+
+対照として、1回目で送ること・変わっていなければ送らないこと・成果物が変われば
+送ること・記録がビルドディレクトリに在ること・**起動そのものが成り立たなかった
+場合には記録が捨てられて次が送り直すこと**・記録を手で消せば直ることを通常の
+検査として置いてある。壊れているのが記録の仕組みではなく、**それを捨てる
+条件の広さ**だと並びから読める。
+
+転送の回数は対象機の側で数えている。dowel の言い分ではなく、実際に何回
+届いたかを見る立場である。
 
 ---
 

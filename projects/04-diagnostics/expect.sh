@@ -160,6 +160,16 @@ _last_cmd="graph | cc の引数（renamed）"; OUT="$got"; RC=0
 printf '%s' "$got" | grep -q -- '-I'
 fact $? "with the library's public include directory reaching the sources that need it"
 
+# ------------------------------------------------------- check は的を取らない
+#
+# `check` は「評価と診断のみ」の入口であり、**全部**を見る。目標の名前を
+# 渡すのは使い方の誤りであって、黙って無視してよい引数ではない——無視すると
+# 「その目標だけ見た」と読んだ利用者が、見ていない誤りを見たつもりになる。
+
+fails "check refuses a target name" -C cases/type-mismatch check app
+out_has "takes no target" "and says that it checks everything" \
+        -C cases/type-mismatch check app
+
 # ------------------------------------------------------- 語彙は閉じている（ADR-0034）
 #
 # `cfg` / `host` / `target` / `tc` は閉じた集合であり、ADR 1つにつき鍵1つ、
@@ -207,9 +217,80 @@ rm -rf "$probe"
 # （[F-059](../../docs/10-findings.md#f-059)）。
 got=$("$DOWEL" schema dump 2>/dev/null | jq -r '.cfg.status')
 _last_cmd="dowel schema dump | .cfg.status"; OUT="$got"; RC=0
-known_issue F-059
 printf '%s' "$got" | grep -qi 'closed'
 fact $? "the schema says the configuration vocabulary is closed, as the decision did"
+
+# 同じ手続きが ABI 札の成分にも及ぶ（ADR-0042）。開いた集合にすると、
+# 綴り違いの成分は「誰も名指していない成分」になり、それは「制約ではない」
+# の形そのものである——受理され、何とも比べられず、何も意味しない。
+
+abi_probe=$(mktemp -d)
+mkdir -p "$abi_probe/src"
+cat >"$abi_probe/dowel.toml" <<'TOML'
+[package]
+name = "abivocab"
+version = "0.1.0"
+edition = "2026"
+TOML
+printf 'int lib(void){ return 0; }\n' >"$abi_probe/src/lib.c"
+
+# abi_decl <札> — 1つのライブラリの public.abi を書き換える。
+abi_decl() {
+    printf '[lib.l]\nsources = [file("src/lib.c")]\n\n[lib.l.public]\nabi = %s\n' \
+        "$1" >"$abi_probe/dowel.build"
+}
+
+abi_decl '{ libcc = "musl" }'
+diag unknown-abi-component "a component outside the vocabulary is refused" \
+     -C "$abi_probe" check
+run -C "$abi_probe" check
+said=$OUT
+_last_cmd="dowel check  # abi = { libcc = ... }"
+OUT=$(printf '%s' "$said" | grep -m5 'note\|error'); RC=0
+printf '%s' "$said" | grep -q 'abi. accepts'
+fact $? "listing the components abi does accept"
+_last_cmd="同じ診断"; OUT=$(printf '%s' "$said" | grep -m5 'note'); RC=0
+printf '%s' "$said" | grep -qi 'closed'
+fact $? "and saying that this vocabulary is closed too"
+_last_cmd="同じ診断"; OUT=$(printf '%s' "$said" | grep -m5 'note'); RC=0
+printf '%s' "$said" | grep -q 'did you mean'
+fact $? "and offering the component that was probably meant"
+
+# 成分の値も領域を持つ。名前だけ閉じて値を開けば、`libc = "glibc"` が
+# 受理されて `libc = "gnu"` と食い違い続ける。
+abi_decl '{ libc = "glibc" }'
+diag unknown-abi-component "a value outside a component's domain is refused" \
+     -C "$abi_probe" check
+out_has "accepts: gnu, musl" "and the domain is listed" -C "$abi_probe" check
+
+# 語彙に在るものは通る。上の拒否が「成分の集合を書くと落ちる」ではないこと
+# は、これが無いと言えない。
+abi_decl '{ libc = "gnu", cxx_stdlib = "libc++" }'
+ok "a label made of known components is accepted" -C "$abi_probe" check
+
+# 1語の札は今までの意味を保つ。語は分解できないので、成分の集合と比べる
+# 手立てが無い——だから片方ずつが出会うのは食い違いである。
+abi_decl '"gnu11"'
+ok "a label written as one word is still accepted" -C "$abi_probe" check
+
+rm -rf "$abi_probe"
+
+# 構成の語彙も1つ増えた。`target.os` はこの軸に答えない——`linux-gnu` と
+# `linux-musl` は同じ OS で、繋がらない2つの実行時である（ADR-0042）。
+keys=$("$DOWEL" schema dump 2>/dev/null | jq -r '.cfg.keys[].name' | paste -sd' ' -)
+_last_cmd="dowel schema dump | .cfg.keys"; OUT="$keys"; RC=0
+printf '%s' "$keys" | grep -qw 'target.env'
+fact $? "the configuration vocabulary carries the runtime axis the triple names"
+dom=$("$DOWEL" schema dump 2>/dev/null | jq -r '.cfg.keys[] | select(.name=="target.env") | .values | join(",")')
+_last_cmd="dowel schema dump | target.env values"; OUT="$dom"; RC=0
+printf '%s' "$dom" | grep -q 'musl'
+fact $? "with a domain, as every key in a closed vocabulary has"
+
+# 閉じていることだけでは、道具の側は「二度と増えない」とも読める。増え方まで
+# 述べて初めて、当てにしてよい理由になる——ADR 1本につき鍵1つ、領域つき。
+_last_cmd="dowel schema dump | .cfg.status"; OUT="$got"; RC=0
+printf '%s' "$got" | grep -qi 'adr' && printf '%s' "$got" | grep -qi 'domain'
+fact $? "and says how the vocabulary grows, which is what makes it dependable"
 
 # 語彙そのものは正しい。壊れているのは報せ方の1行だけである。
 keys=$("$DOWEL" schema dump 2>/dev/null | jq -r '.cfg.keys[].name' | paste -sd' ' -)

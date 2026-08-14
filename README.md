@@ -10,7 +10,7 @@ dowel 本体は自分自身を内側から検査している（`crates/*/tests/`
 仕様と実装の食い違いを仕様の側から見つけられる。
 
 見つけたものは [docs/10-findings.md](docs/10-findings.md) に記録し、本体へ報告する。
-これまでに 61 件を報告し、56 件が修正された。
+これまでに 66 件を報告し、60 件が修正された。
 
 ## 走らせる
 
@@ -65,12 +65,13 @@ DOWELUP=/path/to/dowelup DOWEL_SRC=/path/to/dowel ./run.sh
 ## 出力
 
 1 検査 1 行。本体が直していない事項に対する検査は `xfail` として登録する。
-本体側が直ると `XPASS` になって落ち、宣言を外すべきことが分かる。現在は 6 件で、
+本体側が直ると `XPASS` になって落ち、宣言を外すべきことが分かる。現在は 11 件で、
 [F-011](docs/10-findings.md#f-011) の残っている側のほか、入ったばかりの機構を
-使ってみて出たもの——[F-058](docs/10-findings.md#f-058)（`template` を宣言すると
-`check` が落ちる）、[F-059](docs/10-findings.md#f-059)（`schema dump` だけが語彙を
-「暫定」と言う）、[F-060](docs/10-findings.md#f-060) と
-[F-061](docs/10-findings.md#f-061)（`dowelup` の release 資産まわり）である。
+最初に触って出た5件である——[F-062](docs/10-findings.md#f-062)（install が出す
+`.pc` が兄弟を名指さない）、[F-063](docs/10-findings.md#f-063)（翻訳しない綴りが
+黙って成功する）、[F-064](docs/10-findings.md#f-064)（`abi-mismatch` が写しに
+見える）、[F-065](docs/10-findings.md#f-065)（`fetch` が toolchain を数えない）、
+[F-066](docs/10-findings.md#f-066)（転送の自己修復が動機の場面で働かない）。
 
 直前の回では 16 件あった。デバッグ機能について見つけた
 [F-046](docs/10-findings.md#f-046) から [F-049](docs/10-findings.md#f-049)、
@@ -174,6 +175,9 @@ total 1146 checks: 1141 passed, 0 failed, 5 known, 0 fixed
 | [21-debug](projects/21-debug/) | 宣言されたデバッガとスタブ。本物の gdb で止め、--dap が同じ事実を書き出すこと |
 | [22-bench](projects/22-bench/) | 測るための種別。速さに判定は無く、走り切れなければ数を出さないこと |
 | [23-probe](projects/23-probe/) | 道具に訊いたことを利用者の cache へ。訊き直さず、道具を替えれば鍵が変わること |
+| [24-install](projects/24-install/) | 組んだものを prefix へ。移しても動くこと、dowel を知らない使う側が pkg-config だけで繋げること |
+| [25-asm](projects/25-asm/) | アセンブリを第3の言語として。旗の仕分け、実行可能スタック、依存ファイルの有無 |
+| [26-prebuilt](projects/26-prebuilt/) | 他所で組まれたライブラリを目標として書く。ABI 札が初めて確かめる価値のある辺を得る |
 
 ## アプリケーション
 
@@ -197,7 +201,7 @@ total 1146 checks: 1141 passed, 0 failed, 5 known, 0 fixed
 計装（ASan / UBSan）を機能フラグとして宣言した版を組み、壊れた入力と壊れた
 要求を実際に食わせて、落ちないことと未定義動作を踏まないことを見る。
 
-**ここで見つかるものは、最小の構成では現れない。** 報告した 61 件のうち
+**ここで見つかるものは、最小の構成では現れない。** 報告した 66 件のうち
 18 件がこの層から出ており、どれも「最小の構成には置く理由が無い」形をして
 いる——パッケージを跨いだ機能名、`test` と `build` を交互に打つ流れ、
 実行ファイルに拡張子が付く対象、配るライブラリが自分の検査を持っていること。

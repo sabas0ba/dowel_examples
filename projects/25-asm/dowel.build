@@ -1,0 +1,11 @@
+# C と、素の翻訳単位（.s）と、前処理を通る翻訳単位（.S）。3つが1つの目標に
+# 同居する形が、言語ごとの旗の行き先を見るのに要る（ADR-0048）。
+[bin.app]
+sources = [file("src/main.c"), file("src/plain.s"), file("src/pre.S")]
+
+[bin.app.private]
+includes  = [dir("include")]
+c_std     = "c17"
+flags     = ["-DBOTH=1"]
+c_flags   = ["-DONLY_C=1"]
+asm_flags = ["-DONLY_ASM=1"]
