@@ -482,39 +482,84 @@ built_from_source
 fact $? "the fallback really reaches cargo"
 
 # 退避した理由が読めること。取得の失敗は proxy・TLS・404・DNS と原因が
-# 幅広く、しかも利用者の機械の側にある。理由が空だと手の打ちようがない。
-known_issue F-060
-printf '%s' "$said" | grep -q 'failed: [^)]'
+# 幅広く、しかも利用者の機械の側にある（F-060）。
+printf '%s' "$said" | grep -q 'failed: [^;)]'
 fact $? "a failed fetch says why it failed"
+
+# 試した道具を1つに絞らない。最後の1つだけを残すと、実際に失敗した側の
+# 理由が捨てられ、入っていない道具の名前だけが出る。
+printf '%s' "$said" | grep -q 'curl failed' && printf '%s' "$said" | grep -q 'wget failed'
+fact $? "a failed fetch says what each tool it tried reported"
+
+# 資産の経路を諦めた理由が、続く失敗まで持ち越されること。持ち越さないと
+# 利用者が最後に読む言葉は「cargo が無い」になり、実際の問題を指さない。
+printf '%s' "$said" | grep -q 'the release asset was not usable'
+fact $? "the reason the asset path was abandoned survives into the failure"
 mv "$PWD/asset.keep" "$ASSET_BASE/$ASSET"
+
+# 検証に落ちた場合も同じ。こちらは「壊れた配り物を掴んだ」という、
+# 取得できなかった場合とは別の事実である。
+printf '%s\n' 0000000000000000000000000000000000000000000000000000000000000000 \
+    > "$ASSET_BASE/$ASSET.sha256"
+up_nc install 0.9.0
+said=$OUT
+printf '%s' "$said" | grep -q 'the release asset was not usable'
+fact $? "a checksum mismatch also survives into the failure"
+printf '%s' "$said" | grep -q 'does not match its checksum'
+fact $? "the surviving reason is the mismatch itself, not a generic one"
+publish_sum
 
 # --- 何で入ったかは後から分かるか
 #
 # ADR-0036 は2つの経路の違いを「何を信用するか」に置いている。組んだ側は
-# コミットに紐づき、取った側は公開者に紐づく。`install` は取った経路を
-# 1行で言うが、それは流れて消える stderr である。versions/<sha>/origin は
-# 「どこから来たか」を残すために在るのに、指定子と上流しか書かない。
+# コミットに紐づき、取った側は公開者に紐づく。どちらであるかが残らなければ、
+# 目の前のバイナリについて何を言ってよいかが後から決まらない（F-061）。
 
 up_nc install 0.9.0
-cp "$PWD/nc-home/versions/$TIP/origin" "$PWD/origin.asset"
+grep -q '^from=asset$' "$PWD/nc-home/versions/$TIP/origin"
+fact $? "the record of a version taken from an asset says so"
+grep -q "^asset_sha256=$(cat "$ASSET_BASE/$ASSET.sha256")$" "$PWD/nc-home/versions/$TIP/origin"
+fact $? "the record keeps the digest that was verified"
+
+_last_cmd="dowelup list"
+OUT=$(env DOWELUP_HOME="$PWD/nc-home" DOWELUP_UPSTREAM="$UPSTREAM" "$DOWELUP" list 2>&1); RC=$?
+printf '%s' "$OUT" | grep -q 'asset'
+fact $? "the listing marks a version that arrived as a published binary"
+
+env DOWELUP_HOME="$PWD/nc-home" DOWELUP_UPSTREAM="$UPSTREAM" "$DOWELUP" default 0.9.0 >/dev/null 2>&1
+_last_cmd="dowelup which"
+OUT=$(env DOWELUP_HOME="$PWD/nc-home" DOWELUP_UPSTREAM="$UPSTREAM" "$DOWELUP" which 2>&1); RC=$?
+said=$OUT
+printf '%s' "$said" | grep -q 'release asset'
+fact $? "which says which way the binary that would run here arrived"
+printf '%s' "$said" | grep -qF "$(cat "$ASSET_BASE/$ASSET.sha256")"
+fact $? "which states the digest for a version taken from an asset"
+
+# 組んだ側。対照が無ければ、上の文言が経路を見ているのか、
+# 常に出ているだけなのかを区別できない。
 rm -rf "$PWD/nc-home"
 env DOWELUP_HOME="$PWD/nc-home" DOWELUP_UPSTREAM="$UPSTREAM" \
     "$DOWELUP" install 0.9.0 --from-source >/dev/null 2>&1
-cp "$PWD/nc-home/versions/$TIP/origin" "$PWD/origin.source" 2>/dev/null || : > "$PWD/origin.source"
-
-_last_cmd="cat versions/$TIP/origin"
-OUT=$(printf 'asset:\n%s\nsource:\n%s\n' "$(cat "$PWD/origin.asset")" "$(cat "$PWD/origin.source")")
-RC=0
-known_issue F-061
-! cmp -s "$PWD/origin.asset" "$PWD/origin.source"
-fact $? "the record of an installed version says which way it arrived"
-
-env DOWELUP_HOME="$PWD/nc-home" DOWELUP_UPSTREAM="$UPSTREAM" "$DOWELUP" list >/dev/null 2>&1
-up_nc install 0.9.0
+grep -q '^from=source$' "$PWD/nc-home/versions/$TIP/origin"
+fact $? "the record of a version built from source says so"
+! grep -q '^asset_sha256=' "$PWD/nc-home/versions/$TIP/origin"
+fact $? "a version built from source carries no asset digest"
 _last_cmd="dowelup list"
 OUT=$(env DOWELUP_HOME="$PWD/nc-home" DOWELUP_UPSTREAM="$UPSTREAM" "$DOWELUP" list 2>&1); RC=$?
-known_issue F-061
-printf '%s' "$OUT" | grep -qi 'asset\|source\|prebuilt'
-fact $? "the listing says which way each version arrived"
+printf '%s' "$OUT" | grep -q 'source'
+fact $? "the listing marks a version that was built from source"
+
+# ディスクの1つの実体は1つの来かたで届いている。別の指定子で引き当てただけの
+# ときに経路が積まれると、記録は「どちらでもある」という無意味な形になる。
+env DOWELUP_HOME="$PWD/nc-home" DOWELUP_UPSTREAM="$UPSTREAM" \
+    "$DOWELUP" install tag:v0.9.0 >/dev/null 2>&1
+_last_cmd="cat versions/$TIP/origin"
+OUT=$(cat "$PWD/nc-home/versions/$TIP/origin"); RC=0
+[ "$(grep -c '^from=' "$PWD/nc-home/versions/$TIP/origin")" -eq 1 ]
+fact $? "resolving an installed version again records one arrival, not two"
+grep -q '^from=source$' "$PWD/nc-home/versions/$TIP/origin"
+fact $? "resolving an installed version again keeps the way it first arrived"
+grep -q '^spec=tag:v0.9.0$' "$PWD/nc-home/versions/$TIP/origin"
+fact $? "resolving an installed version again still records the new specifier"
 
 rm -rf "$PWD/nc-home" "$PWD/stage" "$PWD/stage-empty" "$WITNESS"

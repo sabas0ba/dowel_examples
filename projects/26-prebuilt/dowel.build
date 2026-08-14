@@ -1,0 +1,16 @@
+# 他所で組まれたライブラリを、ソースの無い `lib` として書く（ADR-0049）。
+# ここから先は普通の目標である——`deps` で繋がり、`public` が伝わり、
+# `dowel why` が辿り、`abi` が他と同じ規則で比べられる。
+[lib.engine]
+prebuilt = file("vendor/libengine.a")
+
+[lib.engine.public]
+includes   = [dir("include")]
+abi        = { libc = "gnu" }
+link_flags = ["-lm"]
+
+[bin.app]
+sources = [file("src/main.c")]
+
+[bin.app.private]
+deps = [target("engine")]

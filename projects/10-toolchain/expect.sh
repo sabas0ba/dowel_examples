@@ -162,3 +162,155 @@ diag_where missing-toolchain '.labels | length > 0' \
 out_lacks "not found" "the missing toolchain never reaches the shell" -C subject build
 
 use gcc
+
+# ---------------------------------------------------------- 取ってくる（ADR-0044 / ADR-0047）
+#
+# `[toolchain.<triple>]` は機械に既に在る命令を名指すものだった。マニフェスト
+# は固定され、ソースも固定され、依存は `rev` や `sha256` で固定される——そして
+# **目的コードを決める唯一の入力だけが、その名前で機械に在ったもの**だった。
+# 同じ README に従った2人が違うバイナリを得ても、木は何も言わない。
+#
+# 決定は「toolchain は依存と同じやり方で取ってきて固定する」。書庫と digest
+# であり、新しい機構は要らない。
+#
+# 本物の cross の書庫は数百 MB あるので、kit/ に偽物を組み立てる。確かめたい
+# のは中身ではなく、**取得・検証・展開・その中からの解決**である。
+
+TCDIR=$PWD/tcfetch
+KIT=$PWD/kit.tar.gz
+mkdir -p "$TCDIR/src"
+cp kitsrc.c "$TCDIR/src/main.c"
+tar czf "$KIT" kit
+KITSUM=$(sha256sum "$KIT" | cut -d' ' -f1)
+
+# 取ってきたものは利用者のキャッシュへ入る。木ごとに持つと、系の中で最も
+# 安定したものを最も揺れる場所へ何度も落とすことになる。
+export XDG_CACHE_HOME=$PWD/tccache
+
+cat > "$TCDIR/dowel.build" <<'EOF'
+[bin.app]
+sources = [file("src/main.c")]
+
+[bin.app.private]
+flags = ["-I", sysroot("usr/include")]
+EOF
+
+# tc_toml <鍵=値...> — 取ってくる toolchain の宣言を書く。省いた鍵は出ない。
+tc_toml() {
+    {
+        printf '[package]\nname = "tcfetch"\nversion = "0.1.0"\nedition = "2026"\n\n'
+        printf '[toolchain.x86_64-unknown-linux-gnu]\n'
+        local kv
+        for kv in "$@"; do printf '%s = "%s"\n' "${kv%%=*}" "${kv#*=}"; done
+    } > "$TCDIR/dowel.toml"
+}
+tc_full() { tc_toml "url=file://$KIT" "sha256=$KITSUM" c=bin/kitcc "sysroot=sysroot"; }
+
+# --- 取ってきて、その中から解決する
+
+tc_full
+rm -rf "$TCDIR/.dowel" "$PWD/tccache"
+ok "a toolchain declared with a url and a sha256 builds" -C tcfetch build --no-compdb
+prints "42" "and the program it produced runs" \
+       "$(find "$TCDIR/.dowel/build" -type f -name app | head -1)"
+
+# 命令は書庫の中から選ばれている。機械の `cc` が使われたのでは、
+# 取ってきた意味が無い。
+_last_cmd="graph --kind=action | the compiler"
+OUT=$("$DOWEL" -C tcfetch graph --kind=action --format=json 2>/dev/null |
+      jq -r '.steps[] | select(.kind == "cc") | .program'); RC=0
+said=$OUT
+printf '%s' "$said" | grep -q 'toolchains/'
+fact $? "the compiler is resolved inside what was unpacked"
+printf '%s' "$said" | grep -q 'bin/kitcc$'
+fact $? "and it is the one the declaration named"
+
+# 置き場は利用者のキャッシュであり、木の中ではない。同じ書庫は
+# どの木でも同じバイト列である。
+n=$(find "$PWD/tccache/dowel/toolchains" -mindepth 1 -maxdepth 1 -type d 2>/dev/null | wc -l)
+_last_cmd="find \$XDG_CACHE_HOME/dowel/toolchains"; OUT="$n directories"; RC=0
+[ "$n" -eq 1 ]
+fact $? "what was unpacked lives in the user's cache, one directory per archive"
+if [ -e "$TCDIR/.dowel/toolchains" ]; then
+    fact 1 "and not inside the tree"
+else
+    fact 0 "and not inside the tree"
+fi
+
+# 2度目は取りに行かない。書庫を消しても組める。
+mv "$KIT" "$KIT.moved"
+ok "a later build never reaches for the archive again" -C tcfetch build --no-compdb
+mv "$KIT.moved" "$KIT"
+
+# --- sysroot（ADR-0047）
+#
+# cross では sysroot は飾りではない。対象の見出しとライブラリがそこに在り、
+# 翻訳の行がそれを言わなければ、機械側の見出しを拾って後から失敗する。
+# dowel には文字列の連結が無いので、`["-I", sysroot("...")]` の2語で書く。
+
+_last_cmd="graph --kind=action | the compile line"
+OUT=$("$DOWEL" -C tcfetch graph --kind=action --format=json 2>/dev/null |
+      jq -r '.steps[] | select(.kind == "cc") | (.arguments | join(" "))'); RC=0
+said=$OUT
+printf '%s' "$said" | grep -q 'toolchains/.*/sysroot/usr/include'
+fact $? "sysroot() expands to a path under the fetched toolchain"
+
+# 宣言が無ければ既定は無い。既定を置くと、何も宣言していない path が
+# 命令行へ入り、失敗は翻訳器の言葉で返ってくる。
+tc_toml "url=file://$KIT" "sha256=$KITSUM" c=bin/kitcc
+diag missing-sysroot "writing sysroot() with none declared is refused" \
+     -C tcfetch check
+out_has "declare \`sysroot" "and says where to declare it" -C tcfetch check
+
+# --- 固定されていないもの
+
+tc_toml "url=file://$KIT" c=bin/kitcc "sysroot=sysroot"
+diag unpinned-toolchain "a url without a sha256 is refused" -C tcfetch check
+out_has "the bytes behind a name can change" \
+        "and says why a url alone is not a pin" -C tcfetch check
+
+# digest が合わなければ止まる。機械に在るものへ黙って退避すると、
+# 宣言と違う翻訳器が宣言の裏で使われる——この決定が消そうとしたものである。
+tc_toml "url=file://$KIT" "sha256=0000000000000000000000000000000000000000000000000000000000000000" \
+        c=bin/kitcc "sysroot=sysroot"
+rm -rf "$PWD/tccache"
+diag unfetchable-toolchain "an archive whose digest does not match is refused" \
+     -C tcfetch check
+out_has "expected" "and shows what was expected and what arrived" -C tcfetch check
+
+tc_toml "url=file:///nonexistent/none.tar.gz" "sha256=$KITSUM" c=bin/kitcc
+diag unfetchable-toolchain "an archive that cannot be fetched is refused" \
+     -C tcfetch check
+
+# --- offline（ADR-0045）
+#
+# toolchain も「取ってきて印を置く」ものである以上、offline の対象である。
+
+tc_full
+rm -rf "$PWD/tccache"
+diag needs-fetch "a toolchain that is not fetched is refused under --offline" \
+     -C tcfetch check --offline
+
+ok "fetch acquires the toolchain" -C tcfetch fetch
+if [ -d "$PWD/tccache/dowel/toolchains" ]; then
+    fact 0 "and it really is unpacked into the cache"
+else
+    fact 1 "and it really is unpacked into the cache"
+fi
+ok "after which the build runs offline" -C tcfetch build --offline --no-compdb
+
+# `fetch` は「offline へ行ける」ことを見せるための入口である。取ってきた
+# ものを数えず一覧もしないなら、利用者が読むのは「何も要らなかった」に
+# なる（[F-065](../../docs/10-findings.md#f-065)）。
+rm -rf "$PWD/tccache"
+run -C tcfetch fetch
+said=$OUT
+known_issue F-065
+! printf '%s' "$said" | grep -q 'fetched 0'
+fact $? "fetch counts the toolchain it acquired"
+run -C tcfetch fetch
+known_issue F-065
+printf '%s' "$OUT" | grep -q 'ready:.*toolchain\|toolchain.*ready'
+fact $? "and lists it among what is now present"
+
+rm -rf "$TCDIR" "$KIT" "$PWD/tccache"

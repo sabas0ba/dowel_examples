@@ -75,10 +75,8 @@ PY
 
 # ------------------------------------------------------------ 1. 組める
 
-# `template` を宣言したパッケージは `check` を通らない。何も名指ししていない
-# のに `not-a-target` が出る（[F-058](../../docs/10-findings.md#f-058)）。
-# `build` と `test` は通るので、壊れているのは目標の数え方の側である。
-known_issue F-058
+# `check` は雛形を「組むもの」として数えない（[F-058](../../docs/10-findings.md#f-058)）。
+# 何も名指ししていないのだから、名指ししたときの `not-a-target` は出ない。
 ok "the bare-metal package passes check" check --target=$TRIPLE
 ok "and builds"                          build --no-compdb --target=$TRIPLE
 

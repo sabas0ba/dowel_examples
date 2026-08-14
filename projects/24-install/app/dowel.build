@@ -1,0 +1,12 @@
+[bin.app]
+sources = [file("src/main.c")]
+
+[bin.app.private]
+deps = [dep("shapes")]
+
+# 道具であって配り物ではない。install の既定はこれを含まない（ADR-0041）。
+[test.smoke]
+sources = [file("src/smoke.c")]
+
+[test.smoke.private]
+deps = [dep("shapes")]

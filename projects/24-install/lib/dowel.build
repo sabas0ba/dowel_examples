@@ -1,0 +1,22 @@
+# 配る側のライブラリ。public 区画は「使う側が何に対して翻訳するか」の宣言で
+# あり、install はそれをそのまま二つの形へ写す——見出しファイルの複製と、
+# pkg-config の記述子である（ADR-0041 / ADR-0043）。
+[lib.shapes]
+sources   = glob("src/*.c")
+linkage   = "shared"
+soversion = 2
+exports   = ["shapes_area", "shapes_perimeter"]
+
+[lib.shapes.public]
+includes   = [dir("include")]
+defines    = { SHAPES_SHARED = "1" }
+link_flags = ["-lm"]
+
+# 同じパッケージの、上に乗るライブラリ。書庫のままにしてある——共有と静的で
+# 「配った記述子で繋がるかどうか」が変わることを見るためである。
+[lib.render]
+sources = [file("render/render.c")]
+
+[lib.render.public]
+includes = [dir("render/include")]
+deps     = [target("shapes")]

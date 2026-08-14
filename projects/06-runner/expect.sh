@@ -101,3 +101,131 @@ if ! grep -qE '\{[a-z_]+\}' dowel.build; then
 else
     fact 1 "the manifest carries no placeholder for the transferred path"
 fi
+
+# --------------------------------------------------- 二度送らない（ADR-0046）
+#
+# `transfer` は起動のたびに写していた。変わっていない木の2度目の `test` でも、
+# 20 の case を持つ目標の case ごとにも、`--failed` の再実行でも。机の上の板へ
+# の ssh や直列の線では、その写しがテストより長いことが珍しくない。dowel は
+# 変わっていないものを組み直さないよう気を配り、その組み直していない結果を
+# 毎回送り直していた。
+#
+# 難しいのは、宛先が dowel の見えない機械であることである。手元なら出力
+# ファイルを見れば済むが、向こう側を見るには往復が要る——避けたいものが
+# それである。決定は「送ったものと宛先を記録し、両方変わらなければ飛ばす」。
+#
+# 数えるのは対象機の側に立ってである。dowel の言い分ではなく、
+# **実際に何回届いたか**を見る。
+
+count() { grep -c . transfer-count.txt 2>/dev/null || printf 0; }
+
+rm -rf .dowel remote transfer-count.txt
+ok "the first test run transfers the artifact" test --target=$TRIPLE
+n1=$(count)
+_last_cmd="wc -l transfer-count.txt"; OUT="$n1 transfers"; RC=0
+[ "$n1" -eq 1 ]
+fact $? "which really is one transfer"
+
+ok "an unchanged tree runs the tests again" test --target=$TRIPLE
+n2=$(count)
+_last_cmd="wc -l transfer-count.txt"; OUT="$n2 transfers after two runs"; RC=0
+[ "$n2" -eq 1 ]
+fact $? "and sends nothing the second time"
+
+# 送るものが変われば送る。指紋は成果物のものであり、木のものではない。
+sed -i 's|return 0;|return 0; /* touched */|' tests/remote_test.c
+ok "changing the source and testing again works" test --target=$TRIPLE
+n3=$(count)
+_last_cmd="wc -l transfer-count.txt"; OUT="$n3 transfers after the artifact changed"; RC=0
+[ "$n3" -eq 2 ]
+fact $? "a changed artifact is sent again"
+sed -i 's| /\* touched \*/||' tests/remote_test.c
+
+# 記録はビルドディレクトリに在る。構成ごとに分かれ、構成と共に死ぬ。
+if [ -f ".dowel/build/$TRIPLE-debug/transfers" ]; then
+    fact 0 "what was sent is recorded in the build directory"
+else
+    fact 1 "what was sent is recorded in the build directory"
+fi
+
+# 記録を消せば送り直す。古くなった記録は、古くなったビルド状態を捨てる
+# のと同じ手立てで捨てられる——そのための別の切り替えは要らない。
+run test --target=$TRIPLE
+before=$(count)
+rm -f ".dowel/build/$TRIPLE-debug/transfers"
+ok "testing after the record is gone works" test --target=$TRIPLE
+after=$(count)
+_last_cmd="wc -l transfer-count.txt"; OUT="$before -> $after"; RC=0
+[ "$after" -eq $((before + 1)) ]
+fact $? "removing the record makes the next run send again"
+
+
+# ここが決定の正直な半分である。dowel は対象機を見られないので、誰かが
+# 消したことは分からない。分かるのは**起動に失敗したこと**だけであり、
+# それを使えば、気づいた次の実行で直る。
+#
+# 仕組みそのものは働く。起動そのものが成り立たなかった場合——`command` に
+# 書いた道具が無い——次の実行は送り直す。
+
+launcher() {
+    python3 - "$1" "$2" <<'EOF'
+import sys
+p = "dowel.build"
+t = open(p).read()
+open(p, "w").write(t.replace('command    = "%s"' % sys.argv[1],
+                             'command    = "%s"' % sys.argv[2]))
+EOF
+}
+
+run test --target=$TRIPLE
+before=$(count)
+launcher sh no-such-launcher-xyz
+run test --target=$TRIPLE
+said=$OUT; rc=$RC
+[ "$rc" -ne 0 ]; _verdict $? "a run whose launcher does not exist fails"
+printf '%s' "$said" | grep -q 'could not start'
+fact $? "and is reported as a launch that never happened"
+launcher no-such-launcher-xyz sh
+ok "and the run after it works" test --target=$TRIPLE
+after=$(count)
+_last_cmd="wc -l transfer-count.txt"; OUT="$before -> $after"; RC=0
+[ "$after" -eq $((before + 1)) ]
+fact $? "a run that could not start drops the record, so the next one sends again"
+
+# ところが、この決定が自分の動機として挙げている場面——対象機から成果物が
+# 消えた——では起動は成り立つ。dowel が起こすのは手元の運び手（ssh や sh）
+# であり、それは問題なく始まる。消えていることが分かるのは向こう側で、
+# 返ってくるのは終了状態である。`launch_error` にはならないので記録は残り、
+# 次の実行も送らない（[F-066](../../docs/10-findings.md#f-066)）。
+run test --target=$TRIPLE
+before=$(count)
+rm -f remote/remote_test
+fails "a run whose artifact vanished from the target fails" test --target=$TRIPLE
+mid=$(count)
+_last_cmd="wc -l transfer-count.txt"; OUT="$before -> $mid (the run that noticed)"; RC=0
+[ "$mid" -eq "$before" ]
+fact $? "the run that noticed does not itself re-send"
+
+run test --target=$TRIPLE
+recovered=$(count)
+_last_cmd="wc -l transfer-count.txt"; OUT="$mid -> $recovered (the run after)"; RC=0
+known_issue F-066
+[ "$recovered" -eq $((mid + 1)) ]
+fact $? "a machine that lost the artifact recovers on the run after the one that noticed"
+
+run test --target=$TRIPLE
+known_issue F-066
+[ "$RC" -eq 0 ]
+_verdict $? "and the tests pass again without the record being touched by hand"
+
+# 手立てが無いわけではない。記録はビルドディレクトリに在るので、
+# 古くなったビルド状態と同じやり方で捨てられる。
+rm -f ".dowel/build/$TRIPLE-debug/transfers"
+ok "removing the record by hand is what brings it back" test --target=$TRIPLE
+if [ -f remote/remote_test ]; then
+    fact 0 "and the artifact is on the target machine again"
+else
+    fact 1 "and the artifact is on the target machine again"
+fi
+
+rm -f transfer-count.txt
