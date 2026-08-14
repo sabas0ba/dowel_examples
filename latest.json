@@ -1,20 +1,20 @@
 {
- "run_id": "31573052612",
+ "run_id": "31762764772",
  "run_attempt": "1",
- "run_url": "https://github.com/sabas0ba/dowel_examples/actions/runs/31573052612",
- "commit": "6bdf4c361082781b5e261cfc2b0f39be5e55006c",
+ "run_url": "https://github.com/sabas0ba/dowel_examples/actions/runs/31762764772",
+ "commit": "44b9e82bb3725a3efeb54d7027ff9cf8d2d7a992",
  "branch": "main",
- "started_at": "2026-08-12T07:20:11Z",
+ "started_at": "2026-08-14T02:10:27Z",
  "dowel_version": "dowel 0.0.1",
- "dowel_ref": "c1540974ad02ef56fd17e669fa7052c384138873",
- "dowel_commit": "c1540974ad02ef56fd17e669fa7052c384138873",
+ "dowel_ref": "0511d5e048bc07dbd27b75b4bd310da603686d39",
+ "dowel_commit": "0511d5e048bc07dbd27b75b4bd310da603686d39",
  "cc": "cc (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0",
  "ninja": "1.13.2",
  "projects": [
   {
    "name": "01-minimal",
    "root": "projects",
-   "duration_ms": 269,
+   "duration_ms": 3195,
    "counts": {
     "pass": 10,
     "fail": 0,
@@ -72,7 +72,7 @@
   {
    "name": "02-config",
    "root": "projects",
-   "duration_ms": 1127,
+   "duration_ms": 9817,
    "counts": {
     "pass": 34,
     "fail": 0,
@@ -227,7 +227,7 @@
   {
    "name": "03-features",
    "root": "projects",
-   "duration_ms": 781,
+   "duration_ms": 270,
    "counts": {
     "pass": 17,
     "fail": 0,
@@ -317,14 +317,14 @@
   {
    "name": "04-diagnostics",
    "root": "projects",
-   "duration_ms": 1592,
+   "duration_ms": 541,
    "counts": {
-    "pass": 80,
+    "pass": 94,
     "fail": 0,
-    "xfail": 1,
+    "xfail": 0,
     "xpass": 0
    },
-   "total": 81,
+   "total": 94,
    "ok": true,
    "checks": [
     {
@@ -629,6 +629,14 @@
     },
     {
      "status": "pass",
+     "desc": "check refuses a target name"
+    },
+    {
+     "status": "pass",
+     "desc": "and says that it checks everything"
+    },
+    {
+     "status": "pass",
      "desc": "a key outside the vocabulary is refused"
     },
     {
@@ -644,8 +652,52 @@
      "desc": "and where a project's own axis belongs, spelled with the name that was written"
     },
     {
-     "status": "xfail",
-     "desc": "the schema says the configuration vocabulary is closed, as the decision did  [F-059]"
+     "status": "pass",
+     "desc": "the schema says the configuration vocabulary is closed, as the decision did"
+    },
+    {
+     "status": "pass",
+     "desc": "a component outside the vocabulary is refused"
+    },
+    {
+     "status": "pass",
+     "desc": "listing the components abi does accept"
+    },
+    {
+     "status": "pass",
+     "desc": "and saying that this vocabulary is closed too"
+    },
+    {
+     "status": "pass",
+     "desc": "and offering the component that was probably meant"
+    },
+    {
+     "status": "pass",
+     "desc": "a value outside a component's domain is refused"
+    },
+    {
+     "status": "pass",
+     "desc": "and the domain is listed"
+    },
+    {
+     "status": "pass",
+     "desc": "a label made of known components is accepted"
+    },
+    {
+     "status": "pass",
+     "desc": "a label written as one word is still accepted"
+    },
+    {
+     "status": "pass",
+     "desc": "the configuration vocabulary carries the runtime axis the triple names"
+    },
+    {
+     "status": "pass",
+     "desc": "with a domain, as every key in a closed vocabulary has"
+    },
+    {
+     "status": "pass",
+     "desc": "and says how the vocabulary grows, which is what makes it dependable"
     },
     {
      "status": "pass",
@@ -680,7 +732,7 @@
   {
    "name": "05-incremental",
    "root": "projects",
-   "duration_ms": 1972,
+   "duration_ms": 1514,
    "counts": {
     "pass": 49,
     "fail": 0,
@@ -896,14 +948,14 @@
   {
    "name": "06-runner",
    "root": "projects",
-   "duration_ms": 361,
+   "duration_ms": 798,
    "counts": {
-    "pass": 17,
+    "pass": 34,
     "fail": 0,
-    "xfail": 0,
+    "xfail": 2,
     "xpass": 0
    },
-   "total": 17,
+   "total": 36,
    "ok": true,
    "checks": [
     {
@@ -973,6 +1025,82 @@
     {
      "status": "pass",
      "desc": "the manifest carries no placeholder for the transferred path"
+    },
+    {
+     "status": "pass",
+     "desc": "the first test run transfers the artifact"
+    },
+    {
+     "status": "pass",
+     "desc": "which really is one transfer"
+    },
+    {
+     "status": "pass",
+     "desc": "an unchanged tree runs the tests again"
+    },
+    {
+     "status": "pass",
+     "desc": "and sends nothing the second time"
+    },
+    {
+     "status": "pass",
+     "desc": "changing the source and testing again works"
+    },
+    {
+     "status": "pass",
+     "desc": "a changed artifact is sent again"
+    },
+    {
+     "status": "pass",
+     "desc": "what was sent is recorded in the build directory"
+    },
+    {
+     "status": "pass",
+     "desc": "testing after the record is gone works"
+    },
+    {
+     "status": "pass",
+     "desc": "removing the record makes the next run send again"
+    },
+    {
+     "status": "pass",
+     "desc": "a run whose launcher does not exist fails"
+    },
+    {
+     "status": "pass",
+     "desc": "and is reported as a launch that never happened"
+    },
+    {
+     "status": "pass",
+     "desc": "and the run after it works"
+    },
+    {
+     "status": "pass",
+     "desc": "a run that could not start drops the record, so the next one sends again"
+    },
+    {
+     "status": "pass",
+     "desc": "a run whose artifact vanished from the target fails"
+    },
+    {
+     "status": "pass",
+     "desc": "the run that noticed does not itself re-send"
+    },
+    {
+     "status": "xfail",
+     "desc": "a machine that lost the artifact recovers on the run after the one that noticed  [F-066]"
+    },
+    {
+     "status": "xfail",
+     "desc": "and the tests pass again without the record being touched by hand  [F-066]"
+    },
+    {
+     "status": "pass",
+     "desc": "removing the record by hand is what brings it back"
+    },
+    {
+     "status": "pass",
+     "desc": "and the artifact is on the target machine again"
     }
    ],
    "packages": [
@@ -984,7 +1112,7 @@
   {
    "name": "07-robustness",
    "root": "projects",
-   "duration_ms": 2249,
+   "duration_ms": 1292,
    "counts": {
     "pass": 145,
     "fail": 0,
@@ -1582,7 +1710,7 @@
   {
    "name": "08-lsp",
    "root": "projects",
-   "duration_ms": 13673,
+   "duration_ms": 12940,
    "counts": {
     "pass": 110,
     "fail": 0,
@@ -2040,14 +2168,14 @@
   {
    "name": "09-acquisition",
    "root": "projects",
-   "duration_ms": 31351,
+   "duration_ms": 40830,
    "counts": {
-    "pass": 91,
+    "pass": 107,
     "fail": 0,
-    "xfail": 4,
+    "xfail": 1,
     "xpass": 0
    },
-   "total": 95,
+   "total": 108,
    "ok": true,
    "checks": [
     {
@@ -2419,16 +2547,68 @@
      "desc": "the fallback really reaches cargo"
     },
     {
-     "status": "xfail",
-     "desc": "a failed fetch says why it failed  [F-060]"
+     "status": "pass",
+     "desc": "a failed fetch says why it failed"
     },
     {
-     "status": "xfail",
-     "desc": "the record of an installed version says which way it arrived  [F-061]"
+     "status": "pass",
+     "desc": "a failed fetch says what each tool it tried reported"
     },
     {
-     "status": "xfail",
-     "desc": "the listing says which way each version arrived  [F-061]"
+     "status": "pass",
+     "desc": "the reason the asset path was abandoned survives into the failure"
+    },
+    {
+     "status": "pass",
+     "desc": "a checksum mismatch also survives into the failure"
+    },
+    {
+     "status": "pass",
+     "desc": "the surviving reason is the mismatch itself, not a generic one"
+    },
+    {
+     "status": "pass",
+     "desc": "the record of a version taken from an asset says so"
+    },
+    {
+     "status": "pass",
+     "desc": "the record keeps the digest that was verified"
+    },
+    {
+     "status": "pass",
+     "desc": "the listing marks a version that arrived as a published binary"
+    },
+    {
+     "status": "pass",
+     "desc": "which says which way the binary that would run here arrived"
+    },
+    {
+     "status": "pass",
+     "desc": "which states the digest for a version taken from an asset"
+    },
+    {
+     "status": "pass",
+     "desc": "the record of a version built from source says so"
+    },
+    {
+     "status": "pass",
+     "desc": "a version built from source carries no asset digest"
+    },
+    {
+     "status": "pass",
+     "desc": "the listing marks a version that was built from source"
+    },
+    {
+     "status": "pass",
+     "desc": "resolving an installed version again records one arrival, not two"
+    },
+    {
+     "status": "pass",
+     "desc": "resolving an installed version again keeps the way it first arrived"
+    },
+    {
+     "status": "pass",
+     "desc": "resolving an installed version again still records the new specifier"
     }
    ],
    "packages": []
@@ -2436,14 +2616,14 @@
   {
    "name": "10-toolchain",
    "root": "projects",
-   "duration_ms": 889,
+   "duration_ms": 4382,
    "counts": {
-    "pass": 31,
+    "pass": 50,
     "fail": 0,
-    "xfail": 0,
+    "xfail": 2,
     "xpass": 0
    },
-   "total": 31,
+   "total": 52,
    "ok": true,
    "checks": [
     {
@@ -2569,6 +2749,90 @@
     {
      "status": "pass",
      "desc": "the missing toolchain never reaches the shell"
+    },
+    {
+     "status": "pass",
+     "desc": "a toolchain declared with a url and a sha256 builds"
+    },
+    {
+     "status": "pass",
+     "desc": "and the program it produced runs"
+    },
+    {
+     "status": "pass",
+     "desc": "the compiler is resolved inside what was unpacked"
+    },
+    {
+     "status": "pass",
+     "desc": "and it is the one the declaration named"
+    },
+    {
+     "status": "pass",
+     "desc": "what was unpacked lives in the user's cache, one directory per archive"
+    },
+    {
+     "status": "pass",
+     "desc": "and not inside the tree"
+    },
+    {
+     "status": "pass",
+     "desc": "a later build never reaches for the archive again"
+    },
+    {
+     "status": "pass",
+     "desc": "sysroot() expands to a path under the fetched toolchain"
+    },
+    {
+     "status": "pass",
+     "desc": "writing sysroot() with none declared is refused"
+    },
+    {
+     "status": "pass",
+     "desc": "and says where to declare it"
+    },
+    {
+     "status": "pass",
+     "desc": "a url without a sha256 is refused"
+    },
+    {
+     "status": "pass",
+     "desc": "and says why a url alone is not a pin"
+    },
+    {
+     "status": "pass",
+     "desc": "an archive whose digest does not match is refused"
+    },
+    {
+     "status": "pass",
+     "desc": "and shows what was expected and what arrived"
+    },
+    {
+     "status": "pass",
+     "desc": "an archive that cannot be fetched is refused"
+    },
+    {
+     "status": "pass",
+     "desc": "a toolchain that is not fetched is refused under --offline"
+    },
+    {
+     "status": "pass",
+     "desc": "fetch acquires the toolchain"
+    },
+    {
+     "status": "pass",
+     "desc": "and it really is unpacked into the cache"
+    },
+    {
+     "status": "pass",
+     "desc": "after which the build runs offline"
+    },
+    {
+     "status": "xfail",
+     "desc": "fetch counts the toolchain it acquired  [F-065]"
+    },
+    {
+     "status": "xfail",
+     "desc": "and lists it among what is now present  [F-065]"
     }
    ],
    "packages": [
@@ -2578,7 +2842,7 @@
   {
    "name": "11-cross",
    "root": "projects",
-   "duration_ms": 736,
+   "duration_ms": 1570,
    "counts": {
     "pass": 17,
     "fail": 0,
@@ -2664,7 +2928,7 @@
   {
    "name": "12-store",
    "root": "projects",
-   "duration_ms": 1533,
+   "duration_ms": 1267,
    "counts": {
     "pass": 43,
     "fail": 0,
@@ -2854,7 +3118,7 @@
   {
    "name": "13-parallel",
    "root": "projects",
-   "duration_ms": 10816,
+   "duration_ms": 11176,
    "counts": {
     "pass": 18,
     "fail": 0,
@@ -2944,7 +3208,7 @@
   {
    "name": "14-scale",
    "root": "projects",
-   "duration_ms": 7401,
+   "duration_ms": 6108,
    "counts": {
     "pass": 17,
     "fail": 0,
@@ -3028,7 +3292,7 @@
   {
    "name": "15-cpp",
    "root": "projects",
-   "duration_ms": 4699,
+   "duration_ms": 8084,
    "counts": {
     "pass": 70,
     "fail": 0,
@@ -3336,7 +3600,7 @@
   {
    "name": "16-migrate",
    "root": "projects",
-   "duration_ms": 2657,
+   "duration_ms": 2724,
    "counts": {
     "pass": 72,
     "fail": 0,
@@ -3642,14 +3906,14 @@
   {
    "name": "17-deps",
    "root": "projects",
-   "duration_ms": 931,
+   "duration_ms": 1222,
    "counts": {
-    "pass": 67,
+    "pass": 83,
     "fail": 0,
     "xfail": 0,
     "xpass": 0
    },
-   "total": 67,
+   "total": 83,
    "ok": true,
    "checks": [
     {
@@ -3919,6 +4183,70 @@
     {
      "status": "pass",
      "desc": "removing what was unpacked makes the next build fetch it again"
+    },
+    {
+     "status": "pass",
+     "desc": "a dependency that is not fetched is refused under --offline"
+    },
+    {
+     "status": "pass",
+     "desc": "and says where it would have come from"
+    },
+    {
+     "status": "pass",
+     "desc": "and how to get it"
+    },
+    {
+     "status": "pass",
+     "desc": "the environment variable does the same as the flag"
+    },
+    {
+     "status": "pass",
+     "desc": "fetch acquires what the build needs"
+    },
+    {
+     "status": "pass",
+     "desc": "and lists what is now present"
+    },
+    {
+     "status": "pass",
+     "desc": "and says that the build can now run offline"
+    },
+    {
+     "status": "pass",
+     "desc": "fetch compiles nothing"
+    },
+    {
+     "status": "pass",
+     "desc": "the build then runs with --offline"
+    },
+    {
+     "status": "pass",
+     "desc": "and so does check"
+    },
+    {
+     "status": "pass",
+     "desc": "removing what was unpacked brings needs-fetch back"
+    },
+    {
+     "status": "pass",
+     "desc": "and fetching once makes it work again"
+    },
+    {
+     "status": "pass",
+     "desc": "--offline says nothing about resolving a system dependency"
+    },
+    {
+     "status": "pass",
+     "desc": "a fetch that was tried and failed has its own code"
+    },
+    {
+     "status": "pass",
+     "desc": "while the same tree under --offline reports nothing was tried"
+    },
+    {
+     "status": "pass",
+     "desc": "fetch fails when it cannot acquire what it was asked for"
     }
    ],
    "packages": [
@@ -3933,7 +4261,7 @@
   {
    "name": "18-tools",
    "root": "projects",
-   "duration_ms": 1002,
+   "duration_ms": 489,
    "counts": {
     "pass": 32,
     "fail": 0,
@@ -4082,7 +4410,7 @@
   {
    "name": "19-artifacts",
    "root": "projects",
-   "duration_ms": 939,
+   "duration_ms": 616,
    "counts": {
     "pass": 35,
     "fail": 0,
@@ -4242,7 +4570,7 @@
   {
    "name": "20-cases",
    "root": "projects",
-   "duration_ms": 33362,
+   "duration_ms": 32524,
    "counts": {
     "pass": 62,
     "fail": 0,
@@ -4508,7 +4836,7 @@
   {
    "name": "21-debug",
    "root": "projects",
-   "duration_ms": 1266,
+   "duration_ms": 1184,
    "counts": {
     "pass": 32,
     "fail": 0,
@@ -4654,7 +4982,7 @@
   {
    "name": "22-bench",
    "root": "projects",
-   "duration_ms": 3617,
+   "duration_ms": 3263,
    "counts": {
     "pass": 34,
     "fail": 0,
@@ -4808,7 +5136,7 @@
   {
    "name": "23-probe",
    "root": "projects",
-   "duration_ms": 192,
+   "duration_ms": 213,
    "counts": {
     "pass": 23,
     "fail": 0,
@@ -4917,21 +5245,472 @@
    ]
   },
   {
-   "name": "blink",
-   "root": "apps",
-   "duration_ms": 2089,
+   "name": "24-install",
+   "root": "projects",
+   "duration_ms": 1583,
    "counts": {
-    "pass": 47,
+    "pass": 44,
+    "fail": 0,
+    "xfail": 2,
+    "xpass": 0
+   },
+   "total": 46,
+   "ok": true,
+   "checks": [
+    {
+     "status": "pass",
+     "desc": "installing a library succeeds"
+    },
+    {
+     "status": "pass",
+     "desc": "installing a library writes lib/libshapes.so.2"
+    },
+    {
+     "status": "pass",
+     "desc": "installing a library writes lib/libshapes.so"
+    },
+    {
+     "status": "pass",
+     "desc": "installing a library writes lib/librender.a"
+    },
+    {
+     "status": "pass",
+     "desc": "installing a library writes include/shapes.h"
+    },
+    {
+     "status": "pass",
+     "desc": "installing a library writes include/render.h"
+    },
+    {
+     "status": "pass",
+     "desc": "installing a library writes lib/pkgconfig/shapes.pc"
+    },
+    {
+     "status": "pass",
+     "desc": "installing a library writes lib/pkgconfig/render.pc"
+    },
+    {
+     "status": "pass",
+     "desc": "the unversioned name of a versioned library is a symlink"
+    },
+    {
+     "status": "pass",
+     "desc": "what is installed is the published directory, not the sources beside it"
+    },
+    {
+     "status": "pass",
+     "desc": "what is installed is the same bytes that were built"
+    },
+    {
+     "status": "pass",
+     "desc": "installing without a destination is refused"
+    },
+    {
+     "status": "pass",
+     "desc": "refusing it names the option that is missing"
+    },
+    {
+     "status": "pass",
+     "desc": "installing a package with a test target succeeds"
+    },
+    {
+     "status": "pass",
+     "desc": "a bin target is installed"
+    },
+    {
+     "status": "pass",
+     "desc": "a test target is not installed"
+    },
+    {
+     "status": "pass",
+     "desc": "a shared library the executable needs is installed with it"
+    },
+    {
+     "status": "pass",
+     "desc": "installing a binary does not bring its dependency's headers"
+    },
+    {
+     "status": "pass",
+     "desc": "naming a target installs that one"
+    },
+    {
+     "status": "pass",
+     "desc": "the named target is installed"
+    },
+    {
+     "status": "pass",
+     "desc": "an installed executable records a search path relative to itself"
+    },
+    {
+     "status": "pass",
+     "desc": "the build tree path stays alongside it"
+    },
+    {
+     "status": "pass",
+     "desc": "the installed tree runs after it is moved and the build tree is gone"
+    },
+    {
+     "status": "pass",
+     "desc": "the direct backend records the relative search path unmangled"
+    },
+    {
+     "status": "pass",
+     "desc": "the ninja backend records the relative search path unmangled"
+    },
+    {
+     "status": "pass",
+     "desc": "the make backend records the relative search path unmangled"
+    },
+    {
+     "status": "pass",
+     "desc": "installing into a staging directory succeeds"
+    },
+    {
+     "status": "pass",
+     "desc": "--destdir prepends a staging root to every destination"
+    },
+    {
+     "status": "pass",
+     "desc": "the descriptor names the real prefix, not the staging directory"
+    },
+    {
+     "status": "pass",
+     "desc": "a staged executable carries the same relative search path"
+    },
+    {
+     "status": "pass",
+     "desc": "a staged tree unpacked somewhere else runs"
+    },
+    {
+     "status": "pass",
+     "desc": "installing into an empty staging directory yields the file list"
+    },
+    {
+     "status": "pass",
+     "desc": "the descriptor names the target"
+    },
+    {
+     "status": "pass",
+     "desc": "the descriptor carries the package version"
+    },
+    {
+     "status": "pass",
+     "desc": "the descriptor carries the declared description"
+    },
+    {
+     "status": "pass",
+     "desc": "Cflags points at the installed include directory"
+    },
+    {
+     "status": "pass",
+     "desc": "Cflags carries the defines the library publishes"
+    },
+    {
+     "status": "pass",
+     "desc": "Libs names the library itself"
+    },
+    {
+     "status": "pass",
+     "desc": "Libs carries the link flags the library publishes"
+    },
+    {
+     "status": "pass",
+     "desc": "the descriptor validates as pkg-config input"
+    },
+    {
+     "status": "pass",
+     "desc": "a bin target gets no pkg-config descriptor"
+    },
+    {
+     "status": "pass",
+     "desc": "a consumer that knows nothing about dowel compiles against the installed library"
+    },
+    {
+     "status": "pass",
+     "desc": "and the program it produced runs"
+    },
+    {
+     "status": "xfail",
+     "desc": "a consumer links against an installed library that sits on a sibling  [F-062]"
+    },
+    {
+     "status": "pass",
+     "desc": "naming the sibling by hand is what makes that link succeed"
+    },
+    {
+     "status": "xfail",
+     "desc": "the descriptor of a library that sits on a sibling names what it requires  [F-062]"
+    }
+   ],
+   "packages": [
+    "app",
+    "lib"
+   ]
+  },
+  {
+   "name": "25-asm",
+   "root": "projects",
+   "duration_ms": 492,
+   "counts": {
+    "pass": 23,
+    "fail": 0,
+    "xfail": 3,
+    "xpass": 0
+   },
+   "total": 26,
+   "ok": true,
+   "checks": [
+    {
+     "status": "pass",
+     "desc": "a target mixing C and assembly builds"
+    },
+    {
+     "status": "pass",
+     "desc": "and the program it produced runs"
+    },
+    {
+     "status": "pass",
+     "desc": "the progress line for assembly says AS"
+    },
+    {
+     "status": "pass",
+     "desc": "and the one for C still says CC"
+    },
+    {
+     "status": "pass",
+     "desc": "the action graph describes it as an assembly step"
+    },
+    {
+     "status": "pass",
+     "desc": "a language-independent flag reaches assembly"
+    },
+    {
+     "status": "pass",
+     "desc": "a C standard does not reach assembly"
+    },
+    {
+     "status": "pass",
+     "desc": "a C-only flag does not reach assembly"
+    },
+    {
+     "status": "pass",
+     "desc": "an assembly-only flag reaches assembly"
+    },
+    {
+     "status": "pass",
+     "desc": "an assembly-only flag does not reach C"
+    },
+    {
+     "status": "pass",
+     "desc": "C still gets its own standard and flags"
+    },
+    {
+     "status": "pass",
+     "desc": "a preprocessed assembly source is assembly too"
+    },
+    {
+     "status": "pass",
+     "desc": "dowel adds the flag that marks the stack non-executable"
+    },
+    {
+     "status": "pass",
+     "desc": "the executable it produced does not ask for an executable stack"
+    },
+    {
+     "status": "pass",
+     "desc": "what dowel adds comes before what the target declares, so the target can override it"
+    },
+    {
+     "status": "pass",
+     "desc": "a preprocessed assembly source asks for a depfile"
+    },
+    {
+     "status": "pass",
+     "desc": "a plain assembly source does not, because none would be written"
+    },
+    {
+     "status": "pass",
+     "desc": "editing a header a preprocessed assembly source includes rebuilds it"
+    },
+    {
+     "status": "pass",
+     "desc": "and the change reaches the program"
+    },
+    {
+     "status": "pass",
+     "desc": "the direct backend leaves nothing to redo on the next build"
+    },
+    {
+     "status": "pass",
+     "desc": "the ninja backend leaves nothing to redo on the next build"
+    },
+    {
+     "status": "pass",
+     "desc": "the make backend leaves nothing to redo on the next build"
+    },
+    {
+     "status": "pass",
+     "desc": "a source the C driver cannot compile fails the build"
+    },
+    {
+     "status": "xfail",
+     "desc": "and says which source produced no object  [F-063]"
+    },
+    {
+     "status": "xfail",
+     "desc": "check refuses a source the C driver cannot compile  [F-063]"
+    },
+    {
+     "status": "xfail",
+     "desc": "a build that failed this way still converges  [F-063]"
+    }
+   ],
+   "packages": [
+    "."
+   ]
+  },
+  {
+   "name": "26-prebuilt",
+   "root": "projects",
+   "duration_ms": 360,
+   "counts": {
+    "pass": 26,
     "fail": 0,
     "xfail": 1,
+    "xpass": 0
+   },
+   "total": 27,
+   "ok": true,
+   "checks": [
+    {
+     "status": "pass",
+     "desc": "a target that names a prebuilt library builds"
+    },
+    {
+     "status": "pass",
+     "desc": "and the program it produced runs"
+    },
+    {
+     "status": "pass",
+     "desc": "a consumer of a prebuilt library compiles against its published headers"
+    },
+    {
+     "status": "pass",
+     "desc": "building a prebuilt library runs no compile and no archive of its own"
+    },
+    {
+     "status": "pass",
+     "desc": "while its consumer is compiled as usual"
+    },
+    {
+     "status": "pass",
+     "desc": "why traces a value back to the prebuilt target"
+    },
+    {
+     "status": "pass",
+     "desc": "and the link flags it publishes arrive with it"
+    },
+    {
+     "status": "pass",
+     "desc": "a prebuilt library that is not there fails"
+    },
+    {
+     "status": "pass",
+     "desc": "and says so with its own code"
+    },
+    {
+     "status": "pass",
+     "desc": "with the position of the declaration"
+    },
+    {
+     "status": "pass",
+     "desc": "naming the path it looked for"
+    },
+    {
+     "status": "pass",
+     "desc": "and saying that dowel does not produce it"
+    },
+    {
+     "status": "pass",
+     "desc": "replacing the prebuilt library relinks its consumer"
+    },
+    {
+     "status": "pass",
+     "desc": "declaring both sources and prebuilt is refused"
+    },
+    {
+     "status": "pass",
+     "desc": "and says a target is built here or was built elsewhere"
+    },
+    {
+     "status": "pass",
+     "desc": "a bin that names a prebuilt library is refused"
+    },
+    {
+     "status": "pass",
+     "desc": "and says what a prebuilt is for"
+    },
+    {
+     "status": "pass",
+     "desc": "a prebuilt library requiring another libc than the build is refused"
+    },
+    {
+     "status": "pass",
+     "desc": "with the code the label system already had"
+    },
+    {
+     "status": "pass",
+     "desc": "naming what the surface requires"
+    },
+    {
+     "status": "pass",
+     "desc": "and the triple the build actually is"
+    },
+    {
+     "status": "pass",
+     "desc": "and says why nothing later would catch it"
+    },
+    {
+     "status": "xfail",
+     "desc": "one wrong declaration produces one diagnostic  [F-064]"
+    },
+    {
+     "status": "pass",
+     "desc": "a prebuilt library requiring the libc the build has passes"
+    },
+    {
+     "status": "pass",
+     "desc": "a surface may say more than the other side without blocking it"
+    },
+    {
+     "status": "pass",
+     "desc": "and the merged label is the union of what was said"
+    },
+    {
+     "status": "pass",
+     "desc": "keeping what the other side said too"
+    }
+   ],
+   "packages": [
+    "."
+   ]
+  },
+  {
+   "name": "blink",
+   "root": "apps",
+   "duration_ms": 3152,
+   "counts": {
+    "pass": 48,
+    "fail": 0,
+    "xfail": 0,
     "xpass": 0
    },
    "total": 48,
    "ok": true,
    "checks": [
     {
-     "status": "xfail",
-     "desc": "the bare-metal package passes check  [F-058]"
+     "status": "pass",
+     "desc": "the bare-metal package passes check"
     },
     {
      "status": "pass",
@@ -5129,7 +5908,7 @@
   {
    "name": "dsp",
    "root": "apps",
-   "duration_ms": 1497,
+   "duration_ms": 1711,
    "counts": {
     "pass": 47,
     "fail": 0,
@@ -5338,7 +6117,7 @@
   {
    "name": "hashx",
    "root": "apps",
-   "duration_ms": 2769,
+   "duration_ms": 2731,
    "counts": {
     "pass": 68,
     "fail": 0,
@@ -5630,7 +6409,7 @@
   {
    "name": "httpd",
    "root": "apps",
-   "duration_ms": 4286,
+   "duration_ms": 5229,
    "counts": {
     "pass": 36,
     "fail": 0,
@@ -5792,7 +6571,7 @@
   {
    "name": "jsonfmt",
    "root": "apps",
-   "duration_ms": 1794,
+   "duration_ms": 1758,
    "counts": {
     "pass": 39,
     "fail": 0,
@@ -5967,7 +6746,7 @@
   {
    "name": "plot",
    "root": "apps",
-   "duration_ms": 2101,
+   "duration_ms": 7100,
    "counts": {
     "pass": 42,
     "fail": 0,
@@ -6154,7 +6933,7 @@
   {
    "name": "vision",
    "root": "apps",
-   "duration_ms": 13450,
+   "duration_ms": 19215,
    "counts": {
     "pass": 32,
     "fail": 0,
@@ -6301,7 +7080,7 @@
   {
    "name": "winapp",
    "root": "apps",
-   "duration_ms": 6923,
+   "duration_ms": 6880,
    "counts": {
     "pass": 38,
     "fail": 0,
@@ -6471,7 +7250,7 @@
   {
    "name": "docs",
    "root": "projects",
-   "duration_ms": 67,
+   "duration_ms": 80,
    "counts": {
     "pass": 9,
     "fail": 0,
@@ -6522,19 +7301,24 @@
   }
  ],
  "totals": {
-  "pass": 1464,
+  "pass": 1640,
   "fail": 0,
-  "xfail": 6,
+  "xfail": 11,
   "xpass": 0
  },
- "total": 1470,
+ "total": 1651,
  "ok": true,
  "attention": [],
  "known_issues": [
   {
    "status": "xfail",
-   "project": "04-diagnostics",
-   "desc": "the schema says the configuration vocabulary is closed, as the decision did  [F-059]"
+   "project": "06-runner",
+   "desc": "a machine that lost the artifact recovers on the run after the one that noticed  [F-066]"
+  },
+  {
+   "status": "xfail",
+   "project": "06-runner",
+   "desc": "and the tests pass again without the record being touched by hand  [F-066]"
   },
   {
    "status": "xfail",
@@ -6543,23 +7327,43 @@
   },
   {
    "status": "xfail",
-   "project": "09-acquisition",
-   "desc": "a failed fetch says why it failed  [F-060]"
+   "project": "10-toolchain",
+   "desc": "fetch counts the toolchain it acquired  [F-065]"
   },
   {
    "status": "xfail",
-   "project": "09-acquisition",
-   "desc": "the record of an installed version says which way it arrived  [F-061]"
+   "project": "10-toolchain",
+   "desc": "and lists it among what is now present  [F-065]"
   },
   {
    "status": "xfail",
-   "project": "09-acquisition",
-   "desc": "the listing says which way each version arrived  [F-061]"
+   "project": "24-install",
+   "desc": "a consumer links against an installed library that sits on a sibling  [F-062]"
   },
   {
    "status": "xfail",
-   "project": "blink",
-   "desc": "the bare-metal package passes check  [F-058]"
+   "project": "24-install",
+   "desc": "the descriptor of a library that sits on a sibling names what it requires  [F-062]"
+  },
+  {
+   "status": "xfail",
+   "project": "25-asm",
+   "desc": "and says which source produced no object  [F-063]"
+  },
+  {
+   "status": "xfail",
+   "project": "25-asm",
+   "desc": "check refuses a source the C driver cannot compile  [F-063]"
+  },
+  {
+   "status": "xfail",
+   "project": "25-asm",
+   "desc": "a build that failed this way still converges  [F-063]"
+  },
+  {
+   "status": "xfail",
+   "project": "26-prebuilt",
+   "desc": "one wrong declaration produces one diagnostic  [F-064]"
   }
  ]
 }
