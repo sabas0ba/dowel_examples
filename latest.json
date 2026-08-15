@@ -1,10 +1,10 @@
 {
- "run_id": "31762764772",
+ "run_id": "31866125264",
  "run_attempt": "1",
- "run_url": "https://github.com/sabas0ba/dowel_examples/actions/runs/31762764772",
- "commit": "44b9e82bb3725a3efeb54d7027ff9cf8d2d7a992",
+ "run_url": "https://github.com/sabas0ba/dowel_examples/actions/runs/31866125264",
+ "commit": "cc126d0cde3d8340cab67518d435a15b8c895aec",
  "branch": "main",
- "started_at": "2026-08-14T02:10:27Z",
+ "started_at": "2026-08-15T05:08:39Z",
  "dowel_version": "dowel 0.0.1",
  "dowel_ref": "0511d5e048bc07dbd27b75b4bd310da603686d39",
  "dowel_commit": "0511d5e048bc07dbd27b75b4bd310da603686d39",
@@ -14,7 +14,7 @@
   {
    "name": "01-minimal",
    "root": "projects",
-   "duration_ms": 3195,
+   "duration_ms": 1317,
    "counts": {
     "pass": 10,
     "fail": 0,
@@ -72,7 +72,7 @@
   {
    "name": "02-config",
    "root": "projects",
-   "duration_ms": 9817,
+   "duration_ms": 6395,
    "counts": {
     "pass": 34,
     "fail": 0,
@@ -227,7 +227,7 @@
   {
    "name": "03-features",
    "root": "projects",
-   "duration_ms": 270,
+   "duration_ms": 314,
    "counts": {
     "pass": 17,
     "fail": 0,
@@ -317,7 +317,7 @@
   {
    "name": "04-diagnostics",
    "root": "projects",
-   "duration_ms": 541,
+   "duration_ms": 629,
    "counts": {
     "pass": 94,
     "fail": 0,
@@ -732,7 +732,7 @@
   {
    "name": "05-incremental",
    "root": "projects",
-   "duration_ms": 1514,
+   "duration_ms": 1790,
    "counts": {
     "pass": 49,
     "fail": 0,
@@ -948,7 +948,7 @@
   {
    "name": "06-runner",
    "root": "projects",
-   "duration_ms": 798,
+   "duration_ms": 960,
    "counts": {
     "pass": 34,
     "fail": 0,
@@ -1112,7 +1112,7 @@
   {
    "name": "07-robustness",
    "root": "projects",
-   "duration_ms": 1292,
+   "duration_ms": 1490,
    "counts": {
     "pass": 145,
     "fail": 0,
@@ -1710,7 +1710,7 @@
   {
    "name": "08-lsp",
    "root": "projects",
-   "duration_ms": 12940,
+   "duration_ms": 12792,
    "counts": {
     "pass": 110,
     "fail": 0,
@@ -2168,7 +2168,7 @@
   {
    "name": "09-acquisition",
    "root": "projects",
-   "duration_ms": 40830,
+   "duration_ms": 47637,
    "counts": {
     "pass": 107,
     "fail": 0,
@@ -2616,7 +2616,7 @@
   {
    "name": "10-toolchain",
    "root": "projects",
-   "duration_ms": 4382,
+   "duration_ms": 2837,
    "counts": {
     "pass": 50,
     "fail": 0,
@@ -2842,7 +2842,7 @@
   {
    "name": "11-cross",
    "root": "projects",
-   "duration_ms": 1570,
+   "duration_ms": 1559,
    "counts": {
     "pass": 17,
     "fail": 0,
@@ -2928,7 +2928,7 @@
   {
    "name": "12-store",
    "root": "projects",
-   "duration_ms": 1267,
+   "duration_ms": 1732,
    "counts": {
     "pass": 43,
     "fail": 0,
@@ -3118,7 +3118,7 @@
   {
    "name": "13-parallel",
    "root": "projects",
-   "duration_ms": 11176,
+   "duration_ms": 10929,
    "counts": {
     "pass": 18,
     "fail": 0,
@@ -3208,7 +3208,7 @@
   {
    "name": "14-scale",
    "root": "projects",
-   "duration_ms": 6108,
+   "duration_ms": 8196,
    "counts": {
     "pass": 17,
     "fail": 0,
@@ -3292,7 +3292,7 @@
   {
    "name": "15-cpp",
    "root": "projects",
-   "duration_ms": 8084,
+   "duration_ms": 6888,
    "counts": {
     "pass": 70,
     "fail": 0,
@@ -3600,7 +3600,7 @@
   {
    "name": "16-migrate",
    "root": "projects",
-   "duration_ms": 2724,
+   "duration_ms": 2877,
    "counts": {
     "pass": 72,
     "fail": 0,
@@ -3906,7 +3906,7 @@
   {
    "name": "17-deps",
    "root": "projects",
-   "duration_ms": 1222,
+   "duration_ms": 1614,
    "counts": {
     "pass": 83,
     "fail": 0,
@@ -4261,7 +4261,7 @@
   {
    "name": "18-tools",
    "root": "projects",
-   "duration_ms": 489,
+   "duration_ms": 641,
    "counts": {
     "pass": 32,
     "fail": 0,
@@ -4410,7 +4410,7 @@
   {
    "name": "19-artifacts",
    "root": "projects",
-   "duration_ms": 616,
+   "duration_ms": 825,
    "counts": {
     "pass": 35,
     "fail": 0,
@@ -4570,7 +4570,7 @@
   {
    "name": "20-cases",
    "root": "projects",
-   "duration_ms": 32524,
+   "duration_ms": 32867,
    "counts": {
     "pass": 62,
     "fail": 0,
@@ -4836,7 +4836,7 @@
   {
    "name": "21-debug",
    "root": "projects",
-   "duration_ms": 1184,
+   "duration_ms": 1485,
    "counts": {
     "pass": 32,
     "fail": 0,
@@ -4982,7 +4982,7 @@
   {
    "name": "22-bench",
    "root": "projects",
-   "duration_ms": 3263,
+   "duration_ms": 3602,
    "counts": {
     "pass": 34,
     "fail": 0,
@@ -5136,7 +5136,7 @@
   {
    "name": "23-probe",
    "root": "projects",
-   "duration_ms": 213,
+   "duration_ms": 288,
    "counts": {
     "pass": 23,
     "fail": 0,
@@ -5247,7 +5247,7 @@
   {
    "name": "24-install",
    "root": "projects",
-   "duration_ms": 1583,
+   "duration_ms": 2079,
    "counts": {
     "pass": 44,
     "fail": 0,
@@ -5450,7 +5450,7 @@
   {
    "name": "25-asm",
    "root": "projects",
-   "duration_ms": 492,
+   "duration_ms": 679,
    "counts": {
     "pass": 23,
     "fail": 0,
@@ -5572,7 +5572,7 @@
   {
    "name": "26-prebuilt",
    "root": "projects",
-   "duration_ms": 360,
+   "duration_ms": 489,
    "counts": {
     "pass": 26,
     "fail": 0,
@@ -5698,14 +5698,14 @@
   {
    "name": "blink",
    "root": "apps",
-   "duration_ms": 3152,
+   "duration_ms": 3110,
    "counts": {
-    "pass": 48,
+    "pass": 59,
     "fail": 0,
     "xfail": 0,
     "xpass": 0
    },
-   "total": 48,
+   "total": 59,
    "ok": true,
    "checks": [
     {
@@ -5802,11 +5802,15 @@
     },
     {
      "status": "pass",
-     "desc": "without the script the image is placed where the vector table cannot be"
+     "desc": "without a memory map the firmware does not link at all"
     },
     {
      "status": "pass",
-     "desc": "and then the processor locks up at reset, having read no vector table"
+     "desc": "the link names the section bounds the script was to define"
+    },
+    {
+     "status": "pass",
+     "desc": "and a target that does link locks up at reset, having read no vector table"
     },
     {
      "status": "pass",
@@ -5899,6 +5903,46 @@
     {
      "status": "pass",
      "desc": "and so is test"
+    },
+    {
+     "status": "pass",
+     "desc": "the start-up code is built as assembly, not as C that happens to assemble"
+    },
+    {
+     "status": "pass",
+     "desc": "and the C dialect the template declares does not reach it"
+    },
+    {
+     "status": "pass",
+     "desc": "while C still gets it, which is what makes the separation a placement and not a loss"
+    },
+    {
+     "status": "pass",
+     "desc": "while the machine flags do, being what the assembler needs too"
+    },
+    {
+     "status": "pass",
+     "desc": "a preprocessed start-up file records what it includes"
+    },
+    {
+     "status": "pass",
+     "desc": "editing the header it shares with C rebuilds the start-up code"
+    },
+    {
+     "status": "pass",
+     "desc": "and the value it took from that header is the first word of the image"
+    },
+    {
+     "status": "pass",
+     "desc": "the vector table is a symbol the assembly file defines"
+    },
+    {
+     "status": "pass",
+     "desc": "and the reset entry it points at is marked as a thumb function"
+    },
+    {
+     "status": "pass",
+     "desc": "the firmware still runs on emulated hardware with the assembly start-up"
     }
    ],
    "packages": [
@@ -5908,14 +5952,14 @@
   {
    "name": "dsp",
    "root": "apps",
-   "duration_ms": 1711,
+   "duration_ms": 2214,
    "counts": {
-    "pass": 47,
+    "pass": 60,
     "fail": 0,
     "xfail": 0,
     "xpass": 0
    },
-   "total": 47,
+   "total": 60,
    "ok": true,
    "checks": [
     {
@@ -6105,6 +6149,58 @@
     {
      "status": "pass",
      "desc": "while another triple is rebuilt only when it is asked for (3 actions)"
+    },
+    {
+     "status": "pass",
+     "desc": "the host build installs"
+    },
+    {
+     "status": "pass",
+     "desc": "and what was installed answers as the build tree's copy did"
+    },
+    {
+     "status": "pass",
+     "desc": "installing for aarch64-unknown-linux-gnu succeeds"
+    },
+    {
+     "status": "pass",
+     "desc": "and what landed there is for that machine, not this one"
+    },
+    {
+     "status": "pass",
+     "desc": "and the installed artifact runs on that machine, out of the prefix alone"
+    },
+    {
+     "status": "pass",
+     "desc": "installing for riscv64gc-unknown-linux-gnu succeeds"
+    },
+    {
+     "status": "pass",
+     "desc": "and what landed there is for that machine, not this one"
+    },
+    {
+     "status": "pass",
+     "desc": "and the installed artifact runs on that machine, out of the prefix alone"
+    },
+    {
+     "status": "pass",
+     "desc": "the distribution for another machine gives the same answers as the host's"
+    },
+    {
+     "status": "pass",
+     "desc": "nothing in this tree needs fetching"
+    },
+    {
+     "status": "pass",
+     "desc": "so the host build runs with the network forbidden"
+    },
+    {
+     "status": "pass",
+     "desc": "and so does the cross build"
+    },
+    {
+     "status": "pass",
+     "desc": "a package that resolves a system library still resolves it offline"
     }
    ],
    "packages": [
@@ -6117,14 +6213,14 @@
   {
    "name": "hashx",
    "root": "apps",
-   "duration_ms": 2731,
+   "duration_ms": 3625,
    "counts": {
-    "pass": 68,
+    "pass": 88,
     "fail": 0,
     "xfail": 0,
     "xpass": 0
    },
-   "total": 68,
+   "total": 88,
    "ok": true,
    "checks": [
     {
@@ -6257,7 +6353,7 @@
     },
     {
      "status": "pass",
-     "desc": "what a build produces today is one static archive and nothing a foreign consumer could read"
+     "desc": "a build tree offers a foreign consumer nothing, the distribution being what install writes"
     },
     {
      "status": "pass",
@@ -6398,6 +6494,86 @@
     {
      "status": "pass",
      "desc": "because when the ABI generation changes is the author's call, not the tool's"
+    },
+    {
+     "status": "pass",
+     "desc": "the library installs into a prefix"
+    },
+    {
+     "status": "pass",
+     "desc": "installing writes lib/libhashx.so"
+    },
+    {
+     "status": "pass",
+     "desc": "installing writes include/hashx/hashx.h"
+    },
+    {
+     "status": "pass",
+     "desc": "installing writes lib/pkgconfig/hashx.pc"
+    },
+    {
+     "status": "pass",
+     "desc": "and keeps the directory shape the header is included through"
+    },
+    {
+     "status": "pass",
+     "desc": "while what is private stays behind"
+    },
+    {
+     "status": "pass",
+     "desc": "the same manifest installs a static distribution too"
+    },
+    {
+     "status": "pass",
+     "desc": "and what lands there is the archive, the feature deciding the form"
+    },
+    {
+     "status": "pass",
+     "desc": "the descriptor carries the one version this package declares"
+    },
+    {
+     "status": "pass",
+     "desc": "and the description, which pkg-config requires of a valid file"
+    },
+    {
+     "status": "pass",
+     "desc": "the descriptor validates as pkg-config input"
+    },
+    {
+     "status": "pass",
+     "desc": "a consumer that never heard of dowel compiles and links against it"
+    },
+    {
+     "status": "pass",
+     "desc": "and the program it produced gives the answers this suite fixed elsewhere"
+    },
+    {
+     "status": "pass",
+     "desc": "a runtime that is neither C nor C++ can load the installed library"
+    },
+    {
+     "status": "pass",
+     "desc": "and gets the same answers, the boundary being an ABI and not a language"
+    },
+    {
+     "status": "pass",
+     "desc": "while a name the library did not export is not reachable from there either"
+    },
+    {
+     "status": "pass",
+     "desc": "and that name does exist in the archive, so the surface was made, not merely absent"
+    },
+    {
+     "status": "pass",
+     "desc": "a consumer builds against the prefix after it is moved and the build tree is gone"
+    },
+    {
+     "status": "pass",
+     "desc": "and what it produced still runs"
+    },
+    {
+     "status": "pass",
+     "desc": "as does loading the moved library from a foreign runtime"
     }
    ],
    "packages": [
@@ -6409,7 +6585,7 @@
   {
    "name": "httpd",
    "root": "apps",
-   "duration_ms": 5229,
+   "duration_ms": 5486,
    "counts": {
     "pass": 36,
     "fail": 0,
@@ -6571,7 +6747,7 @@
   {
    "name": "jsonfmt",
    "root": "apps",
-   "duration_ms": 1758,
+   "duration_ms": 1984,
    "counts": {
     "pass": 39,
     "fail": 0,
@@ -6746,7 +6922,7 @@
   {
    "name": "plot",
    "root": "apps",
-   "duration_ms": 7100,
+   "duration_ms": 4459,
    "counts": {
     "pass": 42,
     "fail": 0,
@@ -6933,7 +7109,7 @@
   {
    "name": "vision",
    "root": "apps",
-   "duration_ms": 19215,
+   "duration_ms": 18809,
    "counts": {
     "pass": 32,
     "fail": 0,
@@ -7080,7 +7256,7 @@
   {
    "name": "winapp",
    "root": "apps",
-   "duration_ms": 6880,
+   "duration_ms": 6261,
    "counts": {
     "pass": 38,
     "fail": 0,
@@ -7250,7 +7426,7 @@
   {
    "name": "docs",
    "root": "projects",
-   "duration_ms": 80,
+   "duration_ms": 89,
    "counts": {
     "pass": 9,
     "fail": 0,
@@ -7301,12 +7477,12 @@
   }
  ],
  "totals": {
-  "pass": 1640,
+  "pass": 1684,
   "fail": 0,
   "xfail": 11,
   "xpass": 0
  },
- "total": 1651,
+ "total": 1695,
  "ok": true,
  "attention": [],
  "known_issues": [
