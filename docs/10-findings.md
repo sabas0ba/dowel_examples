@@ -2197,10 +2197,13 @@ known_issue F-025 である。
 - `and the firmware runs on emulated hardware and its test passes`
 - `the firmware reports through semihosting, so the result comes from the device`
 
-指さなかったときに何が起きるかは、外して確かめる。
+指さなかったときに何が起きるかは、外して確かめる。起動コードをアセンブリ
+へ移してからは、節の両端をスクリプトから受け取るため、**像が置かれる前に
+そもそも繋がらない**。
 
-- `without the script the image is placed where the vector table cannot be`
-- `and then the processor locks up at reset, having read no vector table`
+- `without a memory map the firmware does not link at all`
+- `the link names the section bounds the script was to define`
+- `and a target that does link locks up at reset, having read no vector table`
 
 スクリプトが効いたときは、生イメージの先頭2語を直に読んで確かめている。
 `the first word of the image is the initial stack pointer` と

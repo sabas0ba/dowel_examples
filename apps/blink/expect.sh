@@ -222,21 +222,29 @@ fact $v "and the firmware runs on emulated hardware and its test passes"
 printf '%s' "$SAID" | grep -q 'blink: ok'
 fact $? "the firmware reports through semihosting, so the result comes from the device"
 
-# 配置を決めないと何が起きるかを、外して確かめる。既定のリンカスクリプトが
-# 選ぶ番地には何も割り当てられていない。
+# 配置を決めないと何が起きるかを、外して確かめる。
+#
+# 起動コードは `.bss` の両端と `.data` の載せ先をリンカスクリプトから
+# 受け取る。スクリプトが無ければその名前は誰も定義しないので、
+# **像が置かれる前に、そもそも繋がらない。**
 with_script ""
-"$DOWEL" build --no-compdb --target=$TRIPLE >/dev/null 2>&1
-addr=$(first_load)
-[ "$addr" = "0x00008000" ]
-v=$?; RC=0; _last_cmd="readelf -l $B/firmware | grep LOAD   # -T を外した"
-OUT="first LOAD at: ${addr:-?}  (the vector table must sit at 0x00000000)"
-fact $v "without the script the image is placed where the vector table cannot be"
+run build --no-compdb --target=$TRIPLE
+said=$OUT; rc=$RC
+[ "$rc" -ne 0 ]
+_verdict $? "without a memory map the firmware does not link at all"
+_last_cmd="dowel build --target=$TRIPLE   # -T を外した"
+OUT=$(printf '%s' "$said" | grep -m4 'undefined\|error'); RC=0
+printf '%s' "$said" | grep -q '__bss_start__\|__data_load__'
+fact $? "the link names the section bounds the script was to define"
 
+# 起動コードを自分で持つ側——`test.onhw` は C だけで書かれており、節の
+# 両端を要らない——は繋がる。そちらで「置き場所を決めないと何が起きるか」
+# が見える。既定のリンカスクリプトが選ぶ番地には何も割り当てられていない。
 on_hardware
 _last_cmd="dowel test --target=$TRIPLE   # -T を外した"
 OUT="$SAID"; RC=0
 printf '%s' "$SAID" | grep -q 'Lockup'
-fact $? "and then the processor locks up at reset, having read no vector table"
+fact $? "and a target that does link locks up at reset, having read no vector table"
 
 with_script "$LD"
 "$DOWEL" build --no-compdb --target=$TRIPLE >/dev/null 2>&1
@@ -433,3 +441,90 @@ mv dowel.build.keep dowel.build
 ok "while build itself is untroubled by the templates beside it" \
     build --target=$TRIPLE --no-compdb
 ok "and so is test"  test --target=$TRIPLE --no-compdb
+
+# ------------------------------------------------------------ 9. 起動コード（ADR-0048）
+#
+# ここはアセンブリでしか書けない層である。SP を載せる前に C の関数へは
+# 入れず（引数も戻り番地も置く先が無い）、`.bss` を 0 で埋める前に C の
+# 大域変数は読めない。libc も起動コードも無い triple では、この段を誰かが
+# 書く必要がある。
+#
+# 以前はベクタ表を C の配列として書き、`_reset` も C の関数だった。組めて
+# はいたが、`.bss` は誰も 0 にしておらず、SP はベクタ表の [0] を CPU が
+# 読むことだけに頼っていた。アセンブリを第3の言語として扱えるようになった
+# ので、本来の形へ移してある。
+
+asm_line=$("$DOWEL" graph --kind=action --format=json --target=$TRIPLE 2>/dev/null |
+           jq -r '.steps[] | select(.kind == "cc") | "\(.description) \(.arguments | join(" "))"' |
+           grep 'vectors\.S')
+
+_last_cmd="graph --kind=action | the vectors.S action"; OUT=$asm_line; RC=0
+printf '%s' "$asm_line" | grep -q '^AS '
+fact $? "the start-up code is built as assembly, not as C that happens to assemble"
+
+# C の方言はアセンブラへ渡らない。**これはこの木の書き方を変えさせた。**
+# 以前は `-std=gnu11` を `flags`（言語に依らない一覧）に混ぜていた——
+# ソースが C だけのうちは同じことだったからである。起動コードを `.S` へ
+# 移した時点で、それは C でないファイルに C の方言を告げる指定になった。
+# 言語ごとの置き場が在るのは、このためである。
+_last_cmd="graph --kind=action | the vectors.S action"; OUT=$asm_line; RC=0
+! printf '%s' "$asm_line" | grep -q '\-std=gnu11'
+fact $? "and the C dialect the template declares does not reach it"
+
+c_line=$("$DOWEL" graph --kind=action --format=json --target=$TRIPLE 2>/dev/null |
+         jq -r '.steps[] | select(.kind == "cc") | (.arguments | join(" "))' | grep 'main\.c')
+_last_cmd="graph --kind=action | the main.c action"; OUT=$c_line; RC=0
+printf '%s' "$c_line" | grep -q '\-std=gnu11'
+fact $? "while C still gets it, which is what makes the separation a placement and not a loss"
+
+# 機械の旗は渡る。cpu も浮動小数点 ABI も、アセンブラにとっても要る。
+_last_cmd="graph --kind=action | the vectors.S action"; OUT=$asm_line; RC=0
+printf '%s' "$asm_line" | grep -q '\-mcpu=cortex-m4' &&
+    printf '%s' "$asm_line" | grep -q '\-mfloat-abi=hard'
+fact $? "while the machine flags do, being what the assembler needs too"
+
+# 前処理を通る綴りを選んである。スタックの頂きを C と共有する見出しから
+# 取り込むためであり、`.s` では `#include` が届かない。
+_last_cmd="graph --kind=action | the vectors.S action"; OUT=$asm_line; RC=0
+printf '%s' "$asm_line" | grep -q '\-MD'
+fact $? "a preprocessed start-up file records what it includes"
+
+# 宣言が在るだけでは依存が辿られたことにならない。共有している見出しを
+# 書き換えて、組み直されることを見る。
+"$DOWEL" build --no-compdb --target=$TRIPLE >/dev/null 2>&1
+sed -i 's/0x20400000/0x20300000/' include/bl/mem.h
+build_direct --no-compdb --target=$TRIPLE
+rebuilt "vectors.S" "editing the header it shares with C rebuilds the start-up code"
+
+# そして値が本当に届いている。像の先頭の語が初期スタックポインタである。
+sp=$(od -An -tx4 -N4 "$B/firmware.bin" 2>/dev/null | tr -d ' ')
+_last_cmd="od -tx4 -N4 $B/firmware.bin"; OUT="[0] initial SP: 0x$sp"; RC=0
+[ "$sp" = "20300000" ]
+fact $? "and the value it took from that header is the first word of the image"
+
+sed -i 's/0x20300000/0x20400000/' include/bl/mem.h
+"$DOWEL" build --no-compdb --target=$TRIPLE >/dev/null 2>&1
+
+# ベクタ表はアセンブリの側に移った。C の配列だった頃と同じく、誰も
+# 参照しないので `KEEP()` が残している。
+_last_cmd="$NM $B/firmware | vectors"
+OUT=$($NM "$B/firmware" 2>/dev/null | grep -i ' vectors$'); RC=0
+printf '%s' "$OUT" | grep -q 'vectors'
+fact $? "the vector table is a symbol the assembly file defines"
+
+# thumb の記号は下位ビットが 1 でなければならない。`.thumb_func` を書き
+# 忘れると、表の [1] は偶数のままになり、CPU は ARM 状態へ移ろうとして
+# 起動直後に落ちる。**組み上がり、書き込め、起動だけしない**形である。
+pc=$(od -An -tx4 -j4 -N4 "$B/firmware.bin" 2>/dev/null | tr -d ' ')
+_last_cmd="od -tx4 -j4 -N4 $B/firmware.bin"; OUT="[1] reset: 0x$pc"; RC=0
+case $pc in
+    *[13579bdf]) fact 0 "and the reset entry it points at is marked as a thumb function" ;;
+    *)           fact 1 "and the reset entry it points at is marked as a thumb function" ;;
+esac
+
+# 起動コードが本当に働いていること。`.bss` を 0 で埋める段は、埋めない
+# 限り観測できない——初期化していない大域変数を装置の上で読ませる。
+on_hardware
+[ "$RC" -eq 0 ]
+v=$?; OUT="$SAID"; RC=0
+fact $v "the firmware still runs on emulated hardware with the assembly start-up"

@@ -7,7 +7,7 @@
 __attribute__((used))
 const char build_marker[] = "DOWEL-BLINK";
 
-void _reset(void)
+void bl_main(void)
 {
     bl_gpio_output(LED);
     for (;;) {

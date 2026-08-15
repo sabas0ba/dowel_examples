@@ -2,6 +2,10 @@
 name    = "hashx"
 version = "0.4.0"
 edition = "2026"
+# 配ったときに pkg-config の記述子へ入る（ADR-0043）。無ければパッケージ名が
+# 代わりに立つが、それは「名前を2度書いた」記述子であり、引いた相手に何も
+# 伝えない。配るライブラリなら書く側の仕事である。
+description = "small, dependency-free hashes with a C ABI (FNV-1a and CRC-32)"
 
 [features]
 default = []

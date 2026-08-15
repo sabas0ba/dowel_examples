@@ -388,3 +388,79 @@ not_rebuilt "crc32.c" "and leaves the other source alone"
 # 触った対象のビルドが道連れにしない。
 runs_actions "+" "while another triple is rebuilt only when it is asked for" \
     -C core --no-compdb --target=$RV_T
+
+# ------------------------------------------------------------ 10. 配る（ADR-0041 / ADR-0045）
+#
+# 4つの三つ組へ組めることと、組んだものを**渡せる**ことは別である。
+# 使う側の機械には dowel もビルド木も無い。あるのは `install` が置いた
+# 木だけであり、それがその機械の上で動かなければ意味が無い。
+#
+# ここでしか見られないのは「別の三つ組へ install する」形である。
+# 手元の機械で組み、手元の機械に置き、動かすのは向こうの機械である。
+
+PFX=$PWD/prefix
+
+# --- 手元の三つ組
+
+rm -rf "$PFX"
+ok "the host build installs" -C cli install --prefix="$PFX"
+built_said=$(say x86_64-unknown-linux-gnu "$(bin_for cli dsp x86_64-unknown-linux-gnu)" sums)
+prints "$built_said" \
+       "and what was installed answers as the build tree's copy did" \
+       "$PFX/bin/dsp" sums
+
+# --- 別の三つ組
+#
+# `--target` を付ければ、その三つ組の成果物が prefix へ入る。組んだ機械の
+# 上では起動できないので、置いたものを qemu で走らせて確かめる。
+
+for t in "$ARM_T" "$RV_T"; do
+    rm -rf "$PFX"
+    ok "installing for $t succeeds" -C cli install --target="$t" --prefix="$PFX"
+
+    _last_cmd="readelf -h $PFX/bin/dsp | Machine"
+    OUT=$(readelf -h "$PFX/bin/dsp" 2>&1 | sed -n 's/.*Machine: *//p'); RC=0
+    said=$OUT
+    case $t:$said in
+        "$ARM_T":*AArch64*) fact 0 "and what landed there is for that machine, not this one" ;;
+        "$RV_T":*RISC-V*)   fact 0 "and what landed there is for that machine, not this one" ;;
+        *) fact 1 "and what landed there is for that machine, not this one ($said)" ;;
+    esac
+
+    # 置いたものを、その機械の走らせ方で動かす。組んだ木は要らない。
+    out=$(say "$t" "$PFX/bin/dsp" sums)
+    rc=$?
+    _last_cmd="qemu … $PFX/bin/dsp sums"; OUT=$out; RC=0
+    [ "$rc" -eq 0 ]
+    fact $? "and the installed artifact runs on that machine, out of the prefix alone"
+done
+
+# 同じ答が出る。ここまで各三つ組の**ビルド木の中**では確かめてきたが、
+# 配った先で同じであることは別の主張である。
+rm -rf "$PFX"
+run -C cli install --target="$ARM_T" --prefix="$PFX"
+host_said=$(say x86_64-unknown-linux-gnu "$(bin_for cli dsp x86_64-unknown-linux-gnu)" sums)
+arm_said=$(say "$ARM_T" "$PFX/bin/dsp" sums)
+_last_cmd="host vs the installed ARM artifact"
+OUT="host: $host_said"$'\n'"arm : $arm_said"; RC=0
+[ "$host_said" = "$arm_said" ]
+fact $? "the distribution for another machine gives the same answers as the host's"
+
+rm -rf "$PFX"
+
+# --- 網の外で組む（ADR-0045）
+#
+# この木の外側の入力は2つある——三つ組ごとの翻訳器と、`gui` が引く cairo。
+# 前者は機械に在るものを名指しており（`url` を書いていない）、後者は
+# pkg-config が答える。どちらも取ってくるものではないので、この木は
+# **最初から網に触れない**。それを言えるようにするのが `--offline` である。
+
+ok "nothing in this tree needs fetching" -C cli fetch
+ok "so the host build runs with the network forbidden" \
+   -C cli build --offline --no-compdb
+ok "and so does the cross build"  -C cli build --offline --no-compdb --target=$ARM_T
+
+# pkg-config は網の話ではない。手元の処理を起こして手元のファイルを読む。
+# ここを止めると `--offline` の意味が「することを減らす」に変わる。
+ok "a package that resolves a system library still resolves it offline" \
+   -C gui check --offline
