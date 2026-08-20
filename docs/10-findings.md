@@ -2,7 +2,7 @@
 
 本スイートが外側から見つけたもの。
 
-報告した 66 件のうち 60 件が修正されている。直ったものの記録も検査も残す。
+報告した 67 件のうち 65 件が修正されている。直ったものの記録も検査も残す。
 **何を見てどう報告したか**が、次に同種のものを見つけるときの型になるためで
 あり、消してしまうと退行したときに気づけない。
 
@@ -23,6 +23,7 @@
 | F-046 〜 F-055 | `9858932` | デバッグ機能（ADR-0023 / ADR-0024）と、実践的なアプリが出した群 |
 | F-056 / F-057 | `c154097` | 入ったばかりの機構（共有ライブラリ、Meson 移行）を使って出た2件 |
 | F-058 〜 F-061 | `0511d5e` | 雛形と `check`、そして dowel が自分について報せることの3点 |
+| F-062 〜 F-066 | `v0.1.0` | 最初の release に入った5件。うち4件は**報せ方**の側だった |
 
 直った検査の扱いには2段階ある。**`known_issue` を外すだけでは足りない。**
 新しい機構が入った場合は、その機構を実際に使う形へ書き換える。書き換えない
@@ -41,21 +42,23 @@ F-047 はその逆側の例である。**直ったのに検査が落ち続けた
 | 所見 | 内容 |
 |---|---|
 | [F-011](#f-011)（残り） | |
-| [F-062](#f-062) | install が出す `.pc` が同じパッケージの兄弟を名指さない |
-| [F-063](#f-063) | 翻訳しない綴りのソースが目的ファイルを書かずに成功する |
-| [F-064](#f-064) | `abi-mismatch` が目標の数だけ出るのに、文面に目標名が無い |
-| [F-065](#f-065) | `dowel fetch` が toolchain を数えず一覧にも出さない |
-| [F-066](#f-066) | 転送の記録の自己修復が、その動機になっている場面で働かない |
+| [F-067](#f-067) | `missing-assembler` がソースではなく目標の見出しを指す |
 
 5件とも、**入ったばかりの機構を最初に触ったとき**に出た。F-062 は
 `dowel install` を2つのライブラリを持つパッケージへ、F-063 は手元の `.asm`
 を `sources` へ、F-065 は cross の木で `dowel fetch` を打って、F-066 は板から
-成果物が消えた場面を作って。同じ形が続いている——**機構そのものは動くが、
-それを使った木を普段の入口から触った**ときに初めて欠けが見える。
+成果物が消えた場面を作って。そのうち4件が**報せ方**の側だった。
 
-そして今回は、そのうち4件が**報せ方**の側だった。記述子が下を名指さない、
-理由が持ち越されない、目標名が入っていない、数が 0 と出る。どれも中の判断は
-正しく、外へ出る1行だけが足りていない。
+**5件とも `0.1.0` に入っている。** 直り方には2つの形があった。F-062・F-064・
+F-065 は報せ方を直すもので、決定はそのままである。F-063 と F-066 は
+**決定そのものが書き換わった**——ADR-0051 は「それ以外は C」という落とし前を
+畳んで綴りの集合を閉じ、ADR-0052 は「起動に失敗した実行」を「通らなかった
+実行」へ広げた。後者は元の ADR が自分の動機として書いた場面を、その動機の
+とおりに直している。
+
+F-067 は、その ADR-0051 と ADR-0050 を**同じ木に並べて**出た。2つは
+「このソースはここでは組めない」という1つの問いへの2つの答であり、
+片方だけを見ている限り、位置が食い違っていることは見えない。
 
 ## 実アプリの層が出したもの
 
@@ -143,13 +146,14 @@ F-050 から F-058 は `apps/vision`（大きい依存）、`apps/winapp`（Wind
 | [F-057](#f-057) | Meson の移行が書庫とリンクの引数を翻訳の flags に混ぜる | 実装 | [#135](https://github.com/sabas0ba/dowel/issues/135) | 修正済み |
 | [F-058](#f-058) | `template` を宣言したパッケージが `check` を通らない | 実装 | [#141](https://github.com/sabas0ba/dowel/issues/141) | 未修正 |
 | [F-059](#f-059) | `schema dump` が構成の語彙を「暫定」と報せ続ける | 実装 | [#143](https://github.com/sabas0ba/dowel/issues/143) | 未修正 |
-| [F-060](#f-060) | 資産の取得に失敗したときの理由が空で、走っていない道具の名前が出る | 実装 | [#145](https://github.com/sabas0ba/dowel/issues/145) | 未修正 |
+| [F-060](#f-060) | 資産の取得に失敗したときの理由が空で、走っていない道具の名前が出る | 実装 | [#145](https://github.com/sabas0ba/dowel/issues/145) | 修正済み |
 | [F-061](#f-061) | 入った版が公開バイナリか自分で組んだものかを後から知る手立てが無い | 実装 | [#146](https://github.com/sabas0ba/dowel/issues/146) | 修正済み |
-| [F-062](#f-062) | install が出す `.pc` が同じパッケージの兄弟を名指さない | 実装 | [#156](https://github.com/sabas0ba/dowel/issues/156) | 未修正 |
-| [F-063](#f-063) | 翻訳しない綴りのソースが目的ファイルを書かずに成功する | 実装 | [#157](https://github.com/sabas0ba/dowel/issues/157) | 未修正 |
-| [F-064](#f-064) | `abi-mismatch` が目標の数だけ出るのに、文面に目標名が無い | 実装 | [#158](https://github.com/sabas0ba/dowel/issues/158) | 未修正 |
-| [F-065](#f-065) | `dowel fetch` が toolchain を数えず一覧にも出さない | 実装 | [#159](https://github.com/sabas0ba/dowel/issues/159) | 未修正 |
-| [F-066](#f-066) | 転送の記録の自己修復が、その動機になっている場面で働かない | 実装 | [#160](https://github.com/sabas0ba/dowel/issues/160) | 未修正 |
+| [F-062](#f-062) | install が出す `.pc` が同じパッケージの兄弟を名指さない | 実装 | [#156](https://github.com/sabas0ba/dowel/issues/156) | 修正済み |
+| [F-063](#f-063) | 翻訳しない綴りのソースが目的ファイルを書かずに成功する | 実装 | [#157](https://github.com/sabas0ba/dowel/issues/157) | 修正済み |
+| [F-064](#f-064) | `abi-mismatch` が目標の数だけ出るのに、文面に目標名が無い | 実装 | [#158](https://github.com/sabas0ba/dowel/issues/158) | 修正済み |
+| [F-065](#f-065) | `dowel fetch` が toolchain を数えず一覧にも出さない | 実装 | [#159](https://github.com/sabas0ba/dowel/issues/159) | 修正済み |
+| [F-066](#f-066) | 転送の記録の自己修復が、その動機になっている場面で働かない | 実装 | [#160](https://github.com/sabas0ba/dowel/issues/160) | 修正済み |
+| [F-067](#f-067) | `missing-assembler` がソースではなく目標の見出しを指す | 実装 | [#172](https://github.com/sabas0ba/dowel/issues/172) | 未修正 |
 
 ---
 
@@ -4611,7 +4615,7 @@ PATH から `cargo` を消すのではなく、呼ばれたら印を残して落
 **install が出す `.pc` が、同じパッケージの兄弟ライブラリを名指さない。**
 pkg-config だけを頼りにする使う側の結合が、未定義参照で落ちる。
 
-種別: 実装。未修正（`0511d5e`）。ADR-0041 と ADR-0043 を
+種別: 実装。`v0.1.0` で修正（`0511d5e` で観測）。ADR-0041 と ADR-0043 を
 `projects/24-install` に当てて出た。
 
 ### 観測
@@ -4657,6 +4661,12 @@ ADR-0043 は「`Requires` は確かに在るものだけを名指す。dowel パ
 使う側の結合段であり、名前も知らないライブラリの記号を、リンカの言葉で
 告げられる。
 
+### 修正
+
+`v0.1.0` で入った。同じ実行で install した兄弟は `Requires` に名指され、
+その `Cflags` も使う側へ届く。ADR-0043 が書いていた「確かに在るものだけを
+名指す」が、実装が唯一作り出せる場面で満たされるようになった。
+
 ### 期待
 
 `top.pc` が下を名指す。`Requires: base` の形なら、`base` の `Cflags`（公開の
@@ -4696,7 +4706,7 @@ ADR-0043 の e2e は「`pkg-config --validate` を通し、刷られた引数で
 通り、結合が「そんなファイルは無い」で落ちる。** `check` は通り、増分ビルド
 は収束しない。
 
-種別: 実装。未修正（`0511d5e`）。ADR-0048（アセンブリを第3の言語として）を
+種別: 実装。`v0.1.0` で修正（`0511d5e` で観測）。ADR-0048（アセンブリを第3の言語として）を
 `projects/25-asm` に当てて出た。
 
 ### 観測
@@ -4748,6 +4758,13 @@ ADR-0048 自身が、`.s` に依存ファイルを要求していた件につい
 を宣言することは、増分ビルドが収束しなくなる形」と書いている。同じ形が目的
 ファイルの側に残っている。
 
+### 修正
+
+`v0.1.0` で ADR-0051 として入った。**決定そのものが書き換わっている**——
+「それ以外は C」という落とし前を畳み、綴りの集合を閉じた。加えて網が2枚
+置かれた。direct は段ごとに出力の有無を見て、それ以外の背骨には
+「`built:` として刷る先が在るか」をビルドのあとに見る検査が付いた。
+
 ### 期待
 
 計画の段で拒む（`sources` の綴りはマニフェストを読んだ時点で分かる）か、
@@ -4766,15 +4783,19 @@ ADR-0048 のフィクスチャは `.s` と `.S` と `.c` を持つ。`.asm` は*
 
 ### 検査
 
-`projects/25-asm` の `and says which source produced no object`、
-`check refuses a source the C driver cannot compile`、
-`a build that failed this way still converges`。いずれも known_issue F-063。
+`projects/25-asm` の `a spelling dowel cannot compile is refused`。位置と
+中身は `with the position where it was declared as a source`、
+`naming the file, not an object inside the build directory`、
+`and listing the languages it does compile`、
+`and saying what the C driver would have done with it` で見る。
+拡張子の無いソースは `a source with no extension is refused too`、
+受ける側の対照は `a preprocessed C source is accepted, being C the driver takes`。
 
-対照として、`.s` と `.S` が正しく組まれること、言語ごとの旗の仕分け、
-`-Wa,--noexecstack` が出てきた実行ファイルの `GNU_STACK` に効いていること、
-`.S` だけが依存ファイルを持ち3つの背骨すべてで収束することを通常の検査と
-して置いてある。**新しい言語の側は動いていて、欠けているのは境目の扱い**だ
-と並びから読める。
+2枚の網は別々に見る。direct は
+`the direct backend fails when a tool writes nothing it was asked for` と
+`showing the tool's own words, which usually explain it`。それ以外の背骨は
+`the ninja backend fails there too, the net being after the build`。
+対照は `a tool that does write its output still succeeds` である。
 
 ---
 
@@ -4785,7 +4806,7 @@ ADR-0048 のフィクスチャは `.s` と `.S` と `.c` を持つ。`.asm` は*
 **宣言1つに対して `abi-mismatch` が「札を受け取る目標の数 + 1」回出る。**
 文面も位置も同じで、目標の名前がどこにも入っていない。
 
-種別: 実装。未修正（`0511d5e`）。ADR-0042 の成分を ADR-0049 の `prebuilt` と
+種別: 実装。`v0.1.0` で修正（`0511d5e` で観測）。ADR-0042 の成分を ADR-0049 の `prebuilt` と
 合わせて確かめていて出た。
 
 ### 観測
@@ -4823,6 +4844,11 @@ N 件が、同じ誤りの写し N 件として届く。**
 指すので、複数出ても読み分けられる。ビルドとの照合の側だけが手がかりを
 持っていない。
 
+### 修正
+
+`v0.1.0` で入った。ビルドとの照合は宣言ごとに1件へ畳まれる。使う側を
+増やしても増えないので、「1つ直せば全部消える」ことが出力の形から読める。
+
 ### 期待
 
 文面に目標を入れるか、宣言ごとに1件へ畳む。後者の方が、この検査の性質
@@ -4855,7 +4881,7 @@ known_issue F-064 である。
 **`dowel fetch` は toolchain を取ってくるのに、取ってきたと言わない。**
 依存の無い木では「fetched 0 package(s)」とだけ出る。
 
-種別: 実装。未修正（`0511d5e`）。ADR-0044 と ADR-0045 を合わせて確かめて
+種別: 実装。`v0.1.0` で修正（`0511d5e` で観測）。ADR-0044 と ADR-0045 を合わせて確かめて
 いて出た。
 
 ### 観測
@@ -4895,6 +4921,11 @@ toolchain の取得が失敗すると、その診断のあとに `missing-toolch
 読める。ADR-0044 が `missing-toolchain` に与えた役割は「取ってきたものの中に
 `bin/…-gcc` が無い」場合であり、取得そのものが成立していない場合ではない。
 
+### 修正
+
+`v0.1.0` で入った。`fetch` は道具立ても数え、`ready:` の行に出す。
+依存とは別に数える——どちらも取ってくるものだが、無いときに見る先が違う。
+
 ### 期待
 
 toolchain も数え、一覧に出す。行の形は依存に揃えるのが自然である。
@@ -4930,7 +4961,7 @@ toolchain も数え、一覧に出す。行の形は依存に揃えるのが自�
 消えた——では働かない。** 記録は残り、次の実行も送らないので、手で記録を
 消すまで失敗し続ける。
 
-種別: 実装。未修正（`0511d5e`）。ADR-0046 を `projects/06-runner` に当てて
+種別: 実装。`v0.1.0` で修正（`0511d5e` で観測）。ADR-0046 を `projects/06-runner` に当てて
 出た。
 
 ### 観測
@@ -4965,6 +4996,13 @@ test result: FAILED. 0 passed; 1 failed             # 直らない
 なっている場面でだけ効かない**。出力のどこにも「転送を飛ばしている」とは
 書いておらず、`.dowel/build/<triple>/transfers` を知らなければ直せない。
 
+### 修正
+
+`v0.1.0` で ADR-0052 として入った。こちらも**決定が書き換わっている**——
+「起動に失敗した実行」が「通らなかった実行」へ広がった。dowel は対象機を
+見に行かないまま、実際に受け取る一番強い証拠を使う。代償（落ち続ける
+テストは実行ごとに1回送る）は ADR に言葉として書かれている。
+
 ### 期待
 
 失敗した実行は記録を捨てる、失敗の出力に飛ばしたことを書く、明示的に送り
@@ -4984,8 +5022,10 @@ test result: FAILED. 0 passed; 1 failed             # 直らない
 
 `projects/06-runner` の
 `a machine that lost the artifact recovers on the run after the one that noticed`。
-併せて `and the tests pass again without the record being touched by hand`。
-どちらも known_issue F-066。
+併せて `so the artifact is back on the target machine, with nothing touched by hand`。
+
+代償の側も見る——`and a failing run pays exactly one transfer, that being the price`
+と、通れば記録が戻ることを `which is the skip returning once the tree is healthy` で。
 
 対照として、1回目で送ること・変わっていなければ送らないこと・成果物が変われば
 送ること・記録がビルドディレクトリに在ること・**起動そのものが成り立たなかった
@@ -4995,6 +5035,77 @@ test result: FAILED. 0 passed; 1 failed             # 直らない
 
 転送の回数は対象機の側で数えている。dowel の言い分ではなく、実際に何回
 届いたかを見る立場である。
+
+---
+
+## F-067
+
+報告先: [sabas0ba/dowel#172](https://github.com/sabas0ba/dowel/issues/172)
+
+**`missing-assembler` の下線が、ソースの宣言ではなく `[bin.<名前>]` の行に
+付く。** 註の文言は「declared as a source here」なので、指している先と
+言っていることが食い違っている。
+
+種別: 実装。未修正（`v0.1.0`）。ADR-0050 と ADR-0051 を `projects/25-asm` に
+並べて出た。
+
+### 観測
+
+```console
+$ dowel check
+error[missing-assembler]: `src/five.asm` needs an assembler
+ --> dowel.build:3:1
+  |
+3 | [bin.app]
+  | ^^^^^^^^^ declared as a source here
+```
+
+`src/five.asm` が書かれているのは `sources` の行である。同じ版の、同じ問い
+——「このソースはここでは組めない」——に答える隣の診断は正しく指す。
+
+| 診断 | 下線の位置 |
+|---|---|
+| `missing-assembler` | `[bin.app]`（目標の見出し） |
+| `unknown-source-language` | `file("src/note.txt")`（要素そのもの） |
+
+**2つは同時に入った、対になる診断である。**
+
+### なぜ問題か
+
+文言が位置についての主張になっているので、読む側は「ここでソースが宣言
+されている」と読む。実害は目標が大きいときに出る——30 のソースを持つ目標
+なら、下線は見出しに付き、どれが問題なのかは本文の文字列から探すことに
+なる。編集器では波線が `[bin.app]` に付くので、**問題のある行へは飛べない。**
+
+ADR-0051 が `unknown-source-language` について書いた論拠がそのまま当て
+はまる——「ファイルがソースになる場所であり、**指すべき位置がまだ手元に
+在る**場所」である。
+
+### 期待
+
+`unknown-source-language` と同じ位置を指す。文言はそのままでよい。
+
+### なぜ内側から見つからないか
+
+この診断のフィクスチャは、**出ること**と**中身**——ファイル名、`.asm` が
+何の綴りか、何を宣言すればよいか——を見れば足りる。それらはすべて正しく
+揃っている。
+
+位置の誤りは、**同じ木でもう一方の診断を出して並べたとき**にだけ見える。
+ADR-0050 と ADR-0051 は別の決定であり、別のフィクスチャを持つのが自然で
+ある。外から見ると、この2つは1つの問いへの2つの答なので、同じ木に両方を
+書いて見比べることになる。
+
+### 検査
+
+`projects/25-asm` の `and points at the source, as its sibling diagnostic does`。
+known_issue F-067 である。
+
+対照として、`missing-assembler` が出ること・ファイル名を述べること・
+`.asm` が MASM/NASM の綴りだと言うこと・宣言の仕方を示すこと、そして
+`unknown-source-language` が正しい位置を指すことを通常の検査として置いて
+ある。**壊れているのが診断の中身ではなく位置だけ**であることが、並びから
+読める。
 
 ---
 

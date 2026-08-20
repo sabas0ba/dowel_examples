@@ -1,0 +1,14 @@
+# NASM の綴りのアセンブリ。1つのビルドに1つの assembler なので、この木は
+# `.asm` だけを持つ。両方の綴りを配るプロジェクトは三つ組で選び分ける
+# ——道具立ての宣言はもともと三つ組ごとに在る（ADR-0050）。
+[bin.app]
+sources = [file("src/main.c"), file("src/five.asm")]
+
+[bin.app.private]
+c_std = "c17"
+flags = ["-DNOT_FOR_THE_ASSEMBLER=1"]
+
+# dowel が渡すのは入力と出力と `asm_flags` だけである。翻訳の行の残りは
+# C の駆動器のために綴られたもので、assembler はそれではない。
+# `asm_flags` は List<Word> なので、要る道はここに書ける。
+asm_flags = ["-f", "elf64", "-I", dir("src")]

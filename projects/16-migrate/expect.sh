@@ -46,9 +46,11 @@ ref() {
 EQ=0; DIFF=0; UNPORTED=0; ONLY=0; SAID=""
 counts() {
     _last_cmd="dowel migrate verify $1 --format=json"
-    OUT=$("$DOWEL" migrate verify "$1" --format=json 2>&1)
+    # 機械可読の答は stdout に出る。stderr は診断と進行であり、混ぜると
+    # 警告1つで JSON が読めなくなる（docs/60-cli.md の出力の分け方）。
+    SAID=$("$DOWEL" migrate verify "$1" --format=json 2>/dev/null)
     RC=$?
-    SAID=$OUT
+    OUT=$SAID
     EQ=$(printf '%s' "$SAID"       | jq -r '.equivalent'           2>/dev/null)
     DIFF=$(printf '%s' "$SAID"     | jq -r '.differing     | length' 2>/dev/null)
     UNPORTED=$(printf '%s' "$SAID" | jq -r '.unported      | length' 2>/dev/null)
@@ -453,3 +455,97 @@ ok "the same tree imports from CMake as well" -C "$MESON_SRC" migrate import "$M
 ok "and that draft builds without editing" -C "$MESON_SRC" build --no-compdb
 rm -f "$MESON_SRC/CMakeLists.txt"
 rm -rf "$MESON_SRC/cm" "$MESON_BUILD"
+
+# ------------------------------------------------------------ 取り込んだ印（ADR-0053）
+#
+# 下書きは verify に落ちない。**通る。** Meson も CMake も、結合の関係を
+# 翻訳の引数に混ぜて報せるので、取り込み器はそれを落として註に書く。
+# 偽ったことは何も無いので `check` に文句の付けようが無い。欠けているのは
+# **誰も在ると主張していない `deps` の辺**であり、失敗は結合の段に、
+# 結合器の言葉で、記号について返る。
+#
+# だから下げるものが無い。誤りを警告へ格下げする様式は、下書きが踏みも
+# しない検査を抑え、しかも移行の途中で人が足した宣言まで抑えてしまう。
+# 決定は「印を置く。何も緩めない」である。
+
+cd from-debug || exit 1
+
+assert "import marks every target it drafted" \
+    grep -q '^unverified = true$' dowel.build
+
+n=$(grep -c '^unverified = true$' dowel.build)
+_last_cmd="grep -c 'unverified = true' dowel.build"; OUT="$n target(s) marked"; RC=0
+[ "$n" -eq 3 ]
+fact $? "one mark per target, the unit of migration being the target"
+
+# 印は毎回の計画で報される。結合の中で気づくのではなく、その前に述べる。
+diag unverified-import "every plan reports what is still unverified" check
+diag_where unverified-import '.severity == "warning"' \
+    "as a warning, so the draft still builds and runs" check
+ok "and the draft does build with the mark in place" build --no-compdb
+
+# 何が確かめられていないかを言う。「未検証」だけでは、利用者は次に何を
+# 見ればよいか決められない。
+out_has "came in private" "saying that everything came in private" check
+out_has "not \`deps\` yet" "and that dropped link inputs are not dependencies yet" check
+out_has "migrate verify" "and pointing at the step that checks it" check
+
+# 機械可読の側にも出る。「どこまで移ったか」が記憶ではなく数になる。
+codes=$("$DOWEL" check --message-format=json 2>/dev/null |
+        jq -r 'select(.code == "unverified-import") | .message' | grep -c .)
+_last_cmd="dowel check --message-format=json | unverified-import"
+OUT="$codes warning(s)"; RC=0
+[ "$codes" -eq 3 ]
+fact $? "the mark is machine readable, so an editor can underline it"
+
+# `migrate verify` が残りを数える。移行の単位が目標なので、進み方の単位も
+# 目標である。
+left=$("$DOWEL" migrate verify "$PWD/../bd-debug/compile_commands.json" --format=json 2>/dev/null |
+       jq -r '.unverified | length')
+_last_cmd="dowel migrate verify --format=json | .unverified"
+OUT="$left target(s) still marked"; RC=0
+[ "$left" -eq 3 ]
+fact $? "verify counts what is still marked, beside the source-level verdict"
+
+# 「等価」と「未検証」は矛盾しない。翻訳の行は一致しており、結合は
+# ビルド以外の何にも見られていない——それが正直な状態である。
+counts "$PWD/../bd-debug/compile_commands.json"
+[ "$RC" = 0 ] && [ "$DIFF" = 0 ]
+fact $? "and reporting the compile lines as equivalent is not a contradiction with that"
+
+# 消すのは人だけである。`verify` は翻訳の引数を比べるだけで、落とした
+# 結合入力が `deps` として戻されたことも、private と public の分け方が
+# 意図どおりであることも知らない。印を消すことは「私が確かめた」という
+# 主張であり、dowel はそれを利用者の代わりに言える立場にない。
+before=$(grep -c '^unverified = true$' dowel.build)
+"$DOWEL" migrate verify "$PWD/../bd-debug/compile_commands.json" >/dev/null 2>&1
+after=$(grep -c '^unverified = true$' dowel.build)
+_last_cmd="dowel migrate verify   # 通ったあと"; OUT="$before -> $after"; RC=0
+[ "$after" -eq "$before" ]
+fact $? "a clean verify does not clear the mark, that claim being the user's to make"
+
+# 人が消せば消える。そして黙る。
+sed -i '0,/^unverified = true$/{/^unverified = true$/d}' dowel.build
+left2=$("$DOWEL" migrate verify "$PWD/../bd-debug/compile_commands.json" --format=json 2>/dev/null |
+        jq -r '.unverified | length')
+_last_cmd="dowel migrate verify --format=json   # 印を1つ消した"
+OUT="$left2 target(s) still marked"; RC=0
+[ "$left2" -eq 2 ]
+fact $? "removing a line by hand is what moves the count"
+
+# 手で書いても構わない。古いビルドを読んで手で起こした目標は、
+# 下書きと同じ立場に在る。
+python3 - <<'PY'
+p = "dowel.build"
+t = open(p).read()
+open(p, "w").write(t + '\n[lib.byhand]\nsources = [file("src/greet.c")]\nunverified = true\n')
+PY
+diag unverified-import "a mark written by hand is reported the same way" check
+PY_LEFT=$("$DOWEL" migrate verify "$PWD/../bd-debug/compile_commands.json" --format=json 2>/dev/null |
+          jq -r '.unverified | length')
+_last_cmd="dowel migrate verify --format=json   # 手で書いた印を足した"
+OUT="$PY_LEFT target(s) still marked"; RC=0
+[ "$PY_LEFT" -eq 3 ]
+fact $? "and counted the same way, dowel not distinguishing who wrote it"
+
+cd ..

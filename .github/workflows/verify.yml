@@ -128,12 +128,13 @@ jobs:
               gcc-aarch64-linux-gnu g++-aarch64-linux-gnu qemu-user-static \
               gcc-arm-none-eabi qemu-system-arm xvfb libcairo2-dev libx11-dev \
               gdb gdb-multiarch libosmesa6-dev libopencv-dev \
-              gcc-mingw-w64-x86-64 wine wine64 gcc-riscv64-linux-gnu
+              gcc-mingw-w64-x86-64 wine wine64 gcc-riscv64-linux-gnu nasm
           ninja --version
           jq --version
           cmake --version | head -1
           meson --version
           pkg-config --version
+          nasm -v
           gcc --version | head -1
           gcc-ar --version | head -1
           objcopy --version | head -1

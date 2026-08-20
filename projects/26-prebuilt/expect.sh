@@ -112,15 +112,24 @@ out_has "x86_64-unknown-linux-gnu" "and the triple the build actually is" check
 # ある——だから計画の段で止める価値がある。
 out_has "the link succeeds" "and says why nothing later would catch it" check
 
-# 同じ診断が、札を受け取る目標の数だけ出る。文面には目標の名前が入って
-# いないため、読む側には同じ誤りの写しに見える
+# ビルドとの照合は、宣言と構成の関係である。誰が引いているかには依らない
+# ——1つのビルドの中で構成は一様だからである（ADR-0031）。したがって
+# 宣言1つにつき1件であり、「1つ直せば全部消える」ことが出力の形から読める
 # （[F-064](../../docs/10-findings.md#f-064)）。
 n=$("$DOWEL" check --message-format=json 2>/dev/null | jq -r 'select(.code=="abi-mismatch")|.code' | grep -c .)
 _last_cmd="dowel check --message-format=json | abi-mismatch"
 OUT="emitted $n times for one declaration"; RC=0
-known_issue F-064
 [ "$n" -eq 1 ]
 fact $? "one wrong declaration produces one diagnostic"
+
+# 使う側を増やしても増えない。件数がグラフの形について増えると、
+# 広く使われるライブラリで札を1つ間違えたときに出力が埋まる。
+printf '\n[bin.app2]\nsources = [file("src/main.c")]\n\n[bin.app2.private]\ndeps = [target("engine")]\n' >> dowel.build
+n2=$("$DOWEL" check --message-format=json 2>/dev/null | jq -r 'select(.code=="abi-mismatch")|.code' | grep -c .)
+_last_cmd="dowel check  # 使う側を2つに増やした"
+OUT="emitted $n2 times with two consumers"; RC=0
+[ "$n2" -eq 1 ]
+fact $? "and adding another consumer does not add another copy of it"
 cp dowel.build.keep dowel.build
 
 # 対照。ビルドと合っていれば通る。上の拒否が「札を書くと落ちる」ではなく

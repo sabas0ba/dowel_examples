@@ -249,33 +249,41 @@ fact $? "a consumer that knows nothing about dowel compiles against the installe
 prints "12.5664" "and the program it produced runs" \
        env LD_LIBRARY_PATH="$PFX/lib" "$PWD/consumer.bin"
 
-# 同じパッケージの、上に乗るライブラリ。こちらは書庫であり、`-lrender` だけ
-# では下の実体が引かれない。記述子は `Requires` にも `Libs` にも下を書いて
-# いないため、使う側の結合が未定義参照で落ちる
-# （[F-062](../../docs/10-findings.md#f-062)）。
+# 同じパッケージの、上に乗るライブラリ。こちらは書庫なので、`-lrender`
+# だけでは下の実体が引かれない。記述子が下を名指していなければ、使う側の
+# 結合は未定義参照で落ちる（[F-062](../../docs/10-findings.md#f-062)）。
+#
+# 共有ライブラリなら `DT_NEEDED` が隠してしまうため、**静的にしたときに
+# だけ**現れる。ここを書庫のままにしてあるのはそのためである。
 RENDER_FLAGS=$(pc "$PFX" --cflags --libs render)
 _last_cmd="cc consumer/render.c \$(pkg-config --cflags --libs render)"
 OUT=$(cc "$CONS/render.c" -o "$PWD/render.bin" $RENDER_FLAGS 2>&1); RC=$?
-known_issue F-062
 [ "$RC" -eq 0 ]
 fact $? "a consumer links against an installed library that sits on a sibling"
 
-# 対照。同じ木で、下の実体を自分で足せば通る。壊れているのは繋がり方では
-# なく、記述子が下を名指していないことである。
-_last_cmd="cc consumer/render.c \$(pkg-config ... render) -lshapes -lm"
-OUT=$(cc "$CONS/render.c" -o "$PWD/render2.bin" $RENDER_FLAGS -L"$PFX/lib" -lshapes -lm 2>&1); RC=$?
-[ "$RC" -eq 0 ]
-fact $? "naming the sibling by hand is what makes that link succeed"
+prints "1.0000" "and the program it produced runs" \
+       env LD_LIBRARY_PATH="$PFX/lib" "$PWD/render.bin"
 
-# システムの依存は名前で書かれている。dowel はそれを解決したときに
-# モジュール名も下限も知っており、書ける情報は持っている。
-grep -q 'Requires' "$PFX/lib/pkgconfig/render.pc" 2>/dev/null
-sysreq=$?
+# 名指す先は隣に書いた記述子である。「確かに在るものだけを名指す」という
+# 規則が満たされるのは、同じ実行で両方を出したこの場合だけである。
 _last_cmd="cat $PFX/lib/pkgconfig/render.pc"
-OUT=$(cat "$PFX/lib/pkgconfig/render.pc"); RC=0
-known_issue F-062
-[ "$sysreq" -eq 0 ]
+OUT=$(cat "$PFX/lib/pkgconfig/render.pc" 2>&1); RC=0
+said=$OUT
+printf '%s' "$said" | grep -q '^Requires: .*shapes'
 fact $? "the descriptor of a library that sits on a sibling names what it requires"
 
-rm -rf "$PFX" "$STG" "$MOVED" "$UNSTG" "$PWD/consumer.bin" "$PWD/render.bin" "$PWD/render2.bin" \
+if [ -e "$PFX/lib/pkgconfig/shapes.pc" ]; then
+    fact 0 "and what it names was written by the same run, beside it"
+else
+    fact 1 "and what it names was written by the same run, beside it"
+fi
+
+# `Requires` で名指すと、下の `Cflags` も届く。`Libs` に `-lshapes` を
+# 足すだけの形では、公開している定義や旗が落ちる。
+_last_cmd="pkg-config --cflags render"
+OUT=$(pc "$PFX" --cflags render); RC=0
+printf '%s' "$OUT" | grep -q 'SHAPES_SHARED'
+fact $? "so a define the sibling publishes reaches the consumer too"
+
+rm -rf "$PFX" "$STG" "$MOVED" "$UNSTG" "$PWD/consumer.bin" "$PWD/render.bin" \
        "$LIB/.dowel" "$APP/.dowel" "$LIB/compile_commands.json" "$APP/compile_commands.json"
