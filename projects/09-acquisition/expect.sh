@@ -574,15 +574,23 @@ rm -rf "$PWD/nc-home" "$PWD/stage" "$PWD/stage-empty" "$WITNESS"
 # dowel は公開バイナリがその sha から組まれたことを確かめられない。
 # だから「入ったものが期待どおりか」は、**入ったものに名乗らせる**しかない。
 
-# 上流にもう1つ release を作る。別のコミットに別の版を置くと、
+# 上流にもう1つ release を作る。別のコミットに別の version を置くと、
 # 「名指した方が来たか」を答の側で見分けられる。
-OLD=$(git --git-dir="$UPSTREAM" rev-parse 'HEAD~1' 2>/dev/null || printf '%s' "$TIP")
+#
+# コミットは**ここで作る**。上流の履歴を辿って `HEAD~1` を使うと、複製元が
+# 浅い場合に無い——CI の checkout は既定で深さ1であり、そこで話が変わる。
+# 環境によって走る検査が変わることを避けるのがこの木の規則である。
+TREE=$(git --git-dir="$UPSTREAM" rev-parse 'HEAD^{tree}')
+OLD=$(git --git-dir="$UPSTREAM" -c user.email=t@t -c user.name=t \
+        commit-tree "$TREE" -p "$TIP" -m 'a second release, for the checks below' 2>/dev/null)
 git --git-dir="$UPSTREAM" tag -f v0.8.0 "$OLD" >/dev/null 2>&1
+[ -n "$OLD" ] && [ "$OLD" != "$TIP" ]
+fact $? "a second release can be created on the local mirror"
 OLD_BASE=${UPSTREAM%.git}/releases/download/v0.8.0
 OLD_ASSET=dowel-v0.8.0-$TRIPLE.tar.gz
 mkdir -p "$OLD_BASE"
 
-# 古い方の asset には、自分が何者かを名乗るだけのものを詰める。dowel は
+# 片方の asset には、自分が何者かを名乗るだけのものを詰める。dowel は
 # 中身が本物の dowel かどうかを確かめない——その限界を使って、
 # 「どちらが来たか」を答の側から読む。
 mkdir -p "$PWD/stage-old"
@@ -594,7 +602,7 @@ chmod +x "$PWD/stage-old/dowel"
 tar czf "$OLD_BASE/$OLD_ASSET" -C "$PWD/stage-old" dowel
 ( cd "$OLD_BASE" && sha256sum "$OLD_ASSET" | awk '{print $1}' > "$OLD_ASSET.sha256" )
 
-# 新しい方の asset は、検査対象の dowel そのものである（1節で作ってある）。
+# もう片方の asset は、検査対象の dowel そのものである（1節で作ってある）。
 publish_sum
 
 VER=$("$DOWEL" --version 2>&1)
@@ -619,12 +627,12 @@ fact $? "and both arrived as published binaries"
 
 # ここが要点である。名指した版の**中身**が来たかどうかは、入ったものに
 # 名乗らせるほかない。
-prints "$VER" "asking for the newer release gives the payload published under it" \
+prints "$VER" "asking for one release gives the payload published under it" \
        env DOWELUP_HOME="$HOME2" DOWELUP_UPSTREAM="$UPSTREAM" \
            "$DOWELUP" run 0.9.0 -- --version
 
 prints "dowel 0.8.0 (the payload published under v0.8.0)" \
-       "and asking for the older one gives the payload published under that" \
+       "and asking for the other gives the payload published under that" \
        env DOWELUP_HOME="$HOME2" DOWELUP_UPSTREAM="$UPSTREAM" \
            "$DOWELUP" run 0.8.0 -- --version
 
