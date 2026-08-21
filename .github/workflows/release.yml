@@ -1,0 +1,44 @@
+# 公開された release を、利用者と同じ経路で確かめる。
+#
+# `verify` とは分けてある。あちらは「本リポジトリを変えていなければ結果も
+# 動かない」ことを前提に組まれており、上流の資産に触れる検査はその前提と
+# 両立しない。ここが落ちても pull request は止まらない——止めるべき相手が
+# 本リポジトリの外に在るためである。
+#
+# 走らせるのは人が指示したときと、日に一度。release は人が作る手順の産物で
+# あり、壊れ方も人の手順の壊れ方をする——資産が1つ欠ける、digest を貼り
+# 忘れる、書庫の中身が変わる。どれも公開したあとに気づくものである。
+name: release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 確かめる版（例 0.1.0）
+        required: true
+        default: "0.1.0"
+  schedule:
+    # 毎日 03:20 UTC。時刻に意味は無く、正時を避けてあるだけである。
+    - cron: "20 3 * * *"
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # dowel を組むのに必要なものは入れない。**Rust の道具立てを要らなく
+      # するのがこの配り方の目的**であり、それを確かめる側が rust を持って
+      # いては、確かめたことにならない。
+      - name: install what a new user would have
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq gcc ninja-build
+          gcc --version | head -1
+
+      - name: check the published release
+        run: |
+          ./scripts/check-release.sh "${{ inputs.version || '0.1.0' }}"
