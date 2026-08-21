@@ -43,7 +43,7 @@ for f in lib/libshapes.so.2 lib/libshapes.so lib/librender.a \
 done
 
 # 世代付きの実体には、世代なしの別名が付く（ADR-0040）。`-lshapes` が
-# 引き当てるのはこちらであり、無ければ記述子の `Libs` は書庫を指す。
+# 引き当てるのはこちらであり、無ければ記述子の `Libs` は archive を指す。
 if [ -L "$PFX/lib/libshapes.so" ]; then
     fact 0 "the unversioned name of a versioned library is a symlink"
 else
@@ -135,7 +135,7 @@ rm -rf "$APP/.dowel"
 prints "3.1416" "the installed tree runs after it is moved and the build tree is gone" \
        "$MOVED/bin/app"
 
-# 3つの背骨すべてで同じことが起きること。`$` は ninja にとっても make に
+# 3つの backend すべてで同じことが起きること。`$` は ninja にとっても make に
 # とっても、make の行を走らせる shell にとっても意味を持つ記号である。
 # 引用を1つ落とすと、実行ファイルは繋がり、木の中では動き、移した後にだけ
 # 壊れる——最も見つけにくい形になる。
@@ -249,12 +249,12 @@ fact $? "a consumer that knows nothing about dowel compiles against the installe
 prints "12.5664" "and the program it produced runs" \
        env LD_LIBRARY_PATH="$PFX/lib" "$PWD/consumer.bin"
 
-# 同じパッケージの、上に乗るライブラリ。こちらは書庫なので、`-lrender`
+# 同じパッケージの、上に乗るライブラリ。こちらは archive なので、`-lrender`
 # だけでは下の実体が引かれない。記述子が下を名指していなければ、使う側の
 # 結合は未定義参照で落ちる（[F-062](../../docs/10-findings.md#f-062)）。
 #
 # 共有ライブラリなら `DT_NEEDED` が隠してしまうため、**静的にしたときに
-# だけ**現れる。ここを書庫のままにしてあるのはそのためである。
+# だけ**現れる。ここを archive のままにしてあるのはそのためである。
 RENDER_FLAGS=$(pc "$PFX" --cflags --libs render)
 _last_cmd="cc consumer/render.c \$(pkg-config --cflags --libs render)"
 OUT=$(cc "$CONS/render.c" -o "$PWD/render.bin" $RENDER_FLAGS 2>&1); RC=$?

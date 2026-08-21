@@ -26,7 +26,7 @@ cp -a prefix moved && rm -rf app/.dowel && moved/bin/app
 
 `$` は ninja にとっても make にとっても、make の行を走らせる shell にとっても
 意味を持つ記号である。引用を1つ落とすと、実行ファイルは**繋がり、木の中では
-動き、移した後にだけ壊れる**。3つの背骨すべてで見る。
+動き、移した後にだけ壊れる**。3つの backend すべてで見る。
 
 ### 2. 出した先が見つかること
 
@@ -45,11 +45,11 @@ cc consumer/main.c $(pkg-config --cflags --libs shapes)
 
 | ところ | 何を持つか |
 |---|---|
-| `lib/` | `shapes`（共有、`soversion`、`exports`、公開の見出し・定義・結合旗）と、その上に乗る `render`（書庫） |
+| `lib/` | `shapes`（共有、`soversion`、`exports`、公開の見出し・定義・結合旗）と、その上に乗る `render`（archive） |
 | `app/` | `shapes` を使う `bin` と、配り物ではない `test` |
 | `consumer/` | dowel を知らない使う側。pkg-config が刷る引数だけで組む |
 
-`render` を**書庫のまま**にしてあるのは、共有と静的で「配った記述子で繋がる
+`render` を**archive のまま**にしてあるのは、共有と静的で「配った記述子で繋がる
 かどうか」が変わるためである。
 
 ## 何を確かめるか

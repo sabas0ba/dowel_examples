@@ -99,7 +99,7 @@ File API のような問い合わせを置く手順が要らない。どちら�
 
 ### 関門: 仕分けが粗い（[F-057](../../docs/10-findings.md#f-057)、[#135](https://github.com/sabas0ba/dowel/issues/135)）
 
-`parameters` には翻訳の引数だけでなく、リンクと書庫の引数も入っている。
+`parameters` には翻訳の引数だけでなく、リンクと archive の引数も入っている。
 それが翻訳の `flags` に落ちるため、**下書きがそのままでは組めない**。
 
 ```toml

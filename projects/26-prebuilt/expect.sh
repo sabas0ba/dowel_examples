@@ -34,7 +34,7 @@ OUT=$(cc_args linkage:app); RC=0
 printf '%s' "$OUT" | grep -q 'include'
 fact $? "a consumer of a prebuilt library compiles against its published headers"
 
-# 何も組まない。翻訳も書庫化も起きず、使う側の翻訳だけが走る。
+# 何も組まない。翻訳も archive 化も起きず、使う側の翻訳だけが走る。
 build_direct --no-compdb
 rm -rf .dowel
 build_direct --no-compdb
@@ -94,7 +94,7 @@ cp dowel.build.keep dowel.build
 
 # --------------------------------------------------------------- 4. ABI 札の辺
 #
-# 「1つのビルドの中では道具立ても構成も一様である」（ADR-0031）ため、
+# 「1つのビルドの中では toolchain も構成も一様である」（ADR-0031）ため、
 # **手元で組んだもの同士**の札はいつも一致し、比較は空虚だった。片側が
 # 他所で組まれている場合に初めて、札が食い違いうる。
 

@@ -12,7 +12,7 @@
 #   4. 記録された入力である。差し替えたら作り直す
 #   5. 目標トリプルごとに選べる
 #
-# 5 が組み込みで効く。ベンダが配る toolchain はコンパイラ・リンカ・書庫の
+# 5 が組み込みで効く。ベンダが配る toolchain はコンパイラ・リンカ・archive の
 # 道具を一組で配り、混ぜることを想定していない。混成が起きても黙って
 # 通ってしまうなら、宣言できることの意味が薄れる。
 
@@ -20,7 +20,7 @@ TRIPLE=aarch64-unknown-linux-gnu
 BUILD_BAK=$PWD/host-dowel.build.bak
 cp host/dowel.build "$BUILD_BAK"
 
-# ------------------------------------------------------------ 道具立て
+# ------------------------------------------------------------ 下ごしらえ
 
 # tool_of <パッケージ> <アクションの種類> [dowel args...] — そのアクションを
 # 起こすコマンド。「宣言が起動に届いたか」は引数の先頭にしか現れない。
@@ -114,7 +114,7 @@ diag_where missing-toolchain '.message | test("archiver")' \
     "the refusal says it is the archiver, not the compiler" -C host check
 out_lacks "not found" "the missing archiver never reaches the shell" -C host build
 
-# 要るときだけ確かめる。書庫を作らない目標だけを求めるなら、archiver が
+# 要るときだけ確かめる。archive を作らない目標だけを求めるなら、archiver が
 # 壊れていても組めなければならない。C 専用の構成に C++ コンパイラを強いない
 # のと同じ理屈である。
 ok "a target that produces no archive ignores a broken archiver" \
@@ -124,7 +124,7 @@ declare_toolchain host
 
 # ------------------------------------------------------------ 4. 記録された入力
 #
-# `ar` にはこれが無かった（F-016）。記録されていなければ、書庫の中身が
+# `ar` にはこれが無かった（F-016）。記録されていなければ、archive の中身が
 # 黙って変わりうる。
 
 rm -rf host/.dowel
@@ -164,8 +164,8 @@ fact $v "the record is the tool's name, so swapping what the name resolves to do
 
 # ------------------------------------------------------------ 5. トリプルごと
 #
-# ここが `ar` を宣言できるようにした理由である。クロスの構成で書庫の作成
-# だけがホストの道具に落ちると、ホストと目標で書庫の形式が違う場合に
+# ここが `ar` を宣言できるようにした理由である。クロスの構成で archive の作成
+# だけがホストの道具に落ちると、ホストと目標で archive の形式が違う場合に
 # 壊れる。llvm-ar と GNU ar、macOS をホストに ELF へクロスする場合、
 # ベンダ配布の toolchain。いずれも手元では通り、別の環境で壊れる。
 
@@ -180,7 +180,7 @@ tool_is ar cross ar "the host build still uses the host archiver"
 ok "the cross build passes check" -C cross check --target=$TRIPLE
 ok "the cross build produces an archive" -C cross build --no-compdb --target=$TRIPLE
 
-# 書庫の中身が本当に目標のアーキテクチャのものであること。宣言が届いた
+# archive の中身が本当に目標のアーキテクチャのものであること。宣言が届いた
 # ことは引数で分かるが、出来上がったものが正しいかは別である。
 archive=$(find cross/.dowel/build -name 'libpart.a' | head -1)
 got=""
@@ -201,12 +201,12 @@ assert "the cross binary links against that archive and runs under the emulator"
 #
 # かつて表に無いキーは黙って受理され、その道具は既定値へ後退していた
 # （docs/10-findings.md F-019）。クロスの宣言で archiver のキーを打ち間違える
-# と、aarch64 の書庫がホストの `ar` で作られ、#50 が防ごうとした状態が
+# と、aarch64 の archive がホストの `ar` で作られ、#50 が防ごうとした状態が
 # 綴り間違いで戻っていた。
 #
 # `c` が同じ経路で消えれば翻訳が動かないのですぐ分かる。archiver は既定の
 # `ar` が ELF に対して総称的に動いてしまうため、**壊れるのはホストと目標で
-# 書庫形式が違うときだけ**であった。
+# archive 形式が違うときだけ**であった。
 
 fails "a misspelled toolchain key is refused" -C typo check --target=$TRIPLE
 
@@ -217,7 +217,7 @@ printf '%s' "$said" | jq -e 'select(.code == "unknown-property")
     | .suggestions | length > 0' >/dev/null 2>&1
 fact $? "the refusal suggests the tool that was meant"
 
-# 拒むのは計画の前である。書庫がホストの道具で作られてから気づくのでは遅い。
+# 拒むのは計画の前である。archive がホストの道具で作られてから気づくのでは遅い。
 _last_cmd="dowel -C typo build --target=$TRIPLE"
 OUT=$("$DOWEL" -C typo build --no-compdb --target=$TRIPLE 2>&1)
 RC=0

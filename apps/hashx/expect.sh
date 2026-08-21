@@ -19,7 +19,7 @@
 #   - **版が1か所で決まるか。** 見出しの版とマニフェストの版は一致すべき
 #   - **配れるか。** dowel 以外の利用者へ渡す形があるか
 
-# ------------------------------------------------------------ 道具立て
+# ------------------------------------------------------------ 下ごしらえ
 
 RE=readelf
 AR_PATH="lib/.dowel/build/x86_64-unknown-linux-gnu-debug/lib/libhashx.a"
@@ -308,7 +308,7 @@ fact $v "and the kinds it does offer, which the diagnostic lists, hold nothing f
 
 mv lib/dowel.build.keep lib/dowel.build
 
-# 出来上がるものを数える。既定の機能で組んだビルド木には、静的な書庫が
+# 出来上がるものを数える。既定の機能で組んだビルド木には、静的な archive が
 # 1つ在るだけである——`.pc` も CMake の設定も出ない。
 #
 # それでよい。**配るための形は組むことの副産物ではなく、`install` が出す
@@ -361,7 +361,7 @@ rebuilt "main.cpp" "editing the public header recompiles the consumer that inclu
 
 # ------------------------------------------------------------ 10. 共有として配る（ADR-0030）
 #
-# ここまでライブラリが作れたのは静的な書庫だけだった。書庫は「その木の中で
+# ここまでライブラリが作れたのは静的な archive だけだった。archive は「その木の中で
 # しか意味がない」形であり、dowel を使わない相手へ渡すには足りない。
 # `linkage = "shared"` で共有ライブラリが作れる。
 #
@@ -381,7 +381,7 @@ _last_cmd="find libhashx.so"; OUT="${SO:-(absent)}"; RC=0
 [ -n "$SO" ]
 fact $? "producing a shared object where the default configuration produces an archive"
 
-# 既定の側は書庫のままである。同じ木、同じソース、違う配られ方。
+# 既定の側は archive のままである。同じ木、同じソース、違う配られ方。
 "$DOWEL" -C ctool build --no-compdb >/dev/null 2>&1
 A=$(find ctool/.dowel/build -name 'libhashx.a' | head -1)
 _last_cmd="find libhashx.a"; OUT="${A:-(absent)}"; RC=0
@@ -471,7 +471,7 @@ fact $? "and answers exactly what the archive-linked build answers"
 #
 # **パッケージの中では、共有ライブラリも静的に繋がれる。** `exports` は
 # 「一緒に書かれなかったコードへの境界」であり、パッケージが配布の単位で
-# ある以上、同じパッケージの兄弟は書庫の側を見る。
+# ある以上、同じパッケージの兄弟は archive の側を見る。
 #
 # これが無いと、ライブラリ自身の検査が内側に届かなくなる。公開の面だけを
 # 叩く検査では、面の後ろにある表の構築を覆えない（F-056）。
@@ -551,7 +551,7 @@ fact $? "because when the ABI generation changes is the author's call, not the t
 
 # ------------------------------------------------------------ 11. 配る（ADR-0041 / ADR-0043）
 #
-# ここまでの「配る先」は木の中の話だった。書庫も共有ライブラリも
+# ここまでの「配る先」は木の中の話だった。archive も共有ライブラリも
 # `.dowel/build/` の下に出るだけで、置く先が無い。`dowel install` がその
 # 先であり、`.pc` がそこを**引けるようにする**ものである。
 #
@@ -661,7 +661,7 @@ except AttributeError:
 [ "$OUT" = "not reachable" ]
 fact $? "while a name the library did not export is not reachable from there either"
 
-# 対照。同じ名前が、静的な書庫の側には在る。面が「作られた」ものであって
+# 対照。同じ名前が、静的な archive の側には在る。面が「作られた」ものであって
 # 「たまたま無い」のではないことは、これが無いと言えない。
 _last_cmd="nm libhashx.a | hx_crc_step"
 OUT=$(nm "$AR_PATH" 2>/dev/null | grep 'hx_crc_step'); RC=0

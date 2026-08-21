@@ -17,7 +17,7 @@ built: .../lib/libhashx.a
 
 $ printf '123456789' | ./hashsum      # C の利用者
 crc32=cbf43926
-$ printf '123456789' | ./hashcxx      # C++ の利用者、同じ書庫から
+$ printf '123456789' | ./hashcxx      # C++ の利用者、同じ archive から
 crc32=cbf43926
 ```
 
@@ -52,7 +52,7 @@ GLOBAL HIDDEN   hx_crc_step       ← 翻訳単位は跨ぐが外へは出ない
 LOCAL  DEFAULT  build             ← static
 ```
 
-`expect.sh` は、**見出しが `HASHX_API` を付けた名前の集合**と、**書庫が
+`expect.sh` は、**見出しが `HASHX_API` を付けた名前の集合**と、**archive が
 GLOBAL DEFAULT で出す名前の集合**が一致することを見る。片方だけを触れば落ちる。
 印を付けずに新しい大域を足しても面に入らないことも、実際に足して確かめている。
 
@@ -113,7 +113,7 @@ defines = { HASHX_VERSION = pkg.version }
 
 ## 配る先
 
-`lib` は静的な書庫だけである。`.so` も `.pc` も CMake の設定も出ない。dowel は
+`lib` は静的な archive だけである。`.so` も `.pc` も CMake の設定も出ない。dowel は
 システムのライブラリを pkg-config 経由で**使える**（`projects/17-deps`）が、
 その逆は無い。
 
@@ -128,7 +128,7 @@ consumer could read`）。段が来たときに何が変わるかは、この1�
 | | |
 |---|---|
 | 公開と非公開 | `include/` だけが渡り、`src/` の内部見出しは渡らない |
-| 言語の混在 | 同じ書庫が C の利用者にも C++ の利用者にも繋がること |
+| 言語の混在 | 同じ archive が C の利用者にも C++ の利用者にも繋がること |
 | リンクの駆動 | 閉包に C++ があればリンクは C++ のドライバを通ること |
 | `abi` の札 | `must_equal` が何を拒むか（[F-028](../../docs/10-findings.md#f-028)） |
 | 依存の出所 | `path` / `git` / `version` の扱い（[F-029](../../docs/10-findings.md#f-029)） |
@@ -141,7 +141,7 @@ consumer could read`）。段が来たときに何が変わるかは、この1�
 
 ## 共有として配る（ADR-0030）
 
-ここまでこのライブラリが作れたのは静的な書庫だけだった。書庫は「その木の
+ここまでこのライブラリが作れたのは静的な archive だけだった。archive は「その木の
 中でしか意味がない」形であり、dowel を使わない相手へ渡すには足りない。
 `--features=shared` で共有ライブラリになる。
 
@@ -177,11 +177,11 @@ exports = ["hashx_fnv1a", "hashx_crc32", "hashx_crc_begin",
 
 **パッケージの中では、共有ライブラリも静的に繋がれる。** `exports` は
 「一緒に書かれなかったコードへの境界」であり、パッケージが配布の単位である
-以上、同じパッケージの兄弟は書庫の側を見る。
+以上、同じパッケージの兄弟は archive の側を見る。
 
 | どこから見るか | 見えるもの |
 |---|---|
-| 同じパッケージの `test` | 全部（書庫に繋がる） |
+| 同じパッケージの `test` | 全部（archive に繋がる） |
 | 別のパッケージの使う側（`dep(...)`） | `exports` に挙げたものだけ |
 
 一時はここが繋がらず、共有にするとライブラリ自身の検査が組めなかった
@@ -222,7 +222,7 @@ Library soname: [libhashx.so.3]
 
 ## 配る（[ADR-0041](https://github.com/sabas0ba/dowel/blob/main/docs/adr/0041-install.md) / [ADR-0043](https://github.com/sabas0ba/dowel/blob/main/docs/adr/0043-pkgconfig-generation.md)）
 
-ここまでの「配る先」は木の中の話だった。書庫も共有ライブラリも
+ここまでの「配る先」は木の中の話だった。archive も共有ライブラリも
 `.dowel/build/` の下に出るだけで、**置く先が無かった**。
 
 ```console
@@ -260,6 +260,6 @@ $ cc consumer.c $(pkg-config --cflags --libs hashx)
 |---|---|
 | 公開した6つ | 引ける。答は C の利用者と同じ |
 | `hx_crc_step`（`exports` に無い） | 引けない |
-| 同じ名前を書庫の側で | 在る——面は**作られた**ものであって、たまたま無いのではない |
+| 同じ名前を archive の側で | 在る——面は**作られた**ものであって、たまたま無いのではない |
 
 prefix ごと別の場所へ移し、ビルド木を消しても、翻訳も結合も実行も通る。

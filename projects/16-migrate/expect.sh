@@ -9,7 +9,7 @@
 #
 # 2 は 1 の答合わせであり、import 自身が出力の最後で指している手順である。
 
-# ------------------------------------------------------------ 道具立て
+# ------------------------------------------------------------ 下ごしらえ
 
 # configure <src> <build> <type> — File API の問い合わせを置いてから構成する。
 # migrate import が読むのは compile_commands.json ではなく codemodel-v2 の
@@ -70,7 +70,7 @@ same() {
 # 翻訳された構成を名乗らせる（cmake-project/src/report.c）。
 #
 # 期待と実際は検査名ではなく、落ちたときの材料へ回す。名前に混ぜると
-# 実行ごとに検査名が変わり、文書からも掲示からも同じ行を指せなくなる
+# 実行ごとに検査名が変わり、文書からも publish からも同じ行を指せなくなる
 # （docs/00-design.md 6節）。名乗りは複数行であり、1検査1行の記録も壊す。
 reports() {
     local want=$1 dir=$2 cfg=$3 desc=$4 bin got v
@@ -190,7 +190,7 @@ assert "an object library becomes a lib target" \
 assert "a shared library becomes a lib target too" \
     grep -q '^\[lib\.shr\]' shapes/dowel.build
 
-# dowel は今のところ静的な書庫しか作らない。同じ [lib.*] へ写しておきながら
+# dowel は今のところ静的な archive しか作らない。同じ [lib.*] へ写しておきながら
 # 何も言わないと、共有ライブラリのつもりの利用者が黙って別のものを得る。
 assert "the draft says out loud that a shared library became a static one" \
     grep -q 'was a SHARED_LIBRARY' shapes/dowel.build
@@ -325,7 +325,7 @@ cd .. || exit 1
 # する。Meson は目標ごとに `parameters` 配列を1本渡すだけなので、仕分けは
 # dowel が行い、依存の辺は分からないままになる（文書に明記されている）。
 #
-# その仕分けがまだ粗い。配列にはリンクと書庫の引数も混ざっており、それが
+# その仕分けがまだ粗い。配列にはリンクと archive の引数も混ざっており、それが
 # 翻訳の `flags` に入るため、**下書きがそのままでは組めない**（F-057）。
 
 MESON_SRC=$PWD/meson-shapes
@@ -385,7 +385,7 @@ fact $? "and deps is left empty, because Meson does not say which target links w
 
 # ------------------------------------------------------------ 引数の仕分け
 #
-# `parameters` には翻訳の引数だけでなく、リンクと書庫の引数も混ざっている。
+# `parameters` には翻訳の引数だけでなく、リンクと archive の引数も混ざっている。
 # かつてはそれが丸ごと翻訳の `flags` に入り、下書きがそのままでは組めな
 # かった（F-057）。いまは行き先ごとに分けられる。
 

@@ -27,7 +27,7 @@ fact $? "the progress line for assembly says AS"
 printf '%s' "$said" | grep -q 'CC .*main\.c'
 fact $? "and the one for C still says CC"
 
-# 同じことがアクショングラフの記述にも出る。背骨を問わずここを読めば分かる。
+# 同じことがアクショングラフの記述にも出る。backend を問わずここを読めば分かる。
 _last_cmd="graph --kind=action | descriptions"
 OUT=$("$DOWEL" graph --kind=action --format=json 2>/dev/null | jq -r '.steps[].description'); RC=0
 printf '%s' "$OUT" | grep -q '^AS .*plain\.s'
@@ -115,8 +115,8 @@ prints "7 13" "and the change reaches the program" "$(bdir)/bin/app"
 sed -i 's/13/11/' include/value.h
 build_direct --no-compdb
 
-# 収束すること。3つの背骨すべてで見る——「依存ファイルは無い」の綴りは
-# 背骨ごとに違い、ninja では変数を束ねないと自分自身に解決して循環になる。
+# 収束すること。3つの backend すべてで見る——「依存ファイルは無い」の綴りは
+# backend ごとに違い、ninja では変数を束ねないと自分自身に解決して循環になる。
 for backend in direct ninja make; do
     rm -rf .dowel
     run build --no-compdb --backend="$backend"
@@ -248,7 +248,7 @@ rm -rf .dowel compile_commands.json
 # `[toolchain] c` が組み立てるので、`nasm` が要るプロジェクトはそう言えない」。
 #
 # 要るのは dowel の相手そのものである。暗号や符号のライブラリは x86 向けに
-# NASM のソースを配る——OpenSSL も BoringSSL も、生成器が Unix の三つ組へは
+# NASM のソースを配る——OpenSSL も BoringSSL も、生成器が Unix の triple へは
 # gas を、Windows へは NASM を吐く。Windows の側は C の駆動器が聞いたことも
 # ない道具を要る。
 #

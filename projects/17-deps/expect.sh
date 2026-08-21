@@ -14,7 +14,7 @@
 
 export PKG_CONFIG_PATH="$PWD/system"
 
-# ------------------------------------------------------------ 道具立て
+# ------------------------------------------------------------ 下ごしらえ
 
 # lock <パッケージ> — そのパッケージの dowel.lock の中身。
 lock() { cat "$1/dowel.lock" 2>/dev/null; }
@@ -226,15 +226,15 @@ ok "a module with no link flags builds all the same" \
 
 # ------------------------------------------------------------ 6. リンクの閉包
 #
-# 静的な書庫は自分のリンク要件を運べない。したがって lib が private に持つ
+# 静的な archive は自分のリンク要件を運べない。したがって lib が private に持つ
 # リンク要件も、依存元の最終リンクへ届かなければ解けない。
 #
-# かつては書庫だけが閉包を辿り、link_flags は落ちていた（F-018）。
+# かつては archive だけが閉包を辿り、link_flags は落ちていた（F-018）。
 # public/private が制御するのは**翻訳**の伝播であり、リンクの到達可能性では
 # ない。ライブラリはシステム依存の見出しを private に保ったまま、なお
 # リンクできなければならない。
 
-# 前提。private のままでも、demokit の書庫は top のリンク行に現れる。
+# 前提。private のままでも、demokit の archive は top のリンク行に現れる。
 printf '%s' "$(link_command chain/top)" | grep -q 'libdemokit.a'
 fact $? "the archive of a private system dependency reaches the final link"
 
@@ -285,12 +285,12 @@ RC=0
 printf '%s' "$cxx" | grep -q 'DEMOKIT'
 fact $? "but a public system dependency also hands its defines to the dependent"
 
-# ------------------------------------------------------------ 書庫の依存（ADR-0029）
+# ------------------------------------------------------------ tarball の依存（ADR-0029）
 #
-# `url` + `sha256` で、書庫を取ってきて展開する依存が書ける。`version` が
+# `url` + `sha256` で、tarball を取ってきて展開する依存が書ける。`version` が
 # 環境に委ねるのに対し、こちらは**内容そのもの**で固定する。
 #
-# 相手にする書庫は手元で作る。実際の網には触れない——落ちたときに直すのが
+# 相手にする tarball は手元で作る。実際の網には触れない——落ちたときに直すのが
 # dowel なのか回線なのかを判断できなくなる。`file://` で取れるので、
 # 取得の経路そのものは本物のまま通せる。
 #
@@ -328,7 +328,7 @@ _last_cmd="ls archived/.dowel/deps"; OUT="${d:-(none)}"; RC=0
 printf '%s' "$d" | grep -q "greet-${SUM:0:12}"
 fact $? "unpacked into a directory named for the digest of what was fetched"
 
-# 書庫の中の唯一の最上位ディレクトリは剥がれる。`name-version/` で包むのが
+# tarball の中の唯一の最上位ディレクトリは剥がれる。`name-version/` で包むのが
 # 慣習であり、剥がさなければ利用者が毎回その1階層を書くことになる。
 _last_cmd="ls \$deps/greet-*"; OUT=$(ls "$d" 2>&1 | paste -sd' ' -); RC=0
 [ -f "$d/dowel.toml" ]

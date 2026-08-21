@@ -24,7 +24,7 @@ LD="ld/$TRIPLE.ld"
 RE=arm-none-eabi-readelf
 NM=arm-none-eabi-nm
 
-# ------------------------------------------------------------ 道具立て
+# ------------------------------------------------------------ 下ごしらえ
 
 # elf_says <readelf の項目> — 成果物の見出しから1行読む。
 elf_says() { $RE -h "$B/firmware" 2>/dev/null | sed -n "s/.*$1: *//p" | head -1; }
@@ -392,7 +392,7 @@ RC=0
 [ -n "$a" ] && [ "$a" = "$b" ] && [ "$b" = "$c" ]
 fact $? "and every target that uses it is compiled with exactly those flags"
 
-# リンクする2つだけが、リンクの側の雛形も使う。書庫を作るだけの lib には
+# リンクする2つだけが、リンクの側の雛形も使う。archive を作るだけの lib には
 # 要らない——束ねるとは「同じものを配る」ことであって「全部に配る」ことでは
 # ない。
 lf=$("$DOWEL" graph --kind=action --format=json --target=$TRIPLE 2>/dev/null |

@@ -11,7 +11,7 @@
 #
 #   - ジョブ要約   直近の実行だけを見るための表
 #   - 成果物       results.json / summary.md / index.html（失敗した実行こそ残す）
-#   - 掲示用の枝   履歴を積んだ表。既定枝への押し込みと手動実行のときだけ
+#   - publish 用の枝   履歴を積んだ表。既定枝への押し込みと手動実行のときだけ
 #
 # 外部アクションはコミットへ固定する（dowel 本体の docs/50-development.md 5節に
 # 合わせる。タグやブランチ名のみによる参照は固定とみなさない）。
@@ -30,7 +30,7 @@ on:
         default: ""
 
 # 同じ枝に新しい押し込みが来たら、走っている実行を止める。
-# 掲示用の枝への押し込みが交差しないようにする意味も兼ねる。
+# publish 用の枝への押し込みが交差しないようにする意味も兼ねる。
 concurrency:
   group: verify-${{ github.ref }}
   cancel-in-progress: true
@@ -117,7 +117,7 @@ jobs:
         # OpenCV の .pc は 55 個のリンク旗を出す。OSMesa は表示の無い機械でも
         # GL の文脈を作れるので、描いたものを実際に読み返せる。
         # riscv64 のクロスと qemu-riscv64 は apps/dsp が使う。1つの算法を
-        # 4つの三つ組（x86_64 / aarch64 / riscv64 / thumbv7em）へ組み、
+        # 4つの triple（x86_64 / aarch64 / riscv64 / thumbv7em）へ組み、
         # どれでも同じ答が出ることを見る層である。
         # mingw と wine は apps/winapp が Windows 向けに組んで走らせるために
         # 使う。ここまでのクロスは同じ族のコンパイラだったが、Windows は
@@ -163,7 +163,7 @@ jobs:
 
       - name: Run the suite
         id: suite
-        # 落ちても要約と掲示は作る。失敗した実行の結果こそ見たい。
+        # 落ちても要約と publish は作る。失敗した実行の結果こそ見たい。
         continue-on-error: true
         run: ./run.sh
 
@@ -200,14 +200,14 @@ jobs:
           if-no-files-found: warn
 
       - name: Gate
-        # 検査の合否はここで確定させる。掲示は先に済ませてある。
+        # 検査の合否はここで確定させる。publish は先に済ませてある。
         if: steps.suite.outcome == 'failure'
         run: |
           echo "::error::検査が失敗した。ジョブ要約の「直すべきもの」を参照。"
           exit 1
 
   publish:
-    # 掲示は既定枝と手動実行のときだけ行う。pull request では押し込まない。
+    # publish は既定枝と手動実行のときだけ行う。pull request では押し込まない。
     needs: verify
     if: always() && github.event_name != 'pull_request'
     runs-on: ubuntu-latest

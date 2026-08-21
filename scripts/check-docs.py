@@ -180,9 +180,9 @@ def check_findings_index(report):
 
 
 def check_published_chart(report):
-    """README が埋める図が、掲示が実際に書き出す図と一致すること。
+    """README が埋める図が、publish が実際に書き出す図と一致すること。
 
-    図は掲示用の枝にしか無く、README からは URL で参照する。相対リンクの
+    図は publish 用の枝にしか無く、README からは URL で参照する。相対リンクの
     検査（`check_links`）は URL を見ないため、名前を片方だけ変えても
     どの検査にも当たらない。README の画像が静かに壊れるだけである。
     """

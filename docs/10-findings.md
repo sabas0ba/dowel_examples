@@ -63,12 +63,12 @@ F-067 は、その ADR-0051 と ADR-0050 を**同じ木に並べて**出た。2�
 ## 実アプリの層が出したもの
 
 F-050 から F-058 は `apps/vision`（大きい依存）、`apps/winapp`（Windows）、
-`apps/dsp`（1つの算法を4つの三つ組で）、`apps/hashx`（配る側のライブラリ）、
+`apps/dsp`（1つの算法を4つの triple で）、`apps/hashx`（配る側のライブラリ）、
 `apps/blink`（ベアメタル）を書く・書き換える過程で出た。**アプリケーションを書かないと現れない層**であり、性質を1つ
 ずつ固定する `projects/` の側からは要求として立ち上がらなかったものである。
 
 条件が2つ重なって初めて現れるものもある。F-054 と F-055 は**パッケージが
-分かれていて、かつ三つ組が複数ある**ときにしか出ない——どちらか一方だけの木
+分かれていて、かつ triple が複数ある**ときにしか出ない——どちらか一方だけの木
 では無害か、そもそも起きない。F-056 は**配るライブラリが自分の検査を持って
 いる**ときにしか出ない。共有ライブラリのフィクスチャを書けば面は確かめられ
 るが、そこに内側を見る検査を置く理由が無い。
@@ -139,14 +139,14 @@ F-050 から F-058 は `apps/vision`（大きい依存）、`apps/winapp`（Wind
 | [F-050](#f-050) | Windows 対象の成果物名が `.exe` を知らない | 実装 | [#112](https://github.com/sabas0ba/dowel/issues/112) | 修正済み |
 | [F-051](#f-051) | MSVC は名指しできるが宣言できない（引数が GNU の形） | 実装 | [#113](https://github.com/sabas0ba/dowel/issues/113) | 修正済み |
 | [F-052](#f-052) | 同名のターゲットを2つ書け、伝播とオブジェクト経路が壊れる | 実装 | [#114](https://github.com/sabas0ba/dowel/issues/114) | 修正済み |
-| [F-053](#f-053) | 対象の OS を指す語が無く、三つ組を数え上げるしかない | 要望 | [#115](https://github.com/sabas0ba/dowel/issues/115) | 修正済み |
+| [F-053](#f-053) | 対象の OS を指す語が無く、triple を数え上げるしかない | 要望 | [#115](https://github.com/sabas0ba/dowel/issues/115) | 修正済み |
 | [F-054](#f-054) | 依存の `[toolchain]` が効かず、使う側すべてが写す | 診断／要望 | [#125](https://github.com/sabas0ba/dowel/issues/125) | 修正済み |
-| [F-055](#f-055) | 目標を三つ組で絞れず、依存の `test` が使う側の build で組まれる | 要望 | [#126](https://github.com/sabas0ba/dowel/issues/126) | 修正済み |
+| [F-055](#f-055) | 目標を triple で絞れず、依存の `test` が使う側の build で組まれる | 要望 | [#126](https://github.com/sabas0ba/dowel/issues/126) | 修正済み |
 | [F-056](#f-056) | 共有にするとライブラリ自身の検査が組めない | 要望 | [#134](https://github.com/sabas0ba/dowel/issues/134) | 修正済み |
-| [F-057](#f-057) | Meson の移行が書庫とリンクの引数を翻訳の flags に混ぜる | 実装 | [#135](https://github.com/sabas0ba/dowel/issues/135) | 修正済み |
+| [F-057](#f-057) | Meson の移行が archive とリンクの引数を翻訳の flags に混ぜる | 実装 | [#135](https://github.com/sabas0ba/dowel/issues/135) | 修正済み |
 | [F-058](#f-058) | `template` を宣言したパッケージが `check` を通らない | 実装 | [#141](https://github.com/sabas0ba/dowel/issues/141) | 未修正 |
 | [F-059](#f-059) | `schema dump` が構成の語彙を「暫定」と報せ続ける | 実装 | [#143](https://github.com/sabas0ba/dowel/issues/143) | 未修正 |
-| [F-060](#f-060) | 資産の取得に失敗したときの理由が空で、走っていない道具の名前が出る | 実装 | [#145](https://github.com/sabas0ba/dowel/issues/145) | 修正済み |
+| [F-060](#f-060) | asset の取得に失敗したときの理由が空で、走っていない道具の名前が出る | 実装 | [#145](https://github.com/sabas0ba/dowel/issues/145) | 修正済み |
 | [F-061](#f-061) | 入った版が公開バイナリか自分で組んだものかを後から知る手立てが無い | 実装 | [#146](https://github.com/sabas0ba/dowel/issues/146) | 修正済み |
 | [F-062](#f-062) | install が出す `.pc` が同じパッケージの兄弟を名指さない | 実装 | [#156](https://github.com/sabas0ba/dowel/issues/156) | 修正済み |
 | [F-063](#f-063) | 翻訳しない綴りのソースが目的ファイルを書かずに成功する | 実装 | [#157](https://github.com/sabas0ba/dowel/issues/157) | 修正済み |
@@ -1302,14 +1302,14 @@ error[missing-toolchain]: no toolchain is declared for target `aarch64-unknown-l
 
 報告先: [sabas0ba/dowel#50](https://github.com/sabas0ba/dowel/issues/50)
 
-**書庫の作成に使う `ar` を `[toolchain]` で宣言できない。しかもどの `ar` を
+**archive の作成に使う `ar` を `[toolchain]` で宣言できない。しかもどの `ar` を
 使ったかが記録された入力になっていない。**
 
 種別: 要望。修正済み（`a9c1619`）。
 
 ### 観測
 
-クロスの構成でも、書庫の作成だけがホストの道具に落ちる。
+クロスの構成でも、archive の作成だけがホストの道具に落ちる。
 
 ```console
 $ dowel graph --kind=action --format=json --target=aarch64-unknown-linux-gnu \
@@ -1344,15 +1344,15 @@ $ PATH=/path/to/other-ar:$PATH dowel build --target=... --executor=direct --log-
 ロックし、**記録されない入力を排除する**」。`ar` はちょうどその
 「記録されない入力」になっている。
 
-組み込みでは、ベンダが配る toolchain がコンパイラ・リンカ・書庫の道具を
+組み込みでは、ベンダが配る toolchain がコンパイラ・リンカ・archive を作る道具を
 一組で配り、混ぜることを想定していない。現状はその混成を**利用者が
 避けられない**。macOS をホストに ELF へクロスする場合は、Apple の `ar` が
-GNU 形式の ELF 書庫を作れないため、より直接に効く。
+GNU 形式の ELF archive を作れないため、より直接に効く。
 
 ### なぜ内側から見つからないか
 
 本体のフィクスチャと CI は単一のホスト向けにしか組まない。ホストの `ar` が
-ホストの目的物を扱うのは当然通るため、「書庫の道具だけがホストのものである」
+ホストの目的物を扱うのは当然通るため、「archive を作る道具だけがホストのものである」
 状態が入力として現れない。
 
 `missing-toolchain` の検査も `c` と `cxx` を対象にしており、宣言できない
@@ -1361,8 +1361,8 @@ GNU 形式の ELF 書庫を作れないため、より直接に効く。
 ### 修正
 
 `[toolchain] ar`（既定 `ar`、`[toolchain.<triple>]` にも書ける、構成キーは
-`tc.ar`）が入った。実在は書庫を作るときだけ確かめられ、名前がアクションの
-コマンド行に載るため、差し替えると書庫が作り直される。
+`tc.ar`）が入った。実在は archive を作るときだけ確かめられ、名前がアクションの
+コマンド行に載るため、差し替えると archive が作り直される。
 
 同時に、道具の集合が表（`dowel_eval::config::TOOLS`）へ集約された。
 `[toolchain]` のキー・`tc.*` の語彙・既定値・宣言の写し・`toolchain-mismatch`
@@ -1504,7 +1504,7 @@ RelWithDebInfo / MinSizeRel）と `--config`（debug / release）の 10 通り
 と述べているが、同じファイルの下に `link_flags = ["-O3", "-DNDEBUG"]` が並ぶ。
 **下書きが自分自身について嘘をつく。**
 
-`lib` に出ないのは書庫の作成がリンクを伴わないためで、`bin` と `test` にだけ
+`lib` に出ないのは archive の作成がリンクを伴わないためで、`bin` と `test` にだけ
 現れる。`-DNDEBUG` はリンク行では意味を持たないが、`-flto` を使う構成では
 `-O3` が効く。`migrate verify` は翻訳の引数だけを比べるため、**verify が
 clean でも残る**。
@@ -1529,7 +1529,7 @@ clean でも残る**。
 報告先: [sabas0ba/dowel#56](https://github.com/sabas0ba/dowel/issues/56)
 
 **`lib` が `private` ブロックで持つ `link_flags`（および `private` な依存が
-持ち込む `--libs`）が、依存元の最終リンクに乗らない。静的な書庫は自分の
+持ち込む `--libs`）が、依存元の最終リンクに乗らない。静的な archive は自分の
 リンク要件を運べないため、依存元が `undefined reference` で落ちる。**
 
 種別: 実装。修正済み（`af7d391`）。ADR-0015 の `version` 依存を試していて
@@ -1556,7 +1556,7 @@ cc .../src_main.c.o .../libmid.a .../libdemokit.a -o .../bin/top
 mid/src/mid.c:5: undefined reference to `sqrt'
 ```
 
-リンク行に `-lm` が無い。`libdemokit.a`（要素0の合成書庫）は乗っている。
+リンク行に `-lm` が無い。`libdemokit.a`（要素0の合成した archive）は乗っている。
 
 `public` に変えると通るが、今度は `-I.../include` と `-DDEMOKIT=1` が
 `top` の翻訳にも届く。
@@ -1571,7 +1571,7 @@ mid/src/mid.c:5: undefined reference to `sqrt'
 pkg-config とは無関係でも同じである。`[lib.mid.private] link_flags = ["-lm"]`
 と直に書いても `top` のリンクに現れず、診断も出ない。`lib` に対する
 `private link_flags` は現状**黙って無視される**プロパティになっている
-（書庫の作成は `ar` であり、リンクは行われないため）。
+（archive の作成は `ar` であり、リンクは行われないため）。
 
 さらに、`top` → `mid` → `leaf` と繋ぎ `mid` が `leaf` を `private` で持つと、
 `libleaf.a` は `private` を2段跨いで最終リンクに乗る。**閉包を辿る機構は
@@ -1584,8 +1584,8 @@ pkg-config とは無関係でも同じである。`[lib.mid.private] link_flags 
 
 根拠は本体の文書。`docs/13-semantics.md` は「**The linker follows the
 closure**」と述べ、リンクを「own objects, dependency archives in graph
-order, `link_flags`」と定義している。書庫が閉包を辿るなら、その書庫が要求
-するリンクフラグも同じ閉包を辿らなければ、書庫だけがあってシンボルが解けない
+order, `link_flags`」と定義している。archive が閉包を辿るなら、その archive が要求
+するリンクフラグも同じ閉包を辿らなければ、archive だけがあってシンボルが解けない
 状態になる。
 
 `docs/12-build-reference.md` の例は、まさにこの形を載せている。
@@ -1599,7 +1599,7 @@ deps     = [dep("zlib") when feature.zlib]
 ADR-0015 以前は `zlib` が解決されなかったため露見しなかった。解決される
 ようになった今、この例のとおりに書くと `libfoo.a` を使う側がリンクできない。
 
-静的リンクでは書庫が自分の依存を運べないため、CMake が `$<LINK_ONLY:...>`
+静的リンクでは archive が自分の依存を運べないため、CMake が `$<LINK_ONLY:...>`
 で扱っている領域にあたる（`target_link_libraries(mid PRIVATE m)` は STATIC
 ライブラリでも最終実行ファイルの行に `m` を残す）。
 
@@ -1611,7 +1611,7 @@ ADR-0015 以前は `zlib` が解決されなかったため露見しなかった
 ### なぜ内側から見つからないか
 
 - 本体のフィクスチャに、`private` ブロックへ `link_flags` を置き、かつ
-  **その記号が実際に必要**な例が無い。`-lm` のような「無くても書庫は作れるが
+  **その記号が実際に必要**な例が無い。`-lm` のような「無くても archive は作れるが
   リンクで初めて落ちる」形が要る
 - `version` 依存は入ったばかりで、`--libs` が空でないモジュールを `private`
   で使う例がまだ無い。`Libs:` が空なら差は出ない
@@ -1675,13 +1675,13 @@ c   = "aarch64-linux-gnu-gcc"
 ar_ = "aarch64-linux-gnu-ar"      # ar の綴り間違い
 ```
 
-`check passed` となり、aarch64 向けの書庫がホストの `ar` で作られる。
+`check passed` となり、aarch64 向けの archive がホストの `ar` で作られる。
 F-016 で報告した状態そのものであり、`[toolchain] ar` はまさにそれを防ぐために
 入った。宣言できるようになった一方で、**宣言が効いているかどうかは利用者に
 見えない。**
 
 `c` が同じ経路で消えれば翻訳が動かないのですぐ分かる。archiver は既定の `ar`
-が ELF に対して総称的に動いてしまうため、**壊れるのはホストと目標で書庫形式が
+が ELF に対して総称的に動いてしまうため、**壊れるのはホストと目標で archive 形式が
 違うときだけ**である。llvm-ar と GNU ar、macOS をホストに ELF へクロスする
 場合、ベンダ配布の toolchain。いずれも手元では通り、別の環境で壊れる。
 
@@ -1729,7 +1729,7 @@ for a cross archiver means the host's `ar` quietly builds the archives」と
 - `the refusal suggests the tool that was meant`
 - `the misspelled declaration is caught before anything is built`
 
-3件目は、書庫がホストの道具で作られてから気づくのでは遅いためである。
+3件目は、archive がホストの道具で作られてから気づくのでは遅いためである。
 
 ---
 
@@ -1851,7 +1851,7 @@ defines  = { DEMO_MODE = 1 }
 link_flags = ["-O3", "-DNDEBUG"]      ← 残っている
 ```
 
-`lib` に出ないのは書庫の作成がリンクを伴わないためで、`bin` と `test` にだけ
+`lib` に出ないのは archive の作成がリンクを伴わないためで、`bin` と `test` にだけ
 現れる。build type ごとの内容は F-017 の表と同じである。
 
 ### 期待
@@ -2406,7 +2406,7 @@ error[abi-mismatch]: `abi` does not match: "gnu++17" vs "gnu11"
     = note: the merge rule of `abi` is must_equal. a mismatch fails instead of propagating
 ```
 
-`abi = "gnu11"` と書き写せば通り、走る。C の利用者と C++ の利用者は同じ書庫
+`abi = "gnu11"` と書き写せば通り、走る。C の利用者と C++ の利用者は同じ archive
 から同じ答を得る。
 
 ### 期待
@@ -2637,7 +2637,7 @@ $ ./httpd --waiter
 epoll sequential                      # poll の側は死んだ翻訳単位になった
 ```
 
-両方の目的ファイルが同じ書庫に入り、リンカは記号を最初に満たした部材だけを
+両方の目的ファイルが同じ archive に入り、リンカは記号を最初に満たした部材だけを
 引く。`sources` の並び順を入れ替えても結果は変わらないので、**どちらが
 生き残るかをマニフェスト側から決める手立ても無い。**
 
@@ -3621,7 +3621,7 @@ run 3: ran 2 steps, skipped 5 already up to date
 
 ### 期待
 
-対象の三つ組が実行ファイルの綴りを決める、という規則を1か所に置く。
+対象の triple が実行ファイルの綴りを決める、という規則を1か所に置く。
 `*-windows-*` では `bin/<名前>.exe`。runner・`artifacts`・`inspect`・`debug`・
 `built:` の印字・指紋の照合が、すべて同じ値を読む形になる。
 
@@ -3677,7 +3677,7 @@ cl   …/src_main.c.o …/lib/libapp.a -o …/bin/app
 
 すべての綴りが GNU である。`-c` `-o` `-g` `-O0` は `cl` の綴りではなく、
 `-MD` に至っては MSVC では**動的 CRT の指定**であり、意味が衝突する
-（`docs/00-overview.md` 自身が CRT を ABI の軸として挙げている）。書庫の
+（`docs/00-overview.md` 自身が CRT を ABI の軸として挙げている）。archive の
 綴り `lib<名前>.a` も MSVC では `<名前>.lib` である。ツール表に `link` が
 無いため、リンクを別の実行ファイルに割り当てることもできない。
 
@@ -3698,7 +3698,7 @@ cl   …/src_main.c.o …/lib/libapp.a -o …/bin/app
 
 ### 修正
 
-引数の様式を `style`（`gnu` / `msvc`）として宣言できるようになった（ADR-0027）。三つ組からも導かれる（`*-msvc` → msvc）。**dowel が組み立てる引数だけ**が様式ごとに綴られ、利用者の書いた `flags` はそのまま渡る。`-MD` の衝突は `/showIncludes` を出すことで解かれ、`link` が道具の表に入り、成果物の綴り（`.obj` / `<name>.lib` / `.exe`）も様式に従う。
+引数の様式を `style`（`gnu` / `msvc`）として宣言できるようになった（ADR-0027）。triple からも導かれる（`*-msvc` → msvc）。**dowel が組み立てる引数だけ**が様式ごとに綴られ、利用者の書いた `flags` はそのまま渡る。`-MD` の衝突は `/showIncludes` を出すことで解かれ、`link` が道具の表に入り、成果物の綴り（`.obj` / `<name>.lib` / `.exe`）も様式に従う。
 
 ### 検査
 
@@ -3749,7 +3749,7 @@ check passed: 1 packages, 2 targets
 現れ方は4つ。
 
 1. **グラフのラベルが同じ。** 4つの手順がすべて `pkg:foo` になり、どの `cc`
-   が書庫のためのものかをラベルから決められない。`--failed` や
+   が archive のためのものかをラベルから決められない。`--failed` や
    `--message-format=json` を読む側は、この名前を鍵にしている
 2. **`public` が伝播しない。** 依存する `bin.foo` にも、`lib.foo` 自身の
    ソースにも `-I include` が届かず、翻訳が落ちる。名前を割るだけで通る
@@ -3826,14 +3826,14 @@ ninja: error: …/build.ninja:39: multiple rules generate …/obj/pkg/foo/src_sh
 
 報告先: [sabas0ba/dowel#115](https://github.com/sabas0ba/dowel/issues/115)
 
-**対象の OS を指す語が無い。条件つきソースは三つ組を数え上げるしかなく、
+**対象の OS を指す語が無い。条件つきソースは triple を数え上げるしかなく、
 `match host.os` は組む側を指すため書き手の意図と逆に効く。**
 
 種別: 要望（`docs/99-open-questions.md` Q1 への材料）。`9858932` で修正（`e12bac7` で観測）。
 
 ### 観測
 
-語彙にあるのは `host.os` / `host.arch`（組む側）と `cfg.target`（三つ組その
+語彙にあるのは `host.os` / `host.arch`（組む側）と `cfg.target`（triple その
 もの）だけである。対象の OS を指す語は無い。
 
 素直に書くとこうなる。
@@ -3856,7 +3856,7 @@ $ dowel graph --target=x86_64-pc-windows-gnu --format=json | jq '…plat…'
 POSIX の実装が選ばれる。`plat_posix.c` が `<unistd.h>` を含んでいれば翻訳で
 落ちるが、含んでいなければ**組み上がって答だけが違う**。
 
-正しい綴りは三つ組の数え上げになる。
+正しい綴りは triple の数え上げになる。
 
 ```toml
 match cfg.target {
@@ -3866,8 +3866,8 @@ match cfg.target {
 }
 ```
 
-Windows の三つ組は複数あり、「Windows のどれか」と言う手段が無い。`_` が
-既定なので、**書き忘れた三つ組は静かに POSIX 側へ落ちる**。`cfg.target` は
+Windows の triple は複数あり、「Windows のどれか」と言う手段が無い。`_` が
+既定なので、**書き忘れた triple は静かに POSIX 側へ落ちる**。`cfg.target` は
 開いた領域なので網羅性の検査も掛からない。
 
 ### 期待
@@ -3877,7 +3877,7 @@ Q1 で `target.os` / `target.arch` を語彙に入れる。`host.*` は残す—
 
 `target.os` は `host.os` と同じ有限領域にできるので、`match` の網羅性検査が
 効く。`_` を書かずに済み、対象が増えたときに**マニフェストが落ちて教えて
-くれる**。三つ組を数え上げる形の一番の弱点がここである。三つ組から導ける
+くれる**。triple を数え上げる形の一番の弱点がここである。triple から導ける
 値なので、新しい入力は要らない。
 
 ### なぜ内側から見つからないか
@@ -3888,7 +3888,7 @@ Q1 で `target.os` / `target.arch` を語彙に入れる。`host.*` は残す—
 
 ### 修正
 
-`target.os` / `target.arch` が語彙に入った。`host.*` は組む側を指したまま残っている。`target.os` は有限領域（`linux` / `macos` / `windows` / `none` / `other`）なので `match` の網羅性が検査され、三つ組を数え上げる形の一番の弱点——書き忘れが静かに `_` の腕へ落ちること——が消えた。
+`target.os` / `target.arch` が語彙に入った。`host.*` は組む側を指したまま残っている。`target.os` は有限領域（`linux` / `macos` / `windows` / `none` / `other`）なので `match` の網羅性が検査され、triple を数え上げる形の一番の弱点——書き忘れが静かに `_` の腕へ落ちること——が消えた。
 
 ### 検査
 
@@ -3917,7 +3917,7 @@ dowel はその宣言を読み上げたうえで「宣言が無い」と言っ�
 
 ```
 lib/dowel.toml      [toolchain.aarch64-unknown-linux-gnu] を宣言する
-app/dowel.toml      lib に依存する。道具立ては書かない
+app/dowel.toml      lib に依存する。toolchain は書かない
 ```
 
 ```console
@@ -3934,21 +3934,21 @@ warning[toolchain-mismatch]: package `mylib` asks for `ar = "aarch64-linux-gnu-a
 **探しているものを見つけていて、それでも無いと言う。** 助言が挙げる例は、
 2行下で読み上げている値そのものである。
 
-`docs/11-toml-reference.md` は「依存の道具立てが違えば `toolchain-mismatch`
+`docs/11-toml-reference.md` は「依存の toolchain が違えば `toolchain-mismatch`
 で警告する」と述べているので、**警告が出ること自体は文書どおり**である。
 所見にしたのは、そこから出てくる書き味の方である。
 
 ### なぜ問題か
 
-複数の三つ組を支えるライブラリを書くと、**支える三つ組の数 × 使う側の数**
-だけ表の写しができる。`apps/dsp` では `core` が4つの三つ組の表を持って
+複数の triple を支えるライブラリを書くと、**支える triple の数 × 使う側の数**
+だけ表の写しができる。`apps/dsp` では `core` が4つの triple の表を持って
 いても、`cli` は2つ、`fw` は1つを自分で書き直している。
 
 - **食い違っても止まらない。** 片方を `aarch64-linux-gnu-gcc-12` に変えて
   他方を直し忘れると、`toolchain-mismatch` は出るが警告であり、組み上がる
-- **ライブラリの作者が「対応する三つ組」を配れない。** どのコンパイラで
+- **ライブラリの作者が「対応する triple」を配れない。** どのコンパイラで
   組むかはライブラリの知識だが、置き場所は使う側にしかない
-- 三つ組を1つ増やす作業が、1行ではなく**使う側の数だけ**になる
+- triple を1つ増やす作業が、1行ではなく**使う側の数だけ**になる
 
 ### 期待
 
@@ -3964,7 +3964,7 @@ warning[toolchain-mismatch]: package `mylib` asks for `ar = "aarch64-linux-gnu-a
    toolchain per build」は保てる——採るのは1つだけで、複数の依存が食い違う
    値を出したら拒めばよい。
 
-2 に踏み込まない判断もある。道具立ては build 全体の性質であって依存の性質
+2 に踏み込まない判断もある。toolchain は build 全体の性質であって依存の性質
 ではない、という立場は一貫している（Cargo でも toolchain はパッケージでは
 なく環境の側にある）。その場合でも 1 は要る。**いまの出力はその立場を
 説明していない。**
@@ -3973,7 +3973,7 @@ warning[toolchain-mismatch]: package `mylib` asks for `ar = "aarch64-linux-gnu-a
 
 クロスを見るフィクスチャは、1つのパッケージに `[toolchain.<triple>]` を
 書いて `--target` を渡すのが最短であり、それで挙動は十分見える。写しの
-費用は、パッケージが分かれていて**かつ複数の三つ組がある**ときにしか出ない。
+費用は、パッケージが分かれていて**かつ複数の triple がある**ときにしか出ない。
 
 `toolchain-mismatch` の検査も、おそらく食い違いを警告することを見るもので、
 そのとき根は必ず宣言を持っている。**根が持っていない**場合が、警告と
@@ -4002,8 +4002,8 @@ error が同時に出る唯一の形である。
 
 報告先: [sabas0ba/dowel#126](https://github.com/sabas0ba/dowel/issues/126)
 
-**目標を三つ組で絞れないため、複数の三つ組を支えるライブラリが自分の検査を
-持てない。使う側の `build` が依存の `test` を組み、組めない三つ組では落ちる。**
+**目標を triple で絞れないため、複数の triple を支えるライブラリが自分の検査を
+持てない。使う側の `build` が依存の `test` を組み、組めない triple では落ちる。**
 
 種別: 要望。`9858932` で修正（`e12bac7` で観測）。
 
@@ -4018,7 +4018,7 @@ $ dowel -C app build app --target=aarch64-unknown-linux-gnu
 built: …/bin/app             ← 名指しすれば組まれない
 ```
 
-ホスト付きの三つ組では余計なだけだが、**OS の無い三つ組では落ちる**。
+ホスト付きの triple では余計なだけだが、**OS の無い triple では落ちる**。
 
 ```console
 $ dowel -C fw test --target=thumbv7em-none-eabihf
@@ -4037,7 +4037,7 @@ test dsp-fw:onhw ... ok (5009ms)
 
 ### 根にあるもの
 
-ライブラリの側で「この検査はホストの載っている三つ組でだけ」と書けない。
+ライブラリの側で「この検査はホストの載っている triple でだけ」と書けない。
 
 - `[package] targets` はパッケージ全体に掛かる。`core` は4つすべてへ組む
   必要があるので使えない
@@ -4053,7 +4053,7 @@ test dsp-fw:onhw ... ok (5009ms)
 1. **使う側の `build` / `test` は依存の `test` を組まない。** `cargo build`
    が依存のテストを組まないのと同じ立場。いまも名指しすれば避けられるので、
    既定がどちらかという話である
-2. **目標ごとに三つ組を絞れる。** `[package] targets` と同じ綴りを目標にも
+2. **目標ごとに triple を絞れる。** `[package] targets` と同じ綴りを目標にも
    許す形。語彙は増えない
 
 1 を推す。小さく、既定の変更だけで済む。ただし 1 だけでは、ライブラリ自身の
@@ -4067,12 +4067,12 @@ test dsp-fw:onhw ... ok (5009ms)
 フィクスチャは単独のパッケージになる。**依存されているライブラリが自分の
 検査を持っている**という組み合わせが、どちらの側からも要らない。
 
-そして三つ組が1つなら、これは余計なものが組まれるだけで無害である。
-**組めない三つ組が混じって初めて**落ちる。
+そして triple が1つなら、これは余計なものが組まれるだけで無害である。
+**組めない triple が混じって初めて**落ちる。
 
 ### 修正
 
-期待の両方が入った。使う側の `build` / `test` は依存の `test` を組まなくなり、目標ごとに `targets` で三つ組を絞れるようになった。圏外の三つ組では計画に**現れず**、それでも名指しは `unsupported-target` で断られる——名指しは要求であり、黙って何も作らない build は成功に読めるためである。
+期待の両方が入った。使う側の `build` / `test` は依存の `test` を組まなくなり、目標ごとに `targets` で triple を絞れるようになった。圏外の triple では計画に**現れず**、それでも名指しは `unsupported-target` で断られる——名指しは要求であり、黙って何も作らない build は成功に読めるためである。
 
 ### 検査
 
@@ -4161,7 +4161,7 @@ CMake の `OBJECT` ライブラリ、Meson の `objects:`、Cargo の同一ク�
 
 ### 修正
 
-パッケージの中では共有ライブラリも静的に繋がれるようになった（ADR-0038、期待の側）。`exports` は「一緒に書かれなかったコードへの境界」であり、パッケージが配布の単位である以上、同じパッケージの兄弟は書庫の側を見る。外向きの境界は変わらない——別のパッケージの使う側は `exports` だけを見る。
+パッケージの中では共有ライブラリも静的に繋がれるようになった（ADR-0038、期待の側）。`exports` は「一緒に書かれなかったコードへの境界」であり、パッケージが配布の単位である以上、同じパッケージの兄弟は archive の側を見る。外向きの境界は変わらない——別のパッケージの使う側は `exports` だけを見る。
 
 あわせて、`exports` に挙げた名前が実在するかを、リンクの後に `nm` で確かめるようになった（ADR-0039、`unexported-symbol`）。`apps/hashx` で `hashx_crc`（型名であって記号ではない）を挙げても黙っていた件が、これで拒まれる。
 
@@ -4187,7 +4187,7 @@ ABI の世代（`soversion`）は
 
 報告先: [sabas0ba/dowel#135](https://github.com/sabas0ba/dowel/issues/135)
 
-**Meson からの移行が、書庫とリンクの引数を翻訳の `flags` に混ぜるため、
+**Meson からの移行が、archive とリンクの引数を翻訳の `flags` に混ぜるため、
 下書きがそのままでは組めない。**
 
 種別: 実装。`c154097` で修正（`9858932` で観測）。
@@ -4204,7 +4204,7 @@ flags = ["-fdiagnostics-color=always", "-Wall", "-Winvalid-pch", "-std=c11", "-f
 flags = ["…", "-Wl,--as-needed", "-Wl,--no-undefined", "-Wl,--start-group", "libshapes.a", "-Wl,--end-group"]
 ```
 
-`flags` は**翻訳の**引数である。そこに `ar` の引数文字列（`csrDT`）、書庫の
+`flags` は**翻訳の**引数である。そこに `ar` の引数文字列（`csrDT`）、archive の
 名前（`libshapes.a`）、リンカへの引数（`-Wl,…`）が入っている。
 
 ```console
@@ -4218,7 +4218,7 @@ cc: error: libshapes.a: linker input file not found: No such file or directory
 ### なぜ問題か
 
 `docs/60-cli.md` は「the rest → `flags`」と述べているが、その配列には
-リンクと書庫の引数も入っている。移行は片道であり、下書きが組めなければ
+リンクと archive の引数も入っている。移行は片道であり、下書きが組めなければ
 利用者はまず**移行そのものを疑う**。実際には仕分けの問題であり、
 `meson.build` にも木にも誤りは無い。
 
@@ -4232,7 +4232,7 @@ cc: error: libshapes.a: linker input file not found: No such file or directory
 ### 期待
 
 `parameters` を仕分けるとき、翻訳の引数でないものを `flags` に入れない。
-`-Wl,` は綴りで判別でき、書庫の名前とオブジェクトは落とせる（Meson から
+`-Wl,` は綴りで判別でき、archive の名前とオブジェクトは落とせる（Meson から
 `deps` を起こさない既存の判断は変わらない）。
 
 そこまで踏み込まないなら、下書きの見出しに一言——Meson の `parameters` には
@@ -4249,7 +4249,7 @@ Meson 対応のフィクスチャは、取り込みたい要素を持つ最小�
 
 ### 修正
 
-`parameters` の仕分けが行き先ごとに分かれた。`-Wl,` は `link_flags` へ、書庫の名前と `ar` の引数文字列は落として**註に残す**（`# link input, not a compile flag: … — declare it as a dep`）。黙って落とさないのは、下書きが未検証だからである。
+`parameters` の仕分けが行き先ごとに分かれた。`-Wl,` は `link_flags` へ、archive の名前と `ar` の引数文字列は落として**註に残す**（`# link input, not a compile flag: … — declare it as a dep`）。黙って落とさないのは、下書きが未検証だからである。
 
 下書きはまだそのままでは組めないが、理由が変わった——`flags` の混入ではなく、**書かれていない `deps`** である。これは Meson の introspection がリンクの関係を言わないことから来る文書どおりの限界であり、註がその1行を指している。
 
@@ -4414,10 +4414,10 @@ known_issue F-059 である。
 
 報告先: [sabas0ba/dowel#145](https://github.com/sabas0ba/dowel/issues/145)
 
-**`dowelup` が release 資産の取得に失敗したとき、理由の欄が空で出る。**
+**`dowelup` が release asset の取得に失敗したとき、理由の欄が空で出る。**
 しかも PATH に無い道具の名前が入る。
 
-種別: 実装。`0511d5e` で修正（`c154097` で観測）。ADR-0036（release 資産からの取得）を
+種別: 実装。`0511d5e` で修正（`c154097` で観測）。ADR-0036（release asset からの取得）を
 `projects/09-acquisition` に当てて出た。
 
 ### 観測
@@ -4432,7 +4432,7 @@ no usable release asset (wget failed: ); building from source
 
 | 何が起きたか | 括弧の中 |
 |---|---|
-| 資産が取れない | **`wget failed: `**（空） |
+| asset が取れない | **`wget failed: `**（空） |
 | `wget` も `curl` も PATH に無い | `cannot run wget: No such file or directory (os error 2)` |
 | 展開に失敗 | `tar failed: ...`（`tar` の stderr がそのまま） |
 | checksum 不一致 | expected と actual の両方 |
@@ -4449,7 +4449,7 @@ no usable release asset (wget failed: ); building from source
 どれも理由の1行があれば当たりが付く。
 
 しかも失敗は静かに退避する（ADR-0036 の決定どおり）。cargo のある機械では
-そのまま組み上がって終わり、**資産が一度も取れていないことに気づけない。**
+そのまま組み上がって終わり、**asset が一度も取れていないことに気づけない。**
 cargo の無い機械では、最後に残る言葉がこうなる。
 
 ```console
@@ -4457,7 +4457,7 @@ no usable release asset (wget failed: ); building from source
 error: cannot start cargo: No such file or directory (os error 2)
 ```
 
-利用者の実際の問題は「資産が取れなかった」ことだが、最後の行は
+利用者の実際の問題は「asset が取れなかった」ことだが、最後の行は
 「cargo が無い」と言う。**ADR-0036 が取り除こうとした要求そのものを、
 原因として指してしまう。**
 
@@ -4465,12 +4465,12 @@ error: cannot start cargo: No such file or directory (os error 2)
 
 取得の道具の stderr を捕まえて括弧に入れる。`tar failed:` が既にその形で
 ある。名前は実際に走らせた道具のものにし、両方試すなら両方の理由を出す。
-資産の経路を諦めた理由が、最後の失敗まで持ち越されるとなおよい。
+asset の経路を諦めた理由が、最後の失敗まで持ち越されるとなおよい。
 
 ### なぜ内側から見つからないか
 
 e2e は ADR-0036 が書いているとおり**同じ配置を組み立てて**確かめる形に
-なっているはずで、そこでは資産は必ず在る。無い場合の経路は「退避すること」
+なっているはずで、そこでは asset は必ず在る。無い場合の経路は「退避すること」
 を見れば足り、退避したことは終了状態と後続の成功で分かる。**括弧の中身は
 退避の判定に関わらないため、空でも検査は通る。**
 
@@ -4481,7 +4481,7 @@ e2e は ADR-0036 が書いているとおり**同じ配置を組み立てて**�
 ### 修正
 
 `wget --quiet` は進捗と一緒に誤りも黙らせていた。`--no-verbose` に替え、
-**全ての試行の理由を集める**。そして資産の経路を諦めた理由は、続く
+**全ての試行の理由を集める**。そして asset の経路を諦めた理由は、続く
 ソースビルドの失敗まで持ち越される。
 
 ### 検査
@@ -4492,7 +4492,7 @@ e2e は ADR-0036 が書いているとおり**同じ配置を組み立てて**�
 `a checksum mismatch also survives into the failure`、
 `the surviving reason is the mismatch itself, not a generic one`。
 
-対照として、資産が在るときに取れること、checksum が合わないもの・checksum
+対照として、asset が在るときに取れること、checksum が合わないもの・checksum
 の無いもの・`dowel` を含まないものがそれぞれ理由付きで拒まれること、
 どの場合も組む側へ退避することは通常の検査として置いてある。壊れているのが
 退避の判断ではなく**理由の伝え方**であることが、並びから読める。
@@ -4545,13 +4545,13 @@ ADR-0036 は2つの経路の違いを**信用の根**に置いている。組ん
 その1点が記録されていない。`origin` は「どこから来たか」を残すために在る
 ファイルで、指定子と上流は書いているのに、来かたは書いていない。
 
-退避があるため、これは意図せず起きる。資産が無い・checksum が合わない・
+退避があるため、これは意図せず起きる。asset が無い・checksum が合わない・
 中身が壊れている場合は黙って組む側に回る。**逆向きの退避は無い**ので
 「組んだつもりが取っていた」は起きないが、「取ったつもりが組んでいた」は
 普通に起きる。cargo のある機械では成功して終わるため、気づく機会が無い。
 
-CI で「公開した資産そのものを検証する」ことをしたい場合、取ることを要求
-する手立ても、取れたかを後から確かめる手立ても無い。資産が壊れた日に、
+CI で「公開した asset そのものを検証する」ことをしたい場合、取ることを要求
+する手立ても、取れたかを後から確かめる手立ても無い。asset が壊れた日に、
 その CI は黙ってソースビルドを検証して緑になる。
 
 ### 期待
@@ -4573,7 +4573,7 @@ ADR-0036 が入るまで存在しなかった。**新しい列が要ることは
 
 ### 修正
 
-`origin` に `from=asset` / `from=source` が入り、資産の場合は検めた
+`origin` に `from=asset` / `from=source` が入り、asset の場合は検めた
 `asset_sha256` も残る。`dowelup list` が印を出し、`which` が digest まで
 述べる。**経路は積まない**——ディスクの1つの実体は1つの来かたで届いている
 ので、既に在る実体を別の指定子で引き当てただけのときは記録を保つ。
@@ -4598,7 +4598,7 @@ ADR-0036 が入るまで存在しなかった。**新しい列が要ることは
 と、新しい指定子は足されること。
 
 cargo を呼ばずに release が入ること、`stable` と `tag:` も同じ経路を通る
-こと、`nightly` は資産を探しにも行かないこと、`--from-source` が資産が
+こと、`nightly` は asset を探しにも行かないこと、`--from-source` が asset が
 あっても組む側を選ぶことは、以前から通常の検査として置いてある。
 
 cargo を呼ばなかったことは、出力の文言ではなく**痕跡の不在**で見ている。
@@ -4671,7 +4671,7 @@ ADR-0043 は「`Requires` は確かに在るものだけを名指す。dowel パ
 
 `top.pc` が下を名指す。`Requires: base` の形なら、`base` の `Cflags`（公開の
 定義や旗）も一緒に届くので、`public` 区画を写すという ADR-0043 の考え方に
-沿う。静的な書庫は依存の順に並ぶ必要があるので、並べる順は結合順である。
+沿う。静的な archive は依存の順に並ぶ必要があるので、並べる順は結合順である。
 
 ### なぜ内側から見つからないか
 
@@ -4762,7 +4762,7 @@ ADR-0048 自身が、`.s` に依存ファイルを要求していた件につい
 
 `v0.1.0` で ADR-0051 として入った。**決定そのものが書き換わっている**——
 「それ以外は C」という落とし前を畳み、綴りの集合を閉じた。加えて網が2枚
-置かれた。direct は段ごとに出力の有無を見て、それ以外の背骨には
+置かれた。direct は段ごとに出力の有無を見て、それ以外の backend には
 「`built:` として刷る先が在るか」をビルドのあとに見る検査が付いた。
 
 ### 期待
@@ -4793,7 +4793,7 @@ ADR-0048 のフィクスチャは `.s` と `.S` と `.c` を持つ。`.asm` は*
 
 2枚の網は別々に見る。direct は
 `the direct backend fails when a tool writes nothing it was asked for` と
-`showing the tool's own words, which usually explain it`。それ以外の背骨は
+`showing the tool's own words, which usually explain it`。それ以外の backend は
 `the ninja backend fails there too, the net being after the build`。
 対照は `a tool that does write its output still succeeds` である。
 
@@ -4811,7 +4811,7 @@ ADR-0048 のフィクスチャは `.s` と `.S` と `.c` を持つ。`.asm` は*
 
 ### 観測
 
-gnu の三つ組で `abi = { libc = "musl" }` を1つ書くと、同じ error が並ぶ。
+gnu の triple で `abi = { libc = "musl" }` を1つ書くと、同じ error が並ぶ。
 
 ```console
 error[abi-mismatch]: this surface requires `libc = "musl"` but the build is `gnu`
@@ -4868,7 +4868,7 @@ N 件が、同じ誤りの写し N 件として届く。**
 `projects/26-prebuilt` の `one wrong declaration produces one diagnostic`。
 known_issue F-064 である。
 
-対照として、拒むこと自体・要求と実際の三つ組を述べること・合っていれば
+対照として、拒むこと自体・要求と実際の triple を述べること・合っていれば
 通ること・相手が名指さない成分は制約にならないことを通常の検査として
 置いてある。**壊れているのが検査ではなく報せ方**だと並びから読める。
 
@@ -4908,7 +4908,7 @@ offline へ行けることが推し量るのではなく見られる**」もの�
 toolchain はその2つの段の片方として明示されている。
 
 cross の木では、**取ってくるものが toolchain だけ**という形が普通である
-（依存はすべて `path`、道具立てだけ書庫）。その木の利用者が読む唯一の行が
+（依存はすべて `path`、toolchain だけ archive）。その木の利用者が読む唯一の行が
 「fetched 0 package(s)」になる。素直な解釈は「何も要らなかった」であり、
 数百 MB を落とした直後でも同じ行が出る。
 
@@ -4923,7 +4923,7 @@ toolchain の取得が失敗すると、その診断のあとに `missing-toolch
 
 ### 修正
 
-`v0.1.0` で入った。`fetch` は道具立ても数え、`ready:` の行に出す。
+`v0.1.0` で入った。`fetch` は toolchain も数え、`ready:` の行に出す。
 依存とは別に数える——どちらも取ってくるものだが、無いときに見る先が違う。
 
 ### 期待
@@ -4944,8 +4944,8 @@ toolchain も数え、一覧に出す。行の形は依存に揃えるのが自�
 `projects/10-toolchain` の `fetch counts the toolchain it acquired` と
 `and lists it among what is now present`。どちらも known_issue F-065。
 
-対照として、取ってきた書庫の中から翻訳器が解決されること、利用者のキャッシュ
-へ入って木の中には入らないこと、2度目は書庫を消しても組めること、
+対照として、取ってきた archive の中から翻訳器が解決されること、利用者のキャッシュ
+へ入って木の中には入らないこと、2度目は archive を消しても組めること、
 `sysroot()` がその中を指すこと、digest が合わなければ止まること、
 `--offline` で `needs-fetch` になり `fetch` の後に通ることを通常の検査として
 置いてある。**取得そのものは働いていて、欠けているのは報せ方**だと並びから
@@ -5120,17 +5120,17 @@ known_issue F-067 である。
   意図的な配置と読める。`.gitignore` への記載が要る点は利用者側の話であり、
   本体の欠陥ではない
 - **共有オブジェクトを作れず、dowel を使わない相手へ渡す形も出ない** —
-  `apps/hashx` で踏んだ。`lib` は静的な書庫だけであり、`.so` も `.pc` も
+  `apps/hashx` で踏んだ。`lib` は静的な archive だけであり、`.so` も `.pc` も
   CMake の設定も出ない。ただし `docs/90-roadmap.md` は第3段に「CMake の
   `find_package` 設定を出す」、第6段に「書き出し対象（C ABI / CPython
   拡張ほか）」を既に載せている。報告しても重なるだけなので、現状の記録に
   留めた（`what a build produces today is one static archive and nothing a
   foreign consumer could read`）
-- **三つ組ごとの機械の旗を束ねられない** — `apps/dsp` で踏んだ。
+- **triple ごとの機械の旗を束ねられない** — `apps/dsp` で踏んだ。
   `-mcpu=cortex-m4 -mthumb -mfloat-abi=hard -mfpu=fpv4-sp-d16` が
   `core`（ライブラリの `match` の腕）と `fw`（使う側の目標）の2か所に要り、
   同じ値でなければならないのに揃っていることを確かめる手立てが無い。
-  食い違えば呼び出し規約の違う書庫ができる。ただし `docs/12-build-reference.md`
+  食い違えば呼び出し規約の違う archive ができる。ただし `docs/12-build-reference.md`
   の種別の表は `template`（非再帰の再利用単位）を予約済みであり、変数も
   文字列の連結も無いのは ADR-0004 の決定である。そこで解かれるものと読んで
   報告しなかった。`expect.sh` は代わりに**2か所が実際に同じ旗を出している
