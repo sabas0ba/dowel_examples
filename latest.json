@@ -1,20 +1,20 @@
 {
- "run_id": "31866125264",
+ "run_id": "32446295641",
  "run_attempt": "1",
- "run_url": "https://github.com/sabas0ba/dowel_examples/actions/runs/31866125264",
- "commit": "cc126d0cde3d8340cab67518d435a15b8c895aec",
+ "run_url": "https://github.com/sabas0ba/dowel_examples/actions/runs/32446295641",
+ "commit": "cf71c393760e4d030ecd1f8de3728009a8a63990",
  "branch": "main",
- "started_at": "2026-08-15T05:08:39Z",
- "dowel_version": "dowel 0.0.1",
- "dowel_ref": "0511d5e048bc07dbd27b75b4bd310da603686d39",
- "dowel_commit": "0511d5e048bc07dbd27b75b4bd310da603686d39",
+ "started_at": "2026-08-21T04:17:16Z",
+ "dowel_version": "dowel 0.1.0",
+ "dowel_ref": "f65fe20a974f589a8ae424bf97d50010fb7745e2",
+ "dowel_commit": "f65fe20a974f589a8ae424bf97d50010fb7745e2",
  "cc": "cc (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0",
  "ninja": "1.13.2",
  "projects": [
   {
    "name": "01-minimal",
    "root": "projects",
-   "duration_ms": 1317,
+   "duration_ms": 240,
    "counts": {
     "pass": 10,
     "fail": 0,
@@ -72,7 +72,7 @@
   {
    "name": "02-config",
    "root": "projects",
-   "duration_ms": 6395,
+   "duration_ms": 969,
    "counts": {
     "pass": 34,
     "fail": 0,
@@ -227,7 +227,7 @@
   {
    "name": "03-features",
    "root": "projects",
-   "duration_ms": 314,
+   "duration_ms": 289,
    "counts": {
     "pass": 17,
     "fail": 0,
@@ -317,7 +317,7 @@
   {
    "name": "04-diagnostics",
    "root": "projects",
-   "duration_ms": 629,
+   "duration_ms": 587,
    "counts": {
     "pass": 94,
     "fail": 0,
@@ -732,7 +732,7 @@
   {
    "name": "05-incremental",
    "root": "projects",
-   "duration_ms": 1790,
+   "duration_ms": 1621,
    "counts": {
     "pass": 49,
     "fail": 0,
@@ -948,14 +948,14 @@
   {
    "name": "06-runner",
    "root": "projects",
-   "duration_ms": 960,
+   "duration_ms": 1069,
    "counts": {
-    "pass": 34,
+    "pass": 40,
     "fail": 0,
-    "xfail": 2,
+    "xfail": 0,
     "xpass": 0
    },
-   "total": 36,
+   "total": 40,
    "ok": true,
    "checks": [
     {
@@ -1087,20 +1087,36 @@
      "desc": "the run that noticed does not itself re-send"
     },
     {
-     "status": "xfail",
-     "desc": "a machine that lost the artifact recovers on the run after the one that noticed  [F-066]"
-    },
-    {
-     "status": "xfail",
-     "desc": "and the tests pass again without the record being touched by hand  [F-066]"
+     "status": "pass",
+     "desc": "and the run after it passes"
     },
     {
      "status": "pass",
-     "desc": "removing the record by hand is what brings it back"
+     "desc": "a machine that lost the artifact recovers on the run after the one that noticed"
     },
     {
      "status": "pass",
-     "desc": "and the artifact is on the target machine again"
+     "desc": "so the artifact is back on the target machine, with nothing touched by hand"
+    },
+    {
+     "status": "pass",
+     "desc": "a test that keeps failing still fails"
+    },
+    {
+     "status": "pass",
+     "desc": "and a failing run pays exactly one transfer, that being the price"
+    },
+    {
+     "status": "pass",
+     "desc": "a passing run writes the record back"
+    },
+    {
+     "status": "pass",
+     "desc": "so the run after it skips again"
+    },
+    {
+     "status": "pass",
+     "desc": "which is the skip returning once the tree is healthy"
     }
    ],
    "packages": [
@@ -1112,7 +1128,7 @@
   {
    "name": "07-robustness",
    "root": "projects",
-   "duration_ms": 1490,
+   "duration_ms": 1391,
    "counts": {
     "pass": 145,
     "fail": 0,
@@ -1710,7 +1726,7 @@
   {
    "name": "08-lsp",
    "root": "projects",
-   "duration_ms": 12792,
+   "duration_ms": 12677,
    "counts": {
     "pass": 110,
     "fail": 0,
@@ -2168,14 +2184,14 @@
   {
    "name": "09-acquisition",
    "root": "projects",
-   "duration_ms": 47637,
+   "duration_ms": 44335,
    "counts": {
-    "pass": 107,
+    "pass": 120,
     "fail": 0,
     "xfail": 1,
     "xpass": 0
    },
-   "total": 108,
+   "total": 121,
    "ok": true,
    "checks": [
     {
@@ -2609,6 +2625,58 @@
     {
      "status": "pass",
      "desc": "resolving an installed version again still records the new specifier"
+    },
+    {
+     "status": "pass",
+     "desc": "a second release can be created on the local mirror"
+    },
+    {
+     "status": "pass",
+     "desc": "two named releases can be installed side by side"
+    },
+    {
+     "status": "pass",
+     "desc": "and both arrived as published binaries"
+    },
+    {
+     "status": "pass",
+     "desc": "asking for one release gives the payload published under it"
+    },
+    {
+     "status": "pass",
+     "desc": "and asking for the other gives the payload published under that"
+    },
+    {
+     "status": "pass",
+     "desc": "what was installed is byte for byte what the asset held"
+    },
+    {
+     "status": "pass",
+     "desc": "and the digest it recorded is the one published beside the asset"
+    },
+    {
+     "status": "pass",
+     "desc": "the dowel that was fetched can build a package"
+    },
+    {
+     "status": "pass",
+     "desc": "and what it built runs"
+    },
+    {
+     "status": "pass",
+     "desc": "a pin file selects the payload that came with the version it names"
+    },
+    {
+     "status": "pass",
+     "desc": "and changing the pin changes which payload runs"
+    },
+    {
+     "status": "pass",
+     "desc": "a payload that is not dowel at all installs, nothing checking what it is"
+    },
+    {
+     "status": "pass",
+     "desc": "and --from-source is the way to demand a binary whose origin is shown"
     }
    ],
    "packages": []
@@ -2616,14 +2684,14 @@
   {
    "name": "10-toolchain",
    "root": "projects",
-   "duration_ms": 2837,
+   "duration_ms": 2527,
    "counts": {
-    "pass": 50,
+    "pass": 53,
     "fail": 0,
-    "xfail": 2,
+    "xfail": 0,
     "xpass": 0
    },
-   "total": 52,
+   "total": 53,
    "ok": true,
    "checks": [
     {
@@ -2827,12 +2895,16 @@
      "desc": "after which the build runs offline"
     },
     {
-     "status": "xfail",
-     "desc": "fetch counts the toolchain it acquired  [F-065]"
+     "status": "pass",
+     "desc": "fetch counts the toolchain it acquired"
     },
     {
-     "status": "xfail",
-     "desc": "and lists it among what is now present  [F-065]"
+     "status": "pass",
+     "desc": "and lists it among what is now present"
+    },
+    {
+     "status": "pass",
+     "desc": "counting them apart, the two being different things to go and get"
     }
    ],
    "packages": [
@@ -2842,7 +2914,7 @@
   {
    "name": "11-cross",
    "root": "projects",
-   "duration_ms": 1559,
+   "duration_ms": 1267,
    "counts": {
     "pass": 17,
     "fail": 0,
@@ -2928,7 +3000,7 @@
   {
    "name": "12-store",
    "root": "projects",
-   "duration_ms": 1732,
+   "duration_ms": 1278,
    "counts": {
     "pass": 43,
     "fail": 0,
@@ -3118,7 +3190,7 @@
   {
    "name": "13-parallel",
    "root": "projects",
-   "duration_ms": 10929,
+   "duration_ms": 10728,
    "counts": {
     "pass": 18,
     "fail": 0,
@@ -3208,7 +3280,7 @@
   {
    "name": "14-scale",
    "root": "projects",
-   "duration_ms": 8196,
+   "duration_ms": 6090,
    "counts": {
     "pass": 17,
     "fail": 0,
@@ -3292,7 +3364,7 @@
   {
    "name": "15-cpp",
    "root": "projects",
-   "duration_ms": 6888,
+   "duration_ms": 4642,
    "counts": {
     "pass": 70,
     "fail": 0,
@@ -3600,14 +3672,14 @@
   {
    "name": "16-migrate",
    "root": "projects",
-   "duration_ms": 2877,
+   "duration_ms": 2491,
    "counts": {
-    "pass": 72,
+    "pass": 87,
     "fail": 0,
     "xfail": 0,
     "xpass": 0
    },
-   "total": 72,
+   "total": 87,
    "ok": true,
    "checks": [
     {
@@ -3897,6 +3969,66 @@
     {
      "status": "pass",
      "desc": "and that draft builds without editing"
+    },
+    {
+     "status": "pass",
+     "desc": "import marks every target it drafted"
+    },
+    {
+     "status": "pass",
+     "desc": "one mark per target, the unit of migration being the target"
+    },
+    {
+     "status": "pass",
+     "desc": "every plan reports what is still unverified"
+    },
+    {
+     "status": "pass",
+     "desc": "as a warning, so the draft still builds and runs"
+    },
+    {
+     "status": "pass",
+     "desc": "and the draft does build with the mark in place"
+    },
+    {
+     "status": "pass",
+     "desc": "saying that everything came in private"
+    },
+    {
+     "status": "pass",
+     "desc": "and that dropped link inputs are not dependencies yet"
+    },
+    {
+     "status": "pass",
+     "desc": "and pointing at the step that checks it"
+    },
+    {
+     "status": "pass",
+     "desc": "the mark is machine readable, so an editor can underline it"
+    },
+    {
+     "status": "pass",
+     "desc": "verify counts what is still marked, beside the source-level verdict"
+    },
+    {
+     "status": "pass",
+     "desc": "and reporting the compile lines as equivalent is not a contradiction with that"
+    },
+    {
+     "status": "pass",
+     "desc": "a clean verify does not clear the mark, that claim being the user's to make"
+    },
+    {
+     "status": "pass",
+     "desc": "removing a line by hand is what moves the count"
+    },
+    {
+     "status": "pass",
+     "desc": "a mark written by hand is reported the same way"
+    },
+    {
+     "status": "pass",
+     "desc": "and counted the same way, dowel not distinguishing who wrote it"
     }
    ],
    "packages": [
@@ -3906,7 +4038,7 @@
   {
    "name": "17-deps",
    "root": "projects",
-   "duration_ms": 1614,
+   "duration_ms": 1218,
    "counts": {
     "pass": 83,
     "fail": 0,
@@ -4261,7 +4393,7 @@
   {
    "name": "18-tools",
    "root": "projects",
-   "duration_ms": 641,
+   "duration_ms": 517,
    "counts": {
     "pass": 32,
     "fail": 0,
@@ -4410,7 +4542,7 @@
   {
    "name": "19-artifacts",
    "root": "projects",
-   "duration_ms": 825,
+   "duration_ms": 629,
    "counts": {
     "pass": 35,
     "fail": 0,
@@ -4570,7 +4702,7 @@
   {
    "name": "20-cases",
    "root": "projects",
-   "duration_ms": 32867,
+   "duration_ms": 32498,
    "counts": {
     "pass": 62,
     "fail": 0,
@@ -4836,7 +4968,7 @@
   {
    "name": "21-debug",
    "root": "projects",
-   "duration_ms": 1485,
+   "duration_ms": 1191,
    "counts": {
     "pass": 32,
     "fail": 0,
@@ -4982,7 +5114,7 @@
   {
    "name": "22-bench",
    "root": "projects",
-   "duration_ms": 3602,
+   "duration_ms": 3281,
    "counts": {
     "pass": 34,
     "fail": 0,
@@ -5136,7 +5268,7 @@
   {
    "name": "23-probe",
    "root": "projects",
-   "duration_ms": 288,
+   "duration_ms": 216,
    "counts": {
     "pass": 23,
     "fail": 0,
@@ -5247,14 +5379,14 @@
   {
    "name": "24-install",
    "root": "projects",
-   "duration_ms": 2079,
+   "duration_ms": 1525,
    "counts": {
-    "pass": 44,
+    "pass": 48,
     "fail": 0,
-    "xfail": 2,
+    "xfail": 0,
     "xpass": 0
    },
-   "total": 46,
+   "total": 48,
    "ok": true,
    "checks": [
     {
@@ -5430,16 +5562,24 @@
      "desc": "and the program it produced runs"
     },
     {
-     "status": "xfail",
-     "desc": "a consumer links against an installed library that sits on a sibling  [F-062]"
+     "status": "pass",
+     "desc": "a consumer links against an installed library that sits on a sibling"
     },
     {
      "status": "pass",
-     "desc": "naming the sibling by hand is what makes that link succeed"
+     "desc": "and the program it produced runs"
     },
     {
-     "status": "xfail",
-     "desc": "the descriptor of a library that sits on a sibling names what it requires  [F-062]"
+     "status": "pass",
+     "desc": "the descriptor of a library that sits on a sibling names what it requires"
+    },
+    {
+     "status": "pass",
+     "desc": "and what it names was written by the same run, beside it"
+    },
+    {
+     "status": "pass",
+     "desc": "so a define the sibling publishes reaches the consumer too"
     }
    ],
    "packages": [
@@ -5450,14 +5590,14 @@
   {
    "name": "25-asm",
    "root": "projects",
-   "duration_ms": 679,
+   "duration_ms": 807,
    "counts": {
-    "pass": 23,
+    "pass": 52,
     "fail": 0,
-    "xfail": 3,
+    "xfail": 1,
     "xpass": 0
    },
-   "total": 26,
+   "total": 53,
    "ok": true,
    "checks": [
     {
@@ -5550,36 +5690,145 @@
     },
     {
      "status": "pass",
-     "desc": "a source the C driver cannot compile fails the build"
+     "desc": "a spelling dowel cannot compile is refused"
+    },
+    {
+     "status": "pass",
+     "desc": "and check does not pass a tree that holds one"
+    },
+    {
+     "status": "pass",
+     "desc": "with the position where it was declared as a source"
+    },
+    {
+     "status": "pass",
+     "desc": "naming the file, not an object inside the build directory"
+    },
+    {
+     "status": "pass",
+     "desc": "and listing the languages it does compile"
+    },
+    {
+     "status": "pass",
+     "desc": "and saying what the C driver would have done with it"
+    },
+    {
+     "status": "pass",
+     "desc": "a source with no extension is refused too"
+    },
+    {
+     "status": "pass",
+     "desc": "a preprocessed C source is accepted, being C the driver takes"
+    },
+    {
+     "status": "pass",
+     "desc": "the direct backend fails when a tool writes nothing it was asked for"
+    },
+    {
+     "status": "pass",
+     "desc": "and says that the command exited 0 without writing its output"
+    },
+    {
+     "status": "pass",
+     "desc": "showing the tool's own words, which usually explain it"
+    },
+    {
+     "status": "pass",
+     "desc": "the ninja backend fails there too, the net being after the build"
+    },
+    {
+     "status": "pass",
+     "desc": "and the ninja failure names the artifact that never appeared"
+    },
+    {
+     "status": "pass",
+     "desc": "the make backend fails there too, the net being after the build"
+    },
+    {
+     "status": "pass",
+     "desc": "and the make failure names the artifact that never appeared"
+    },
+    {
+     "status": "pass",
+     "desc": "a tool that does write its output still succeeds"
+    },
+    {
+     "status": "pass",
+     "desc": "a package that declares its own assembler builds"
+    },
+    {
+     "status": "pass",
+     "desc": "and the program it produced runs"
+    },
+    {
+     "status": "pass",
+     "desc": "the declared assembler is what assembles, not the C driver"
+    },
+    {
+     "status": "pass",
+     "desc": "and asm_flags reach it, being where what it needs is written"
+    },
+    {
+     "status": "pass",
+     "desc": "while the C driver's own flags do not"
+    },
+    {
+     "status": "pass",
+     "desc": "and neither does what the target declared for every language"
+    },
+    {
+     "status": "pass",
+     "desc": "a path written in asm_flags arrives as a path, there being no concatenation"
+    },
+    {
+     "status": "pass",
+     "desc": "no depfile is asked for, its spelling being that assembler's and not the tool slot's"
+    },
+    {
+     "status": "pass",
+     "desc": "the link carries the claim about the stack instead"
+    },
+    {
+     "status": "pass",
+     "desc": "and the executable that came out does not ask for an executable stack"
+    },
+    {
+     "status": "pass",
+     "desc": "a .asm source with no assembler declared is refused"
+    },
+    {
+     "status": "pass",
+     "desc": "naming the file that needs one"
+    },
+    {
+     "status": "pass",
+     "desc": "and saying what that spelling is"
+    },
+    {
+     "status": "pass",
+     "desc": "and how to declare one"
     },
     {
      "status": "xfail",
-     "desc": "and says which source produced no object  [F-063]"
-    },
-    {
-     "status": "xfail",
-     "desc": "check refuses a source the C driver cannot compile  [F-063]"
-    },
-    {
-     "status": "xfail",
-     "desc": "a build that failed this way still converges  [F-063]"
+     "desc": "and points at the source, as its sibling diagnostic does  [F-067]"
     }
    ],
    "packages": [
-    "."
+    ".",
+    "nasm"
    ]
   },
   {
    "name": "26-prebuilt",
    "root": "projects",
-   "duration_ms": 489,
+   "duration_ms": 365,
    "counts": {
-    "pass": 26,
+    "pass": 28,
     "fail": 0,
-    "xfail": 1,
+    "xfail": 0,
     "xpass": 0
    },
-   "total": 27,
+   "total": 28,
    "ok": true,
    "checks": [
     {
@@ -5671,8 +5920,12 @@
      "desc": "and says why nothing later would catch it"
     },
     {
-     "status": "xfail",
-     "desc": "one wrong declaration produces one diagnostic  [F-064]"
+     "status": "pass",
+     "desc": "one wrong declaration produces one diagnostic"
+    },
+    {
+     "status": "pass",
+     "desc": "and adding another consumer does not add another copy of it"
     },
     {
      "status": "pass",
@@ -5698,7 +5951,7 @@
   {
    "name": "blink",
    "root": "apps",
-   "duration_ms": 3110,
+   "duration_ms": 3150,
    "counts": {
     "pass": 59,
     "fail": 0,
@@ -5952,7 +6205,7 @@
   {
    "name": "dsp",
    "root": "apps",
-   "duration_ms": 2214,
+   "duration_ms": 2031,
    "counts": {
     "pass": 60,
     "fail": 0,
@@ -6213,7 +6466,7 @@
   {
    "name": "hashx",
    "root": "apps",
-   "duration_ms": 3625,
+   "duration_ms": 3252,
    "counts": {
     "pass": 88,
     "fail": 0,
@@ -6585,7 +6838,7 @@
   {
    "name": "httpd",
    "root": "apps",
-   "duration_ms": 5486,
+   "duration_ms": 4787,
    "counts": {
     "pass": 36,
     "fail": 0,
@@ -6747,7 +7000,7 @@
   {
    "name": "jsonfmt",
    "root": "apps",
-   "duration_ms": 1984,
+   "duration_ms": 1793,
    "counts": {
     "pass": 39,
     "fail": 0,
@@ -6922,7 +7175,7 @@
   {
    "name": "plot",
    "root": "apps",
-   "duration_ms": 4459,
+   "duration_ms": 4906,
    "counts": {
     "pass": 42,
     "fail": 0,
@@ -7109,7 +7362,7 @@
   {
    "name": "vision",
    "root": "apps",
-   "duration_ms": 18809,
+   "duration_ms": 17976,
    "counts": {
     "pass": 32,
     "fail": 0,
@@ -7256,7 +7509,7 @@
   {
    "name": "winapp",
    "root": "apps",
-   "duration_ms": 6261,
+   "duration_ms": 5941,
    "counts": {
     "pass": 38,
     "fail": 0,
@@ -7426,7 +7679,7 @@
   {
    "name": "docs",
    "root": "projects",
-   "duration_ms": 89,
+   "duration_ms": 84,
    "counts": {
     "pass": 9,
     "fail": 0,
@@ -7477,25 +7730,15 @@
   }
  ],
  "totals": {
-  "pass": 1684,
+  "pass": 1756,
   "fail": 0,
-  "xfail": 11,
+  "xfail": 2,
   "xpass": 0
  },
- "total": 1695,
+ "total": 1758,
  "ok": true,
  "attention": [],
  "known_issues": [
-  {
-   "status": "xfail",
-   "project": "06-runner",
-   "desc": "a machine that lost the artifact recovers on the run after the one that noticed  [F-066]"
-  },
-  {
-   "status": "xfail",
-   "project": "06-runner",
-   "desc": "and the tests pass again without the record being touched by hand  [F-066]"
-  },
   {
    "status": "xfail",
    "project": "09-acquisition",
@@ -7503,43 +7746,8 @@
   },
   {
    "status": "xfail",
-   "project": "10-toolchain",
-   "desc": "fetch counts the toolchain it acquired  [F-065]"
-  },
-  {
-   "status": "xfail",
-   "project": "10-toolchain",
-   "desc": "and lists it among what is now present  [F-065]"
-  },
-  {
-   "status": "xfail",
-   "project": "24-install",
-   "desc": "a consumer links against an installed library that sits on a sibling  [F-062]"
-  },
-  {
-   "status": "xfail",
-   "project": "24-install",
-   "desc": "the descriptor of a library that sits on a sibling names what it requires  [F-062]"
-  },
-  {
-   "status": "xfail",
    "project": "25-asm",
-   "desc": "and says which source produced no object  [F-063]"
-  },
-  {
-   "status": "xfail",
-   "project": "25-asm",
-   "desc": "check refuses a source the C driver cannot compile  [F-063]"
-  },
-  {
-   "status": "xfail",
-   "project": "25-asm",
-   "desc": "a build that failed this way still converges  [F-063]"
-  },
-  {
-   "status": "xfail",
-   "project": "26-prebuilt",
-   "desc": "one wrong declaration produces one diagnostic  [F-064]"
+   "desc": "and points at the source, as its sibling diagnostic does  [F-067]"
   }
  ]
 }
