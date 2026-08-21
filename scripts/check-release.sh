@@ -4,16 +4,16 @@
 #
 #   ./scripts/check-release.sh 0.1.0
 #
-# `run.sh` の外に置いてある。本スイートは「環境によって走る検査が変わると、
-# 結果を過去の実行と比べられなくなる」という規則で動いており、上流の release
-# に触れる検査はその規則と両立しない——本リポジトリを何も変えていないのに、
-# 上流の資産が差し替われば結果が動く。
+# run.sh の外に置いてある。スイートは「環境によって走る検査が変わると、結果を
+# 過去の実行と比べられなくなる」という規則で動いており、上流の release asset に
+# 触れる検査はその規則と両立しない——こちらが何もしなくても、向こうが差し替われば
+# 結果が動く。
 #
-# それでも要るのは、**確かめられるのがここだけ**だからである。手元の mirror
-# に対する `projects/09-acquisition` は取得の規則を固定するが、公開された
-# バイト列が本当にその形で置かれているかは言えない。release は人が作る
-# 手順の産物であり、壊れ方も人の手順の壊れ方をする——資産が1つ欠ける、
-# digest を貼り忘れる、書庫の中身が変わる。
+# それでも要るのは、**確かめられるのがここだけ**だからである。手元の mirror を
+# 相手にする projects/09-acquisition は取得の規則を固定するが、公開されたバイト列が
+# 本当にその形で置かれているかは言えない。release は人が作る手順の産物であり、
+# 壊れ方も人の手順の壊れ方をする——asset が1つ欠ける、sha256 を貼り忘れる、
+# tarball の中身が変わる。
 #
 # 見るのは「新しい利用者が最初にすること」である。
 
@@ -28,8 +28,8 @@ if [ -z "$VERSION" ]; then
 fi
 TAG=v$VERSION
 
-# 公開すると宣言されている三つ組（release の本文）。1つでも欠ければ、
-# その機械の利用者は「配られている」という記述に裏切られる。
+# release の本文が「配る」と書いている triple。1つでも欠ければ、その機械の
+# 利用者は書かれていることに裏切られる。
 TRIPLES="
 x86_64-unknown-linux-gnu
 aarch64-unknown-linux-gnu
@@ -64,11 +64,11 @@ printf 'checking the published release %s at %s\n\n' "$TAG" "$UPSTREAM"
 
 # ---------------------------------------------------------------- 1. 置かれているもの
 #
-# 配ると書いた三つ組それぞれに、書庫と digest が在ること。取れるかどうかは
-# 頭だけ問い合わせれば分かる——数百 MB を5つ落とす必要は無い。
-
+# 配ると書いた triple それぞれに、tarball と sha256 が在ること。
+#
 # 1バイトだけ求める。HEAD は release の配布経路（署名付きの転送先へ跳ぶ）で
-# 通らないことがあり、「置かれているか」の答としては当てにならない。
+# 通らないことがあり、置かれているかどうかの答としては当てにならない。
+# 数百 MB を5つ落とす必要も無い。
 reachable() { curl -fsSL -r 0-0 "$1" -o /dev/null 2>/dev/null; }
 
 for triple in $TRIPLES; do
@@ -83,7 +83,7 @@ done
 
 # ---------------------------------------------------------------- 2. 中身
 #
-# 手元の機械の三つ組だけを実際に落とす。残りは上で「在る」ことまで。
+# 手元の機械の triple だけを実際に落とす。残りは上で「在る」ことまで。
 
 HOST=$(uname -m)-unknown-linux-gnu
 case $(uname -s) in
@@ -121,7 +121,7 @@ ok $? "the dowel it holds reports the version this release is named for" \
 
 # ---------------------------------------------------------------- 3. 最初にすること
 #
-# release の本文に書かれている手順を、書かれているとおりに。Rust の道具立ては
+# release の本文に書かれている手順を、書かれているとおりに。Rust の toolchain は
 # 使わない——それを要らなくするのがこの配り方の目的である。
 
 export DOWELUP_HOME=$WORK/home
@@ -142,8 +142,8 @@ said=$("$WORK/bin/dowel" --version 2>&1)
 ok $? "and the shim runs the version that was asked for" \
      "want: dowel $VERSION" "got:  $said"
 
-# 記録された digest が、公開された `.sha256` と一致すること。利用者が
-# あとから突き合わせられる唯一の値である。
+# dowelup が記録した digest が、公開された .sha256 と一致すること。
+# 利用者があとから突き合わせられる唯一の値である。
 recorded=$(grep -h '^asset_sha256=' "$DOWELUP_HOME"/versions/*/origin 2>/dev/null | head -1 | cut -d= -f2)
 [ -n "$recorded" ] && [ "$recorded" = "$published" ]
 ok $? "the digest it recorded is the one published beside the asset" \

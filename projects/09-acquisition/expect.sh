@@ -303,19 +303,19 @@ up_fails "selecting an uninstalled revision is refused" -C "$PROJ" which
 
 rm -rf "$W"
 
-# --------------------------------------------------------------- 9. release 資産からの取得
+# --------------------------------------------------------------- 9. release asset からの取得
 #
-# release 指定子（`stable` / `X.Y.Z` / `tag:`）は、上流の release 資産に
+# release 指定子（`stable` / `X.Y.Z` / `tag:`）は、上流の release asset に
 # 置かれた**公開バイナリ**を取り、隣の `.sha256` と突き合わせる（ADR-0036）。
-# それ以外（`nightly` / `branch:` / 裸の sha）は取るべき資産が無く、
+# それ以外（`nightly` / `branch:` / 裸の sha）は取るべき asset が無く、
 # 従来どおり cargo で組む。`--from-source` はどの場合も組む側を選ぶ。
 #
-# 狙いは「Rust の道具立てが無い機械にも dowel が入る」ことである。
+# 狙いは「Rust の toolchain が無い機械にも dowel が入る」ことである。
 # C/C++ の利用者に、最初のビルドの前に cargo を要求しないための決定であり、
 # 検査もそこを直接見る。cargo を**呼ばなかったこと**を、出力の文言では
 # なく痕跡の不在で見る。
 #
-# 資産の置き場は上流の URL から導かれる。上流を手元の bare リポジトリに
+# asset の置き場は上流の URL から導かれる。上流を手元の bare リポジトリに
 # 差し替えてあるため、その隣に同じ形の木を置けば、ネットワークに触れずに
 # 公開バイナリの経路をそのまま通せる。
 
@@ -324,7 +324,7 @@ TRIPLE=$(uname -m)-unknown-linux-gnu
 ASSET=dowel-v0.9.0-$TRIPLE.tar.gz
 mkdir -p "$ASSET_BASE"
 
-# 資産を作る。中身は検査対象の dowel そのもの。入ったものが動くところまで
+# asset を作る。中身は検査対象の dowel そのもの。入ったものが動くところまで
 # 見たいので、動かない詰め物では代えられない。
 mkdir -p "$PWD/stage"
 cp "$DOWEL" "$PWD/stage/dowel"
@@ -360,7 +360,7 @@ up_nc() {
 }
 built_from_source() { [ -e "$WITNESS" ]; }
 
-# --- 資産がある場合
+# --- asset がある場合
 
 up_nc install 0.9.0
 said=$OUT; rc=$RC
@@ -395,7 +395,7 @@ for spec in stable tag:v0.9.0; do
     fact $? "\`$spec\` takes the release asset too"
 done
 
-# それ以外は資産を探しにも行かない。探しに行けば、上流が落ちている日に
+# それ以外は asset を探しにも行かない。探しに行けば、上流が落ちている日に
 # nightly の取得まで遅くなる。
 up_nc install nightly
 said=$OUT
@@ -406,7 +406,7 @@ fact $? "install says why it is building instead of fetching"
 built_from_source
 fact $? "a specifier that names no release goes to the source build"
 
-# --from-source は資産があっても組む側を選ぶ。ADR-0036 が「由来を示せるのは
+# --from-source は asset があっても組む側を選ぶ。ADR-0036 が「由来を示せるのは
 # 組んだ側だけ」と書いており、それを要求する手段が要る。
 up_nc install 0.9.0 --from-source
 said=$OUT
@@ -431,7 +431,7 @@ built_from_source
 fact $? "a refused asset falls back to the source build"
 publish_sum
 
-# 隣に `.sha256` が無い資産は取らない。検証できないものを取るなら、
+# 隣に `.sha256` が無い asset は取らない。検証できないものを取るなら、
 # 検証は選択肢であって規則ではなくなる。
 mv "$ASSET_BASE/$ASSET.sha256" "$PWD/sum.keep"
 up_nc install 0.9.0
@@ -454,7 +454,7 @@ printf '%s' "$OUT" | grep -q 'from a release asset'
 fact $? "an uppercase checksum is accepted"
 publish_sum
 
-# 資産の中身が違う場合。checksum は「配られたものが listed のものと同じ」
+# asset の中身が違う場合。checksum は「配られたものが listed のものと同じ」
 # しか言わず、それが dowel であるとは言わない。
 mkdir -p "$PWD/stage-empty" && : > "$PWD/stage-empty/README"
 tar czf "$ASSET_BASE/$ASSET" -C "$PWD/stage-empty" README
@@ -468,10 +468,10 @@ fact $? "an asset that holds no dowel binary falls back to the source build"
 tar czf "$ASSET_BASE/$ASSET" -C "$PWD/stage" dowel
 publish_sum
 
-# --- 資産が無い場合
+# --- asset が無い場合
 #
-# 「資産が無いのは失敗ではなく退避である」（ADR-0036）。まだ資産の無い
-# 三つ組でも動き続けるための決定。
+# 「 asset が無いのは失敗ではなく退避である」（ADR-0036）。まだ asset の無い
+# triple でも動き続けるための決定。
 
 mv "$ASSET_BASE/$ASSET" "$PWD/asset.keep"
 up_nc install 0.9.0
@@ -491,7 +491,7 @@ fact $? "a failed fetch says why it failed"
 printf '%s' "$said" | grep -q 'curl failed' && printf '%s' "$said" | grep -q 'wget failed'
 fact $? "a failed fetch says what each tool it tried reported"
 
-# 資産の経路を諦めた理由が、続く失敗まで持ち越されること。持ち越さないと
+# asset の経路を諦めた理由が、続く失敗まで持ち越されること。持ち越さないと
 # 利用者が最後に読む言葉は「cargo が無い」になり、実際の問題を指さない。
 printf '%s' "$said" | grep -q 'the release asset was not usable'
 fact $? "the reason the asset path was abandoned survives into the failure"
@@ -566,11 +566,11 @@ rm -rf "$PWD/nc-home" "$PWD/stage" "$PWD/stage-empty" "$WITNESS"
 
 # --------------------------------------------------------------- 10. 版を名指して取り、中身を確かめる
 #
-# ここまでは「資産の経路を通るか」を見てきた。残っているのは利用者が実際に
+# ここまでは「 asset の経路を通るか」を見てきた。残っているのは利用者が実際に
 # 問うことである——**名指した版が入ったか。入ったものは期待どおりか。**
 #
 # 固定の側（4節）は「同じ sha が選ばれる」ことしか言わない。sha が同じでも、
-# 資産の中身が違えば別のものが動く。ADR-0036 が正直に書いているとおり、
+# asset の中身が違えば別のものが動く。ADR-0036 が正直に書いているとおり、
 # dowel は公開バイナリがその sha から組まれたことを確かめられない。
 # だから「入ったものが期待どおりか」は、**入ったものに名乗らせる**しかない。
 
@@ -582,7 +582,7 @@ OLD_BASE=${UPSTREAM%.git}/releases/download/v0.8.0
 OLD_ASSET=dowel-v0.8.0-$TRIPLE.tar.gz
 mkdir -p "$OLD_BASE"
 
-# 古い方の資産には、自分が何者かを名乗るだけのものを詰める。dowel は
+# 古い方の asset には、自分が何者かを名乗るだけのものを詰める。dowel は
 # 中身が本物の dowel かどうかを確かめない——その限界を使って、
 # 「どちらが来たか」を答の側から読む。
 mkdir -p "$PWD/stage-old"
@@ -594,7 +594,7 @@ chmod +x "$PWD/stage-old/dowel"
 tar czf "$OLD_BASE/$OLD_ASSET" -C "$PWD/stage-old" dowel
 ( cd "$OLD_BASE" && sha256sum "$OLD_ASSET" | awk '{print $1}' > "$OLD_ASSET.sha256" )
 
-# 新しい方の資産は、検査対象の dowel そのものである（1節で作ってある）。
+# 新しい方の asset は、検査対象の dowel そのものである（1節で作ってある）。
 publish_sum
 
 VER=$("$DOWEL" --version 2>&1)
