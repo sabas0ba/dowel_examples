@@ -301,16 +301,19 @@ ok "after which the build runs offline" -C tcfetch build --offline --no-compdb
 
 # `fetch` は「offline へ行ける」ことを見せるための入口である。取ってきた
 # ものを数えず一覧もしないなら、利用者が読むのは「何も要らなかった」に
-# なる（[F-065](../../docs/10-findings.md#f-065)）。
+# なる（[F-065](../../docs/10-findings.md#f-065)）。cross の木では取って
+# くるものが道具立てだけ、という形が普通である。
 rm -rf "$PWD/tccache"
 run -C tcfetch fetch
 said=$OUT
-known_issue F-065
-! printf '%s' "$said" | grep -q 'fetched 0'
+printf '%s' "$said" | grep -q 'toolchain(s)'
 fact $? "fetch counts the toolchain it acquired"
-run -C tcfetch fetch
-known_issue F-065
-printf '%s' "$OUT" | grep -q 'ready:.*toolchain\|toolchain.*ready'
+printf '%s' "$said" | grep -q 'ready:.*toolchain'
 fact $? "and lists it among what is now present"
+
+# 依存とは別に数える。どちらも「取ってきたもの」だが、無いときの直し方が
+# 違う——片方は宣言を、片方は道具立ての表を見ることになる。
+printf '%s' "$said" | grep -q 'package(s)' && printf '%s' "$said" | grep -q 'toolchain(s)'
+fact $? "counting them apart, the two being different things to go and get"
 
 rm -rf "$TCDIR" "$KIT" "$PWD/tccache"

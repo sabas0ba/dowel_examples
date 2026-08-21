@@ -192,11 +192,13 @@ _last_cmd="wc -l transfer-count.txt"; OUT="$before -> $after"; RC=0
 [ "$after" -eq $((before + 1)) ]
 fact $? "a run that could not start drops the record, so the next one sends again"
 
-# ところが、この決定が自分の動機として挙げている場面——対象機から成果物が
-# 消えた——では起動は成り立つ。dowel が起こすのは手元の運び手（ssh や sh）
-# であり、それは問題なく始まる。消えていることが分かるのは向こう側で、
-# 返ってくるのは終了状態である。`launch_error` にはならないので記録は残り、
-# 次の実行も送らない（[F-066](../../docs/10-findings.md#f-066)）。
+# そして、この決定が動機として挙げている場面——対象機から成果物が消えた
+# ——でも直る（ADR-0052、[F-066](../../docs/10-findings.md#f-066)）。
+#
+# そこでは起動は成り立つ。dowel が起こすのは手元の運び手（ssh や sh）で
+# あり、それは問題なく始まる。消えていることが分かるのは向こう側で、
+# 返ってくるのは終了状態である。**通らなかった実行が記録を落とす**なら、
+# 一番強い証拠を使ったことになる。
 run test --target=$TRIPLE
 before=$(count)
 rm -f remote/remote_test
@@ -206,26 +208,36 @@ _last_cmd="wc -l transfer-count.txt"; OUT="$before -> $mid (the run that noticed
 [ "$mid" -eq "$before" ]
 fact $? "the run that noticed does not itself re-send"
 
-run test --target=$TRIPLE
+ok "and the run after it passes" test --target=$TRIPLE
 recovered=$(count)
 _last_cmd="wc -l transfer-count.txt"; OUT="$mid -> $recovered (the run after)"; RC=0
-known_issue F-066
 [ "$recovered" -eq $((mid + 1)) ]
 fact $? "a machine that lost the artifact recovers on the run after the one that noticed"
 
-run test --target=$TRIPLE
-known_issue F-066
-[ "$RC" -eq 0 ]
-_verdict $? "and the tests pass again without the record being touched by hand"
-
-# 手立てが無いわけではない。記録はビルドディレクトリに在るので、
-# 古くなったビルド状態と同じやり方で捨てられる。
-rm -f ".dowel/build/$TRIPLE-debug/transfers"
-ok "removing the record by hand is what brings it back" test --target=$TRIPLE
 if [ -f remote/remote_test ]; then
-    fact 0 "and the artifact is on the target machine again"
+    fact 0 "so the artifact is back on the target machine, with nothing touched by hand"
 else
-    fact 1 "and the artifact is on the target machine again"
+    fact 1 "so the artifact is back on the target machine, with nothing touched by hand"
 fi
+
+# 代償は言葉にできる形をしている。落ち続けるテストは実行ごとに1回送る。
+# 記録の鍵は転送の命令であって case ではないので、20 の case のうち1つが
+# 落ちても、払うのは実行あたり1回である。
+sed -i 's|return 0;|return 4;|' tests/remote_test.c
+run test --target=$TRIPLE
+before=$(count)
+fails "a test that keeps failing still fails" test --target=$TRIPLE
+after=$(count)
+_last_cmd="wc -l transfer-count.txt"; OUT="$before -> $after"; RC=0
+[ "$after" -eq $((before + 1)) ]
+fact $? "and a failing run pays exactly one transfer, that being the price"
+sed -i 's|return 4;|return 0;|' tests/remote_test.c
+ok "a passing run writes the record back" test --target=$TRIPLE
+before=$(count)
+ok "so the run after it skips again" test --target=$TRIPLE
+after=$(count)
+_last_cmd="wc -l transfer-count.txt"; OUT="$before -> $after"; RC=0
+[ "$after" -eq "$before" ]
+fact $? "which is the skip returning once the tree is healthy"
 
 rm -f transfer-count.txt

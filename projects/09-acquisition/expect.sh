@@ -303,19 +303,19 @@ up_fails "selecting an uninstalled revision is refused" -C "$PROJ" which
 
 rm -rf "$W"
 
-# --------------------------------------------------------------- 9. release 資産からの取得
+# --------------------------------------------------------------- 9. release asset からの取得
 #
-# release 指定子（`stable` / `X.Y.Z` / `tag:`）は、上流の release 資産に
+# release 指定子（`stable` / `X.Y.Z` / `tag:`）は、上流の release asset に
 # 置かれた**公開バイナリ**を取り、隣の `.sha256` と突き合わせる（ADR-0036）。
-# それ以外（`nightly` / `branch:` / 裸の sha）は取るべき資産が無く、
+# それ以外（`nightly` / `branch:` / 裸の sha）は取るべき asset が無く、
 # 従来どおり cargo で組む。`--from-source` はどの場合も組む側を選ぶ。
 #
-# 狙いは「Rust の道具立てが無い機械にも dowel が入る」ことである。
+# 狙いは「Rust の toolchain が無い機械にも dowel が入る」ことである。
 # C/C++ の利用者に、最初のビルドの前に cargo を要求しないための決定であり、
 # 検査もそこを直接見る。cargo を**呼ばなかったこと**を、出力の文言では
 # なく痕跡の不在で見る。
 #
-# 資産の置き場は上流の URL から導かれる。上流を手元の bare リポジトリに
+# asset の置き場は上流の URL から導かれる。上流を手元の bare リポジトリに
 # 差し替えてあるため、その隣に同じ形の木を置けば、ネットワークに触れずに
 # 公開バイナリの経路をそのまま通せる。
 
@@ -324,7 +324,7 @@ TRIPLE=$(uname -m)-unknown-linux-gnu
 ASSET=dowel-v0.9.0-$TRIPLE.tar.gz
 mkdir -p "$ASSET_BASE"
 
-# 資産を作る。中身は検査対象の dowel そのもの。入ったものが動くところまで
+# asset を作る。中身は検査対象の dowel そのもの。入ったものが動くところまで
 # 見たいので、動かない詰め物では代えられない。
 mkdir -p "$PWD/stage"
 cp "$DOWEL" "$PWD/stage/dowel"
@@ -360,7 +360,7 @@ up_nc() {
 }
 built_from_source() { [ -e "$WITNESS" ]; }
 
-# --- 資産がある場合
+# --- asset がある場合
 
 up_nc install 0.9.0
 said=$OUT; rc=$RC
@@ -395,7 +395,7 @@ for spec in stable tag:v0.9.0; do
     fact $? "\`$spec\` takes the release asset too"
 done
 
-# それ以外は資産を探しにも行かない。探しに行けば、上流が落ちている日に
+# それ以外は asset を探しにも行かない。探しに行けば、上流が落ちている日に
 # nightly の取得まで遅くなる。
 up_nc install nightly
 said=$OUT
@@ -406,7 +406,7 @@ fact $? "install says why it is building instead of fetching"
 built_from_source
 fact $? "a specifier that names no release goes to the source build"
 
-# --from-source は資産があっても組む側を選ぶ。ADR-0036 が「由来を示せるのは
+# --from-source は asset があっても組む側を選ぶ。ADR-0036 が「由来を示せるのは
 # 組んだ側だけ」と書いており、それを要求する手段が要る。
 up_nc install 0.9.0 --from-source
 said=$OUT
@@ -431,7 +431,7 @@ built_from_source
 fact $? "a refused asset falls back to the source build"
 publish_sum
 
-# 隣に `.sha256` が無い資産は取らない。検証できないものを取るなら、
+# 隣に `.sha256` が無い asset は取らない。検証できないものを取るなら、
 # 検証は選択肢であって規則ではなくなる。
 mv "$ASSET_BASE/$ASSET.sha256" "$PWD/sum.keep"
 up_nc install 0.9.0
@@ -454,7 +454,7 @@ printf '%s' "$OUT" | grep -q 'from a release asset'
 fact $? "an uppercase checksum is accepted"
 publish_sum
 
-# 資産の中身が違う場合。checksum は「配られたものが listed のものと同じ」
+# asset の中身が違う場合。checksum は「配られたものが listed のものと同じ」
 # しか言わず、それが dowel であるとは言わない。
 mkdir -p "$PWD/stage-empty" && : > "$PWD/stage-empty/README"
 tar czf "$ASSET_BASE/$ASSET" -C "$PWD/stage-empty" README
@@ -468,10 +468,10 @@ fact $? "an asset that holds no dowel binary falls back to the source build"
 tar czf "$ASSET_BASE/$ASSET" -C "$PWD/stage" dowel
 publish_sum
 
-# --- 資産が無い場合
+# --- asset が無い場合
 #
-# 「資産が無いのは失敗ではなく退避である」（ADR-0036）。まだ資産の無い
-# 三つ組でも動き続けるための決定。
+# 「 asset が無いのは失敗ではなく退避である」（ADR-0036）。まだ asset の無い
+# triple でも動き続けるための決定。
 
 mv "$ASSET_BASE/$ASSET" "$PWD/asset.keep"
 up_nc install 0.9.0
@@ -491,7 +491,7 @@ fact $? "a failed fetch says why it failed"
 printf '%s' "$said" | grep -q 'curl failed' && printf '%s' "$said" | grep -q 'wget failed'
 fact $? "a failed fetch says what each tool it tried reported"
 
-# 資産の経路を諦めた理由が、続く失敗まで持ち越されること。持ち越さないと
+# asset の経路を諦めた理由が、続く失敗まで持ち越されること。持ち越さないと
 # 利用者が最後に読む言葉は「cargo が無い」になり、実際の問題を指さない。
 printf '%s' "$said" | grep -q 'the release asset was not usable'
 fact $? "the reason the asset path was abandoned survives into the failure"
@@ -563,3 +563,148 @@ grep -q '^spec=tag:v0.9.0$' "$PWD/nc-home/versions/$TIP/origin"
 fact $? "resolving an installed version again still records the new specifier"
 
 rm -rf "$PWD/nc-home" "$PWD/stage" "$PWD/stage-empty" "$WITNESS"
+
+# --------------------------------------------------------------- 10. 版を名指して取り、中身を確かめる
+#
+# ここまでは「 asset の経路を通るか」を見てきた。残っているのは利用者が実際に
+# 問うことである——**名指した版が入ったか。入ったものは期待どおりか。**
+#
+# 固定の側（4節）は「同じ sha が選ばれる」ことしか言わない。sha が同じでも、
+# asset の中身が違えば別のものが動く。ADR-0036 が正直に書いているとおり、
+# dowel は公開バイナリがその sha から組まれたことを確かめられない。
+# だから「入ったものが期待どおりか」は、**入ったものに名乗らせる**しかない。
+
+# 上流にもう1つ release を作る。別のコミットに別の version を置くと、
+# 「名指した方が来たか」を答の側で見分けられる。
+#
+# コミットは**ここで作る**。上流の履歴を辿って `HEAD~1` を使うと、複製元が
+# 浅い場合に無い——CI の checkout は既定で深さ1であり、そこで話が変わる。
+# 環境によって走る検査が変わることを避けるのがこの木の規則である。
+TREE=$(git --git-dir="$UPSTREAM" rev-parse 'HEAD^{tree}')
+OLD=$(git --git-dir="$UPSTREAM" -c user.email=t@t -c user.name=t \
+        commit-tree "$TREE" -p "$TIP" -m 'a second release, for the checks below' 2>/dev/null)
+git --git-dir="$UPSTREAM" tag -f v0.8.0 "$OLD" >/dev/null 2>&1
+[ -n "$OLD" ] && [ "$OLD" != "$TIP" ]
+fact $? "a second release can be created on the local mirror"
+OLD_BASE=${UPSTREAM%.git}/releases/download/v0.8.0
+OLD_ASSET=dowel-v0.8.0-$TRIPLE.tar.gz
+mkdir -p "$OLD_BASE"
+
+# 片方の asset には、自分が何者かを名乗るだけのものを詰める。dowel は
+# 中身が本物の dowel かどうかを確かめない——その限界を使って、
+# 「どちらが来たか」を答の側から読む。
+mkdir -p "$PWD/stage-old"
+cat > "$PWD/stage-old/dowel" <<'EOF'
+#!/bin/sh
+echo "dowel 0.8.0 (the payload published under v0.8.0)"
+EOF
+chmod +x "$PWD/stage-old/dowel"
+tar czf "$OLD_BASE/$OLD_ASSET" -C "$PWD/stage-old" dowel
+( cd "$OLD_BASE" && sha256sum "$OLD_ASSET" | awk '{print $1}' > "$OLD_ASSET.sha256" )
+
+# もう片方の asset は、検査対象の dowel そのものである（1節で作ってある）。
+publish_sum
+
+VER=$("$DOWEL" --version 2>&1)
+
+# --- 名指した版が来る
+
+HOME2=$PWD/two-home
+rm -rf "$HOME2"
+env DOWELUP_HOME="$HOME2" DOWELUP_UPSTREAM="$UPSTREAM" "$DOWELUP" install 0.9.0 >/dev/null 2>&1
+env DOWELUP_HOME="$HOME2" DOWELUP_UPSTREAM="$UPSTREAM" "$DOWELUP" install 0.8.0 >/dev/null 2>&1
+
+_last_cmd="dowelup list   # 2つの版を入れた"
+OUT=$(env DOWELUP_HOME="$HOME2" DOWELUP_UPSTREAM="$UPSTREAM" "$DOWELUP" list 2>&1); RC=0
+said=$OUT
+printf '%s' "$said" | grep -q '0\.9\.0' && printf '%s' "$said" | grep -q '0\.8\.0'
+fact $? "two named releases can be installed side by side"
+
+n=$(printf '%s' "$said" | grep -c '\[asset\]')
+_last_cmd="dowelup list | [asset]"; OUT="$n of them arrived as a published binary"; RC=0
+[ "$n" -eq 2 ]
+fact $? "and both arrived as published binaries"
+
+# ここが要点である。名指した版の**中身**が来たかどうかは、入ったものに
+# 名乗らせるほかない。
+prints "$VER" "asking for one release gives the payload published under it" \
+       env DOWELUP_HOME="$HOME2" DOWELUP_UPSTREAM="$UPSTREAM" \
+           "$DOWELUP" run 0.9.0 -- --version
+
+prints "dowel 0.8.0 (the payload published under v0.8.0)" \
+       "and asking for the other gives the payload published under that" \
+       env DOWELUP_HOME="$HOME2" DOWELUP_UPSTREAM="$UPSTREAM" \
+           "$DOWELUP" run 0.8.0 -- --version
+
+# 配ったバイト列がそのまま届いていること。名乗りが合っていても、
+# 途中で何かが差し替わっていないとは言えない。
+NEW_SHA=$(git --git-dir="$UPSTREAM" rev-parse HEAD)
+if cmp -s "$DOWEL" "$HOME2/versions/$NEW_SHA/bin/dowel"; then
+    fact 0 "what was installed is byte for byte what the asset held"
+else
+    fact 1 "what was installed is byte for byte what the asset held"
+fi
+
+# 記録された digest が、公開した `.sha256` と一致すること。利用者が後から
+# 突き合わせられる唯一の値である。
+grep -q "^asset_sha256=$(cat "$ASSET_BASE/$ASSET.sha256")$" \
+     "$HOME2/versions/$NEW_SHA/origin"
+fact $? "and the digest it recorded is the one published beside the asset"
+
+# --- 入ったものが実際に働く
+
+# 名乗るだけでは足りない。取ってきた dowel で小さな木を組んでみる。
+PROBE=$PWD/probe
+rm -rf "$PROBE"; mkdir -p "$PROBE/src"
+printf '[package]\nname = "probe"\nversion = "0.1.0"\nedition = "2026"\n' > "$PROBE/dowel.toml"
+printf '[bin.probe]\nsources = [file("src/main.c")]\n' > "$PROBE/dowel.build"
+printf '#include <stdio.h>\nint main(void){ printf("probe ok\\n"); return 0; }\n' > "$PROBE/src/main.c"
+
+_last_cmd="the installed dowel builds a package"
+OUT=$("$HOME2/versions/$NEW_SHA/bin/dowel" -C "$PROBE" build --no-compdb 2>&1); RC=$?
+[ "$RC" -eq 0 ]
+fact $? "the dowel that was fetched can build a package"
+
+prints "probe ok" "and what it built runs" \
+       "$(find "$PROBE/.dowel/build" -type f -name probe | head -1)"
+
+# --- 固定した版が、その版として動く
+
+# 固定は sha を書く。shim がそれを選び、選ばれたものが名乗る。
+# 「固定が効いている」と「固定した中身が動いている」は別の主張である。
+# 選択は「起動した場所から上へ辿る」ので、その場所で起こす。
+pinned_says() {
+    printf '%s\n' "$1" > "$PROBE/.dowel-version"
+    ( cd "$PROBE" && env DOWELUP_HOME="$HOME2" DOWELUP_UPSTREAM="$UPSTREAM" \
+        "$PROJ/bin/dowel" --version 2>&1 )
+}
+
+_last_cmd="dowel --version   # .dowel-version が 0.8.0 の sha"
+OUT=$(pinned_says "$OLD"); RC=0
+printf '%s' "$OUT" | grep -q '0\.8\.0'
+fact $? "a pin file selects the payload that came with the version it names"
+
+_last_cmd="dowel --version   # .dowel-version を新しい方へ"
+OUT=$(pinned_says "$NEW_SHA"); RC=0
+[ "$OUT" = "$VER" ]
+fact $? "and changing the pin changes which payload runs"
+
+# --- 確かめられないこと
+#
+# 上の全ては「公開された中身が届いたか」であって、「その中身が本当にその
+# コミットから組まれたか」ではない。ADR-0036 はそれを確かめないと明言して
+# いる。ここではその限界そのものを固定する——限界を検査に書いておかないと、
+# 上の検査が言っている以上のことを言っていると読まれる。
+if cmp -s "$PWD/stage-old/dowel" "$HOME2/versions/$OLD/bin/dowel"; then
+    fact 0 "a payload that is not dowel at all installs, nothing checking what it is"
+else
+    fact 1 "a payload that is not dowel at all installs, nothing checking what it is"
+fi
+
+# 由来を要求する手立ては在る。組んだ側だけが「このコミットから出た」ことを
+# 示せる（ADR-0036）。
+up_nc install 0.9.0 --from-source
+built_from_source
+fact $? "and --from-source is the way to demand a binary whose origin is shown"
+
+rm -rf "$HOME2" "$PROBE" "$PWD/stage-old" "$PWD/nc-home"

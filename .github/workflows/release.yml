@@ -1,0 +1,85 @@
+# 公開された release を、利用者と同じ経路で確かめる。
+#
+# verify とは分けてある。あちらは「このリポジトリを変えていなければ結果も
+# 動かない」ことを前提にしている。上流の release asset に触れる検査はその
+# 前提と両立しない——こちらが何もしなくても、向こうが差し替われば結果が動く。
+# ここが落ちても pull request は止まらない。止めるべき相手が外にいるためである。
+#
+# それでも要るのは、確かめられるのがここだけだからである。release は人が作る
+# 手順の産物であり、壊れ方も人の手順の壊れ方をする——asset が1つ欠ける、
+# sha256 を貼り忘れる、tarball の中身が変わる。どれも公開したあとに気づく。
+name: release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "確かめる version（省略すると上流の最新 release）"
+        required: false
+  schedule:
+    # 月に一度。上流に新しい release が無ければ、下の判定で何もせずに終わる。
+    - cron: "20 3 1 * *"
+
+permissions:
+  contents: read
+
+env:
+  UPSTREAM_API: https://api.github.com/repos/sabas0ba/dowel
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # 何を相手にするかを決める。手で起こしたときは指定された version、
+      # そうでなければ上流の最新 release。prerelease は /releases/latest に
+      # 現れないため、一覧の先頭を取る。
+      - id: target
+        name: resolve the release to check
+        run: |
+          set -euo pipefail
+          version='${{ inputs.version }}'
+          if [ -z "$version" ]; then
+            version=$(curl -fsSL "$UPSTREAM_API/releases" | jq -r '.[0].tag_name' | sed 's/^v//')
+          fi
+          [ -n "$version" ] && [ "$version" != "null" ] || { echo "no release upstream"; exit 1; }
+
+          # 前回どこまで確かめたかの目印。tag と、この機械向け asset の digest を
+          # 合わせたもの。tag を打ち直して中身だけ差し替えられた場合も動く。
+          triple=x86_64-unknown-linux-gnu
+          url="https://github.com/sabas0ba/dowel/releases/download/v$version/dowel-v$version-$triple.tar.gz.sha256"
+          digest=$(curl -fsSL "$url" | awk '{print $1}')
+
+          echo "version=$version"           >> "$GITHUB_OUTPUT"
+          echo "stamp=$version-${digest:0:12}" >> "$GITHUB_OUTPUT"
+          echo "checking $version (stamp $version-${digest:0:12})"
+
+      # 前回と同じものなら、走らせても同じ答が出るだけである。目印が残って
+      # いれば確かめ済みとみなす。手で起こしたときは常に走らせる——人が
+      # 確かめたくて起こしたのだから。
+      - id: seen
+        uses: actions/cache@v4
+        with:
+          path: .release-checked
+          key: release-checked-${{ steps.target.outputs.stamp }}
+
+      - name: install what a new user would have
+        if: github.event_name == 'workflow_dispatch' || steps.seen.outputs.cache-hit != 'true'
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq gcc ninja-build
+          gcc --version | head -1
+
+      # dowel を組むためのものは入れない。Rust の toolchain を要らなくするのが
+      # この配り方の目的であり、確かめる側がそれを持っていては確かめたことに
+      # ならない。
+      - name: check the published release
+        if: github.event_name == 'workflow_dispatch' || steps.seen.outputs.cache-hit != 'true'
+        run: |
+          ./scripts/check-release.sh "${{ steps.target.outputs.version }}"
+          date -u +%FT%TZ > .release-checked
+
+      - name: nothing new upstream
+        if: github.event_name != 'workflow_dispatch' && steps.seen.outputs.cache-hit == 'true'
+        run: echo "release ${{ steps.target.outputs.version }} was already checked; nothing to do"
