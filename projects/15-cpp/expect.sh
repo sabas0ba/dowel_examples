@@ -83,7 +83,7 @@ _verdict $v "but the link uses the C++ driver because a dependency is C++"
 #
 #   cpplib_len       標準ライブラリ
 #   cpplib_throws    送出と捕捉（巻き戻しの機構）
-#   cpplib_ctor_ran  書庫の中の大域オブジェクトの構築子（.init_array）
+#   cpplib_ctor_ran  archive の中の大域オブジェクトの構築子（.init_array）
 #
 # 判定は C の中で行い、終了状態でどれが欠けたかまで分かるようにしてある。
 ok "the binary links and runs" -C capp build
@@ -319,5 +319,5 @@ _verdict $v "the cross C++ artifact is built for the target architecture"
 ok "the cross C++ test runs under the emulator and passes" -C cross/xapp test --target=$TRIPLE
 EXTRA=""
 
-# 書庫の道具（`[toolchain] ar`）は 18-tools が見る。C++ に固有の性質では
+# archive を作る道具（`[toolchain] ar`）は 18-tools が見る。C++ に固有の性質では
 # なく、ツールチェーンの道具一般の話であるため、そちらへ集めてある。

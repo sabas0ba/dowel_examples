@@ -18,7 +18,7 @@ TRIPLE=aarch64-unknown-linux-gnu
 BUILD_BAK=$PWD/library-dowel.build.bak
 cp library/dowel.build "$BUILD_BAK"
 
-# ------------------------------------------------------------ 道具立て
+# ------------------------------------------------------------ 下ごしらえ
 
 # derived <パッケージ> <名前> — ビルドディレクトリの中のその派生ファイル。
 derived() {
@@ -91,7 +91,7 @@ fact $? "the command is the tool, then the args, then the input and the output"
 
 # ------------------------------------------------------------ 3. 要るときだけ
 #
-# 派生を宣言していない木に objcopy を要求しない。`ar` が書庫を作るときだけ
+# 派生を宣言していない木に objcopy を要求しない。`ar` が archive を作るときだけ
 # 要るのと同じ理屈である。
 
 declare_objcopy() {

@@ -70,7 +70,7 @@ _last_cmd="graph --target=$TRIPLE | text.c"; OUT="${shared:-(absent)}"; RC=0
 [ -n "$shared" ]
 fact $? "while the portable source is shared, not duplicated per target"
 
-# 道具立ても対象で変わる。手元の cc が Windows 向けの物を作ってはならない。
+# toolchain も対象で変わる。手元の cc が Windows 向けの物を作ってはならない。
 prog=$("$DOWEL" -C app graph --kind=action --format=json --target=$TRIPLE 2>/dev/null |
        jq -r '.steps[] | select(.kind == "cc") | .program' | sort -u)
 _last_cmd="graph --target=$TRIPLE | .program"; OUT="$prog"; RC=0
@@ -152,7 +152,7 @@ fact $? "with each declared case launched in its own right"
 #
 # MSVC は名指しできるだけでなく、**その綴りで組める**（ADR-0027、F-051 の
 # 修正）。道具の名前と、dowel が組み立てる引数の様式は別のものであり、
-# 後者を `style` として宣言できる。三つ組からも導かれる（`*-msvc` → msvc）。
+# 後者を `style` として宣言できる。triple からも導かれる（`*-msvc` → msvc）。
 #
 # 本物の MSVC は手元に無い。確かめたいのは「MSVC が使えるか」ではなく
 # **引数の形が族に合っているか**であり、それは計画を読めば分かる。
@@ -232,7 +232,7 @@ rm -rf "$fake" "$msvc"
 #
 # 書きたいのは「対象が Windows なら」である。それが `target.os` として
 # 語彙に入った（F-053 の修正）。以前あったのは組む側の OS（`host.os`）と
-# 対象の三つ組そのもの（`cfg.target`）だけで、素直に `match host.os` と
+# 対象の triple そのもの（`cfg.target`）だけで、素直に `match host.os` と
 # 書くと、Windows 向けに組んでも POSIX 側が選ばれていた。
 
 keys=$("$DOWEL" schema dump 2>/dev/null | jq -r '.cfg.keys[].name' | paste -sd' ' -)

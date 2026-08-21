@@ -15,7 +15,7 @@
 **系統**（`projects/` `apps/` `docs`）にだけ使い、層ごとの内訳は小さな面を
 並べて示す。色数を増やして解こうとすると、どの色も見分けられなくなる。
 
-明暗2つの版を書き出す。掲示の頁も README も明暗の両方で読まれるため、
+明暗2つの版を書き出す。publish の頁も README も明暗の両方で読まれるため、
 片方を機械的に反転させるのではなく、それぞれの背景に対して選んだ色を使う。
 
     chart.py <history.json> <出力ディレクトリ>
@@ -30,11 +30,11 @@ import math
 import os
 import sys
 
-# 掲示用の枝に置く名前。README がこの名前で参照する。
+# publish 用の枝に置く名前。README がこの名前で参照する。
 # `scripts/check-docs.py` が両者の一致を見る。
 FILES = {"light": "history.svg", "dark": "history-dark.svg"}
 
-# 掲示の頁が README から参照される先。
+# publish の頁が README から参照される先。
 RAW_BASE = "https://raw.githubusercontent.com/sabas0ba/dowel_examples/gh-pages"
 
 
@@ -53,7 +53,7 @@ RAW_BASE = "https://raw.githubusercontent.com/sabas0ba/dowel_examples/gh-pages"
 # 凡例と右端の注記を必ず添える（History の表も同じ数を全件持つ）。
 FILL = 0.85
 
-# 文字と罫の色は掲示の頁（`report.py` の CSS）に揃える。図は頁の中に
+# 文字と罫の色は publish の頁（`report.py` の CSS）に揃える。図は頁の中に
 # 埋め込まれるため、頁と別の灰色を持ち込むと図だけが浮く。
 THEMES = {
     "light": {
@@ -489,7 +489,7 @@ def status_readout(run):
 def _hover(t, runs, x, n, top, bottom, readout):
     """指したところの値を出す層。
 
-    掲示の頁には脚本を1行も置いていない。`<title>` なら追加のものは要らず、
+    publish の頁には脚本を1行も置いていない。`<title>` なら追加のものは要らず、
     表（History）が同じ値を全件持っているため、これは補助にとどまる。
     """
     out = []
@@ -528,7 +528,7 @@ def document(history, theme_name):
 
 
 def inline(history, theme_name):
-    """掲示の頁へそのまま埋める版。頁の側が明暗を切り替える。"""
+    """publish の頁へそのまま埋める版。頁の側が明暗を切り替える。"""
     body, height = render(history, theme_name)
     return (
         '<svg class="chart {cls}" xmlns="http://www.w3.org/2000/svg" '

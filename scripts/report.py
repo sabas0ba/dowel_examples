@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
-"""検査結果の集計と掲示。
+"""検査結果の集計と publish。
 
 `run.sh` が `.work/` に残した TSV から、次の3つを作る。
 
     summary.md    人間向け。GitHub Actions のジョブ要約へそのまま流せる形
     results.json  機械可読。1回の実行を1オブジェクトで表す
-    index.html    掲示用。過去の実行を積んだ履歴から作る
+    index.html    publish 用。過去の実行を積んだ履歴から作る
     history.svg   同じ履歴の図（`scripts/chart.py`）。README が埋める版
 
 サブコマンドは2つ。
@@ -14,7 +14,7 @@
         1回の実行をまとめる。summary.md と results.json を書く
 
     report.py site --history <history.json> [--latest <results.json>] --out <dir>
-        履歴から index.html と history.svg を作る。掲示用の枝で使う。
+        履歴から index.html と history.svg を作る。publish 用の枝で使う。
         --latest を渡すと、直近の実行の内訳（検査の全件）も出す
 
 履歴の追記は `run --append <history.json>` で行う。同じ実行（run_id）が
@@ -39,7 +39,7 @@ LABEL = {
     "xpass": "fixed",
 }
 
-# 履歴に積む件数の上限。掲示する表が際限なく伸びると読めなくなる。
+# 履歴に積む件数の上限。publish する表が際限なく伸びると読めなくなる。
 HISTORY_LIMIT = 100
 
 
@@ -93,7 +93,7 @@ def collect(work):
                 "total": sum(counts.values()),
                 # 失敗と XPASS のどちらも「直すべきもの」である。
                 "ok": counts["fail"] == 0 and counts["xpass"] == 0,
-                # 検査の全件。掲示で内訳を出すために持つ。履歴には積まない
+                # 検査の全件。publish で内訳を出すために持つ。履歴には積まない
                 # （100 回分を抱えると読めない大きさになる）。
                 "checks": [
                     {"status": c["status"], "desc": c["desc"]}
@@ -141,7 +141,7 @@ def run_url():
 
 # ---------------------------------------------------------------- 実体への道
 #
-# 掲示は結果しか持たない。「この検査は何を見ているのか」を追うには、
+# publish は結果しか持たない。「この検査は何を見ているのか」を追うには、
 # 実体へ辿れる必要がある。相手は2つのリポジトリに固定されているため、
 # ここで定数として持つ。環境変数で上書きできる。
 
@@ -260,7 +260,7 @@ def for_history(run):
 
     履歴が要るのは各回の内訳の数であって、検査1件ずつの一覧ではない。
     100 回分の全件を抱えると、読むにも押し込むにも大きくなりすぎる。
-    直近の実行の全件は `latest.json` にあり、掲示はそちらから描く。
+    直近の実行の全件は `latest.json` にあり、publish はそちらから描く。
     """
     trimmed = {k: v for k, v in run.items() if k != "known_issues"}
     trimmed["projects"] = [
@@ -294,7 +294,7 @@ def append_history(path, run):
     return history
 
 
-# ------------------------------------------------------------------ 掲示
+# ------------------------------------------------------------------ publish
 
 CSS = """
 :root { color-scheme: light dark; --fg:#1a1a1a; --bg:#fff; --muted:#666;
@@ -362,7 +362,7 @@ def short(s, n=12):
 
 
 def render_site(history, latest=None):
-    """履歴から掲示の本文を作る。
+    """履歴から publish の本文を作る。
 
     `latest` は直近の実行の全件（`latest.json`）。履歴には検査1件ずつの
     一覧を積まないため、内訳を出すにはこちらが要る。省いた場合は
@@ -387,7 +387,7 @@ def render_site(history, latest=None):
         "failing is in docs/10-findings.md.</p>"
     )
 
-    # 掲示は結果しか持たない。実体へ辿れないと「何を見ている検査なのか」が
+    # publish は結果しか持たない。実体へ辿れないと「何を見ている検査なのか」が
     # 分からないため、対象と自分自身への道をここに置く。
     links = [
         '<a href="{}">dowel</a>'.format(DOWEL_REPO),
@@ -656,7 +656,7 @@ def main():
     with open(os.path.join(args.out, "index.html"), "w", encoding="utf-8") as f:
         f.write(render_page(history, latest))
     # 図は頁の中にも埋めるが、単体の SVG としても書き出す。README は
-    # 掲示用の枝のこのファイルを画像として参照する。
+    # publish 用の枝のこのファイルを画像として参照する。
     chart.write(history or ([for_history(latest)] if latest else []), args.out)
     return 0
 

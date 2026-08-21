@@ -45,8 +45,8 @@ dowel の足すものが先に来ることも見る。
 ビルドが収束しなくなる形である。
 
 宣言の有無だけでなく、取り込んだ見出しを書き換えて組み直されることと、
-**3つの背骨すべてで2度目に何も残らないこと**を見る。「依存ファイルは無い」の
-綴りは背骨ごとに違う——ninja では変数を束ねないと自分自身に解決して循環になる。
+**3つの backend すべてで2度目に何も残らないこと**を見る。「依存ファイルは無い」の
+綴りは backend ごとに違う——ninja では変数を束ねないと自分自身に解決して循環になる。
 
 ## 綴りは閉じている（[ADR-0051](https://github.com/sabas0ba/dowel/blob/main/docs/adr/0051-source-language-is-closed.md)）
 
@@ -71,7 +71,7 @@ dowel の足すものが先に来ることも見る。
 ## 自前の assembler（[ADR-0050](https://github.com/sabas0ba/dowel/blob/main/docs/adr/0050-separate-assembler.md)）
 
 `nasm/` が `asm = "nasm"` を宣言する。暗号や符号のライブラリは x86 向けに
-NASM のソースを配る——生成器が Unix の三つ組へは gas を、Windows へは NASM を
+NASM のソースを配る——生成器が Unix の triple へは gas を、Windows へは NASM を
 吐くためで、Windows の側は C の駆動器が聞いたこともない道具を要る。
 
 dowel が渡すのは**入力と出力と `asm_flags` だけ**である。翻訳の行の残りは

@@ -170,10 +170,10 @@ use gcc
 # **目的コードを決める唯一の入力だけが、その名前で機械に在ったもの**だった。
 # 同じ README に従った2人が違うバイナリを得ても、木は何も言わない。
 #
-# 決定は「toolchain は依存と同じやり方で取ってきて固定する」。書庫と digest
+# 決定は「toolchain は依存と同じやり方で取ってきて固定する」。archive と digest
 # であり、新しい機構は要らない。
 #
-# 本物の cross の書庫は数百 MB あるので、kit/ に偽物を組み立てる。確かめたい
+# 本物の cross の archive は数百 MB あるので、kit/ に偽物を組み立てる。確かめたい
 # のは中身ではなく、**取得・検証・展開・その中からの解決**である。
 
 TCDIR=$PWD/tcfetch
@@ -214,7 +214,7 @@ ok "a toolchain declared with a url and a sha256 builds" -C tcfetch build --no-c
 prints "42" "and the program it produced runs" \
        "$(find "$TCDIR/.dowel/build" -type f -name app | head -1)"
 
-# 命令は書庫の中から選ばれている。機械の `cc` が使われたのでは、
+# 命令は archive の中から選ばれている。機械の `cc` が使われたのでは、
 # 取ってきた意味が無い。
 _last_cmd="graph --kind=action | the compiler"
 OUT=$("$DOWEL" -C tcfetch graph --kind=action --format=json 2>/dev/null |
@@ -225,7 +225,7 @@ fact $? "the compiler is resolved inside what was unpacked"
 printf '%s' "$said" | grep -q 'bin/kitcc$'
 fact $? "and it is the one the declaration named"
 
-# 置き場は利用者のキャッシュであり、木の中ではない。同じ書庫は
+# 置き場は利用者のキャッシュであり、木の中ではない。同じ archive は
 # どの木でも同じバイト列である。
 n=$(find "$PWD/tccache/dowel/toolchains" -mindepth 1 -maxdepth 1 -type d 2>/dev/null | wc -l)
 _last_cmd="find \$XDG_CACHE_HOME/dowel/toolchains"; OUT="$n directories"; RC=0
@@ -237,7 +237,7 @@ else
     fact 0 "and not inside the tree"
 fi
 
-# 2度目は取りに行かない。書庫を消しても組める。
+# 2度目は取りに行かない。archive を消しても組める。
 mv "$KIT" "$KIT.moved"
 ok "a later build never reaches for the archive again" -C tcfetch build --no-compdb
 mv "$KIT.moved" "$KIT"
@@ -302,7 +302,7 @@ ok "after which the build runs offline" -C tcfetch build --offline --no-compdb
 # `fetch` は「offline へ行ける」ことを見せるための入口である。取ってきた
 # ものを数えず一覧もしないなら、利用者が読むのは「何も要らなかった」に
 # なる（[F-065](../../docs/10-findings.md#f-065)）。cross の木では取って
-# くるものが道具立てだけ、という形が普通である。
+# くるものが toolchain だけ、という形が普通である。
 rm -rf "$PWD/tccache"
 run -C tcfetch fetch
 said=$OUT
@@ -312,7 +312,7 @@ printf '%s' "$said" | grep -q 'ready:.*toolchain'
 fact $? "and lists it among what is now present"
 
 # 依存とは別に数える。どちらも「取ってきたもの」だが、無いときの直し方が
-# 違う——片方は宣言を、片方は道具立ての表を見ることになる。
+# 違う——片方は宣言を、片方は toolchain の表を見ることになる。
 printf '%s' "$said" | grep -q 'package(s)' && printf '%s' "$said" | grep -q 'toolchain(s)'
 fact $? "counting them apart, the two being different things to go and get"
 

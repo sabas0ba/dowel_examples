@@ -1,4 +1,4 @@
-# apps/dsp — 1つのライブラリを複数の三つ組で
+# apps/dsp — 1つのライブラリを複数の triple で
 #
 # ここまでのアプリは、1つのアプリが1つの対象を持っていた。実務でよくある
 # のはその逆で、**算法は1つ、走る機械が何種類もある**。手元で書いて試し、
@@ -6,7 +6,7 @@
 # にも載せる。そのとき問われるのは「組めるか」ではなく、
 # **どの機械でも同じ答が出るか**である。
 #
-#   core/   算法。整数だけで書いてあり、4つの三つ組へ組まれる
+#   core/   算法。整数だけで書いてあり、4つの triple へ組まれる
 #   cli/    使う側。ホストの載っている3つ
 #   gui/    使う側。cairo を引く。手元のみ
 #   fw/     使う側。Cortex-M4F。OS も libc も無い
@@ -20,21 +20,21 @@
 #
 #   - **同じ答**。期待値は tests/golden.h の1枚で、4つすべてがそれを読む
 #   - **機械は本当に違う**。語長も命令集合も違うのに答だけが同じ、を見る
-#   - **道具立てが三つ組ごとに効く**。手元の cc が別の対象の物を作らない
-#   - **ライブラリが自分の道具立てを持てない**。設計としてそうであり、
+#   - **toolchain が triple ごとに効く**。手元の cc が別の対象の物を作らない
+#   - **ライブラリが自分の toolchain を持てない**。設計としてそうであり、
 #     診断がその理由を言う（F-054 の修正）
-#   - **目標を三つ組で絞る**。ライブラリが自分の検査を持てる（F-055 の修正）
+#   - **目標を triple で絞る**。ライブラリが自分の検査を持てる（F-055 の修正）
 
 ARM_T=aarch64-unknown-linux-gnu
 RV_T=riscv64gc-unknown-linux-gnu
 FW_T=thumbv7em-none-eabihf
 
-# bin_for <パッケージ> <名前> <三つ組> — 組んだ実行ファイルの道。
+# bin_for <パッケージ> <名前> <triple> — 組んだ実行ファイルの道。
 bin_for() {
     find "$1/.dowel/build/$3-debug/bin/$2" -type f 2>/dev/null | head -1
 }
 
-# say <三つ組> <実行ファイル> <引数...> — その三つ組の走らせ方で走らせる。
+# say <triple> <実行ファイル> <引数...> — その triple の走らせ方で走らせる。
 say() {
     local t=$1 b=$2; shift 2
     case $t in
@@ -55,15 +55,15 @@ ok "and for ARM"              -C core build --no-compdb --target=$ARM_T
 ok "and for RISC-V"           -C core build --no-compdb --target=$RV_T
 
 # ベアメタルは使う側（fw）から組む。名指しは要らない——依存の検査は
-# 集められず、ライブラリ側の検査は自分の `targets` でこの三つ組から外れて
+# 集められず、ライブラリ側の検査は自分の `targets` でこの triple から外れて
 # いる（F-055 の修正。6節で両方を見る）。
 ok "and for a machine with no operating system" \
     -C fw build --no-compdb --target=$FW_T
 
 # ------------------------------------------------------------ 2. 同じ答
 #
-# ここが本題である。期待値は tests/golden.h の1枚であり、4つの三つ組が
-# すべてそれを読む。三つ組ごとに期待値を分けた瞬間、この検査は
+# ここが本題である。期待値は tests/golden.h の1枚であり、4つの triple が
+# すべてそれを読む。triple ごとに期待値を分けた瞬間、この検査は
 # 「機械が違えば答も違う」を追認するだけのものになる。
 
 ok "the vectors pass on the host" -C core test --no-compdb
@@ -123,7 +123,7 @@ _last_cmd="file onhw"; OUT="$kind"; RC=0
 printf '%s' "$kind" | grep -qi 'ARM'
 fact $? "whose ELF form is an ARM image, from the same algorithm source"
 
-# ------------------------------------------------------------ 4. 道具立てが三つ組ごとに効く
+# ------------------------------------------------------------ 4. toolchain が triple ごとに効く
 #
 # 手元の cc が別の対象の物を作ってはならない。計画の段で見る。
 
@@ -153,7 +153,7 @@ fact $? "and is not, for the ones that have it"
 
 # 機械の旗は2か所（core の腕と fw の目標）に書いてある。文法に束ねる手立てが
 # 無いので、**実際に同じ旗が出ていること**をグラフから確かめる。食い違えば
-# 呼び出し規約の違う書庫ができ、現れるのはリンカの苦情である。
+# 呼び出し規約の違う archive ができ、現れるのはリンカの苦情である。
 lib_f=$("$DOWEL" -C fw graph --kind=action --format=json --target=$FW_T 2>/dev/null |
         jq -r '.steps[] | select(.kind == "cc" and (.arguments | join(" ") | test("biquad")))
                | [.arguments[] | select(test("^-m"))] | join(" ")')
@@ -165,10 +165,10 @@ OUT="library: ${lib_f:-(none)}"$'\n'"consumer: ${use_f:-(none)}"; RC=0
 [ -n "$lib_f" ] && [ "$lib_f" = "$use_f" ]
 fact $? "the machine flags the library and its consumer are built with agree, though nothing binds them"
 
-# ------------------------------------------------------------ 5. 道具立ての置き場所
+# ------------------------------------------------------------ 5. toolchain の置き場所
 #
-# 三つ組ごとのコンパイラはライブラリの知識である。しかし依存の宣言は使う側の
-# build に効かない——道具立ては build 全体の性質であって依存の性質ではない
+# triple ごとのコンパイラはライブラリの知識である。しかし依存の宣言は使う側の
+# build に効かない——toolchain は build 全体の性質であって依存の性質ではない
 # （ADR-0031）。その立場は変わらない。
 #
 # 変わったのは**写しの置き場所**である。`[package] toolchains` が1つの表を
@@ -185,7 +185,7 @@ OUT=$(grep -c '^\[toolchain\.' toolchains.toml)
 [ "$OUT" = 3 ]
 fact $? "and that file holds the three triples they build for"
 
-# 使う側のマニフェストに道具立ては残っていない。
+# 使う側のマニフェストに toolchain は残っていない。
 _last_cmd="grep '\[toolchain' */dowel.toml"; RC=0
 OUT=$(grep -n '^\[toolchain' core/dowel.toml cli/dowel.toml fw/dowel.toml 2>&1 | paste -sd' ' -)
 [ -z "$OUT" ]
@@ -217,7 +217,7 @@ rm -rf "$probe"
 
 # ---- 依存の宣言は依然として効かない（F-054 の立場）
 #
-# 置き場所が1つになっても、**依存から降ってくるわけではない**。道具立ては
+# 置き場所が1つになっても、**依存から降ってくるわけではない**。toolchain は
 # build 全体の性質であって依存の性質ではない（ADR-0031）。診断がそれを言う。
 
 probe=$(mktemp -d)
@@ -250,7 +250,7 @@ echo 'int answer(void); int main(void){ return answer()==42?0:1; }' >"$probe/app
 
 run build --no-compdb --target=$ARM_T -C "$probe/app"
 said=$OUT
-_last_cmd="dowel build --target=$ARM_T  (依存だけが道具立てを宣言している)"
+_last_cmd="dowel build --target=$ARM_T  (依存だけが toolchain を宣言している)"
 OUT=$(printf '%s' "$said" | grep -m4 'error\|warning'); RC=0
 printf '%s' "$said" | grep -q 'missing-toolchain'
 fact $? "a dependency's toolchain declaration does not reach the build that uses it"
@@ -277,9 +277,9 @@ printf '%s' "$block" | grep -qi 'property of the build'
 fact $? "and why it does not apply, which is what makes the refusal read as a design"
 rm -rf "$probe"
 
-# ------------------------------------------------------------ 6. 目標を三つ組で絞る
+# ------------------------------------------------------------ 6. 目標を triple で絞る
 #
-# ライブラリの検査はホスト向けである（libc を使う）。ベアメタルの三つ組では
+# ライブラリの検査はホスト向けである（libc を使う）。ベアメタルの triple では
 # 組めない。それを**目標ごとの `targets`** で言う（F-055 の修正）。
 #
 # 書けなかった頃は、使う側を名指しせずに組むとライブラリの検査が混ざって
@@ -289,14 +289,14 @@ rm -rf "$probe"
 ok "a consumer builds for a triple its dependency's tests cannot be built for" \
     -C fw build --no-compdb --target=$FW_T
 
-# 依存の検査は、どの三つ組でも使う側からは組まれない。ホスト付きの側でも
+# 依存の検査は、どの triple でも使う側からは組まれない。ホスト付きの側でも
 # 同じ規則である——以前はここだけ「余計に組まれる」形で無害に見えていた。
 built=$("$DOWEL" -C cli build --no-compdb 2>&1 | sed -n 's/^built: //p' | sed 's|.*/||' | sort | paste -sd' ' -)
 _last_cmd="dowel -C cli build | built:"; OUT="${built:-(nothing)}"; RC=0
 ! printf '%s' "$built" | grep -q 'vectors'
 fact $? "a consumer never builds the dependency's own tests, on a hosted triple either"
 
-# 絞られた目標は、その三つ組の計画に**現れない**。誤りではなく圏外である。
+# 絞られた目標は、その triple の計画に**現れない**。誤りではなく圏外である。
 n=$("$DOWEL" -C core graph --kind=action --format=json --target=$FW_T 2>/dev/null |
     jq -r '[.steps[] | select(.arguments | join(" ") | test("vectors"))] | length')
 _last_cmd="graph --target=$FW_T | vectors を含む手順の数"; OUT="steps: ${n:-?}"; RC=0
@@ -311,7 +311,7 @@ OUT=$(printf '%s' "$OUT" | grep -m3 'error\|note')
 [ "$RC" -ne 0 ]
 fact $? "while naming it there is refused, because a build that quietly produces nothing reads as success"
 
-# 圏内の三つ組では、同じ目標が普通に組まれて走る。
+# 圏内の triple では、同じ目標が普通に組まれて走る。
 ok "and on a triple it does declare, the same target builds and runs" \
     -C core test --no-compdb --target=$ARM_T
 
@@ -363,7 +363,7 @@ OUT=$(ls -d core/.dowel/build/*/ 2>/dev/null | sed 's|.*/build/||')
 [ "$n" -ge 3 ]
 fact $? "each triple keeps its own build directory"
 
-# 同じ書庫の名前が、対象ごとに別の中身である。
+# 同じ archive の名前が、対象ごとに別の中身である。
 a_lib=$(md5sum "core/.dowel/build/$ARM_T-debug/lib/libdsp.a" 2>/dev/null | cut -c1-8)
 r_lib=$(md5sum "core/.dowel/build/$RV_T-debug/lib/libdsp.a" 2>/dev/null | cut -c1-8)
 _last_cmd="md5 libdsp.a (ARM)   vs   (RISC-V)"
@@ -391,16 +391,16 @@ runs_actions "+" "while another triple is rebuilt only when it is asked for" \
 
 # ------------------------------------------------------------ 10. 配る（ADR-0041 / ADR-0045）
 #
-# 4つの三つ組へ組めることと、組んだものを**渡せる**ことは別である。
+# 4つの triple へ組めることと、組んだものを**渡せる**ことは別である。
 # 使う側の機械には dowel もビルド木も無い。あるのは `install` が置いた
 # 木だけであり、それがその機械の上で動かなければ意味が無い。
 #
-# ここでしか見られないのは「別の三つ組へ install する」形である。
+# ここでしか見られないのは「別の triple へ install する」形である。
 # 手元の機械で組み、手元の機械に置き、動かすのは向こうの機械である。
 
 PFX=$PWD/prefix
 
-# --- 手元の三つ組
+# --- 手元の triple
 
 rm -rf "$PFX"
 ok "the host build installs" -C cli install --prefix="$PFX"
@@ -409,9 +409,9 @@ prints "$built_said" \
        "and what was installed answers as the build tree's copy did" \
        "$PFX/bin/dsp" sums
 
-# --- 別の三つ組
+# --- 別の triple
 #
-# `--target` を付ければ、その三つ組の成果物が prefix へ入る。組んだ機械の
+# `--target` を付ければ、その triple の成果物が prefix へ入る。組んだ機械の
 # 上では起動できないので、置いたものを qemu で走らせて確かめる。
 
 for t in "$ARM_T" "$RV_T"; do
@@ -435,7 +435,7 @@ for t in "$ARM_T" "$RV_T"; do
     fact $? "and the installed artifact runs on that machine, out of the prefix alone"
 done
 
-# 同じ答が出る。ここまで各三つ組の**ビルド木の中**では確かめてきたが、
+# 同じ答が出る。ここまで各 triple の**ビルド木の中**では確かめてきたが、
 # 配った先で同じであることは別の主張である。
 rm -rf "$PFX"
 run -C cli install --target="$ARM_T" --prefix="$PFX"
@@ -450,7 +450,7 @@ rm -rf "$PFX"
 
 # --- 網の外で組む（ADR-0045）
 #
-# この木の外側の入力は2つある——三つ組ごとの翻訳器と、`gui` が引く cairo。
+# この木の外側の入力は2つある——triple ごとの翻訳器と、`gui` が引く cairo。
 # 前者は機械に在るものを名指しており（`url` を書いていない）、後者は
 # pkg-config が答える。どちらも取ってくるものではないので、この木は
 # **最初から網に触れない**。それを言えるようにするのが `--offline` である。

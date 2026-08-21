@@ -241,7 +241,7 @@ for name in "${selected[@]}"; do
 
     cp -r "$src" "$dst"
 
-    # そのプロジェクトが含むパッケージ。掲示の表から実体へ辿る材料になる。
+    # そのプロジェクトが含むパッケージ。publish の表から実体へ辿る材料になる。
     (cd "$dst" && find . -name dowel.toml -printf '%h\n' | sed 's|^\./||' | sort) |
         while IFS= read -r pkg; do
             printf '%s\t%s\n' "$name" "$pkg" >>"$PACKAGES"

@@ -86,7 +86,7 @@ run 1: ran 0 steps    run 2: ran 0 steps
 至っては MSVC では**動的 CRT の指定**であり、`docs/00-overview.md` 自身が
 CRT を ABI の軸として挙げている。
 
-いまは引数の様式を宣言できる（ADR-0027）。三つ組からも導かれる。
+いまは引数の様式を宣言できる（ADR-0027）。triple からも導かれる。
 
 ```console
 $ dowel graph --target=x86_64-pc-windows-msvc
@@ -106,7 +106,7 @@ link  /nologo …/src_main.c.obj /OUT:…/app.exe
 ## かつての関門 3: 対象の OS（[F-053](../../docs/10-findings.md#f-053)、[#115](https://github.com/sabas0ba/dowel/issues/115)、`9858932` で修正）
 
 書きたいのは「対象が Windows なら」である。かつて語彙にあったのは組む側の OS
-（`host.os`）と対象の三つ組そのもの（`cfg.target`）だけで、素直に書くと
+（`host.os`）と対象の triple そのもの（`cfg.target`）だけで、素直に書くと
 **意図と逆に効いた**——Linux から Windows 向けに組むと `plat_posix.c` が
 選ばれる。`plat_posix.c` が `<unistd.h>` を含んでいれば翻訳で落ちるが、
 含んでいなければ**組み上がって答だけが違う**。
@@ -121,7 +121,7 @@ match target.os {
 ```
 
 有限領域（`linux` / `macos` / `windows` / `none` / `other`）なので `match` の
-網羅性が検査される。三つ組を数え上げる形の一番の弱点——Windows の三つ組が
+網羅性が検査される。triple を数え上げる形の一番の弱点——Windows の triple が
 複数あり、書き忘れが静かに `_` の腕へ落ちること——が消えた。`host.os` は
 組む側を指したまま残っている。両方が要る。
 
@@ -147,11 +147,11 @@ match target.os {
 
 | | |
 |---|---|
-| 三つ組ごとの道具立て | `[toolchain.x86_64-pc-windows-gnu]` が mingw を指す |
+| triple ごとの toolchain | `[toolchain.x86_64-pc-windows-gnu]` が mingw を指す |
 | 対象ごとのソース | `match target.os`。可搬な側は共有される |
 | runner | wine を据えて、組んだものを実際に起動する |
 | 成果物の綴り | 対象で変わる（`wt` と `wt.exe`）。`target.os` から決まる |
-| もう1つの族 | MSVC の引数の様式。`style` で宣言でき、三つ組からも導かれる |
+| もう1つの族 | MSVC の引数の様式。`style` で宣言でき、triple からも導かれる |
 | 対象の語彙 | 「対象が Windows なら」と書ける。`target.os` は有限領域 |
 | 二つの対象の分離 | 同じ木から PE と ELF が別のディレクトリに出る |
 | 増分 | 選ばれなかったソースは依存にすら入らない |

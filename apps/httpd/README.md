@@ -115,7 +115,7 @@ link_flags = ["-fsanitize=address,undefined" when feature.sanitize]
 ## 見つけたもの
 
 [F-031](../../docs/10-findings.md#f-031) の `lib` の側——両方の待ち方が
-立った書庫は黙って組み上がり、リンカが先に届いた側だけを引く——をこの木で
+立った archive は黙って組み上がり、リンカが先に届いた側だけを引く——をこの木で
 踏んだ（`bin` の側は [plot](../plot/) が踏んだ）。`17bd54e` の `exclusive`
 で開き、上の宣言がその答である。
 

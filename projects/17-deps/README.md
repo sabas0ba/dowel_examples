@@ -69,7 +69,7 @@ dowel は大小の判定を持たない。したがって検査するのは「do
 
 ## リンクの閉包（[F-018](../../docs/10-findings.md#f-018)）
 
-静的な書庫は自分のリンク要件を運べない。`lib` が `private` に持つリンク要件も、
+静的な archive は自分のリンク要件を運べない。`lib` が `private` に持つリンク要件も、
 依存元の最終リンクへ届かなければ解けない。
 
 `chain/` は同じ木を2通りに宣言して両側を見る。
@@ -79,7 +79,7 @@ dowel は大小の判定を持たない。したがって検査するのは「do
 | `private` | **失敗**（`undefined reference`） | 何も届かない（正しい） |
 | `public` | 成功 | `-I.../include` `-DDEMOKIT=1`（漏れている） |
 
-「ヘッダを漏らさない」と「リンクできる」を同時に選べない。書庫の側は既に
+「ヘッダを漏らさない」と「リンクできる」を同時に選べない。archive の側は既に
 `private` を跨いで閉包を辿っている（`libdemokit.a` は `top` のリンク行に
 現れる）。届いていないのは `link_flags` だけである。
 
@@ -94,15 +94,15 @@ dowel は大小の判定を持たない。したがって検査するのは「do
 その検査は [`08-lsp`](../08-lsp/) の `unsupported_boundary` に置いてある。
 エディタで開いただけで `dowel.lock` に差分が出ないことも、そこで見る。
 
-## 書庫の依存（[ADR-0029](https://github.com/sabas0ba/dowel/blob/main/docs/adr/0029-tarball-dependencies.md)）
+## tarball の依存（[ADR-0029](https://github.com/sabas0ba/dowel/blob/main/docs/adr/0029-tarball-dependencies.md)）
 
-4つ目の形である。`url` + `sha256` で書庫を取ってきて展開する。
+4つ目の形である。`url` + `sha256` で tarball を取ってきて展開する。
 
 ```toml
 [[dependencies]]
 name   = "greet"
 url    = "https://example.org/greet-1.0.tar.gz"
-sha256 = "8143be1c…"          # 書庫そのものの指紋。64 桁
+sha256 = "8143be1c…"          # tarball そのものの指紋。64 桁
 ```
 
 `version` が環境に委ねるのに対し、こちらは**内容そのもの**で固定する。
@@ -112,15 +112,15 @@ sha256 = "8143be1c…"          # 書庫そのものの指紋。64 桁
 のかを利用者が決められない。
 
 展開先は `.dowel/deps/<name>-<hash12>/` であり、版の名前ではなく指紋で名づけ
-られる。書庫の中の唯一の最上位ディレクトリ（`name-version/` という慣習の
+られる。tarball の中の唯一の最上位ディレクトリ（`name-version/` という慣習の
 包み）は剥がれる。
 
-### 相手にする書庫
+### 相手にする tarball
 
 **手元で作る。実際の網には触れない。** 落ちたときに直すのが dowel なのか
 回線なのかを判断できなくなるためである。`file://` で取れるので、取得の経路
 そのものは本物のまま通せる。
 
-一度取れば網へは戻らない。`expect.sh` は書庫を**動かしてから**組み直して、
+一度取れば網へは戻らない。`expect.sh` は tarball を**動かしてから**組み直して、
 それでも通ることを見ている。展開したものを消せばまた取りに行くので、
 「触らない」が「二度と取れない」ではないことも同時に確かめている。

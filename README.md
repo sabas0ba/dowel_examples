@@ -55,7 +55,7 @@ release asset に触れる検査は「本リポジトリを変えていなけれ
 | `apps/plot` | cairo / X11、`xvfb-run` | 描いて、**本当に窓を開く** |
 | `apps/vision` | OSMesa、OpenCV | 表示の無い機械でも GL の文脈を作れるので、描いたものを読み返せる |
 | `apps/winapp` | `x86_64-w64-mingw32-gcc`、`wine`、`file` | Windows 向けに組み、**それを走らせる** |
-| `apps/dsp` | `riscv64-linux-gnu-gcc`、`qemu-riscv64-static` | 1つの算法を4つの三つ組で走らせ、**同じ答が出ること**を見る |
+| `apps/dsp` | `riscv64-linux-gnu-gcc`、`qemu-riscv64-static` | 1つの算法を4つの triple で走らせ、**同じ答が出ること**を見る |
 
 Debian と Ubuntu では、`run.sh` が足りないものを見つけたときに
 `apt-get` の1行を出す。
@@ -131,13 +131,13 @@ total 1146 checks: 1141 passed, 0 failed, 5 known, 0 fixed
 ```
 
 検査名は英語で書く。実装の中身ではなく、何が固定されているかを1行で読ませる
-ためのものであり、CI の要約と掲示にもそのまま並ぶ（[docs/00-design.md](docs/00-design.md) 6節）。
+ためのものであり、CI の要約と publish にもそのまま並ぶ（[docs/00-design.md](docs/00-design.md) 6節）。
 
 ## 育ち方
 
-各回の結果は掲示用の枝に積んである。数の並びとしては読めるが、**どこで何が
+各回の結果は publish 用の枝に積んである。数の並びとしては読めるが、**どこで何が
 伸びたか**は 100 行の数字を辿っても分からない。図はそのために描く。CI が
-実行のたびに描き直し、掲示の頁の `Growth` にも同じものが出る。
+実行のたびに描き直し、publish の頁の `Growth` にも同じものが出る。
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/sabas0ba/dowel_examples/gh-pages/history-dark.svg">
@@ -154,7 +154,7 @@ total 1146 checks: 1141 passed, 0 failed, 5 known, 0 fixed
 使い、層ごとの内訳は面を並べて示す。色数を増やして解こうとすると、どの色も
 見分けられなくなる。
 
-図が示す数はすべて掲示の `History` に表として並ぶ。図は読み方をひとつ足すだけ
+図が示す数はすべて publish の `History` に表として並ぶ。図は読み方をひとつ足すだけ
 であり、値へ辿る唯一の経路ではない。
 
 ## プロジェクト
@@ -203,7 +203,7 @@ total 1146 checks: 1141 passed, 0 failed, 5 known, 0 fixed
 | [plot](apps/plot/) | GUI。描画と窓の分離、任意の依存、Xvfb の上で本当に窓を開く | cairo / X11 |
 | [vision](apps/vision/) | 大きい依存。1つの `.pc` が 55 個のリンク旗を出す。C++ の中身に C の面 | OSMesa / OpenCV |
 | [winapp](apps/winapp/) | Windows。対象ごとの実装、`.exe` の綴り、wine で走らせる、MSVC の族 | 無し（`mingw` / `wine`） |
-| [dsp](apps/dsp/) | 1つの算法を4つの三つ組で。x86_64 / ARM / RISC-V / ベアメタル、同じ期待値、別の三つ組への install | cairo（見せる側だけ） |
+| [dsp](apps/dsp/) | 1つの算法を4つの triple で。x86_64 / ARM / RISC-V / ベアメタル、同じ期待値、別の triple への install | cairo（見せる側だけ） |
 
 どれも**組めたことでは終わらせない**。整形結果は文字単位で見て、サーバには
 本物のソケットで接続し、ファームウェアは qemu の上で走らせる。加えて、
@@ -217,7 +217,7 @@ total 1146 checks: 1141 passed, 0 failed, 5 known, 0 fixed
 
 条件が2つ重なって初めて現れるものもある。
 [F-054](docs/10-findings.md#f-054) と [F-055](docs/10-findings.md#f-055) は
-**パッケージが分かれていて、かつ三つ組が複数ある**ときにしか出ない。
+**パッケージが分かれていて、かつ triple が複数ある**ときにしか出ない。
 一覧と、それぞれが最小の構成で現れない理由は
 [docs/00-design.md](docs/00-design.md) 7節にある。
 
@@ -238,7 +238,7 @@ total 1146 checks: 1141 passed, 0 failed, 5 known, 0 fixed
 なのかを区別できなくなる。追随はこの1行を書き換える pull request として現れる。
 
 結果は3か所に出る。ジョブ要約（直近の実行）、成果物（30 日保持）、
-そして掲示用の枝 `gh-pages` に積んだ表である。掲示には検査の全件と、
+そして publish 用の枝 `gh-pages` に積んだ表である。publish には検査の全件と、
 それぞれが置かれた実体へのリンク、過去 100 回分の履歴、そしてその図が並ぶ。手動実行では
 `dowel_ref` を渡せるため、本体の修正が本スイートの検査を
 どう動かすかを、固定値を書き換える前に確かめられる。
@@ -251,4 +251,4 @@ total 1146 checks: 1141 passed, 0 failed, 5 known, 0 fixed
 |---|---|
 | [docs/00-design.md](docs/00-design.md) | スイートの設計。層の分け方、検査の置き場所、書き方の規約 |
 | [docs/10-findings.md](docs/10-findings.md) | 本スイートが見つけたもの。報告状況と、対応する検査 |
-| [docs/20-ci.md](docs/20-ci.md) | CI の準備と構成。掲示用の枝と表の読み方 |
+| [docs/20-ci.md](docs/20-ci.md) | CI の準備と構成。publish 用の枝と表の読み方 |

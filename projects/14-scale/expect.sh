@@ -18,11 +18,11 @@ DEPTH=6
 
 # wide の総アクション数。
 #   コンパイル = SOURCES + 1（sum.c）+ TARGETS（各 bin）
-#   書庫       = 1
+#   archive    = 1
 #   リンク     = TARGETS
 COMPILES=$(( SOURCES + 1 + TARGETS ))
 WIDE_TOTAL=$(( COMPILES + 1 + TARGETS ))
-# 連鎖の総アクション数。各段が1コンパイル+1書庫、top が1コンパイル+1リンク。
+# 連鎖の総アクション数。各段が1コンパイル + 1 archive、top が1コンパイル+1リンク。
 CHAIN_TOTAL=$(( DEPTH * 2 + 2 ))
 
 python3 generate.py tree "$SOURCES" "$TARGETS" "$DEPTH" || {
