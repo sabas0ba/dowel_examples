@@ -1,9 +1,9 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="920" height="864" viewBox="0 0 920 864" role="img" aria-label="dowel_examples — 1,758 checks over 32 runs, by layer" font-family='system-ui, -apple-system, "Segoe UI", "Helvetica Neue", "Hiragino Sans", "Noto Sans JP", sans-serif'>
-<title>dowel_examples — 1,758 checks over 32 runs, by layer</title>
+<svg xmlns="http://www.w3.org/2000/svg" width="920" height="864" viewBox="0 0 920 864" role="img" aria-label="dowel_examples — 1,758 checks over 33 runs, by layer" font-family='system-ui, -apple-system, "Segoe UI", "Helvetica Neue", "Hiragino Sans", "Noto Sans JP", sans-serif'>
+<title>dowel_examples — 1,758 checks over 33 runs, by layer</title>
 <rect width="920" height="864" fill="#ffffff"/>
 <text x="56.0" y="22.0" fill="#767676" font-size="11" font-weight="600" text-anchor="start" letter-spacing="0.06em">checks</text>
 <text x="56.0" y="56.0" fill="#1a1a1a" font-size="34" font-weight="600" text-anchor="start">1,758</text>
-<text x="56.0" y="74.0" fill="#767676" font-size="11" font-weight="400" text-anchor="start">32 runs  ·  2026-07-28 → 2026-08-21  ·  +1,664 since the first run</text>
+<text x="56.0" y="74.0" fill="#767676" font-size="11" font-weight="400" text-anchor="start">33 runs  ·  2026-07-28 → 2026-08-21  ·  +1,664 since the first run</text>
 <text x="56.0" y="104.0" fill="#1a1a1a" font-size="12" font-weight="600" text-anchor="start">Total checks, stacked by layer group</text>
 <rect x="430.0" y="95.0" width="10" height="10" rx="2" fill="#2a78d6" fill-opacity="0.85"/>
 <text x="445.0" y="104.0" fill="#555555" font-size="10.5" font-weight="400" text-anchor="start">projects/</text>
@@ -21,54 +21,55 @@
 <text x="48.0" y="181.5" fill="#767676" font-size="10" font-weight="400" text-anchor="end" font-variant-numeric="tabular-nums">1,500</text>
 <line x1="56.0" y1="118.0" x2="800.0" y2="118.0" stroke="#e6e6e6" stroke-width="1"/>
 <text x="48.0" y="121.5" fill="#767676" font-size="10" font-weight="400" text-anchor="end" font-variant-numeric="tabular-nums">2,000</text>
-<polygon points="56.0,346.7 80.0,346.7 104.0,339.3 128.0,339.3 152.0,336.5 176.0,320.9 200.0,301.5 224.0,293.6 248.0,287.9 272.0,285.9 296.0,282.2 320.0,278.0 344.0,277.7 368.0,271.5 392.0,263.9 416.0,259.6 440.0,255.4 464.0,255.4 488.0,255.4 512.0,255.4 536.0,249.9 560.0,244.8 584.0,244.8 608.0,243.9 632.0,243.9 656.0,242.9 680.0,230.9 704.0,230.9 728.0,224.7 752.0,203.0 776.0,203.0 800.0,195.4 800.0,358.0 776.0,358.0 752.0,358.0 728.0,358.0 704.0,358.0 680.0,358.0 656.0,358.0 632.0,358.0 608.0,358.0 584.0,358.0 560.0,358.0 536.0,358.0 512.0,358.0 488.0,358.0 464.0,358.0 440.0,358.0 416.0,358.0 392.0,358.0 368.0,358.0 344.0,358.0 320.0,358.0 296.0,358.0 272.0,358.0 248.0,358.0 224.0,358.0 200.0,358.0 176.0,358.0 152.0,358.0 128.0,358.0 104.0,358.0 80.0,358.0 56.0,358.0" fill="#2a78d6" fill-opacity="0.85"/>
-<polygon points="56.0,346.7 80.0,346.7 104.0,339.3 128.0,339.3 152.0,336.5 176.0,320.9 200.0,301.5 224.0,293.6 248.0,287.9 272.0,285.9 296.0,282.2 320.0,278.0 344.0,277.7 368.0,271.5 392.0,263.9 416.0,259.6 440.0,255.4 464.0,248.7 488.0,242.7 512.0,232.6 536.0,227.0 560.0,221.6 584.0,221.6 608.0,213.2 632.0,208.6 656.0,205.8 680.0,191.9 704.0,191.9 728.0,182.7 752.0,161.0 776.0,155.7 800.0,148.1 800.0,195.4 776.0,203.0 752.0,203.0 728.0,224.7 704.0,230.9 680.0,230.9 656.0,242.9 632.0,243.9 608.0,243.9 584.0,244.8 560.0,244.8 536.0,249.9 512.0,255.4 488.0,255.4 464.0,255.4 440.0,255.4 416.0,259.6 392.0,263.9 368.0,271.5 344.0,277.7 320.0,278.0 296.0,282.2 272.0,285.9 248.0,287.9 224.0,293.6 200.0,301.5 176.0,320.9 152.0,336.5 128.0,339.3 104.0,339.3 80.0,346.7 56.0,346.7" fill="#eb6834" fill-opacity="0.85"/>
-<polygon points="56.0,346.7 80.0,346.7 104.0,339.3 128.0,338.4 152.0,335.7 176.0,320.1 200.0,300.6 224.0,292.7 248.0,287.1 272.0,285.0 296.0,281.3 320.0,277.1 344.0,276.9 368.0,270.6 392.0,263.1 416.0,258.8 440.0,254.6 464.0,247.7 488.0,241.7 512.0,231.6 536.0,226.0 560.0,220.6 584.0,220.5 608.0,212.1 632.0,207.5 656.0,204.8 680.0,190.8 704.0,190.8 728.0,181.6 752.0,159.9 776.0,154.6 800.0,147.0 800.0,148.1 776.0,155.7 752.0,161.0 728.0,182.7 704.0,191.9 680.0,191.9 656.0,205.8 632.0,208.6 608.0,213.2 584.0,221.6 560.0,221.6 536.0,227.0 512.0,232.6 488.0,242.7 464.0,248.7 440.0,255.4 416.0,259.6 392.0,263.9 368.0,271.5 344.0,277.7 320.0,278.0 296.0,282.2 272.0,285.9 248.0,287.9 224.0,293.6 200.0,301.5 176.0,320.9 152.0,336.5 128.0,339.3 104.0,339.3 80.0,346.7 56.0,346.7" fill="#1baf7a" fill-opacity="0.85"/>
-<polyline points="56.0,346.7 80.0,346.7 104.0,339.3 128.0,339.3 152.0,336.5 176.0,320.9 200.0,301.5 224.0,293.6 248.0,287.9 272.0,285.9 296.0,282.2 320.0,278.0 344.0,277.7 368.0,271.5 392.0,263.9 416.0,259.6 440.0,255.4 464.0,255.4 488.0,255.4 512.0,255.4 536.0,249.9 560.0,244.8 584.0,244.8 608.0,243.9 632.0,243.9 656.0,242.9 680.0,230.9 704.0,230.9 728.0,224.7 752.0,203.0 776.0,203.0 800.0,195.4" fill="none" stroke="#ffffff" stroke-width="2"/>
-<polyline points="56.0,346.7 80.0,346.7 104.0,339.3 128.0,339.3 152.0,336.5 176.0,320.9 200.0,301.5 224.0,293.6 248.0,287.9 272.0,285.9 296.0,282.2 320.0,278.0 344.0,277.7 368.0,271.5 392.0,263.9 416.0,259.6 440.0,255.4 464.0,248.7 488.0,242.7 512.0,232.6 536.0,227.0 560.0,221.6 584.0,221.6 608.0,213.2 632.0,208.6 656.0,205.8 680.0,191.9 704.0,191.9 728.0,182.7 752.0,161.0 776.0,155.7 800.0,148.1" fill="none" stroke="#ffffff" stroke-width="2"/>
-<polyline points="56.0,346.7 80.0,346.7 104.0,339.3 128.0,338.4 152.0,335.7 176.0,320.1 200.0,300.6 224.0,292.7 248.0,287.1 272.0,285.0 296.0,281.3 320.0,277.1 344.0,276.9 368.0,270.6 392.0,263.1 416.0,258.8 440.0,254.6 464.0,247.7 488.0,241.7 512.0,231.6 536.0,226.0 560.0,220.6 584.0,220.5 608.0,212.1 632.0,207.5 656.0,204.8 680.0,190.8 704.0,190.8 728.0,181.6 752.0,159.9 776.0,154.6 800.0,147.0" fill="none" stroke="#555555" stroke-width="2" stroke-linejoin="round"/>
+<polygon points="56.0,346.7 79.2,346.7 102.5,339.3 125.8,339.3 149.0,336.5 172.2,320.9 195.5,301.5 218.8,293.6 242.0,287.9 265.2,285.9 288.5,282.2 311.8,278.0 335.0,277.7 358.2,271.5 381.5,263.9 404.8,259.6 428.0,255.4 451.2,255.4 474.5,255.4 497.8,255.4 521.0,249.9 544.2,244.8 567.5,244.8 590.8,243.9 614.0,243.9 637.2,242.9 660.5,230.9 683.8,230.9 707.0,224.7 730.2,203.0 753.5,203.0 776.8,195.4 800.0,195.4 800.0,358.0 776.8,358.0 753.5,358.0 730.2,358.0 707.0,358.0 683.8,358.0 660.5,358.0 637.2,358.0 614.0,358.0 590.8,358.0 567.5,358.0 544.2,358.0 521.0,358.0 497.8,358.0 474.5,358.0 451.2,358.0 428.0,358.0 404.8,358.0 381.5,358.0 358.2,358.0 335.0,358.0 311.8,358.0 288.5,358.0 265.2,358.0 242.0,358.0 218.8,358.0 195.5,358.0 172.2,358.0 149.0,358.0 125.8,358.0 102.5,358.0 79.2,358.0 56.0,358.0" fill="#2a78d6" fill-opacity="0.85"/>
+<polygon points="56.0,346.7 79.2,346.7 102.5,339.3 125.8,339.3 149.0,336.5 172.2,320.9 195.5,301.5 218.8,293.6 242.0,287.9 265.2,285.9 288.5,282.2 311.8,278.0 335.0,277.7 358.2,271.5 381.5,263.9 404.8,259.6 428.0,255.4 451.2,248.7 474.5,242.7 497.8,232.6 521.0,227.0 544.2,221.6 567.5,221.6 590.8,213.2 614.0,208.6 637.2,205.8 660.5,191.9 683.8,191.9 707.0,182.7 730.2,161.0 753.5,155.7 776.8,148.1 800.0,148.1 800.0,195.4 776.8,195.4 753.5,203.0 730.2,203.0 707.0,224.7 683.8,230.9 660.5,230.9 637.2,242.9 614.0,243.9 590.8,243.9 567.5,244.8 544.2,244.8 521.0,249.9 497.8,255.4 474.5,255.4 451.2,255.4 428.0,255.4 404.8,259.6 381.5,263.9 358.2,271.5 335.0,277.7 311.8,278.0 288.5,282.2 265.2,285.9 242.0,287.9 218.8,293.6 195.5,301.5 172.2,320.9 149.0,336.5 125.8,339.3 102.5,339.3 79.2,346.7 56.0,346.7" fill="#eb6834" fill-opacity="0.85"/>
+<polygon points="56.0,346.7 79.2,346.7 102.5,339.3 125.8,338.4 149.0,335.7 172.2,320.1 195.5,300.6 218.8,292.7 242.0,287.1 265.2,285.0 288.5,281.3 311.8,277.1 335.0,276.9 358.2,270.6 381.5,263.1 404.8,258.8 428.0,254.6 451.2,247.7 474.5,241.7 497.8,231.6 521.0,226.0 544.2,220.6 567.5,220.5 590.8,212.1 614.0,207.5 637.2,204.8 660.5,190.8 683.8,190.8 707.0,181.6 730.2,159.9 753.5,154.6 776.8,147.0 800.0,147.0 800.0,148.1 776.8,148.1 753.5,155.7 730.2,161.0 707.0,182.7 683.8,191.9 660.5,191.9 637.2,205.8 614.0,208.6 590.8,213.2 567.5,221.6 544.2,221.6 521.0,227.0 497.8,232.6 474.5,242.7 451.2,248.7 428.0,255.4 404.8,259.6 381.5,263.9 358.2,271.5 335.0,277.7 311.8,278.0 288.5,282.2 265.2,285.9 242.0,287.9 218.8,293.6 195.5,301.5 172.2,320.9 149.0,336.5 125.8,339.3 102.5,339.3 79.2,346.7 56.0,346.7" fill="#1baf7a" fill-opacity="0.85"/>
+<polyline points="56.0,346.7 79.2,346.7 102.5,339.3 125.8,339.3 149.0,336.5 172.2,320.9 195.5,301.5 218.8,293.6 242.0,287.9 265.2,285.9 288.5,282.2 311.8,278.0 335.0,277.7 358.2,271.5 381.5,263.9 404.8,259.6 428.0,255.4 451.2,255.4 474.5,255.4 497.8,255.4 521.0,249.9 544.2,244.8 567.5,244.8 590.8,243.9 614.0,243.9 637.2,242.9 660.5,230.9 683.8,230.9 707.0,224.7 730.2,203.0 753.5,203.0 776.8,195.4 800.0,195.4" fill="none" stroke="#ffffff" stroke-width="2"/>
+<polyline points="56.0,346.7 79.2,346.7 102.5,339.3 125.8,339.3 149.0,336.5 172.2,320.9 195.5,301.5 218.8,293.6 242.0,287.9 265.2,285.9 288.5,282.2 311.8,278.0 335.0,277.7 358.2,271.5 381.5,263.9 404.8,259.6 428.0,255.4 451.2,248.7 474.5,242.7 497.8,232.6 521.0,227.0 544.2,221.6 567.5,221.6 590.8,213.2 614.0,208.6 637.2,205.8 660.5,191.9 683.8,191.9 707.0,182.7 730.2,161.0 753.5,155.7 776.8,148.1 800.0,148.1" fill="none" stroke="#ffffff" stroke-width="2"/>
+<polyline points="56.0,346.7 79.2,346.7 102.5,339.3 125.8,338.4 149.0,335.7 172.2,320.1 195.5,300.6 218.8,292.7 242.0,287.1 265.2,285.0 288.5,281.3 311.8,277.1 335.0,276.9 358.2,270.6 381.5,263.1 404.8,258.8 428.0,254.6 451.2,247.7 474.5,241.7 497.8,231.6 521.0,226.0 544.2,220.6 567.5,220.5 590.8,212.1 614.0,207.5 637.2,204.8 660.5,190.8 683.8,190.8 707.0,181.6 730.2,159.9 753.5,154.6 776.8,147.0 800.0,147.0" fill="none" stroke="#555555" stroke-width="2" stroke-linejoin="round"/>
 <circle cx="800.0" cy="147.0" r="4" fill="#555555" stroke="#ffffff" stroke-width="2"/>
 <text x="812.0" y="151.0" fill="#1a1a1a" font-size="11" font-weight="600" text-anchor="start">1,758 total</text>
 <text x="812.0" y="280.7" fill="#555555" font-size="10.5" font-weight="400" text-anchor="start">projects/ 1,355</text>
 <text x="812.0" y="175.8" fill="#555555" font-size="10.5" font-weight="400" text-anchor="start">apps/ 394</text>
-<rect x="56.0" y="118.0" width="12.0" height="240.0" fill="transparent"><title>2026-07-28  ·  94 checks  ·  projects/ 94, apps/ 0, docs 0</title></rect>
-<rect x="68.0" y="118.0" width="24.0" height="240.0" fill="transparent"><title>2026-07-28  ·  94 checks  ·  projects/ 94, apps/ 0, docs 0</title></rect>
-<rect x="92.0" y="118.0" width="24.0" height="240.0" fill="transparent"><title>2026-07-28  ·  156 checks  ·  projects/ 156, apps/ 0, docs 0</title></rect>
-<rect x="116.0" y="118.0" width="24.0" height="240.0" fill="transparent"><title>2026-07-28  ·  163 checks  ·  projects/ 156, apps/ 0, docs 7</title></rect>
-<rect x="140.0" y="118.0" width="24.0" height="240.0" fill="transparent"><title>2026-07-29  ·  186 checks  ·  projects/ 179, apps/ 0, docs 7</title></rect>
-<rect x="164.0" y="118.0" width="24.0" height="240.0" fill="transparent"><title>2026-07-29  ·  316 checks  ·  projects/ 309, apps/ 0, docs 7</title></rect>
-<rect x="188.0" y="118.0" width="24.0" height="240.0" fill="transparent"><title>2026-07-29  ·  478 checks  ·  projects/ 471, apps/ 0, docs 7</title></rect>
-<rect x="212.0" y="118.0" width="24.0" height="240.0" fill="transparent"><title>2026-07-29  ·  544 checks  ·  projects/ 537, apps/ 0, docs 7</title></rect>
-<rect x="236.0" y="118.0" width="24.0" height="240.0" fill="transparent"><title>2026-07-29  ·  591 checks  ·  projects/ 584, apps/ 0, docs 7</title></rect>
-<rect x="260.0" y="118.0" width="24.0" height="240.0" fill="transparent"><title>2026-07-29  ·  608 checks  ·  projects/ 601, apps/ 0, docs 7</title></rect>
-<rect x="284.0" y="118.0" width="24.0" height="240.0" fill="transparent"><title>2026-07-30  ·  639 checks  ·  projects/ 632, apps/ 0, docs 7</title></rect>
-<rect x="308.0" y="118.0" width="24.0" height="240.0" fill="transparent"><title>2026-07-30  ·  674 checks  ·  projects/ 667, apps/ 0, docs 7</title></rect>
-<rect x="332.0" y="118.0" width="24.0" height="240.0" fill="transparent"><title>2026-07-30  ·  676 checks  ·  projects/ 669, apps/ 0, docs 7</title></rect>
-<rect x="356.0" y="118.0" width="24.0" height="240.0" fill="transparent"><title>2026-07-30  ·  728 checks  ·  projects/ 721, apps/ 0, docs 7</title></rect>
-<rect x="380.0" y="118.0" width="24.0" height="240.0" fill="transparent"><title>2026-08-03  ·  791 checks  ·  projects/ 784, apps/ 0, docs 7</title></rect>
-<rect x="404.0" y="118.0" width="24.0" height="240.0" fill="transparent"><title>2026-08-03  ·  827 checks  ·  projects/ 820, apps/ 0, docs 7</title></rect>
-<rect x="428.0" y="118.0" width="24.0" height="240.0" fill="transparent"><title>2026-08-05  ·  862 checks  ·  projects/ 855, apps/ 0, docs 7</title></rect>
-<rect x="452.0" y="118.0" width="24.0" height="240.0" fill="transparent"><title>2026-08-05  ·  919 checks  ·  projects/ 855, apps/ 56, docs 8</title></rect>
-<rect x="476.0" y="118.0" width="24.0" height="240.0" fill="transparent"><title>2026-08-06  ·  969 checks  ·  projects/ 855, apps/ 106, docs 8</title></rect>
-<rect x="500.0" y="118.0" width="24.0" height="240.0" fill="transparent"><title>2026-08-07  ·  1,053 checks  ·  projects/ 855, apps/ 190, docs 8</title></rect>
-<rect x="524.0" y="118.0" width="24.0" height="240.0" fill="transparent"><title>2026-08-10  ·  1,100 checks  ·  projects/ 901, apps/ 191, docs 8</title></rect>
-<rect x="548.0" y="118.0" width="24.0" height="240.0" fill="transparent"><title>2026-08-10  ·  1,145 checks  ·  projects/ 943, apps/ 194, docs 8</title></rect>
-<rect x="572.0" y="118.0" width="24.0" height="240.0" fill="transparent"><title>2026-08-11  ·  1,146 checks  ·  projects/ 943, apps/ 194, docs 9</title></rect>
-<rect x="596.0" y="118.0" width="24.0" height="240.0" fill="transparent"><title>2026-08-11  ·  1,216 checks  ·  projects/ 951, apps/ 256, docs 9</title></rect>
-<rect x="620.0" y="118.0" width="24.0" height="240.0" fill="transparent"><title>2026-08-11  ·  1,254 checks  ·  projects/ 951, apps/ 294, docs 9</title></rect>
-<rect x="644.0" y="118.0" width="24.0" height="240.0" fill="transparent"><title>2026-08-11  ·  1,277 checks  ·  projects/ 959, apps/ 309, docs 9</title></rect>
-<rect x="668.0" y="118.0" width="24.0" height="240.0" fill="transparent"><title>2026-08-11  ·  1,393 checks  ·  projects/ 1059, apps/ 325, docs 9</title></rect>
-<rect x="692.0" y="118.0" width="24.0" height="240.0" fill="transparent"><title>2026-08-12  ·  1,393 checks  ·  projects/ 1059, apps/ 325, docs 9</title></rect>
-<rect x="716.0" y="118.0" width="24.0" height="240.0" fill="transparent"><title>2026-08-12  ·  1,470 checks  ·  projects/ 1111, apps/ 350, docs 9</title></rect>
-<rect x="740.0" y="118.0" width="24.0" height="240.0" fill="transparent"><title>2026-08-14  ·  1,651 checks  ·  projects/ 1292, apps/ 350, docs 9</title></rect>
-<rect x="764.0" y="118.0" width="24.0" height="240.0" fill="transparent"><title>2026-08-15  ·  1,695 checks  ·  projects/ 1292, apps/ 394, docs 9</title></rect>
-<rect x="788.0" y="118.0" width="12.0" height="240.0" fill="transparent"><title>2026-08-21  ·  1,758 checks  ·  projects/ 1355, apps/ 394, docs 9</title></rect>
+<rect x="56.0" y="118.0" width="11.6" height="240.0" fill="transparent"><title>2026-07-28  ·  94 checks  ·  projects/ 94, apps/ 0, docs 0</title></rect>
+<rect x="67.6" y="118.0" width="23.2" height="240.0" fill="transparent"><title>2026-07-28  ·  94 checks  ·  projects/ 94, apps/ 0, docs 0</title></rect>
+<rect x="90.9" y="118.0" width="23.2" height="240.0" fill="transparent"><title>2026-07-28  ·  156 checks  ·  projects/ 156, apps/ 0, docs 0</title></rect>
+<rect x="114.1" y="118.0" width="23.2" height="240.0" fill="transparent"><title>2026-07-28  ·  163 checks  ·  projects/ 156, apps/ 0, docs 7</title></rect>
+<rect x="137.4" y="118.0" width="23.2" height="240.0" fill="transparent"><title>2026-07-29  ·  186 checks  ·  projects/ 179, apps/ 0, docs 7</title></rect>
+<rect x="160.6" y="118.0" width="23.2" height="240.0" fill="transparent"><title>2026-07-29  ·  316 checks  ·  projects/ 309, apps/ 0, docs 7</title></rect>
+<rect x="183.9" y="118.0" width="23.2" height="240.0" fill="transparent"><title>2026-07-29  ·  478 checks  ·  projects/ 471, apps/ 0, docs 7</title></rect>
+<rect x="207.1" y="118.0" width="23.2" height="240.0" fill="transparent"><title>2026-07-29  ·  544 checks  ·  projects/ 537, apps/ 0, docs 7</title></rect>
+<rect x="230.4" y="118.0" width="23.2" height="240.0" fill="transparent"><title>2026-07-29  ·  591 checks  ·  projects/ 584, apps/ 0, docs 7</title></rect>
+<rect x="253.6" y="118.0" width="23.2" height="240.0" fill="transparent"><title>2026-07-29  ·  608 checks  ·  projects/ 601, apps/ 0, docs 7</title></rect>
+<rect x="276.9" y="118.0" width="23.2" height="240.0" fill="transparent"><title>2026-07-30  ·  639 checks  ·  projects/ 632, apps/ 0, docs 7</title></rect>
+<rect x="300.1" y="118.0" width="23.2" height="240.0" fill="transparent"><title>2026-07-30  ·  674 checks  ·  projects/ 667, apps/ 0, docs 7</title></rect>
+<rect x="323.4" y="118.0" width="23.2" height="240.0" fill="transparent"><title>2026-07-30  ·  676 checks  ·  projects/ 669, apps/ 0, docs 7</title></rect>
+<rect x="346.6" y="118.0" width="23.2" height="240.0" fill="transparent"><title>2026-07-30  ·  728 checks  ·  projects/ 721, apps/ 0, docs 7</title></rect>
+<rect x="369.9" y="118.0" width="23.2" height="240.0" fill="transparent"><title>2026-08-03  ·  791 checks  ·  projects/ 784, apps/ 0, docs 7</title></rect>
+<rect x="393.1" y="118.0" width="23.2" height="240.0" fill="transparent"><title>2026-08-03  ·  827 checks  ·  projects/ 820, apps/ 0, docs 7</title></rect>
+<rect x="416.4" y="118.0" width="23.2" height="240.0" fill="transparent"><title>2026-08-05  ·  862 checks  ·  projects/ 855, apps/ 0, docs 7</title></rect>
+<rect x="439.6" y="118.0" width="23.2" height="240.0" fill="transparent"><title>2026-08-05  ·  919 checks  ·  projects/ 855, apps/ 56, docs 8</title></rect>
+<rect x="462.9" y="118.0" width="23.2" height="240.0" fill="transparent"><title>2026-08-06  ·  969 checks  ·  projects/ 855, apps/ 106, docs 8</title></rect>
+<rect x="486.1" y="118.0" width="23.2" height="240.0" fill="transparent"><title>2026-08-07  ·  1,053 checks  ·  projects/ 855, apps/ 190, docs 8</title></rect>
+<rect x="509.4" y="118.0" width="23.2" height="240.0" fill="transparent"><title>2026-08-10  ·  1,100 checks  ·  projects/ 901, apps/ 191, docs 8</title></rect>
+<rect x="532.6" y="118.0" width="23.2" height="240.0" fill="transparent"><title>2026-08-10  ·  1,145 checks  ·  projects/ 943, apps/ 194, docs 8</title></rect>
+<rect x="555.9" y="118.0" width="23.2" height="240.0" fill="transparent"><title>2026-08-11  ·  1,146 checks  ·  projects/ 943, apps/ 194, docs 9</title></rect>
+<rect x="579.1" y="118.0" width="23.2" height="240.0" fill="transparent"><title>2026-08-11  ·  1,216 checks  ·  projects/ 951, apps/ 256, docs 9</title></rect>
+<rect x="602.4" y="118.0" width="23.2" height="240.0" fill="transparent"><title>2026-08-11  ·  1,254 checks  ·  projects/ 951, apps/ 294, docs 9</title></rect>
+<rect x="625.6" y="118.0" width="23.2" height="240.0" fill="transparent"><title>2026-08-11  ·  1,277 checks  ·  projects/ 959, apps/ 309, docs 9</title></rect>
+<rect x="648.9" y="118.0" width="23.2" height="240.0" fill="transparent"><title>2026-08-11  ·  1,393 checks  ·  projects/ 1059, apps/ 325, docs 9</title></rect>
+<rect x="672.1" y="118.0" width="23.2" height="240.0" fill="transparent"><title>2026-08-12  ·  1,393 checks  ·  projects/ 1059, apps/ 325, docs 9</title></rect>
+<rect x="695.4" y="118.0" width="23.2" height="240.0" fill="transparent"><title>2026-08-12  ·  1,470 checks  ·  projects/ 1111, apps/ 350, docs 9</title></rect>
+<rect x="718.6" y="118.0" width="23.2" height="240.0" fill="transparent"><title>2026-08-14  ·  1,651 checks  ·  projects/ 1292, apps/ 350, docs 9</title></rect>
+<rect x="741.9" y="118.0" width="23.2" height="240.0" fill="transparent"><title>2026-08-15  ·  1,695 checks  ·  projects/ 1292, apps/ 394, docs 9</title></rect>
+<rect x="765.1" y="118.0" width="23.2" height="240.0" fill="transparent"><title>2026-08-21  ·  1,758 checks  ·  projects/ 1355, apps/ 394, docs 9</title></rect>
+<rect x="788.4" y="118.0" width="11.6" height="240.0" fill="transparent"><title>2026-08-21  ·  1,758 checks  ·  projects/ 1355, apps/ 394, docs 9</title></rect>
 <text x="56.0" y="390.0" fill="#1a1a1a" font-size="12" font-weight="600" text-anchor="start">Checks failing on purpose, regressions, and fixes</text>
 <line x1="56.0" y1="460.0" x2="800.0" y2="460.0" stroke="#c9c9c9" stroke-width="1"/>
 <text x="48.0" y="463.5" fill="#767676" font-size="10" font-weight="400" text-anchor="end" font-variant-numeric="tabular-nums">0</text>
 <line x1="56.0" y1="404.0" x2="800.0" y2="404.0" stroke="#e6e6e6" stroke-width="1"/>
 <text x="48.0" y="407.5" fill="#767676" font-size="10" font-weight="400" text-anchor="end" font-variant-numeric="tabular-nums">30</text>
-<polyline points="56.0,433.9 80.0,433.9 104.0,460.0 128.0,460.0 152.0,460.0 176.0,437.6 200.0,415.2 224.0,452.5 248.0,452.5 272.0,452.5 296.0,452.5 320.0,452.5 344.0,448.8 368.0,448.8 392.0,445.1 416.0,441.3 440.0,454.4 464.0,448.8 488.0,441.3 512.0,430.1 536.0,426.4 560.0,450.7 584.0,450.7 608.0,433.9 632.0,430.1 656.0,458.1 680.0,452.5 704.0,452.5 728.0,448.8 752.0,439.5 776.0,439.5 800.0,456.3" fill="none" stroke="#fab219" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+<polyline points="56.0,433.9 79.2,433.9 102.5,460.0 125.8,460.0 149.0,460.0 172.2,437.6 195.5,415.2 218.8,452.5 242.0,452.5 265.2,452.5 288.5,452.5 311.8,452.5 335.0,448.8 358.2,448.8 381.5,445.1 404.8,441.3 428.0,454.4 451.2,448.8 474.5,441.3 497.8,430.1 521.0,426.4 544.2,450.7 567.5,450.7 590.8,433.9 614.0,430.1 637.2,458.1 660.5,452.5 683.8,452.5 707.0,448.8 730.2,439.5 753.5,439.5 776.8,456.3 800.0,456.3" fill="none" stroke="#fab219" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
 <circle cx="800.0" cy="456.3" r="4" fill="#fab219" stroke="#ffffff" stroke-width="2"/>
 <circle cx="435.0" cy="386.0" r="4" fill="#fab219"/>
 <text x="445.0" y="390.0" fill="#555555" font-size="10.5" font-weight="400" text-anchor="start">known 2</text>
@@ -76,253 +77,254 @@
 <text x="517.1" y="390.0" fill="#555555" font-size="10.5" font-weight="400" text-anchor="start">failed 0 (none yet)</text>
 <circle cx="654.8" cy="386.0" r="4" fill="#0ca30c"/>
 <text x="664.8" y="390.0" fill="#555555" font-size="10.5" font-weight="400" text-anchor="start">fixed 0 (none yet)</text>
-<rect x="56.0" y="404.0" width="12.0" height="56.0" fill="transparent"><title>2026-07-28  ·  known 14, failed 0, fixed 0</title></rect>
-<rect x="68.0" y="404.0" width="24.0" height="56.0" fill="transparent"><title>2026-07-28  ·  known 14, failed 0, fixed 0</title></rect>
-<rect x="92.0" y="404.0" width="24.0" height="56.0" fill="transparent"><title>2026-07-28  ·  known 0, failed 0, fixed 0</title></rect>
-<rect x="116.0" y="404.0" width="24.0" height="56.0" fill="transparent"><title>2026-07-28  ·  known 0, failed 0, fixed 0</title></rect>
-<rect x="140.0" y="404.0" width="24.0" height="56.0" fill="transparent"><title>2026-07-29  ·  known 0, failed 0, fixed 0</title></rect>
-<rect x="164.0" y="404.0" width="24.0" height="56.0" fill="transparent"><title>2026-07-29  ·  known 12, failed 0, fixed 0</title></rect>
-<rect x="188.0" y="404.0" width="24.0" height="56.0" fill="transparent"><title>2026-07-29  ·  known 24, failed 0, fixed 0</title></rect>
-<rect x="212.0" y="404.0" width="24.0" height="56.0" fill="transparent"><title>2026-07-29  ·  known 4, failed 0, fixed 0</title></rect>
-<rect x="236.0" y="404.0" width="24.0" height="56.0" fill="transparent"><title>2026-07-29  ·  known 4, failed 0, fixed 0</title></rect>
-<rect x="260.0" y="404.0" width="24.0" height="56.0" fill="transparent"><title>2026-07-29  ·  known 4, failed 0, fixed 0</title></rect>
-<rect x="284.0" y="404.0" width="24.0" height="56.0" fill="transparent"><title>2026-07-30  ·  known 4, failed 0, fixed 0</title></rect>
-<rect x="308.0" y="404.0" width="24.0" height="56.0" fill="transparent"><title>2026-07-30  ·  known 4, failed 0, fixed 0</title></rect>
-<rect x="332.0" y="404.0" width="24.0" height="56.0" fill="transparent"><title>2026-07-30  ·  known 6, failed 0, fixed 0</title></rect>
-<rect x="356.0" y="404.0" width="24.0" height="56.0" fill="transparent"><title>2026-07-30  ·  known 6, failed 0, fixed 0</title></rect>
-<rect x="380.0" y="404.0" width="24.0" height="56.0" fill="transparent"><title>2026-08-03  ·  known 8, failed 0, fixed 0</title></rect>
-<rect x="404.0" y="404.0" width="24.0" height="56.0" fill="transparent"><title>2026-08-03  ·  known 10, failed 0, fixed 0</title></rect>
-<rect x="428.0" y="404.0" width="24.0" height="56.0" fill="transparent"><title>2026-08-05  ·  known 3, failed 0, fixed 0</title></rect>
-<rect x="452.0" y="404.0" width="24.0" height="56.0" fill="transparent"><title>2026-08-05  ·  known 6, failed 0, fixed 0</title></rect>
-<rect x="476.0" y="404.0" width="24.0" height="56.0" fill="transparent"><title>2026-08-06  ·  known 10, failed 0, fixed 0</title></rect>
-<rect x="500.0" y="404.0" width="24.0" height="56.0" fill="transparent"><title>2026-08-07  ·  known 16, failed 0, fixed 0</title></rect>
-<rect x="524.0" y="404.0" width="24.0" height="56.0" fill="transparent"><title>2026-08-10  ·  known 18, failed 0, fixed 0</title></rect>
-<rect x="548.0" y="404.0" width="24.0" height="56.0" fill="transparent"><title>2026-08-10  ·  known 5, failed 0, fixed 0</title></rect>
-<rect x="572.0" y="404.0" width="24.0" height="56.0" fill="transparent"><title>2026-08-11  ·  known 5, failed 0, fixed 0</title></rect>
-<rect x="596.0" y="404.0" width="24.0" height="56.0" fill="transparent"><title>2026-08-11  ·  known 14, failed 0, fixed 0</title></rect>
-<rect x="620.0" y="404.0" width="24.0" height="56.0" fill="transparent"><title>2026-08-11  ·  known 16, failed 0, fixed 0</title></rect>
-<rect x="644.0" y="404.0" width="24.0" height="56.0" fill="transparent"><title>2026-08-11  ·  known 1, failed 0, fixed 0</title></rect>
-<rect x="668.0" y="404.0" width="24.0" height="56.0" fill="transparent"><title>2026-08-11  ·  known 4, failed 0, fixed 0</title></rect>
-<rect x="692.0" y="404.0" width="24.0" height="56.0" fill="transparent"><title>2026-08-12  ·  known 4, failed 0, fixed 0</title></rect>
-<rect x="716.0" y="404.0" width="24.0" height="56.0" fill="transparent"><title>2026-08-12  ·  known 6, failed 0, fixed 0</title></rect>
-<rect x="740.0" y="404.0" width="24.0" height="56.0" fill="transparent"><title>2026-08-14  ·  known 11, failed 0, fixed 0</title></rect>
-<rect x="764.0" y="404.0" width="24.0" height="56.0" fill="transparent"><title>2026-08-15  ·  known 11, failed 0, fixed 0</title></rect>
-<rect x="788.0" y="404.0" width="12.0" height="56.0" fill="transparent"><title>2026-08-21  ·  known 2, failed 0, fixed 0</title></rect>
+<rect x="56.0" y="404.0" width="11.6" height="56.0" fill="transparent"><title>2026-07-28  ·  known 14, failed 0, fixed 0</title></rect>
+<rect x="67.6" y="404.0" width="23.2" height="56.0" fill="transparent"><title>2026-07-28  ·  known 14, failed 0, fixed 0</title></rect>
+<rect x="90.9" y="404.0" width="23.2" height="56.0" fill="transparent"><title>2026-07-28  ·  known 0, failed 0, fixed 0</title></rect>
+<rect x="114.1" y="404.0" width="23.2" height="56.0" fill="transparent"><title>2026-07-28  ·  known 0, failed 0, fixed 0</title></rect>
+<rect x="137.4" y="404.0" width="23.2" height="56.0" fill="transparent"><title>2026-07-29  ·  known 0, failed 0, fixed 0</title></rect>
+<rect x="160.6" y="404.0" width="23.2" height="56.0" fill="transparent"><title>2026-07-29  ·  known 12, failed 0, fixed 0</title></rect>
+<rect x="183.9" y="404.0" width="23.2" height="56.0" fill="transparent"><title>2026-07-29  ·  known 24, failed 0, fixed 0</title></rect>
+<rect x="207.1" y="404.0" width="23.2" height="56.0" fill="transparent"><title>2026-07-29  ·  known 4, failed 0, fixed 0</title></rect>
+<rect x="230.4" y="404.0" width="23.2" height="56.0" fill="transparent"><title>2026-07-29  ·  known 4, failed 0, fixed 0</title></rect>
+<rect x="253.6" y="404.0" width="23.2" height="56.0" fill="transparent"><title>2026-07-29  ·  known 4, failed 0, fixed 0</title></rect>
+<rect x="276.9" y="404.0" width="23.2" height="56.0" fill="transparent"><title>2026-07-30  ·  known 4, failed 0, fixed 0</title></rect>
+<rect x="300.1" y="404.0" width="23.2" height="56.0" fill="transparent"><title>2026-07-30  ·  known 4, failed 0, fixed 0</title></rect>
+<rect x="323.4" y="404.0" width="23.2" height="56.0" fill="transparent"><title>2026-07-30  ·  known 6, failed 0, fixed 0</title></rect>
+<rect x="346.6" y="404.0" width="23.2" height="56.0" fill="transparent"><title>2026-07-30  ·  known 6, failed 0, fixed 0</title></rect>
+<rect x="369.9" y="404.0" width="23.2" height="56.0" fill="transparent"><title>2026-08-03  ·  known 8, failed 0, fixed 0</title></rect>
+<rect x="393.1" y="404.0" width="23.2" height="56.0" fill="transparent"><title>2026-08-03  ·  known 10, failed 0, fixed 0</title></rect>
+<rect x="416.4" y="404.0" width="23.2" height="56.0" fill="transparent"><title>2026-08-05  ·  known 3, failed 0, fixed 0</title></rect>
+<rect x="439.6" y="404.0" width="23.2" height="56.0" fill="transparent"><title>2026-08-05  ·  known 6, failed 0, fixed 0</title></rect>
+<rect x="462.9" y="404.0" width="23.2" height="56.0" fill="transparent"><title>2026-08-06  ·  known 10, failed 0, fixed 0</title></rect>
+<rect x="486.1" y="404.0" width="23.2" height="56.0" fill="transparent"><title>2026-08-07  ·  known 16, failed 0, fixed 0</title></rect>
+<rect x="509.4" y="404.0" width="23.2" height="56.0" fill="transparent"><title>2026-08-10  ·  known 18, failed 0, fixed 0</title></rect>
+<rect x="532.6" y="404.0" width="23.2" height="56.0" fill="transparent"><title>2026-08-10  ·  known 5, failed 0, fixed 0</title></rect>
+<rect x="555.9" y="404.0" width="23.2" height="56.0" fill="transparent"><title>2026-08-11  ·  known 5, failed 0, fixed 0</title></rect>
+<rect x="579.1" y="404.0" width="23.2" height="56.0" fill="transparent"><title>2026-08-11  ·  known 14, failed 0, fixed 0</title></rect>
+<rect x="602.4" y="404.0" width="23.2" height="56.0" fill="transparent"><title>2026-08-11  ·  known 16, failed 0, fixed 0</title></rect>
+<rect x="625.6" y="404.0" width="23.2" height="56.0" fill="transparent"><title>2026-08-11  ·  known 1, failed 0, fixed 0</title></rect>
+<rect x="648.9" y="404.0" width="23.2" height="56.0" fill="transparent"><title>2026-08-11  ·  known 4, failed 0, fixed 0</title></rect>
+<rect x="672.1" y="404.0" width="23.2" height="56.0" fill="transparent"><title>2026-08-12  ·  known 4, failed 0, fixed 0</title></rect>
+<rect x="695.4" y="404.0" width="23.2" height="56.0" fill="transparent"><title>2026-08-12  ·  known 6, failed 0, fixed 0</title></rect>
+<rect x="718.6" y="404.0" width="23.2" height="56.0" fill="transparent"><title>2026-08-14  ·  known 11, failed 0, fixed 0</title></rect>
+<rect x="741.9" y="404.0" width="23.2" height="56.0" fill="transparent"><title>2026-08-15  ·  known 11, failed 0, fixed 0</title></rect>
+<rect x="765.1" y="404.0" width="23.2" height="56.0" fill="transparent"><title>2026-08-21  ·  known 2, failed 0, fixed 0</title></rect>
+<rect x="788.4" y="404.0" width="11.6" height="56.0" fill="transparent"><title>2026-08-21  ·  known 2, failed 0, fixed 0</title></rect>
 <text x="56.0" y="476.0" fill="#767676" font-size="10" font-weight="400" text-anchor="start">2026-07-28</text>
-<text x="248.0" y="476.0" fill="#767676" font-size="10" font-weight="400" text-anchor="middle">2026-07-29</text>
-<text x="440.0" y="476.0" fill="#767676" font-size="10" font-weight="400" text-anchor="middle">2026-08-05</text>
-<text x="608.0" y="476.0" fill="#767676" font-size="10" font-weight="400" text-anchor="middle">2026-08-11</text>
+<text x="242.0" y="476.0" fill="#767676" font-size="10" font-weight="400" text-anchor="middle">2026-07-29</text>
+<text x="428.0" y="476.0" fill="#767676" font-size="10" font-weight="400" text-anchor="middle">2026-08-05</text>
+<text x="614.0" y="476.0" fill="#767676" font-size="10" font-weight="400" text-anchor="middle">2026-08-11</text>
 <text x="800.0" y="476.0" fill="#767676" font-size="10" font-weight="400" text-anchor="end">2026-08-21</text>
 <text x="56.0" y="491.0" fill="#767676" font-size="10" font-weight="400" text-anchor="start">One point per run, oldest first. Both plots above share this axis.</text>
 <text x="56.0" y="512.0" fill="#1a1a1a" font-size="12" font-weight="600" text-anchor="start">Each layer on the same scale — when it appeared, and how it grew</text>
 <g><title>01-minimal: 10 checks now, first seen 2026-07-28</title>
 <text x="56.0" y="535.0" fill="#555555" font-size="10" font-weight="400" text-anchor="start">01-minimal</text>
 <text x="165.7" y="535.0" fill="#767676" font-size="10" font-weight="400" text-anchor="end" font-variant-numeric="tabular-nums">10</text>
-<polygon points="56.0,574.0 56.0,571.7 59.5,571.7 63.1,571.7 66.6,571.7 70.2,571.7 73.7,571.7 77.2,571.7 80.8,571.7 84.3,571.7 87.9,571.7 91.4,571.7 94.9,571.7 98.5,571.7 102.0,571.7 105.5,571.7 109.1,571.7 112.6,571.7 116.2,571.7 119.7,571.7 123.2,571.7 126.8,571.7 130.3,571.7 133.9,571.7 137.4,571.7 140.9,571.7 144.5,571.7 148.0,571.7 151.6,571.7 155.1,571.7 158.6,571.7 162.2,571.7 165.7,571.7 165.7,574.0" fill="#2a78d6" fill-opacity="0.85"/>
+<polygon points="56.0,574.0 56.0,571.7 59.4,571.7 62.9,571.7 66.3,571.7 69.7,571.7 73.1,571.7 76.6,571.7 80.0,571.7 83.4,571.7 86.9,571.7 90.3,571.7 93.7,571.7 97.1,571.7 100.6,571.7 104.0,571.7 107.4,571.7 110.9,571.7 114.3,571.7 117.7,571.7 121.1,571.7 124.6,571.7 128.0,571.7 131.4,571.7 134.9,571.7 138.3,571.7 141.7,571.7 145.1,571.7 148.6,571.7 152.0,571.7 155.4,571.7 158.9,571.7 162.3,571.7 165.7,571.7 165.7,574.0" fill="#2a78d6" fill-opacity="0.85"/>
 <line x1="56.0" y1="574.0" x2="165.7" y2="574.0" stroke="#c9c9c9" stroke-width="1"/>
 </g>
 <g><title>02-config: 34 checks now, first seen 2026-07-28</title>
 <text x="177.7" y="535.0" fill="#555555" font-size="10" font-weight="400" text-anchor="start">02-config</text>
 <text x="287.4" y="535.0" fill="#767676" font-size="10" font-weight="400" text-anchor="end" font-variant-numeric="tabular-nums">34</text>
-<polygon points="177.7,574.0 177.7,569.2 181.3,569.2 184.8,569.2 188.3,569.2 191.9,569.2 195.4,569.2 198.9,569.2 202.5,569.2 206.0,569.2 209.6,569.2 213.1,569.2 216.6,569.2 220.2,569.2 223.7,569.2 227.3,569.2 230.8,569.2 234.3,569.2 237.9,569.2 241.4,569.2 245.0,569.2 248.5,569.2 252.0,569.2 255.6,569.2 259.1,569.2 262.7,569.2 266.2,569.2 269.7,566.3 273.3,566.3 276.8,566.3 280.4,566.3 283.9,566.3 287.4,566.3 287.4,574.0" fill="#2a78d6" fill-opacity="0.85"/>
+<polygon points="177.7,574.0 177.7,569.2 181.1,569.2 184.6,569.2 188.0,569.2 191.4,569.2 194.9,569.2 198.3,569.2 201.7,569.2 205.1,569.2 208.6,569.2 212.0,569.2 215.4,569.2 218.9,569.2 222.3,569.2 225.7,569.2 229.1,569.2 232.6,569.2 236.0,569.2 239.4,569.2 242.9,569.2 246.3,569.2 249.7,569.2 253.1,569.2 256.6,569.2 260.0,569.2 263.4,569.2 266.9,566.3 270.3,566.3 273.7,566.3 277.1,566.3 280.6,566.3 284.0,566.3 287.4,566.3 287.4,574.0" fill="#2a78d6" fill-opacity="0.85"/>
 <line x1="177.7" y1="574.0" x2="287.4" y2="574.0" stroke="#c9c9c9" stroke-width="1"/>
 </g>
 <g><title>03-features: 17 checks now, first seen 2026-07-28</title>
 <text x="299.4" y="535.0" fill="#555555" font-size="10" font-weight="400" text-anchor="start">03-features</text>
 <text x="409.1" y="535.0" fill="#767676" font-size="10" font-weight="400" text-anchor="end" font-variant-numeric="tabular-nums">17</text>
-<polygon points="299.4,574.0 299.4,570.4 303.0,570.4 306.5,570.1 310.0,570.1 313.6,570.1 317.1,570.1 320.7,570.1 324.2,570.1 327.7,570.1 331.3,570.1 334.8,570.1 338.4,570.1 341.9,570.1 345.4,570.1 349.0,570.1 352.5,570.1 356.1,570.1 359.6,570.1 363.1,570.1 366.7,570.1 370.2,570.1 373.8,570.1 377.3,570.1 380.8,570.1 384.4,570.1 387.9,570.1 391.4,570.1 395.0,570.1 398.5,570.1 402.1,570.1 405.6,570.1 409.1,570.1 409.1,574.0" fill="#2a78d6" fill-opacity="0.85"/>
+<polygon points="299.4,574.0 299.4,570.4 302.9,570.4 306.3,570.1 309.7,570.1 313.1,570.1 316.6,570.1 320.0,570.1 323.4,570.1 326.9,570.1 330.3,570.1 333.7,570.1 337.1,570.1 340.6,570.1 344.0,570.1 347.4,570.1 350.9,570.1 354.3,570.1 357.7,570.1 361.1,570.1 364.6,570.1 368.0,570.1 371.4,570.1 374.9,570.1 378.3,570.1 381.7,570.1 385.1,570.1 388.6,570.1 392.0,570.1 395.4,570.1 398.9,570.1 402.3,570.1 405.7,570.1 409.1,570.1 409.1,574.0" fill="#2a78d6" fill-opacity="0.85"/>
 <line x1="299.4" y1="574.0" x2="409.1" y2="574.0" stroke="#c9c9c9" stroke-width="1"/>
 </g>
 <g><title>04-diagnostics: 94 checks now, first seen 2026-07-28</title>
 <text x="421.1" y="535.0" fill="#555555" font-size="10" font-weight="400" text-anchor="start">04-diagnostics</text>
 <text x="530.9" y="535.0" fill="#767676" font-size="10" font-weight="400" text-anchor="end" font-variant-numeric="tabular-nums">94</text>
-<polygon points="421.1,574.0 421.1,563.3 424.7,563.3 428.2,559.5 431.8,559.5 435.3,558.1 438.8,558.1 442.4,558.1 445.9,558.1 449.5,558.1 453.0,558.1 456.5,559.0 460.1,559.0 463.6,559.0 467.2,559.0 470.7,559.0 474.2,559.0 477.8,559.0 481.3,559.0 484.8,559.0 488.4,559.0 491.9,559.0 495.5,559.0 499.0,559.0 502.5,557.2 506.1,557.2 509.6,557.0 513.2,557.0 516.7,557.0 520.2,555.6 523.8,552.7 527.3,552.7 530.9,552.7 530.9,574.0" fill="#2a78d6" fill-opacity="0.85"/>
+<polygon points="421.1,574.0 421.1,563.3 424.6,563.3 428.0,559.5 431.4,559.5 434.9,558.1 438.3,558.1 441.7,558.1 445.1,558.1 448.6,558.1 452.0,558.1 455.4,559.0 458.9,559.0 462.3,559.0 465.7,559.0 469.1,559.0 472.6,559.0 476.0,559.0 479.4,559.0 482.9,559.0 486.3,559.0 489.7,559.0 493.1,559.0 496.6,559.0 500.0,557.2 503.4,557.2 506.9,557.0 510.3,557.0 513.7,557.0 517.1,555.6 520.6,552.7 524.0,552.7 527.4,552.7 530.9,552.7 530.9,574.0" fill="#2a78d6" fill-opacity="0.85"/>
 <line x1="421.1" y1="574.0" x2="530.9" y2="574.0" stroke="#c9c9c9" stroke-width="1"/>
 </g>
 <g><title>05-incremental: 49 checks now, first seen 2026-07-28</title>
 <text x="542.9" y="535.0" fill="#555555" font-size="10" font-weight="400" text-anchor="start">05-incremental</text>
 <text x="652.6" y="535.0" fill="#767676" font-size="10" font-weight="400" text-anchor="end" font-variant-numeric="tabular-nums">49</text>
-<polygon points="542.9,574.0 542.9,574.0 546.4,574.0 549.9,564.0 553.5,564.0 557.0,564.0 560.6,564.0 564.1,564.0 567.6,563.1 571.2,563.1 574.7,563.1 578.2,563.1 581.8,563.1 585.3,563.1 588.9,563.1 592.4,563.1 595.9,563.1 599.5,563.1 603.0,563.1 606.6,563.1 610.1,563.1 613.6,563.1 617.2,563.1 620.7,563.1 624.3,563.1 627.8,563.1 631.3,562.9 634.9,562.9 638.4,562.9 642.0,562.9 645.5,562.9 649.0,562.9 652.6,562.9 652.6,574.0" fill="#2a78d6" fill-opacity="0.85"/>
+<polygon points="542.9,574.0 542.9,574.0 546.3,574.0 549.7,564.0 553.1,564.0 556.6,564.0 560.0,564.0 563.4,564.0 566.9,563.1 570.3,563.1 573.7,563.1 577.1,563.1 580.6,563.1 584.0,563.1 587.4,563.1 590.9,563.1 594.3,563.1 597.7,563.1 601.1,563.1 604.6,563.1 608.0,563.1 611.4,563.1 614.9,563.1 618.3,563.1 621.7,563.1 625.1,563.1 628.6,562.9 632.0,562.9 635.4,562.9 638.9,562.9 642.3,562.9 645.7,562.9 649.1,562.9 652.6,562.9 652.6,574.0" fill="#2a78d6" fill-opacity="0.85"/>
 <line x1="542.9" y1="574.0" x2="652.6" y2="574.0" stroke="#c9c9c9" stroke-width="1"/>
 </g>
 <g><title>06-runner: 40 checks now, first seen 2026-07-29</title>
 <text x="664.6" y="535.0" fill="#555555" font-size="10" font-weight="400" text-anchor="start">06-runner</text>
 <text x="774.3" y="535.0" fill="#767676" font-size="10" font-weight="400" text-anchor="end" font-variant-numeric="tabular-nums">40</text>
-<polygon points="664.6,574.0 664.6,574.0 668.1,574.0 671.6,574.0 675.2,574.0 678.7,570.1 682.3,570.1 685.8,570.1 689.3,570.1 692.9,570.1 696.4,570.1 700.0,570.1 703.5,570.1 707.0,570.1 710.6,570.1 714.1,570.1 717.7,570.1 721.2,570.1 724.7,570.1 728.3,570.1 731.8,570.1 735.4,570.1 738.9,570.1 742.4,570.1 746.0,570.1 749.5,570.1 753.1,570.1 756.6,570.1 760.1,570.1 763.7,570.1 767.2,565.8 770.7,565.8 774.3,564.9 774.3,574.0" fill="#2a78d6" fill-opacity="0.85"/>
+<polygon points="664.6,574.0 664.6,574.0 668.0,574.0 671.4,574.0 674.9,574.0 678.3,570.1 681.7,570.1 685.1,570.1 688.6,570.1 692.0,570.1 695.4,570.1 698.9,570.1 702.3,570.1 705.7,570.1 709.1,570.1 712.6,570.1 716.0,570.1 719.4,570.1 722.9,570.1 726.3,570.1 729.7,570.1 733.1,570.1 736.6,570.1 740.0,570.1 743.4,570.1 746.9,570.1 750.3,570.1 753.7,570.1 757.1,570.1 760.6,570.1 764.0,565.8 767.4,565.8 770.9,564.9 774.3,564.9 774.3,574.0" fill="#2a78d6" fill-opacity="0.85"/>
 <line x1="664.6" y1="574.0" x2="774.3" y2="574.0" stroke="#c9c9c9" stroke-width="1"/>
 </g>
 <g><title>07-robustness: 145 checks now, first seen 2026-07-29</title>
 <text x="786.3" y="535.0" fill="#555555" font-size="10" font-weight="400" text-anchor="start">07-robustness</text>
 <text x="896.0" y="535.0" fill="#767676" font-size="10" font-weight="400" text-anchor="end" font-variant-numeric="tabular-nums">145</text>
-<polygon points="786.3,574.0 786.3,574.0 789.8,574.0 793.4,574.0 796.9,574.0 800.4,574.0 804.0,544.5 807.5,544.5 811.1,541.1 814.6,541.1 818.1,541.1 821.7,541.1 825.2,541.1 828.8,541.1 832.3,541.1 835.8,541.1 839.4,541.1 842.9,541.1 846.5,541.1 850.0,541.1 853.5,541.1 857.1,541.1 860.6,541.1 864.1,541.1 867.7,541.1 871.2,541.1 874.8,541.1 878.3,541.1 881.8,541.1 885.4,541.1 888.9,541.1 892.5,541.1 896.0,541.1 896.0,574.0" fill="#2a78d6" fill-opacity="0.85"/>
+<polygon points="786.3,574.0 786.3,574.0 789.7,574.0 793.1,574.0 796.6,574.0 800.0,574.0 803.4,544.5 806.9,544.5 810.3,541.1 813.7,541.1 817.1,541.1 820.6,541.1 824.0,541.1 827.4,541.1 830.9,541.1 834.3,541.1 837.7,541.1 841.1,541.1 844.6,541.1 848.0,541.1 851.4,541.1 854.9,541.1 858.3,541.1 861.7,541.1 865.1,541.1 868.6,541.1 872.0,541.1 875.4,541.1 878.9,541.1 882.3,541.1 885.7,541.1 889.1,541.1 892.6,541.1 896.0,541.1 896.0,574.0" fill="#2a78d6" fill-opacity="0.85"/>
 <line x1="786.3" y1="574.0" x2="896.0" y2="574.0" stroke="#c9c9c9" stroke-width="1"/>
 </g>
 <g><title>08-lsp: 110 checks now, first seen 2026-07-29</title>
 <text x="56.0" y="595.0" fill="#555555" font-size="10" font-weight="400" text-anchor="start">08-lsp</text>
 <text x="165.7" y="595.0" fill="#767676" font-size="10" font-weight="400" text-anchor="end" font-variant-numeric="tabular-nums">110</text>
-<polygon points="56.0,634.0 56.0,634.0 59.5,634.0 63.1,634.0 66.6,634.0 70.2,634.0 73.7,634.0 77.2,612.0 80.8,612.0 84.3,612.0 87.9,612.0 91.4,612.0 94.9,612.0 98.5,612.0 102.0,612.0 105.5,609.1 109.1,609.1 112.6,609.1 116.2,609.1 119.7,609.1 123.2,609.1 126.8,609.1 130.3,609.1 133.9,609.1 137.4,609.1 140.9,609.1 144.5,609.1 148.0,609.1 151.6,609.1 155.1,609.1 158.6,609.1 162.2,609.1 165.7,609.1 165.7,634.0" fill="#2a78d6" fill-opacity="0.85"/>
+<polygon points="56.0,634.0 56.0,634.0 59.4,634.0 62.9,634.0 66.3,634.0 69.7,634.0 73.1,634.0 76.6,612.0 80.0,612.0 83.4,612.0 86.9,612.0 90.3,612.0 93.7,612.0 97.1,612.0 100.6,612.0 104.0,609.1 107.4,609.1 110.9,609.1 114.3,609.1 117.7,609.1 121.1,609.1 124.6,609.1 128.0,609.1 131.4,609.1 134.9,609.1 138.3,609.1 141.7,609.1 145.1,609.1 148.6,609.1 152.0,609.1 155.4,609.1 158.9,609.1 162.3,609.1 165.7,609.1 165.7,634.0" fill="#2a78d6" fill-opacity="0.85"/>
 <line x1="56.0" y1="634.0" x2="165.7" y2="634.0" stroke="#c9c9c9" stroke-width="1"/>
 </g>
 <g><title>09-acquisition: 121 checks now, first seen 2026-07-29</title>
 <text x="177.7" y="595.0" fill="#555555" font-size="10" font-weight="400" text-anchor="start">09-acquisition</text>
 <text x="287.4" y="595.0" fill="#767676" font-size="10" font-weight="400" text-anchor="end" font-variant-numeric="tabular-nums">121</text>
-<polygon points="177.7,634.0 177.7,634.0 181.3,634.0 184.8,634.0 188.3,634.0 191.9,634.0 195.4,634.0 198.9,619.3 202.5,618.8 206.0,618.8 209.6,618.8 213.1,618.8 216.6,618.8 220.2,618.8 223.7,618.8 227.3,618.8 230.8,618.8 234.3,618.8 237.9,618.8 241.4,618.8 245.0,618.8 248.5,618.8 252.0,618.8 255.6,618.8 259.1,618.8 262.7,618.8 266.2,618.8 269.7,618.8 273.3,618.8 276.8,612.5 280.4,609.5 283.9,609.5 287.4,606.6 287.4,634.0" fill="#2a78d6" fill-opacity="0.85"/>
+<polygon points="177.7,634.0 177.7,634.0 181.1,634.0 184.6,634.0 188.0,634.0 191.4,634.0 194.9,634.0 198.3,619.3 201.7,618.8 205.1,618.8 208.6,618.8 212.0,618.8 215.4,618.8 218.9,618.8 222.3,618.8 225.7,618.8 229.1,618.8 232.6,618.8 236.0,618.8 239.4,618.8 242.9,618.8 246.3,618.8 249.7,618.8 253.1,618.8 256.6,618.8 260.0,618.8 263.4,618.8 266.9,618.8 270.3,618.8 273.7,612.5 277.1,609.5 280.6,609.5 284.0,606.6 287.4,606.6 287.4,634.0" fill="#2a78d6" fill-opacity="0.85"/>
 <line x1="177.7" y1="634.0" x2="287.4" y2="634.0" stroke="#c9c9c9" stroke-width="1"/>
 </g>
 <g><title>10-toolchain: 53 checks now, first seen 2026-07-29</title>
 <text x="299.4" y="595.0" fill="#555555" font-size="10" font-weight="400" text-anchor="start">10-toolchain</text>
 <text x="409.1" y="595.0" fill="#767676" font-size="10" font-weight="400" text-anchor="end" font-variant-numeric="tabular-nums">53</text>
-<polygon points="299.4,634.0 299.4,634.0 303.0,634.0 306.5,634.0 310.0,634.0 313.6,634.0 317.1,634.0 320.7,634.0 324.2,627.0 327.7,627.0 331.3,627.0 334.8,627.0 338.4,627.0 341.9,627.0 345.4,627.0 349.0,627.0 352.5,627.0 356.1,627.0 359.6,627.0 363.1,627.0 366.7,627.0 370.2,627.0 373.8,627.0 377.3,627.0 380.8,627.0 384.4,627.0 387.9,627.0 391.4,627.0 395.0,627.0 398.5,627.0 402.1,622.2 405.6,622.2 409.1,622.0 409.1,634.0" fill="#2a78d6" fill-opacity="0.85"/>
+<polygon points="299.4,634.0 299.4,634.0 302.9,634.0 306.3,634.0 309.7,634.0 313.1,634.0 316.6,634.0 320.0,634.0 323.4,627.0 326.9,627.0 330.3,627.0 333.7,627.0 337.1,627.0 340.6,627.0 344.0,627.0 347.4,627.0 350.9,627.0 354.3,627.0 357.7,627.0 361.1,627.0 364.6,627.0 368.0,627.0 371.4,627.0 374.9,627.0 378.3,627.0 381.7,627.0 385.1,627.0 388.6,627.0 392.0,627.0 395.4,627.0 398.9,622.2 402.3,622.2 405.7,622.0 409.1,622.0 409.1,634.0" fill="#2a78d6" fill-opacity="0.85"/>
 <line x1="299.4" y1="634.0" x2="409.1" y2="634.0" stroke="#c9c9c9" stroke-width="1"/>
 </g>
 <g><title>11-cross: 17 checks now, first seen 2026-07-29</title>
 <text x="421.1" y="595.0" fill="#555555" font-size="10" font-weight="400" text-anchor="start">11-cross</text>
 <text x="530.9" y="595.0" fill="#767676" font-size="10" font-weight="400" text-anchor="end" font-variant-numeric="tabular-nums">17</text>
-<polygon points="421.1,634.0 421.1,634.0 424.7,634.0 428.2,634.0 431.8,634.0 435.3,634.0 438.8,634.0 442.4,634.0 445.9,630.8 449.5,630.8 453.0,630.8 456.5,630.8 460.1,630.8 463.6,630.8 467.2,630.1 470.7,630.1 474.2,630.1 477.8,630.1 481.3,630.1 484.8,630.1 488.4,630.1 491.9,630.1 495.5,630.1 499.0,630.1 502.5,630.1 506.1,630.1 509.6,630.1 513.2,630.1 516.7,630.1 520.2,630.1 523.8,630.1 527.3,630.1 530.9,630.1 530.9,634.0" fill="#2a78d6" fill-opacity="0.85"/>
+<polygon points="421.1,634.0 421.1,634.0 424.6,634.0 428.0,634.0 431.4,634.0 434.9,634.0 438.3,634.0 441.7,634.0 445.1,630.8 448.6,630.8 452.0,630.8 455.4,630.8 458.9,630.8 462.3,630.8 465.7,630.1 469.1,630.1 472.6,630.1 476.0,630.1 479.4,630.1 482.9,630.1 486.3,630.1 489.7,630.1 493.1,630.1 496.6,630.1 500.0,630.1 503.4,630.1 506.9,630.1 510.3,630.1 513.7,630.1 517.1,630.1 520.6,630.1 524.0,630.1 527.4,630.1 530.9,630.1 530.9,634.0" fill="#2a78d6" fill-opacity="0.85"/>
 <line x1="421.1" y1="634.0" x2="530.9" y2="634.0" stroke="#c9c9c9" stroke-width="1"/>
 </g>
 <g><title>12-store: 43 checks now, first seen 2026-07-29</title>
 <text x="542.9" y="595.0" fill="#555555" font-size="10" font-weight="400" text-anchor="start">12-store</text>
 <text x="652.6" y="595.0" fill="#767676" font-size="10" font-weight="400" text-anchor="end" font-variant-numeric="tabular-nums">43</text>
-<polygon points="542.9,634.0 542.9,634.0 546.4,634.0 549.9,634.0 553.5,634.0 557.0,634.0 560.6,634.0 564.1,634.0 567.6,634.0 571.2,627.4 574.7,627.4 578.2,627.4 581.8,627.4 585.3,627.4 588.9,627.4 592.4,627.4 595.9,627.4 599.5,627.4 603.0,627.4 606.6,627.4 610.1,627.4 613.6,627.4 617.2,627.4 620.7,627.4 624.3,627.4 627.8,627.4 631.3,627.4 634.9,627.4 638.4,627.4 642.0,624.3 645.5,624.3 649.0,624.3 652.6,624.3 652.6,634.0" fill="#2a78d6" fill-opacity="0.85"/>
+<polygon points="542.9,634.0 542.9,634.0 546.3,634.0 549.7,634.0 553.1,634.0 556.6,634.0 560.0,634.0 563.4,634.0 566.9,634.0 570.3,627.4 573.7,627.4 577.1,627.4 580.6,627.4 584.0,627.4 587.4,627.4 590.9,627.4 594.3,627.4 597.7,627.4 601.1,627.4 604.6,627.4 608.0,627.4 611.4,627.4 614.9,627.4 618.3,627.4 621.7,627.4 625.1,627.4 628.6,627.4 632.0,627.4 635.4,627.4 638.9,624.3 642.3,624.3 645.7,624.3 649.1,624.3 652.6,624.3 652.6,634.0" fill="#2a78d6" fill-opacity="0.85"/>
 <line x1="542.9" y1="634.0" x2="652.6" y2="634.0" stroke="#c9c9c9" stroke-width="1"/>
 </g>
 <g><title>13-parallel: 18 checks now, first seen 2026-07-29</title>
 <text x="664.6" y="595.0" fill="#555555" font-size="10" font-weight="400" text-anchor="start">13-parallel</text>
 <text x="774.3" y="595.0" fill="#767676" font-size="10" font-weight="400" text-anchor="end" font-variant-numeric="tabular-nums">18</text>
-<polygon points="664.6,634.0 664.6,634.0 668.1,634.0 671.6,634.0 675.2,634.0 678.7,634.0 682.3,634.0 685.8,634.0 689.3,634.0 692.9,629.9 696.4,629.9 700.0,629.9 703.5,629.9 707.0,629.9 710.6,629.9 714.1,629.9 717.7,629.9 721.2,629.9 724.7,629.9 728.3,629.9 731.8,629.9 735.4,629.9 738.9,629.9 742.4,629.9 746.0,629.9 749.5,629.9 753.1,629.9 756.6,629.9 760.1,629.9 763.7,629.9 767.2,629.9 770.7,629.9 774.3,629.9 774.3,634.0" fill="#2a78d6" fill-opacity="0.85"/>
+<polygon points="664.6,634.0 664.6,634.0 668.0,634.0 671.4,634.0 674.9,634.0 678.3,634.0 681.7,634.0 685.1,634.0 688.6,634.0 692.0,629.9 695.4,629.9 698.9,629.9 702.3,629.9 705.7,629.9 709.1,629.9 712.6,629.9 716.0,629.9 719.4,629.9 722.9,629.9 726.3,629.9 729.7,629.9 733.1,629.9 736.6,629.9 740.0,629.9 743.4,629.9 746.9,629.9 750.3,629.9 753.7,629.9 757.1,629.9 760.6,629.9 764.0,629.9 767.4,629.9 770.9,629.9 774.3,629.9 774.3,634.0" fill="#2a78d6" fill-opacity="0.85"/>
 <line x1="664.6" y1="634.0" x2="774.3" y2="634.0" stroke="#c9c9c9" stroke-width="1"/>
 </g>
 <g><title>14-scale: 17 checks now, first seen 2026-07-29</title>
 <text x="786.3" y="595.0" fill="#555555" font-size="10" font-weight="400" text-anchor="start">14-scale</text>
 <text x="896.0" y="595.0" fill="#767676" font-size="10" font-weight="400" text-anchor="end" font-variant-numeric="tabular-nums">17</text>
-<polygon points="786.3,634.0 786.3,634.0 789.8,634.0 793.4,634.0 796.9,634.0 800.4,634.0 804.0,634.0 807.5,634.0 811.1,634.0 814.6,634.0 818.1,630.1 821.7,630.1 825.2,630.1 828.8,630.1 832.3,630.1 835.8,630.1 839.4,630.1 842.9,630.1 846.5,630.1 850.0,630.1 853.5,630.1 857.1,630.1 860.6,630.1 864.1,630.1 867.7,630.1 871.2,630.1 874.8,630.1 878.3,630.1 881.8,630.1 885.4,630.1 888.9,630.1 892.5,630.1 896.0,630.1 896.0,634.0" fill="#2a78d6" fill-opacity="0.85"/>
+<polygon points="786.3,634.0 786.3,634.0 789.7,634.0 793.1,634.0 796.6,634.0 800.0,634.0 803.4,634.0 806.9,634.0 810.3,634.0 813.7,634.0 817.1,630.1 820.6,630.1 824.0,630.1 827.4,630.1 830.9,630.1 834.3,630.1 837.7,630.1 841.1,630.1 844.6,630.1 848.0,630.1 851.4,630.1 854.9,630.1 858.3,630.1 861.7,630.1 865.1,630.1 868.6,630.1 872.0,630.1 875.4,630.1 878.9,630.1 882.3,630.1 885.7,630.1 889.1,630.1 892.6,630.1 896.0,630.1 896.0,634.0" fill="#2a78d6" fill-opacity="0.85"/>
 <line x1="786.3" y1="634.0" x2="896.0" y2="634.0" stroke="#c9c9c9" stroke-width="1"/>
 </g>
 <g><title>15-cpp: 70 checks now, first seen 2026-07-30</title>
 <text x="56.0" y="655.0" fill="#555555" font-size="10" font-weight="400" text-anchor="start">15-cpp</text>
 <text x="165.7" y="655.0" fill="#767676" font-size="10" font-weight="400" text-anchor="end" font-variant-numeric="tabular-nums">70</text>
-<polygon points="56.0,694.0 56.0,694.0 59.5,694.0 63.1,694.0 66.6,694.0 70.2,694.0 73.7,694.0 77.2,694.0 80.8,694.0 84.3,694.0 87.9,694.0 91.4,686.1 94.9,678.1 98.5,677.7 102.0,677.7 105.5,677.7 109.1,678.1 112.6,678.1 116.2,678.1 119.7,678.1 123.2,678.1 126.8,678.1 130.3,678.1 133.9,678.1 137.4,678.1 140.9,678.1 144.5,678.1 148.0,678.1 151.6,678.1 155.1,678.1 158.6,678.1 162.2,678.1 165.7,678.1 165.7,694.0" fill="#2a78d6" fill-opacity="0.85"/>
+<polygon points="56.0,694.0 56.0,694.0 59.4,694.0 62.9,694.0 66.3,694.0 69.7,694.0 73.1,694.0 76.6,694.0 80.0,694.0 83.4,694.0 86.9,694.0 90.3,686.1 93.7,678.1 97.1,677.7 100.6,677.7 104.0,677.7 107.4,678.1 110.9,678.1 114.3,678.1 117.7,678.1 121.1,678.1 124.6,678.1 128.0,678.1 131.4,678.1 134.9,678.1 138.3,678.1 141.7,678.1 145.1,678.1 148.6,678.1 152.0,678.1 155.4,678.1 158.9,678.1 162.3,678.1 165.7,678.1 165.7,694.0" fill="#2a78d6" fill-opacity="0.85"/>
 <line x1="56.0" y1="694.0" x2="165.7" y2="694.0" stroke="#c9c9c9" stroke-width="1"/>
 </g>
 <g><title>16-migrate: 87 checks now, first seen 2026-07-30</title>
 <text x="177.7" y="655.0" fill="#555555" font-size="10" font-weight="400" text-anchor="start">16-migrate</text>
 <text x="287.4" y="655.0" fill="#767676" font-size="10" font-weight="400" text-anchor="end" font-variant-numeric="tabular-nums">87</text>
-<polygon points="177.7,694.0 177.7,694.0 181.3,694.0 184.8,694.0 188.3,694.0 191.9,694.0 195.4,694.0 198.9,694.0 202.5,694.0 206.0,694.0 209.6,694.0 213.1,694.0 216.6,694.0 220.2,694.0 223.7,682.9 227.3,682.9 230.8,681.8 234.3,681.8 237.9,681.8 241.4,681.8 245.0,681.8 248.5,681.8 252.0,681.8 255.6,681.8 259.1,681.8 262.7,681.8 266.2,681.8 269.7,678.6 273.3,678.6 276.8,677.7 280.4,677.7 283.9,677.7 287.4,674.3 287.4,694.0" fill="#2a78d6" fill-opacity="0.85"/>
+<polygon points="177.7,694.0 177.7,694.0 181.1,694.0 184.6,694.0 188.0,694.0 191.4,694.0 194.9,694.0 198.3,694.0 201.7,694.0 205.1,694.0 208.6,694.0 212.0,694.0 215.4,694.0 218.9,694.0 222.3,682.9 225.7,682.9 229.1,681.8 232.6,681.8 236.0,681.8 239.4,681.8 242.9,681.8 246.3,681.8 249.7,681.8 253.1,681.8 256.6,681.8 260.0,681.8 263.4,681.8 266.9,678.6 270.3,678.6 273.7,677.7 277.1,677.7 280.6,677.7 284.0,674.3 287.4,674.3 287.4,694.0" fill="#2a78d6" fill-opacity="0.85"/>
 <line x1="177.7" y1="694.0" x2="287.4" y2="694.0" stroke="#c9c9c9" stroke-width="1"/>
 </g>
 <g><title>17-deps: 83 checks now, first seen 2026-08-03</title>
 <text x="299.4" y="655.0" fill="#555555" font-size="10" font-weight="400" text-anchor="start">17-deps</text>
 <text x="409.1" y="655.0" fill="#767676" font-size="10" font-weight="400" text-anchor="end" font-variant-numeric="tabular-nums">83</text>
-<polygon points="299.4,694.0 299.4,694.0 303.0,694.0 306.5,694.0 310.0,694.0 313.6,694.0 317.1,694.0 320.7,694.0 324.2,694.0 327.7,694.0 331.3,694.0 334.8,694.0 338.4,694.0 341.9,694.0 345.4,694.0 349.0,682.7 352.5,682.7 356.1,682.4 359.6,682.4 363.1,682.4 366.7,682.4 370.2,682.4 373.8,682.4 377.3,682.4 380.8,682.4 384.4,682.4 387.9,682.4 391.4,678.8 395.0,678.8 398.5,678.8 402.1,675.2 405.6,675.2 409.1,675.2 409.1,694.0" fill="#2a78d6" fill-opacity="0.85"/>
+<polygon points="299.4,694.0 299.4,694.0 302.9,694.0 306.3,694.0 309.7,694.0 313.1,694.0 316.6,694.0 320.0,694.0 323.4,694.0 326.9,694.0 330.3,694.0 333.7,694.0 337.1,694.0 340.6,694.0 344.0,694.0 347.4,682.7 350.9,682.7 354.3,682.4 357.7,682.4 361.1,682.4 364.6,682.4 368.0,682.4 371.4,682.4 374.9,682.4 378.3,682.4 381.7,682.4 385.1,682.4 388.6,678.8 392.0,678.8 395.4,678.8 398.9,675.2 402.3,675.2 405.7,675.2 409.1,675.2 409.1,694.0" fill="#2a78d6" fill-opacity="0.85"/>
 <line x1="299.4" y1="694.0" x2="409.1" y2="694.0" stroke="#c9c9c9" stroke-width="1"/>
 </g>
 <g><title>18-tools: 32 checks now, first seen 2026-08-03</title>
 <text x="421.1" y="655.0" fill="#555555" font-size="10" font-weight="400" text-anchor="start">18-tools</text>
 <text x="530.9" y="655.0" fill="#767676" font-size="10" font-weight="400" text-anchor="end" font-variant-numeric="tabular-nums">32</text>
-<polygon points="421.1,694.0 421.1,694.0 424.7,694.0 428.2,694.0 431.8,694.0 435.3,694.0 438.8,694.0 442.4,694.0 445.9,694.0 449.5,694.0 453.0,694.0 456.5,694.0 460.1,694.0 463.6,694.0 467.2,694.0 470.7,694.0 474.2,686.5 477.8,686.7 481.3,686.7 484.8,686.7 488.4,686.7 491.9,686.7 495.5,686.7 499.0,686.7 502.5,686.7 506.1,686.7 509.6,686.7 513.2,686.7 516.7,686.7 520.2,686.7 523.8,686.7 527.3,686.7 530.9,686.7 530.9,694.0" fill="#2a78d6" fill-opacity="0.85"/>
+<polygon points="421.1,694.0 421.1,694.0 424.6,694.0 428.0,694.0 431.4,694.0 434.9,694.0 438.3,694.0 441.7,694.0 445.1,694.0 448.6,694.0 452.0,694.0 455.4,694.0 458.9,694.0 462.3,694.0 465.7,694.0 469.1,694.0 472.6,686.5 476.0,686.7 479.4,686.7 482.9,686.7 486.3,686.7 489.7,686.7 493.1,686.7 496.6,686.7 500.0,686.7 503.4,686.7 506.9,686.7 510.3,686.7 513.7,686.7 517.1,686.7 520.6,686.7 524.0,686.7 527.4,686.7 530.9,686.7 530.9,694.0" fill="#2a78d6" fill-opacity="0.85"/>
 <line x1="421.1" y1="694.0" x2="530.9" y2="694.0" stroke="#c9c9c9" stroke-width="1"/>
 </g>
 <g><title>19-artifacts: 35 checks now, first seen 2026-08-05</title>
 <text x="542.9" y="655.0" fill="#555555" font-size="10" font-weight="400" text-anchor="start">19-artifacts</text>
 <text x="652.6" y="655.0" fill="#767676" font-size="10" font-weight="400" text-anchor="end" font-variant-numeric="tabular-nums">35</text>
-<polygon points="542.9,694.0 542.9,694.0 546.4,694.0 549.9,694.0 553.5,694.0 557.0,694.0 560.6,694.0 564.1,694.0 567.6,694.0 571.2,694.0 574.7,694.0 578.2,694.0 581.8,694.0 585.3,694.0 588.9,694.0 592.4,694.0 595.9,694.0 599.5,686.1 603.0,686.1 606.6,686.1 610.1,686.1 613.6,686.1 617.2,686.1 620.7,686.1 624.3,686.1 627.8,686.1 631.3,686.1 634.9,686.1 638.4,686.1 642.0,686.1 645.5,686.1 649.0,686.1 652.6,686.1 652.6,694.0" fill="#2a78d6" fill-opacity="0.85"/>
+<polygon points="542.9,694.0 542.9,694.0 546.3,694.0 549.7,694.0 553.1,694.0 556.6,694.0 560.0,694.0 563.4,694.0 566.9,694.0 570.3,694.0 573.7,694.0 577.1,694.0 580.6,694.0 584.0,694.0 587.4,694.0 590.9,694.0 594.3,694.0 597.7,686.1 601.1,686.1 604.6,686.1 608.0,686.1 611.4,686.1 614.9,686.1 618.3,686.1 621.7,686.1 625.1,686.1 628.6,686.1 632.0,686.1 635.4,686.1 638.9,686.1 642.3,686.1 645.7,686.1 649.1,686.1 652.6,686.1 652.6,694.0" fill="#2a78d6" fill-opacity="0.85"/>
 <line x1="542.9" y1="694.0" x2="652.6" y2="694.0" stroke="#c9c9c9" stroke-width="1"/>
 </g>
 <g><title>20-cases: 62 checks now, first seen 2026-08-10</title>
 <text x="664.6" y="655.0" fill="#555555" font-size="10" font-weight="400" text-anchor="start">20-cases</text>
 <text x="774.3" y="655.0" fill="#767676" font-size="10" font-weight="400" text-anchor="end" font-variant-numeric="tabular-nums">62</text>
-<polygon points="664.6,694.0 664.6,694.0 668.1,694.0 671.6,694.0 675.2,694.0 678.7,694.0 682.3,694.0 685.8,694.0 689.3,694.0 692.9,694.0 696.4,694.0 700.0,694.0 703.5,694.0 707.0,694.0 710.6,694.0 714.1,694.0 717.7,694.0 721.2,694.0 724.7,694.0 728.3,694.0 731.8,694.0 735.4,683.6 738.9,680.4 742.4,680.4 746.0,680.4 749.5,680.4 753.1,679.9 756.6,679.9 760.1,679.9 763.7,679.9 767.2,679.9 770.7,679.9 774.3,679.9 774.3,694.0" fill="#2a78d6" fill-opacity="0.85"/>
+<polygon points="664.6,694.0 664.6,694.0 668.0,694.0 671.4,694.0 674.9,694.0 678.3,694.0 681.7,694.0 685.1,694.0 688.6,694.0 692.0,694.0 695.4,694.0 698.9,694.0 702.3,694.0 705.7,694.0 709.1,694.0 712.6,694.0 716.0,694.0 719.4,694.0 722.9,694.0 726.3,694.0 729.7,694.0 733.1,683.6 736.6,680.4 740.0,680.4 743.4,680.4 746.9,680.4 750.3,679.9 753.7,679.9 757.1,679.9 760.6,679.9 764.0,679.9 767.4,679.9 770.9,679.9 774.3,679.9 774.3,694.0" fill="#2a78d6" fill-opacity="0.85"/>
 <line x1="664.6" y1="694.0" x2="774.3" y2="694.0" stroke="#c9c9c9" stroke-width="1"/>
 </g>
 <g><title>21-debug: 32 checks now, first seen 2026-08-10</title>
 <text x="786.3" y="655.0" fill="#555555" font-size="10" font-weight="400" text-anchor="start">21-debug</text>
 <text x="896.0" y="655.0" fill="#767676" font-size="10" font-weight="400" text-anchor="end" font-variant-numeric="tabular-nums">32</text>
-<polygon points="786.3,694.0 786.3,694.0 789.8,694.0 793.4,694.0 796.9,694.0 800.4,694.0 804.0,694.0 807.5,694.0 811.1,694.0 814.6,694.0 818.1,694.0 821.7,694.0 825.2,694.0 828.8,694.0 832.3,694.0 835.8,694.0 839.4,694.0 842.9,694.0 846.5,694.0 850.0,694.0 853.5,694.0 857.1,694.0 860.6,687.7 864.1,687.7 867.7,687.7 871.2,687.7 874.8,686.7 878.3,686.7 881.8,686.7 885.4,686.7 888.9,686.7 892.5,686.7 896.0,686.7 896.0,694.0" fill="#2a78d6" fill-opacity="0.85"/>
+<polygon points="786.3,694.0 786.3,694.0 789.7,694.0 793.1,694.0 796.6,694.0 800.0,694.0 803.4,694.0 806.9,694.0 810.3,694.0 813.7,694.0 817.1,694.0 820.6,694.0 824.0,694.0 827.4,694.0 830.9,694.0 834.3,694.0 837.7,694.0 841.1,694.0 844.6,694.0 848.0,694.0 851.4,694.0 854.9,694.0 858.3,687.7 861.7,687.7 865.1,687.7 868.6,687.7 872.0,686.7 875.4,686.7 878.9,686.7 882.3,686.7 885.7,686.7 889.1,686.7 892.6,686.7 896.0,686.7 896.0,694.0" fill="#2a78d6" fill-opacity="0.85"/>
 <line x1="786.3" y1="694.0" x2="896.0" y2="694.0" stroke="#c9c9c9" stroke-width="1"/>
 </g>
 <g><title>22-bench: 34 checks now, first seen 2026-08-11</title>
 <text x="56.0" y="715.0" fill="#555555" font-size="10" font-weight="400" text-anchor="start">22-bench</text>
 <text x="165.7" y="715.0" fill="#767676" font-size="10" font-weight="400" text-anchor="end" font-variant-numeric="tabular-nums">34</text>
-<polygon points="56.0,754.0 56.0,754.0 59.5,754.0 63.1,754.0 66.6,754.0 70.2,754.0 73.7,754.0 77.2,754.0 80.8,754.0 84.3,754.0 87.9,754.0 91.4,754.0 94.9,754.0 98.5,754.0 102.0,754.0 105.5,754.0 109.1,754.0 112.6,754.0 116.2,754.0 119.7,754.0 123.2,754.0 126.8,754.0 130.3,754.0 133.9,754.0 137.4,754.0 140.9,754.0 144.5,754.0 148.0,746.3 151.6,746.3 155.1,746.3 158.6,746.3 162.2,746.3 165.7,746.3 165.7,754.0" fill="#2a78d6" fill-opacity="0.85"/>
+<polygon points="56.0,754.0 56.0,754.0 59.4,754.0 62.9,754.0 66.3,754.0 69.7,754.0 73.1,754.0 76.6,754.0 80.0,754.0 83.4,754.0 86.9,754.0 90.3,754.0 93.7,754.0 97.1,754.0 100.6,754.0 104.0,754.0 107.4,754.0 110.9,754.0 114.3,754.0 117.7,754.0 121.1,754.0 124.6,754.0 128.0,754.0 131.4,754.0 134.9,754.0 138.3,754.0 141.7,754.0 145.1,746.3 148.6,746.3 152.0,746.3 155.4,746.3 158.9,746.3 162.3,746.3 165.7,746.3 165.7,754.0" fill="#2a78d6" fill-opacity="0.85"/>
 <line x1="56.0" y1="754.0" x2="165.7" y2="754.0" stroke="#c9c9c9" stroke-width="1"/>
 </g>
 <g><title>23-probe: 23 checks now, first seen 2026-08-11</title>
 <text x="177.7" y="715.0" fill="#555555" font-size="10" font-weight="400" text-anchor="start">23-probe</text>
 <text x="287.4" y="715.0" fill="#767676" font-size="10" font-weight="400" text-anchor="end" font-variant-numeric="tabular-nums">23</text>
-<polygon points="177.7,754.0 177.7,754.0 181.3,754.0 184.8,754.0 188.3,754.0 191.9,754.0 195.4,754.0 198.9,754.0 202.5,754.0 206.0,754.0 209.6,754.0 213.1,754.0 216.6,754.0 220.2,754.0 223.7,754.0 227.3,754.0 230.8,754.0 234.3,754.0 237.9,754.0 241.4,754.0 245.0,754.0 248.5,754.0 252.0,754.0 255.6,754.0 259.1,754.0 262.7,754.0 266.2,754.0 269.7,748.8 273.3,748.8 276.8,748.8 280.4,748.8 283.9,748.8 287.4,748.8 287.4,754.0" fill="#2a78d6" fill-opacity="0.85"/>
+<polygon points="177.7,754.0 177.7,754.0 181.1,754.0 184.6,754.0 188.0,754.0 191.4,754.0 194.9,754.0 198.3,754.0 201.7,754.0 205.1,754.0 208.6,754.0 212.0,754.0 215.4,754.0 218.9,754.0 222.3,754.0 225.7,754.0 229.1,754.0 232.6,754.0 236.0,754.0 239.4,754.0 242.9,754.0 246.3,754.0 249.7,754.0 253.1,754.0 256.6,754.0 260.0,754.0 263.4,754.0 266.9,748.8 270.3,748.8 273.7,748.8 277.1,748.8 280.6,748.8 284.0,748.8 287.4,748.8 287.4,754.0" fill="#2a78d6" fill-opacity="0.85"/>
 <line x1="177.7" y1="754.0" x2="287.4" y2="754.0" stroke="#c9c9c9" stroke-width="1"/>
 </g>
 <g><title>24-install: 48 checks now, first seen 2026-08-14</title>
 <text x="299.4" y="715.0" fill="#555555" font-size="10" font-weight="400" text-anchor="start">24-install</text>
 <text x="409.1" y="715.0" fill="#767676" font-size="10" font-weight="400" text-anchor="end" font-variant-numeric="tabular-nums">48</text>
-<polygon points="299.4,754.0 299.4,754.0 303.0,754.0 306.5,754.0 310.0,754.0 313.6,754.0 317.1,754.0 320.7,754.0 324.2,754.0 327.7,754.0 331.3,754.0 334.8,754.0 338.4,754.0 341.9,754.0 345.4,754.0 349.0,754.0 352.5,754.0 356.1,754.0 359.6,754.0 363.1,754.0 366.7,754.0 370.2,754.0 373.8,754.0 377.3,754.0 380.8,754.0 384.4,754.0 387.9,754.0 391.4,754.0 395.0,754.0 398.5,754.0 402.1,743.6 405.6,743.6 409.1,743.1 409.1,754.0" fill="#2a78d6" fill-opacity="0.85"/>
+<polygon points="299.4,754.0 299.4,754.0 302.9,754.0 306.3,754.0 309.7,754.0 313.1,754.0 316.6,754.0 320.0,754.0 323.4,754.0 326.9,754.0 330.3,754.0 333.7,754.0 337.1,754.0 340.6,754.0 344.0,754.0 347.4,754.0 350.9,754.0 354.3,754.0 357.7,754.0 361.1,754.0 364.6,754.0 368.0,754.0 371.4,754.0 374.9,754.0 378.3,754.0 381.7,754.0 385.1,754.0 388.6,754.0 392.0,754.0 395.4,754.0 398.9,743.6 402.3,743.6 405.7,743.1 409.1,743.1 409.1,754.0" fill="#2a78d6" fill-opacity="0.85"/>
 <line x1="299.4" y1="754.0" x2="409.1" y2="754.0" stroke="#c9c9c9" stroke-width="1"/>
 </g>
 <g><title>25-asm: 53 checks now, first seen 2026-08-14</title>
 <text x="421.1" y="715.0" fill="#555555" font-size="10" font-weight="400" text-anchor="start">25-asm</text>
 <text x="530.9" y="715.0" fill="#767676" font-size="10" font-weight="400" text-anchor="end" font-variant-numeric="tabular-nums">53</text>
-<polygon points="421.1,754.0 421.1,754.0 424.7,754.0 428.2,754.0 431.8,754.0 435.3,754.0 438.8,754.0 442.4,754.0 445.9,754.0 449.5,754.0 453.0,754.0 456.5,754.0 460.1,754.0 463.6,754.0 467.2,754.0 470.7,754.0 474.2,754.0 477.8,754.0 481.3,754.0 484.8,754.0 488.4,754.0 491.9,754.0 495.5,754.0 499.0,754.0 502.5,754.0 506.1,754.0 509.6,754.0 513.2,754.0 516.7,754.0 520.2,754.0 523.8,748.1 527.3,748.1 530.9,742.0 530.9,754.0" fill="#2a78d6" fill-opacity="0.85"/>
+<polygon points="421.1,754.0 421.1,754.0 424.6,754.0 428.0,754.0 431.4,754.0 434.9,754.0 438.3,754.0 441.7,754.0 445.1,754.0 448.6,754.0 452.0,754.0 455.4,754.0 458.9,754.0 462.3,754.0 465.7,754.0 469.1,754.0 472.6,754.0 476.0,754.0 479.4,754.0 482.9,754.0 486.3,754.0 489.7,754.0 493.1,754.0 496.6,754.0 500.0,754.0 503.4,754.0 506.9,754.0 510.3,754.0 513.7,754.0 517.1,754.0 520.6,748.1 524.0,748.1 527.4,742.0 530.9,742.0 530.9,754.0" fill="#2a78d6" fill-opacity="0.85"/>
 <line x1="421.1" y1="754.0" x2="530.9" y2="754.0" stroke="#c9c9c9" stroke-width="1"/>
 </g>
 <g><title>26-prebuilt: 28 checks now, first seen 2026-08-14</title>
 <text x="542.9" y="715.0" fill="#555555" font-size="10" font-weight="400" text-anchor="start">26-prebuilt</text>
 <text x="652.6" y="715.0" fill="#767676" font-size="10" font-weight="400" text-anchor="end" font-variant-numeric="tabular-nums">28</text>
-<polygon points="542.9,754.0 542.9,754.0 546.4,754.0 549.9,754.0 553.5,754.0 557.0,754.0 560.6,754.0 564.1,754.0 567.6,754.0 571.2,754.0 574.7,754.0 578.2,754.0 581.8,754.0 585.3,754.0 588.9,754.0 592.4,754.0 595.9,754.0 599.5,754.0 603.0,754.0 606.6,754.0 610.1,754.0 613.6,754.0 617.2,754.0 620.7,754.0 624.3,754.0 627.8,754.0 631.3,754.0 634.9,754.0 638.4,754.0 642.0,754.0 645.5,747.9 649.0,747.9 652.6,747.7 652.6,754.0" fill="#2a78d6" fill-opacity="0.85"/>
+<polygon points="542.9,754.0 542.9,754.0 546.3,754.0 549.7,754.0 553.1,754.0 556.6,754.0 560.0,754.0 563.4,754.0 566.9,754.0 570.3,754.0 573.7,754.0 577.1,754.0 580.6,754.0 584.0,754.0 587.4,754.0 590.9,754.0 594.3,754.0 597.7,754.0 601.1,754.0 604.6,754.0 608.0,754.0 611.4,754.0 614.9,754.0 618.3,754.0 621.7,754.0 625.1,754.0 628.6,754.0 632.0,754.0 635.4,754.0 638.9,754.0 642.3,747.9 645.7,747.9 649.1,747.7 652.6,747.7 652.6,754.0" fill="#2a78d6" fill-opacity="0.85"/>
 <line x1="542.9" y1="754.0" x2="652.6" y2="754.0" stroke="#c9c9c9" stroke-width="1"/>
 </g>
 <g><title>blink: 59 checks now, first seen 2026-08-06</title>
 <text x="664.6" y="715.0" fill="#555555" font-size="10" font-weight="400" text-anchor="start">blink</text>
 <text x="774.3" y="715.0" fill="#767676" font-size="10" font-weight="400" text-anchor="end" font-variant-numeric="tabular-nums">59</text>
-<polygon points="664.6,754.0 664.6,754.0 668.1,754.0 671.6,754.0 675.2,754.0 678.7,754.0 682.3,754.0 685.8,754.0 689.3,754.0 692.9,754.0 696.4,754.0 700.0,754.0 703.5,754.0 707.0,754.0 710.6,754.0 714.1,754.0 717.7,754.0 721.2,754.0 724.7,754.0 728.3,745.8 731.8,745.8 735.4,746.1 738.9,745.4 742.4,745.4 746.0,745.4 749.5,745.4 753.1,745.2 756.6,745.2 760.1,745.2 763.7,743.1 767.2,743.1 770.7,740.6 774.3,740.6 774.3,754.0" fill="#eb6834" fill-opacity="0.85"/>
+<polygon points="664.6,754.0 664.6,754.0 668.0,754.0 671.4,754.0 674.9,754.0 678.3,754.0 681.7,754.0 685.1,754.0 688.6,754.0 692.0,754.0 695.4,754.0 698.9,754.0 702.3,754.0 705.7,754.0 709.1,754.0 712.6,754.0 716.0,754.0 719.4,754.0 722.9,754.0 726.3,745.8 729.7,745.8 733.1,746.1 736.6,745.4 740.0,745.4 743.4,745.4 746.9,745.4 750.3,745.2 753.7,745.2 757.1,745.2 760.6,743.1 764.0,743.1 767.4,740.6 770.9,740.6 774.3,740.6 774.3,754.0" fill="#eb6834" fill-opacity="0.85"/>
 <line x1="664.6" y1="754.0" x2="774.3" y2="754.0" stroke="#c9c9c9" stroke-width="1"/>
 </g>
 <g><title>dsp: 60 checks now, first seen 2026-08-11</title>
 <text x="786.3" y="715.0" fill="#555555" font-size="10" font-weight="400" text-anchor="start">dsp</text>
 <text x="896.0" y="715.0" fill="#767676" font-size="10" font-weight="400" text-anchor="end" font-variant-numeric="tabular-nums">60</text>
-<polygon points="786.3,754.0 786.3,754.0 789.8,754.0 793.4,754.0 796.9,754.0 800.4,754.0 804.0,754.0 807.5,754.0 811.1,754.0 814.6,754.0 818.1,754.0 821.7,754.0 825.2,754.0 828.8,754.0 832.3,754.0 835.8,754.0 839.4,754.0 842.9,754.0 846.5,754.0 850.0,754.0 853.5,754.0 857.1,754.0 860.6,754.0 864.1,754.0 867.7,754.0 871.2,745.4 874.8,744.5 878.3,744.5 881.8,744.5 885.4,743.3 888.9,743.3 892.5,740.4 896.0,740.4 896.0,754.0" fill="#eb6834" fill-opacity="0.85"/>
+<polygon points="786.3,754.0 786.3,754.0 789.7,754.0 793.1,754.0 796.6,754.0 800.0,754.0 803.4,754.0 806.9,754.0 810.3,754.0 813.7,754.0 817.1,754.0 820.6,754.0 824.0,754.0 827.4,754.0 830.9,754.0 834.3,754.0 837.7,754.0 841.1,754.0 844.6,754.0 848.0,754.0 851.4,754.0 854.9,754.0 858.3,754.0 861.7,754.0 865.1,754.0 868.6,745.4 872.0,744.5 875.4,744.5 878.9,744.5 882.3,743.3 885.7,743.3 889.1,740.4 892.6,740.4 896.0,740.4 896.0,754.0" fill="#eb6834" fill-opacity="0.85"/>
 <line x1="786.3" y1="754.0" x2="896.0" y2="754.0" stroke="#c9c9c9" stroke-width="1"/>
 </g>
 <g><title>hashx: 88 checks now, first seen 2026-08-07</title>
 <text x="56.0" y="775.0" fill="#555555" font-size="10" font-weight="400" text-anchor="start">hashx</text>
 <text x="165.7" y="775.0" fill="#767676" font-size="10" font-weight="400" text-anchor="end" font-variant-numeric="tabular-nums">88</text>
-<polygon points="56.0,814.0 56.0,814.0 59.5,814.0 63.1,814.0 66.6,814.0 70.2,814.0 73.7,814.0 77.2,814.0 80.8,814.0 84.3,814.0 87.9,814.0 91.4,814.0 94.9,814.0 98.5,814.0 102.0,814.0 105.5,814.0 109.1,814.0 112.6,814.0 116.2,814.0 119.7,814.0 123.2,805.4 126.8,804.7 130.3,804.7 133.9,804.7 137.4,804.7 140.9,804.7 144.5,804.7 148.0,801.1 151.6,801.1 155.1,798.6 158.6,798.6 162.2,794.1 165.7,794.1 165.7,814.0" fill="#eb6834" fill-opacity="0.85"/>
+<polygon points="56.0,814.0 56.0,814.0 59.4,814.0 62.9,814.0 66.3,814.0 69.7,814.0 73.1,814.0 76.6,814.0 80.0,814.0 83.4,814.0 86.9,814.0 90.3,814.0 93.7,814.0 97.1,814.0 100.6,814.0 104.0,814.0 107.4,814.0 110.9,814.0 114.3,814.0 117.7,814.0 121.1,805.4 124.6,804.7 128.0,804.7 131.4,804.7 134.9,804.7 138.3,804.7 141.7,804.7 145.1,801.1 148.6,801.1 152.0,798.6 155.4,798.6 158.9,794.1 162.3,794.1 165.7,794.1 165.7,814.0" fill="#eb6834" fill-opacity="0.85"/>
 <line x1="56.0" y1="814.0" x2="165.7" y2="814.0" stroke="#c9c9c9" stroke-width="1"/>
 </g>
 <g><title>httpd: 36 checks now, first seen 2026-08-05</title>
 <text x="177.7" y="775.0" fill="#555555" font-size="10" font-weight="400" text-anchor="start">httpd</text>
 <text x="287.4" y="775.0" fill="#767676" font-size="10" font-weight="400" text-anchor="end" font-variant-numeric="tabular-nums">36</text>
-<polygon points="177.7,814.0 177.7,814.0 181.3,814.0 184.8,814.0 188.3,814.0 191.9,814.0 195.4,814.0 198.9,814.0 202.5,814.0 206.0,814.0 209.6,814.0 213.1,814.0 216.6,814.0 220.2,814.0 223.7,814.0 227.3,814.0 230.8,814.0 234.3,814.0 237.9,808.1 241.4,806.5 245.0,805.6 248.5,805.8 252.0,805.8 255.6,805.8 259.1,805.8 262.7,805.8 266.2,805.8 269.7,805.8 273.3,805.8 276.8,805.8 280.4,805.8 283.9,805.8 287.4,805.8 287.4,814.0" fill="#eb6834" fill-opacity="0.85"/>
+<polygon points="177.7,814.0 177.7,814.0 181.1,814.0 184.6,814.0 188.0,814.0 191.4,814.0 194.9,814.0 198.3,814.0 201.7,814.0 205.1,814.0 208.6,814.0 212.0,814.0 215.4,814.0 218.9,814.0 222.3,814.0 225.7,814.0 229.1,814.0 232.6,814.0 236.0,808.1 239.4,806.5 242.9,805.6 246.3,805.8 249.7,805.8 253.1,805.8 256.6,805.8 260.0,805.8 263.4,805.8 266.9,805.8 270.3,805.8 273.7,805.8 277.1,805.8 280.6,805.8 284.0,805.8 287.4,805.8 287.4,814.0" fill="#eb6834" fill-opacity="0.85"/>
 <line x1="177.7" y1="814.0" x2="287.4" y2="814.0" stroke="#c9c9c9" stroke-width="1"/>
 </g>
 <g><title>jsonfmt: 39 checks now, first seen 2026-08-05</title>
 <text x="299.4" y="775.0" fill="#555555" font-size="10" font-weight="400" text-anchor="start">jsonfmt</text>
 <text x="409.1" y="775.0" fill="#767676" font-size="10" font-weight="400" text-anchor="end" font-variant-numeric="tabular-nums">39</text>
-<polygon points="299.4,814.0 299.4,814.0 303.0,814.0 306.5,814.0 310.0,814.0 313.6,814.0 317.1,814.0 320.7,814.0 324.2,814.0 327.7,814.0 331.3,814.0 334.8,814.0 338.4,814.0 341.9,814.0 345.4,814.0 349.0,814.0 352.5,814.0 356.1,814.0 359.6,807.2 363.1,805.6 366.7,805.6 370.2,805.6 373.8,805.6 377.3,805.6 380.8,805.6 384.4,805.6 387.9,805.2 391.4,805.2 395.0,805.2 398.5,805.2 402.1,805.2 405.6,805.2 409.1,805.2 409.1,814.0" fill="#eb6834" fill-opacity="0.85"/>
+<polygon points="299.4,814.0 299.4,814.0 302.9,814.0 306.3,814.0 309.7,814.0 313.1,814.0 316.6,814.0 320.0,814.0 323.4,814.0 326.9,814.0 330.3,814.0 333.7,814.0 337.1,814.0 340.6,814.0 344.0,814.0 347.4,814.0 350.9,814.0 354.3,814.0 357.7,807.2 361.1,805.6 364.6,805.6 368.0,805.6 371.4,805.6 374.9,805.6 378.3,805.6 381.7,805.6 385.1,805.2 388.6,805.2 392.0,805.2 395.4,805.2 398.9,805.2 402.3,805.2 405.7,805.2 409.1,805.2 409.1,814.0" fill="#eb6834" fill-opacity="0.85"/>
 <line x1="299.4" y1="814.0" x2="409.1" y2="814.0" stroke="#c9c9c9" stroke-width="1"/>
 </g>
 <g><title>plot: 42 checks now, first seen 2026-08-07</title>
 <text x="421.1" y="775.0" fill="#555555" font-size="10" font-weight="400" text-anchor="start">plot</text>
 <text x="530.9" y="775.0" fill="#767676" font-size="10" font-weight="400" text-anchor="end" font-variant-numeric="tabular-nums">42</text>
-<polygon points="421.1,814.0 421.1,814.0 424.7,814.0 428.2,814.0 431.8,814.0 435.3,814.0 438.8,814.0 442.4,814.0 445.9,814.0 449.5,814.0 453.0,814.0 456.5,814.0 460.1,814.0 463.6,814.0 467.2,814.0 470.7,814.0 474.2,814.0 477.8,814.0 481.3,814.0 484.8,814.0 488.4,804.5 491.9,804.5 495.5,804.5 499.0,804.5 502.5,804.5 506.1,804.5 509.6,804.5 513.2,804.5 516.7,804.5 520.2,804.5 523.8,804.5 527.3,804.5 530.9,804.5 530.9,814.0" fill="#eb6834" fill-opacity="0.85"/>
+<polygon points="421.1,814.0 421.1,814.0 424.6,814.0 428.0,814.0 431.4,814.0 434.9,814.0 438.3,814.0 441.7,814.0 445.1,814.0 448.6,814.0 452.0,814.0 455.4,814.0 458.9,814.0 462.3,814.0 465.7,814.0 469.1,814.0 472.6,814.0 476.0,814.0 479.4,814.0 482.9,814.0 486.3,804.5 489.7,804.5 493.1,804.5 496.6,804.5 500.0,804.5 503.4,804.5 506.9,804.5 510.3,804.5 513.7,804.5 517.1,804.5 520.6,804.5 524.0,804.5 527.4,804.5 530.9,804.5 530.9,814.0" fill="#eb6834" fill-opacity="0.85"/>
 <line x1="421.1" y1="814.0" x2="530.9" y2="814.0" stroke="#c9c9c9" stroke-width="1"/>
 </g>
 <g><title>vision: 32 checks now, first seen 2026-08-11</title>
 <text x="542.9" y="775.0" fill="#555555" font-size="10" font-weight="400" text-anchor="start">vision</text>
 <text x="652.6" y="775.0" fill="#767676" font-size="10" font-weight="400" text-anchor="end" font-variant-numeric="tabular-nums">32</text>
-<polygon points="542.9,814.0 542.9,814.0 546.4,814.0 549.9,814.0 553.5,814.0 557.0,814.0 560.6,814.0 564.1,814.0 567.6,814.0 571.2,814.0 574.7,814.0 578.2,814.0 581.8,814.0 585.3,814.0 588.9,814.0 592.4,814.0 595.9,814.0 599.5,814.0 603.0,814.0 606.6,814.0 610.1,814.0 613.6,814.0 617.2,814.0 620.7,814.0 624.3,806.7 627.8,806.7 631.3,806.7 634.9,806.7 638.4,806.7 642.0,806.7 645.5,806.7 649.0,806.7 652.6,806.7 652.6,814.0" fill="#eb6834" fill-opacity="0.85"/>
+<polygon points="542.9,814.0 542.9,814.0 546.3,814.0 549.7,814.0 553.1,814.0 556.6,814.0 560.0,814.0 563.4,814.0 566.9,814.0 570.3,814.0 573.7,814.0 577.1,814.0 580.6,814.0 584.0,814.0 587.4,814.0 590.9,814.0 594.3,814.0 597.7,814.0 601.1,814.0 604.6,814.0 608.0,814.0 611.4,814.0 614.9,814.0 618.3,814.0 621.7,806.7 625.1,806.7 628.6,806.7 632.0,806.7 635.4,806.7 638.9,806.7 642.3,806.7 645.7,806.7 649.1,806.7 652.6,806.7 652.6,814.0" fill="#eb6834" fill-opacity="0.85"/>
 <line x1="542.9" y1="814.0" x2="652.6" y2="814.0" stroke="#c9c9c9" stroke-width="1"/>
 </g>
 <g><title>winapp: 38 checks now, first seen 2026-08-11</title>
 <text x="664.6" y="775.0" fill="#555555" font-size="10" font-weight="400" text-anchor="start">winapp</text>
 <text x="774.3" y="775.0" fill="#767676" font-size="10" font-weight="400" text-anchor="end" font-variant-numeric="tabular-nums">38</text>
-<polygon points="664.6,814.0 664.6,814.0 668.1,814.0 671.6,814.0 675.2,814.0 678.7,814.0 682.3,814.0 685.8,814.0 689.3,814.0 692.9,814.0 696.4,814.0 700.0,814.0 703.5,814.0 707.0,814.0 710.6,814.0 714.1,814.0 717.7,814.0 721.2,814.0 724.7,814.0 728.3,814.0 731.8,814.0 735.4,814.0 738.9,814.0 742.4,814.0 746.0,807.2 749.5,807.2 753.1,805.4 756.6,805.4 760.1,805.4 763.7,805.4 767.2,805.4 770.7,805.4 774.3,805.4 774.3,814.0" fill="#eb6834" fill-opacity="0.85"/>
+<polygon points="664.6,814.0 664.6,814.0 668.0,814.0 671.4,814.0 674.9,814.0 678.3,814.0 681.7,814.0 685.1,814.0 688.6,814.0 692.0,814.0 695.4,814.0 698.9,814.0 702.3,814.0 705.7,814.0 709.1,814.0 712.6,814.0 716.0,814.0 719.4,814.0 722.9,814.0 726.3,814.0 729.7,814.0 733.1,814.0 736.6,814.0 740.0,814.0 743.4,807.2 746.9,807.2 750.3,805.4 753.7,805.4 757.1,805.4 760.6,805.4 764.0,805.4 767.4,805.4 770.9,805.4 774.3,805.4 774.3,814.0" fill="#eb6834" fill-opacity="0.85"/>
 <line x1="664.6" y1="814.0" x2="774.3" y2="814.0" stroke="#c9c9c9" stroke-width="1"/>
 </g>
 <g><title>docs: 9 checks now, first seen 2026-07-28</title>
 <text x="786.3" y="775.0" fill="#555555" font-size="10" font-weight="400" text-anchor="start">docs</text>
 <text x="896.0" y="775.0" fill="#767676" font-size="10" font-weight="400" text-anchor="end" font-variant-numeric="tabular-nums">9</text>
-<polygon points="786.3,814.0 786.3,814.0 789.8,814.0 793.4,814.0 796.9,812.4 800.4,812.4 804.0,812.4 807.5,812.4 811.1,812.4 814.6,812.4 818.1,812.4 821.7,812.4 825.2,812.4 828.8,812.4 832.3,812.4 835.8,812.4 839.4,812.4 842.9,812.4 846.5,812.2 850.0,812.2 853.5,812.2 857.1,812.2 860.6,812.2 864.1,812.0 867.7,812.0 871.2,812.0 874.8,812.0 878.3,812.0 881.8,812.0 885.4,812.0 888.9,812.0 892.5,812.0 896.0,812.0 896.0,814.0" fill="#1baf7a" fill-opacity="0.85"/>
+<polygon points="786.3,814.0 786.3,814.0 789.7,814.0 793.1,814.0 796.6,812.4 800.0,812.4 803.4,812.4 806.9,812.4 810.3,812.4 813.7,812.4 817.1,812.4 820.6,812.4 824.0,812.4 827.4,812.4 830.9,812.4 834.3,812.4 837.7,812.4 841.1,812.4 844.6,812.2 848.0,812.2 851.4,812.2 854.9,812.2 858.3,812.2 861.7,812.0 865.1,812.0 868.6,812.0 872.0,812.0 875.4,812.0 878.9,812.0 882.3,812.0 885.7,812.0 889.1,812.0 892.6,812.0 896.0,812.0 896.0,814.0" fill="#1baf7a" fill-opacity="0.85"/>
 <line x1="786.3" y1="814.0" x2="896.0" y2="814.0" stroke="#c9c9c9" stroke-width="1"/>
 </g>
 <text x="56.0" y="828.0" fill="#767676" font-size="10" font-weight="400" text-anchor="start">Same vertical scale everywhere: 0 to 150 checks.</text>

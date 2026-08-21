@@ -1,10 +1,10 @@
 {
- "run_id": "32446295641",
+ "run_id": "32461341202",
  "run_attempt": "1",
- "run_url": "https://github.com/sabas0ba/dowel_examples/actions/runs/32446295641",
- "commit": "cf71c393760e4d030ecd1f8de3728009a8a63990",
+ "run_url": "https://github.com/sabas0ba/dowel_examples/actions/runs/32461341202",
+ "commit": "0bcb1ba979f229af711ed6bf6d7a5a1b2de6bf24",
  "branch": "main",
- "started_at": "2026-08-21T04:17:16Z",
+ "started_at": "2026-08-21T08:04:45Z",
  "dowel_version": "dowel 0.1.0",
  "dowel_ref": "f65fe20a974f589a8ae424bf97d50010fb7745e2",
  "dowel_commit": "f65fe20a974f589a8ae424bf97d50010fb7745e2",
@@ -14,7 +14,7 @@
   {
    "name": "01-minimal",
    "root": "projects",
-   "duration_ms": 240,
+   "duration_ms": 1247,
    "counts": {
     "pass": 10,
     "fail": 0,
@@ -72,7 +72,7 @@
   {
    "name": "02-config",
    "root": "projects",
-   "duration_ms": 969,
+   "duration_ms": 5767,
    "counts": {
     "pass": 34,
     "fail": 0,
@@ -227,7 +227,7 @@
   {
    "name": "03-features",
    "root": "projects",
-   "duration_ms": 289,
+   "duration_ms": 297,
    "counts": {
     "pass": 17,
     "fail": 0,
@@ -317,7 +317,7 @@
   {
    "name": "04-diagnostics",
    "root": "projects",
-   "duration_ms": 587,
+   "duration_ms": 595,
    "counts": {
     "pass": 94,
     "fail": 0,
@@ -732,7 +732,7 @@
   {
    "name": "05-incremental",
    "root": "projects",
-   "duration_ms": 1621,
+   "duration_ms": 1689,
    "counts": {
     "pass": 49,
     "fail": 0,
@@ -948,7 +948,7 @@
   {
    "name": "06-runner",
    "root": "projects",
-   "duration_ms": 1069,
+   "duration_ms": 1104,
    "counts": {
     "pass": 40,
     "fail": 0,
@@ -1128,7 +1128,7 @@
   {
    "name": "07-robustness",
    "root": "projects",
-   "duration_ms": 1391,
+   "duration_ms": 1381,
    "counts": {
     "pass": 145,
     "fail": 0,
@@ -1726,7 +1726,7 @@
   {
    "name": "08-lsp",
    "root": "projects",
-   "duration_ms": 12677,
+   "duration_ms": 12826,
    "counts": {
     "pass": 110,
     "fail": 0,
@@ -2184,7 +2184,7 @@
   {
    "name": "09-acquisition",
    "root": "projects",
-   "duration_ms": 44335,
+   "duration_ms": 43914,
    "counts": {
     "pass": 120,
     "fail": 0,
@@ -2684,7 +2684,7 @@
   {
    "name": "10-toolchain",
    "root": "projects",
-   "duration_ms": 2527,
+   "duration_ms": 3903,
    "counts": {
     "pass": 53,
     "fail": 0,
@@ -2914,7 +2914,7 @@
   {
    "name": "11-cross",
    "root": "projects",
-   "duration_ms": 1267,
+   "duration_ms": 1260,
    "counts": {
     "pass": 17,
     "fail": 0,
@@ -3000,7 +3000,7 @@
   {
    "name": "12-store",
    "root": "projects",
-   "duration_ms": 1278,
+   "duration_ms": 1391,
    "counts": {
     "pass": 43,
     "fail": 0,
@@ -3190,7 +3190,7 @@
   {
    "name": "13-parallel",
    "root": "projects",
-   "duration_ms": 10728,
+   "duration_ms": 10939,
    "counts": {
     "pass": 18,
     "fail": 0,
@@ -3280,7 +3280,7 @@
   {
    "name": "14-scale",
    "root": "projects",
-   "duration_ms": 6090,
+   "duration_ms": 6728,
    "counts": {
     "pass": 17,
     "fail": 0,
@@ -3364,7 +3364,7 @@
   {
    "name": "15-cpp",
    "root": "projects",
-   "duration_ms": 4642,
+   "duration_ms": 7793,
    "counts": {
     "pass": 70,
     "fail": 0,
@@ -3672,7 +3672,7 @@
   {
    "name": "16-migrate",
    "root": "projects",
-   "duration_ms": 2491,
+   "duration_ms": 2607,
    "counts": {
     "pass": 87,
     "fail": 0,
@@ -4038,7 +4038,7 @@
   {
    "name": "17-deps",
    "root": "projects",
-   "duration_ms": 1218,
+   "duration_ms": 1307,
    "counts": {
     "pass": 83,
     "fail": 0,
@@ -4393,7 +4393,7 @@
   {
    "name": "18-tools",
    "root": "projects",
-   "duration_ms": 517,
+   "duration_ms": 535,
    "counts": {
     "pass": 32,
     "fail": 0,
@@ -4542,7 +4542,7 @@
   {
    "name": "19-artifacts",
    "root": "projects",
-   "duration_ms": 629,
+   "duration_ms": 669,
    "counts": {
     "pass": 35,
     "fail": 0,
@@ -4702,7 +4702,7 @@
   {
    "name": "20-cases",
    "root": "projects",
-   "duration_ms": 32498,
+   "duration_ms": 32587,
    "counts": {
     "pass": 62,
     "fail": 0,
@@ -4968,7 +4968,7 @@
   {
    "name": "21-debug",
    "root": "projects",
-   "duration_ms": 1191,
+   "duration_ms": 1273,
    "counts": {
     "pass": 32,
     "fail": 0,
@@ -5114,7 +5114,7 @@
   {
    "name": "22-bench",
    "root": "projects",
-   "duration_ms": 3281,
+   "duration_ms": 3479,
    "counts": {
     "pass": 34,
     "fail": 0,
@@ -5268,7 +5268,7 @@
   {
    "name": "23-probe",
    "root": "projects",
-   "duration_ms": 216,
+   "duration_ms": 234,
    "counts": {
     "pass": 23,
     "fail": 0,
@@ -5379,7 +5379,7 @@
   {
    "name": "24-install",
    "root": "projects",
-   "duration_ms": 1525,
+   "duration_ms": 1689,
    "counts": {
     "pass": 48,
     "fail": 0,
@@ -5590,7 +5590,7 @@
   {
    "name": "25-asm",
    "root": "projects",
-   "duration_ms": 807,
+   "duration_ms": 901,
    "counts": {
     "pass": 52,
     "fail": 0,
@@ -5821,7 +5821,7 @@
   {
    "name": "26-prebuilt",
    "root": "projects",
-   "duration_ms": 365,
+   "duration_ms": 398,
    "counts": {
     "pass": 28,
     "fail": 0,
@@ -5951,7 +5951,7 @@
   {
    "name": "blink",
    "root": "apps",
-   "duration_ms": 3150,
+   "duration_ms": 2913,
    "counts": {
     "pass": 59,
     "fail": 0,
@@ -6205,7 +6205,7 @@
   {
    "name": "dsp",
    "root": "apps",
-   "duration_ms": 2031,
+   "duration_ms": 2041,
    "counts": {
     "pass": 60,
     "fail": 0,
@@ -6466,7 +6466,7 @@
   {
    "name": "hashx",
    "root": "apps",
-   "duration_ms": 3252,
+   "duration_ms": 3387,
    "counts": {
     "pass": 88,
     "fail": 0,
@@ -6838,7 +6838,7 @@
   {
    "name": "httpd",
    "root": "apps",
-   "duration_ms": 4787,
+   "duration_ms": 5004,
    "counts": {
     "pass": 36,
     "fail": 0,
@@ -7000,7 +7000,7 @@
   {
    "name": "jsonfmt",
    "root": "apps",
-   "duration_ms": 1793,
+   "duration_ms": 1921,
    "counts": {
     "pass": 39,
     "fail": 0,
@@ -7175,7 +7175,7 @@
   {
    "name": "plot",
    "root": "apps",
-   "duration_ms": 4906,
+   "duration_ms": 4751,
    "counts": {
     "pass": 42,
     "fail": 0,
@@ -7362,7 +7362,7 @@
   {
    "name": "vision",
    "root": "apps",
-   "duration_ms": 17976,
+   "duration_ms": 18769,
    "counts": {
     "pass": 32,
     "fail": 0,
@@ -7509,7 +7509,7 @@
   {
    "name": "winapp",
    "root": "apps",
-   "duration_ms": 5941,
+   "duration_ms": 5627,
    "counts": {
     "pass": 38,
     "fail": 0,
@@ -7679,7 +7679,7 @@
   {
    "name": "docs",
    "root": "projects",
-   "duration_ms": 84,
+   "duration_ms": 88,
    "counts": {
     "pass": 9,
     "fail": 0,
