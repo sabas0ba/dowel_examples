@@ -24,6 +24,7 @@
 | F-056 / F-057 | `c154097` | 入ったばかりの機構（共有ライブラリ、Meson 移行）を使って出た2件 |
 | F-058 〜 F-061 | `0511d5e` | 雛形と `check`、そして dowel が自分について報せることの3点 |
 | F-062 〜 F-066 | `v0.1.0` | 最初の release に入った5件。うち4件は**報せ方**の側だった |
+| F-067 | `7512e76` | ADR-0050 と ADR-0051 を同じ木に並べて出た1件。位置だけの誤りだった |
 
 直った検査の扱いには2段階ある。**`known_issue` を外すだけでは足りない。**
 新しい機構が入った場合は、その機構を実際に使う形へ書き換える。書き換えない
@@ -42,7 +43,16 @@ F-047 はその逆側の例である。**直ったのに検査が落ち続けた
 | 所見 | 内容 |
 |---|---|
 | [F-011](#f-011)（残り） | |
-| [F-067](#f-067) | `missing-assembler` がソースではなく目標の見出しを指す |
+| [F-068](#f-068) | 宣言した出力を書かない生成が ninja と make では成功する |
+| [F-069](#f-069) | `invalid-output` が「`outputs` は空」と述べる2件目を連れてくる |
+| [F-070](#f-070) | backend の拒否に診断コードも位置も無く、JSON に現れない |
+| [F-071](#f-071) | `args` の `file()` が入力にならない |
+| [F-072](#f-072) | 生成が載せた `-I` を `dowel why` が説明できない |
+
+F-068 〜 F-072 は5件とも ADR-0054（生成されるソース）に触れて出た。入った
+ばかりの機構を最初に使うと出る、という これまでと同じ形である。うち3件
+（F-068・F-069・F-070）は**報せ方**の側であり、F-071 と F-072 は宣言と、
+それについて dowel が答えられることの食い違いである。
 
 5件とも、**入ったばかりの機構を最初に触ったとき**に出た。F-062 は
 `dowel install` を2つのライブラリを持つパッケージへ、F-063 は手元の `.asm`
@@ -153,7 +163,12 @@ F-050 から F-058 は `apps/vision`（大きい依存）、`apps/winapp`（Wind
 | [F-064](#f-064) | `abi-mismatch` が目標の数だけ出るのに、文面に目標名が無い | 実装 | [#158](https://github.com/sabas0ba/dowel/issues/158) | 修正済み |
 | [F-065](#f-065) | `dowel fetch` が toolchain を数えず一覧にも出さない | 実装 | [#159](https://github.com/sabas0ba/dowel/issues/159) | 修正済み |
 | [F-066](#f-066) | 転送の記録の自己修復が、その動機になっている場面で働かない | 実装 | [#160](https://github.com/sabas0ba/dowel/issues/160) | 修正済み |
-| [F-067](#f-067) | `missing-assembler` がソースではなく目標の見出しを指す | 実装 | [#172](https://github.com/sabas0ba/dowel/issues/172) | 未修正 |
+| [F-067](#f-067) | `missing-assembler` がソースではなく目標の見出しを指す | 実装 | [#172](https://github.com/sabas0ba/dowel/issues/172) | 修正済み |
+| [F-068](#f-068) | 宣言した出力を書かない生成が ninja と make では成功する | 実装 | [#183](https://github.com/sabas0ba/dowel/issues/183) | 未修正 |
+| [F-069](#f-069) | `invalid-output` が「`outputs` は空」と述べる2件目を連れてくる | 実装 | [#184](https://github.com/sabas0ba/dowel/issues/184) | 未修正 |
+| [F-070](#f-070) | backend の拒否に診断コードも位置も無く、JSON に現れない | 実装 | [#185](https://github.com/sabas0ba/dowel/issues/185) | 未修正 |
+| [F-071](#f-071) | `args` の `file()` が入力にならず、生成器の script を書き換えても作り直さない | 実装 | [#186](https://github.com/sabas0ba/dowel/issues/186) | 未修正 |
+| [F-072](#f-072) | 生成が載せた `-I` を `dowel why` が説明できない | 実装／要望 | [#187](https://github.com/sabas0ba/dowel/issues/187) | 未修正 |
 
 ---
 
@@ -1369,11 +1384,16 @@ GNU 形式の ELF archive を作れないため、より直接に効く。
 の比較は全てこの表から回る。以後、道具を増やすのは表1行と、それを使う計画の
 箇所だけになる。
 
-なお、記録されているのは**道具の名前**であって、その名前が指す実体ではない。
-同じ `ar` の裏で別の実体に差し替えても組み直されない。報告では「それがどの
-実体を指すかは記録の外にある」と書いたが、これは `c` も `cxx` も同じであり、
-道具ごとの差ではなく記録の粒度である。粒度そのものを上げる話は別件と考え、
-現状を1件の検査として固定するに留めた。
+なお当時、記録されていたのは**道具の名前**であって、その名前が指す実体では
+なかった。同じ `ar` の裏で別の実体に差し替えても組み直されない。報告では
+「それがどの実体を指すかは記録の外にある」と書いたが、これは `c` も `cxx` も
+同じであり、道具ごとの差ではなく記録の粒度である。粒度そのものを上げる話は
+別件と考え、現状を1件の検査として固定するに留めた。
+
+**その粒度は後に上がった。** ADR-0055 が道具の同一性——PATH 上で解決した
+実体の path・大きさ・mtime——をファイルへ書き、それをその道具を走らせる
+全てのアクションの入力にした。名前の裏を差し替えれば組み直る。上の検査は
+向きが逆になり、`projects/29-tool-identity` がその機構そのものを見る。
 
 ### 検査
 
@@ -1388,7 +1408,9 @@ GNU 形式の ELF archive を作れないため、より直接に効く。
 - `the objects inside the cross archive are for the target architecture`
 
 記録の粒度は
-`the record is the tool's name, so swapping what the name resolves to does not rebuild`。
+`swapping what the name resolves to rebuilds, the identity being what is recorded`
+と、その対照の `and settles again once the new identity is the recorded one`。
+どちらも ADR-0055 のあとの向きである。
 
 ---
 
@@ -5046,8 +5068,8 @@ test result: FAILED. 0 passed; 1 failed             # 直らない
 付く。** 註の文言は「declared as a source here」なので、指している先と
 言っていることが食い違っている。
 
-種別: 実装。未修正（`v0.1.0`）。ADR-0050 と ADR-0051 を `projects/25-asm` に
-並べて出た。
+種別: 実装。**修正済み**（`7512e76`）。ADR-0050 と ADR-0051 を
+`projects/25-asm` に並べて出た。
 
 ### 観測
 
@@ -5096,10 +5118,16 @@ ADR-0050 と ADR-0051 は別の決定であり、別のフィクスチャを持�
 ある。外から見ると、この2つは1つの問いへの2つの答なので、同じ木に両方を
 書いて見比べることになる。
 
+### 直り方
+
+`collect_sources` の中、`unknown-source-language` の隣へ移った。**2つは
+同じ問い——このソースはここでは組めない——に答えており、要素の位置がまだ
+手元に在る場所はそこだけ**である。期待したとおり文言は変わっていない。
+
 ### 検査
 
 `projects/25-asm` の `and points at the source, as its sibling diagnostic does`。
-known_issue F-067 である。
+`known_issue` は外してある。
 
 対照として、`missing-assembler` が出ること・ファイル名を述べること・
 `.asm` が MASM/NASM の綴りだと言うこと・宣言の仕方を示すこと、そして
@@ -5135,3 +5163,343 @@ known_issue F-067 である。
   文字列の連結も無いのは ADR-0004 の決定である。そこで解かれるものと読んで
   報告しなかった。`expect.sh` は代わりに**2か所が実際に同じ旗を出している
   こと**をグラフから確かめている
+
+---
+
+## F-068
+
+報告先: [sabas0ba/dowel#183](https://github.com/sabas0ba/dowel/issues/183)
+
+**宣言した出力を書かない生成が、`ninja` と `make` では成功する。** 終了状態は
+0 で、宣言されたファイルは無い。`direct` は捕まえる。
+
+種別: 実装。未修正（`7512e76`）。ADR-0054 に触れて出た。
+
+### 観測
+
+```toml
+[bin.app.generate]
+liar = { command = "true", args = [], outputs = ["never.h"] }
+```
+
+```console
+$ dowel build --no-compdb --backend=direct ; echo $?
+error: GEN generated/g/app/liar failed
+  command: cd .../generated/g/app/liar && true
+  exit status: 0
+1
+
+$ rm -rf .dowel && dowel build --no-compdb --backend=ninja ; echo $?
+[1/3] GEN generated/g/app/liar
+[2/3] CC obj/g/app/src_main.c.o
+[3/3] LINK bin/app
+built: .../bin/app
+0
+
+$ ls .dowel/build/*/generated/g/app/liar/
+$          # 空。never.h は書かれていない
+```
+
+`make` も同じである。
+
+### なぜ問題か
+
+ADR-0054 は自分の帰結にこう書いている——「宣言したものを何も書かない場合は
+ADR-0051 のビルド後の検査が捕まえる」。**その検査は生成の出力へ及んでいない。**
+
+生成される**見出し**が普通の場合（`config.h`、`version.h`）であり、見出しは
+まさに「どの翻訳も名前で入力に挙げないもの」なので、後段の誰も気づかない。
+
+取り込まれている場合は、原因から2段離れた翻訳器の言葉で返る。
+
+```console
+$ dowel build --no-compdb --backend=ninja
+src/main.c:2:10: fatal error: cfg.h: No such file or directory
+error: ninja failed
+```
+
+読む側が送られる先は `main.c` であり、それは正しい C で、問題ではない。
+書かなかった生成は名前すら出ない。`direct` は `error: GEN .../cfg failed` と
+述べて段を指す。
+
+F-063（[#157](https://github.com/sabas0ba/dowel/issues/157)）で翻訳について
+決着した形が、生成では付いていない。**既定の backend は ninja である**ため、
+決着している側を踏むビルドの方が少ない。
+
+### 期待
+
+3つの backend すべてが失敗し、生成と書かれなかった出力を名指す——`direct` が
+既にしているとおりに。
+
+### なぜ内側から見つからないか
+
+生成のフィクスチャは、正しく書く生成器を相手にする。書かないものを相手に
+するには「exit 0 で何も書かないプログラム」を仕立てる必要があり、それは
+ADR-0051 が翻訳について既に考えた形である。外から見ると、`true` を
+`command` に書けるかどうかは真っ先に触るところで、`.asm` の件（F-063）を
+知っていれば同じ手をここでも試す。
+
+### 検査
+
+`projects/27-generate` に2件ある。ninja と make のそれぞれについて、
+`ninja fails it too, the declared output not being there` と
+`make fails it too, the declared output not being there`。
+どちらも known_issue F-068 である。
+
+対照として、`direct` が失敗すること、その文面が翻訳器ではなく生成を名指す
+ことを通常の検査として置いてある。**壊れているのが検出そのものではなく、
+3つの backend のうち2つで及んでいないこと**が並びから読める。
+
+---
+
+## F-069
+
+報告先: [sabas0ba/dowel#184](https://github.com/sabas0ba/dowel/issues/184)
+
+**`invalid-output` が `generates-nothing` を連れてくる。** 1つの誤りに2件出る
+うえ、2件目は `outputs` が空ではない行を指して「`outputs` は空である」と
+述べる。
+
+種別: 実装。未修正（`7512e76`）。
+
+### 観測
+
+```console
+$ dowel check
+error[invalid-output]: `../escape.h` leaves the directory the generation writes to
+ --> dowel.build:5:1
+  |
+5 | g = { command = "true", args = [], outputs = ["../escape.h"] }
+  | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ declared here
+
+error[generates-nothing]: `g` writes nothing in this configuration
+ --> dowel.build:5:1
+  |
+5 | g = { command = "true", args = [], outputs = ["../escape.h"] }
+  | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `outputs` is empty here
+
+2 errors, 0 warnings
+```
+
+連鎖は「1つも残らなかったこと」に依る。
+
+| `outputs` | 出る code |
+|---|---|
+| `["../escape.h"]` | `invalid-output`, `generates-nothing` |
+| `["/tmp/abs.h"]` | `invalid-output`, `generates-nothing` |
+| `["a.h", "../escape.h"]` | `invalid-output` |
+
+**誤りが1つのときにだけ**偽の2件目が付く。それが普通の場合である。
+
+### 期待
+
+`invalid-output` の1件だけ。`generates-nothing` は、書き手が本当に
+`outputs` を空にした場合——あるいは構成が空にした場合——のためのもので
+あり、文面はそう述べている。
+
+### なぜ問題か
+
+読む側は2つ壊れていると告げられ、そのうち1つは下線の付いた行について偽で
+ある。path を直せば両方消えるので、2件目に別の一手は無い——既に起きた拒否を
+通して見た1件目である。
+
+[#158](https://github.com/sabas0ba/dowel/issues/158) が `abi-mismatch` に
+下した判断（宣言1つにつき1件）と、ADR-0059 が `source-among-headers` に
+ついて述べ直した判断（ファイルごとではなく宣言ごとに1件）を、宣言を跨いで
+ではなく**同じ宣言の中**へ当てたものである。
+
+### 検査
+
+`projects/27-generate` の `one rejected output produces one diagnostic`。
+known_issue F-069 である。
+
+---
+
+## F-070
+
+報告先: [sabas0ba/dowel#185](https://github.com/sabas0ba/dowel/issues/185)
+
+**backend が綴れない命令を拒むとき、診断コードも位置も無い。**
+`--message-format=json` には何も現れず、JSON を読む側には**診断0件で落ちた
+ビルド**に見える。
+
+種別: 実装。未修正（`7512e76`）。
+
+### 観測
+
+```console
+$ dowel build --no-compdb --backend=ninja
+error: generating the ninja file failed
+  command: cd .../generated/gen/app/limits && sh -c 'printf '\''#define LIMIT 7
+'\'' > limits.h'
+--- stderr ---
+ninja cannot spell a newline inside a build edge, and `GEN generated/gen/app/limits`
+contains one. ...
+
+$ dowel build --no-compdb --backend=ninja --message-format=json ; echo $?
+1
+```
+
+stdout は空である。`dowel check` は通るので、他の命令でも現れない。
+
+### なぜ問題か
+
+**直す先を指していない。** 拒否が名指すのは `GEN generated/gen/app/limits`
+——ビルドディレクトリの中の段の記述である。直すのは `dowel.build` の1行で
+あり、それがどの行かは出力のどこにも無い。ADR-0058 自身が、古い make の
+壊れ方について同じ形を難じている。
+
+> recipe が2行目へこぼれ、make は dowel が生成したファイルの構文誤りを
+> 報せた——**ビルドディレクトリの中の行番号で、マニフェストを指すものは
+> 何も無い**。
+
+出鱈目な行番号は消えたが、マニフェストへ戻る経路は無いままである。同じ機構の
+隣の拒否——`missing-generator` と `invalid-output`——はどちらも宣言に下線を
+引く。
+
+**JSON を読む側には診断が無い。** ビルドファイルを書く段で見つかるため
+`dowel check` にも現れず、他に出る命令が無い。
+
+### 期待
+
+code（たとえば `unspellable-command`）と、命令の出所である宣言への label を
+持ち、他のあらゆる拒否と同じく `--message-format=json` に載る。
+
+**文面はそのままでよい。** ここが最も良い部分である。
+
+### 検査
+
+`projects/27-generate` の `a refusal a backend makes carries a code, like every
+other refusal`。known_issue F-070 である。
+
+対照として、拒むこと・何を綴れないかを述べること・直し方（`\\n`）を名指す
+こと・`--backend=direct` を挙げること・**ビルドファイルを1バイトも書かない
+こと**を通常の検査として置いてある。壊れているのが判断でも文面でもなく、
+**届け方だけ**であることが並びから読める。
+
+---
+
+## F-071
+
+報告先: [sabas0ba/dowel#186](https://github.com/sabas0ba/dowel/issues/186)
+
+**`args` に書いた `file()` は入力ではない。** 生成器が実際に読む script を
+書き換えても、ビルドは最新のままである。
+
+種別: 実装。未修正（`7512e76`）。
+
+### 観測
+
+```toml
+code = { command = "sh", args = [file("gen/rows.sh")], inputs = [file("gen/seed.txt")], outputs = ["rows.c"] }
+```
+
+```console
+$ dowel build --no-compdb && ./...bin/app
+26 4
+$ # gen/rows.sh を書き換えて、違う表を出させる
+$ dowel build --no-compdb --backend=direct --log-level=debug
+      5.0ms debug direct       ran 0 steps, skipped 4 already up to date
+$ ./...bin/app
+26 4          # 古い表のまま
+```
+
+グラフがそのまま言っている。
+
+```console
+$ jq -r '.steps[]|select(.kind=="generate")|.inputs[]' .dowel/build/*/build-graph.json
+.../gen/seed.txt
+.../tools/sh-89c4ec9f.stamp
+```
+
+`gen/rows.sh` は命令行に在り、入力には無い。path は中身が変わっても変わらない
+ので、命令行の側の鮮度も動かない。
+
+### なぜ問題か
+
+`file()` はマニフェストの「このパッケージの中のファイル」の綴りであり、
+他のあらゆる場所で `file()` はビルドが見張るものになる。`args` の位置は
+同じ見た目で、そうではない。**診断は無い。**
+
+そしてプロジェクト自身が薦める形で踏む。ADR-0058 の帰結は、改行の制限を
+避ける道としてまさにこの綴りを挙げている。
+
+> script をファイルに書いて `sh script.sh` を走らせれば全く避けられる。
+> **このリポジトリ自身の検査がそうしている。**
+
+`sh script.sh` は script を `args` へ置く。薦められた回避は、鮮度が script を
+黙って無視するビルドを作る——書き手はマニフェストに script の path を書いて
+おり、それを宣言したと読むのが自然である。
+
+既知の穴とも別である。ADR-0054 と ADR-0055 が論じたのは**プログラム**
+（`bison`、`sh`）が入力でないことで、ADR-0055 は板でそれを塞いだ。ここで
+落ちているのは別のファイルである——解釈器ではなく、それが手渡される script、
+つまり実際の生成器であり、`PATH` ではなくパッケージの中に在る。
+
+### 期待
+
+`args` の `file()` が生成の入力になる。あるいは `args` の `file()` を拒む、
+あるいは `12-build-reference.md` が「追跡されない、読むファイルは `inputs`
+へ」と述べる。**費用が出ているのは選択ではなく沈黙の方である。**
+
+### 検査
+
+`projects/27-generate` の `editing the program a generation runs re-runs it`。
+known_issue F-071 である。
+
+対照として、`inputs` を書き換えれば生成が走り直し、出てきたソースも使う側も
+翻訳し直すことを通常の検査として置いてある。
+
+---
+
+## F-072
+
+報告先: [sabas0ba/dowel#187](https://github.com/sabas0ba/dowel/issues/187)
+
+**生成が載せた `-I` を `dowel why` が説明できない。** dowel 自身が置いた値に
+ついて、「その値がどこから来たか」に答える唯一の命令が何も言わない。
+
+種別: 実装／要望。未修正（`7512e76`）。
+
+### 観測
+
+```console
+$ jq -r '.steps[]|select(.kind=="cc")|"\(.target): \(.arguments|map(select(startswith("-I")))|join(" "))"' \
+    .dowel/build/*/build-graph.json
+g:table: -I.../generated/g/table/decl
+g:app:   -I.../generated/g/table/decl
+
+$ dowel why app includes
+includes of g:app  (Set<Path>, merge = union)
+
+  (no values reached this target)
+```
+
+### なぜ問題か
+
+値は目標の境を越えている。`g:app` は**別の目標の**生成した置き場を指す `-I`
+で翻訳されており、それに答えるための命令が「何も届いていない」と言う。
+見出しがなぜ引けるのか、`public = true` を外したらなぜ引けなくなったのかを
+探す書き手には、アクショングラフしか残らない。
+
+ADR-0049 が `prebuilt` を2つの生の旗より良いとした論拠も弱くなる。あの ADR が
+`link_flags = ["-L", dir(...), "-lengine"]` に対して挙げたのは、それが
+「`dowel why` に現れず、他の全ての検査に参加しない」ことだった。生成した
+見出しの置き場は、いま同じ位置に在る——実在し、あらゆる命令行に載り、`why`
+からは見えない。
+
+### 期待
+
+`why` が置き場と、それを出した生成を名指す。`public.includes` の項目と、
+それを公開した目標を名指すのと同じ形で。
+
+### これは伝播の話ではない
+
+伝播そのものは仕様どおりであり、3つとも確かめてある——宣言した目標へは常に、
+`public = true` なら直接の使う側へも、`public` を書かない生成は自分の目標に
+留まる。壊れているのは**報せ方**だけである。
+
+### 検査
+
+`projects/27-generate` の `why accounts for the include path a generation put on
+the command line`。known_issue F-072 である。

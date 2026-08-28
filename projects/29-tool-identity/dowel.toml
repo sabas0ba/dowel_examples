@@ -1,0 +1,6 @@
+[package]
+name    = "ident"
+version = "0.1.0"
+edition = "2026"
+
+# expect.sh がここを書き換えて、道具を包みへ向ける。置いてあるのは既定の形。

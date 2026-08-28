@@ -147,20 +147,40 @@ not_rebuilt "CC" "the objects are not recompiled for a different archiver"
 
 declare_toolchain host
 
-# 記録されているのは**名前**であり、その名前が指す実体ではない。同じ名前の
-# 裏で別の実体に差し替えても組み直されない。これは `c` も同じであり、
-# 道具ごとの差ではなく記録の粒度である（docs/10-findings.md F-016）。
+# 記録されているのは名前ではなく、**その名前が PATH 上で解決した実体**で
+# ある（ADR-0055）。同じ名前の裏で別の実体に差し替えれば組み直す。
+#
+# かつてはそうではなかった。記録の粒度が名前どまりで、`ar` も `c` も同じく
+# 取りこぼしていた（[F-016](../../docs/10-findings.md#f-016)）。
+#
+# 差し替えの中身は `gcc-ar` ではない。`gcc-ar` は自分が呼ぶ `ar` を PATH から
+# 引くので、`ar` という名前で PATH の先頭に置くと自分自身に解決して戻らなく
+# なる——dowel を挟まず `ar --version` だけでも止まる。絶対パスへ exec しても
+# PATH は子へ渡るので同じである。
+#
+# 記録されているのは**名前が解決した先のファイル**だから、包みを1枚置けば
+# それで差し替えになる。`$SHIM/ar` は `/usr/bin/ar` とは別のファイルであり、
+# 同じ `ar` という名前が別の実体を指す、という当の条件そのものである。
 SHIM=$PWD/shim
 rm -rf "$SHIM"; mkdir -p "$SHIM"
-ln -sf "$(command -v gcc-ar)" "$SHIM/ar"
-ln -sf "$(command -v clang)" "$SHIM/cc"
+shim_to() { printf '#!/bin/sh\nexec %s "$@"\n' "$2" > "$SHIM/$1"; chmod +x "$SHIM/$1"; }
+shim_to ar "$(command -v ar)"
+shim_to cc "$(command -v clang)"
 rm -rf host/.dowel
 "$DOWEL" -C host build --no-compdb >/dev/null 2>&1
+n=$(PATH="$SHIM:$PATH" ran host --no-compdb)
+[ "${n:-0}" -gt 0 ]
+v=$?; RC=0; _last_cmd="PATH=<other ar and cc> dowel -C host build --backend=direct"
+OUT="ran ${n:-?} actions"
+fact $v "swapping what the name resolves to rebuilds, the identity being what is recorded"
+
+# 同じ PATH でもう一度なら何も走らない。上が「毎回組み直す」ではなく
+# 「変わったから組み直した」であることは、これが無いと言えない。
 n=$(PATH="$SHIM:$PATH" ran host --no-compdb)
 [ "${n:-1}" = 0 ]
 v=$?; RC=0; _last_cmd="PATH=<other ar and cc> dowel -C host build --backend=direct"
 OUT="ran ${n:-?} actions"
-fact $v "the record is the tool's name, so swapping what the name resolves to does not rebuild"
+fact $v "and settles again once the new identity is the recorded one"
 
 # ------------------------------------------------------------ 5. トリプルごと
 #

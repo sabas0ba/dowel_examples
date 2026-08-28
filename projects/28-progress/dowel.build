@@ -1,0 +1,11 @@
+# 4つの生成が互いに依らない。並べれば同時に走り、`--jobs 1` なら1つずつ
+# 走る。どちらであるかを段の側に観測させるため、生成器には共有の板を
+# 渡してある。
+[bin.app]
+sources = glob("src/*.c")
+
+[bin.app.generate]
+s1 = { command = "sh", args = [file("gen/step.sh"), "s1", dir("run")], outputs = ["s1.h"] }
+s2 = { command = "sh", args = [file("gen/step.sh"), "s2", dir("run")], outputs = ["s2.h"] }
+s3 = { command = "sh", args = [file("gen/step.sh"), "s3", dir("run")], outputs = ["s3.h"] }
+s4 = { command = "sh", args = [file("gen/step.sh"), "s4", dir("run")], outputs = ["s4.h"] }

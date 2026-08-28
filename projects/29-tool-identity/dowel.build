@@ -1,0 +1,11 @@
+[lib.core]
+sources = [file("src/core.c")]
+
+[lib.core.public]
+includes = [dir("include")]
+
+[bin.app]
+sources = [file("src/main.c")]
+
+[bin.app.private]
+deps = [target("core")]

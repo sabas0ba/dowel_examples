@@ -285,12 +285,18 @@ _ran_actions() {
 
 # 直前の再ビルドで走ったアクションの記述。件数だけでは
 # 「どれが走ったか」が分からないため、別に取っておく。
+#
+# 取り出し先は進行の行である（ADR-0057）。段ごとの告知はかつて `log_info!`
+# だったが、既定の log level が warn である以上そこには誰も居らず、
+# **log ではなく出力**へ移った。`[n/m] <記述>` の形は3つの backend で
+# 共通であり、log level に依らず出る——`--log-level=debug` を付けて
+# いるのは下の `_ran_actions` が読む要約のためだけである。
 RAN=""
 
 # build_direct <dowel args...> — direct 実行器と debug ログでビルドする。
 build_direct() {
     run build --backend=direct --log-level=debug "$@"
-    RAN=$(printf '%s' "$OUT" | sed -n 's/.*info  direct  *//p')
+    RAN=$(printf '%s' "$OUT" | sed -n 's/^\[[0-9]\{1,\}\/[0-9]\{1,\}\] //p')
 }
 
 # rebuilt <記述の一部> <desc> — そのアクションが走ったこと。
