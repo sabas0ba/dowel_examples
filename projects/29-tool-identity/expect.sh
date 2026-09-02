@@ -68,14 +68,24 @@ OUT=$("$DOWEL" graph --kind=action --format=json 2>/dev/null |
 printf '%s' "$OUT" | grep -q 'tools/mycc-'
 fact $? "the graph carries the stamps a reader has to write before running"
 
-_last_cmd="graph --kind=action --format=json | inputs of the compiles"
+#
+# 翻訳だけを見ては足りない。結合も archive も道具を起動する段であり、
+# 翻訳だけを見ていると、目的ファイルが組み直ったことが結合を引きずるので
+# **結合の板が抜けていても素通りする**。段ごとに、自分が起動する
+# プログラムの板を持っているかを見る。
+_last_cmd="graph --kind=action --format=json | every step and the stamps it takes"
 OUT=$("$DOWEL" graph --kind=action --format=json 2>/dev/null |
-      jq -r '[.steps[] | select(.kind == "cc")] as $cc
-             | [$cc[] | select([.inputs[] | test("tools/mycc-")] | any)] | length
-             as $with | "\($with) of \($cc | length) compiles take the stamp as an input"')
+      jq -r '.steps[]
+             | (.program | split("/") | last) as $prog
+             | (.inputs | map(select(test("/tools/"))) | map(split("/") | last)) as $st
+             | "\(.kind) program=\($prog) stamps=[\($st | join(","))]"' | sort)
 RC=0
-printf '%s' "$OUT" | grep -q '^2 of 2 '
-fact $? "and every action that runs the tool takes its stamp as an input"
+n=$(printf '%s\n' "$OUT" | grep -c .)
+ok_n=$(printf '%s\n' "$OUT" |
+       awk -F'program=| stamps=' '{ split($2, p, " "); if ($3 ~ "\\[" p[1] "-[0-9a-f]+\\.stamp\\]") c++ } END { print c + 0 }')
+OUT="$OUT"$'\n'"$ok_n of $n steps take exactly the stamp of their own program"
+[ "$n" -eq 4 ] && [ "$ok_n" -eq 4 ]
+fact $? "and every action takes the stamp of its own program, link and archive too"
 
 # 版は上がっている。`cwd` と `tool_stamps` はどちらも「この文書を走らせると
 # 何が起きるか」を変えるので、古い読み手が読み違える。

@@ -54,9 +54,9 @@ fact $? "the action graph names each generation as its own kind of step"
 # ディレクトリの名前は構成に依るので、そこへの path はマニフェストからは
 # 組み立てられない。走る場所が出力の側なら、綴るのは相対名だけで足りる。
 
-[ -f "$(gen_dir table code)/rows.c" ] && [ -f "$(gen_dir table decl)/rows.h" ]
 _last_cmd="ls generated/gen/table/{code,decl}"
 OUT=$(ls "$(gen_dir table code)" "$(gen_dir table decl)" 2>&1 | paste -sd' ' -); RC=0
+[ -f "$(gen_dir table code)/rows.c" ] && [ -f "$(gen_dir table decl)/rows.h" ]
 fact $? "each generation gets a directory of its own, named for it"
 
 _last_cmd="graph --kind=action | the generate step's cwd"
@@ -88,21 +88,19 @@ fact $? "and a file() in the arguments opens to an absolute path"
 # 生成した見出しは名前で取り込まれる。ビルドディレクトリを指す `includes` を
 # 別に書かせるのは、dowel がいま決めたことを利用者に綴らせることである。
 
-cc_args gen:table | grep -q -- "-I$(gen_dir table decl)"
 _last_cmd="cc_args gen:table"; OUT=$(cc_args gen:table); RC=0
+printf '%s' "$OUT" | grep -q -- "-I$(gen_dir table decl)"
 fact $? "the output directory joins the include path without being declared"
 
 # `public = true` は使う側へも伝える。`public.includes` の伝わり方と同じ。
-cc_args gen:app | grep -q -- "-I$(gen_dir table decl)"
 _last_cmd="cc_args gen:app"; OUT=$(cc_args gen:app); RC=0
+printf '%s' "$OUT" | grep -q -- "-I$(gen_dir table decl)"
 fact $? "and public = true propagates it to a dependent"
 
 # 既定はそうではない。`code` は `public` を書いていないので、宣言した目標に
 # 留まる。伝わることが確かめられるのは、伝わらないものが隣に在るからである。
-cc_args gen:app | grep -q -- "-I$(gen_dir table code)"
-v=$?
 _last_cmd="cc_args gen:app"; OUT=$(cc_args gen:app); RC=0
-[ $v -ne 0 ]
+! printf '%s' "$OUT" | grep -q -- "-I$(gen_dir table code)"
 fact $? "while a generation that does not say public stays with its own target"
 
 # --------------------------------------------------------------- 4. 読むものが変われば作り直す
@@ -287,9 +285,9 @@ decl = { command = "sh", args = [file("gen/appdecl.sh")], outputs = ["app.h"] }
 PY
 rm -rf .dowel
 ok "two generations may share a name across targets" build --no-compdb
-[ -f "$(gen_dir table decl)/rows.h" ] && [ -f "$(gen_dir app decl)/app.h" ]
 _last_cmd="ls generated/gen/{table,app}/decl"
 OUT=$(ls "$(gen_dir table decl)" "$(gen_dir app decl)" 2>&1 | paste -sd' ' -); RC=0
+[ -f "$(gen_dir table decl)/rows.h" ] && [ -f "$(gen_dir app decl)/app.h" ]
 fact $? "each writing into a directory named for its own target"
 sh_run cat "$(gen_dir table decl)/rows.h"
 ! printf '%s' "$OUT" | grep -q 'APP_LOCAL'

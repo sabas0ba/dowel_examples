@@ -339,10 +339,9 @@ fact $? "one declaration produces one diagnostic, not one per file"
 # ない——振る舞いは宣言どおりであり、誤っていたのは宣言の方だからである。
 rm -rf "$PFX"
 "$DOWEL" -C "$LIB" install --prefix="$PFX" >/dev/null 2>&1
-[ -f "$PFX/include/shapes.c" ] || [ -f "$PFX/include/circle.c" ] ||
-    ls "$PFX/include"/*.c >/dev/null 2>&1
 _last_cmd="ls $PFX/include"
 OUT=$(ls "$PFX/include" 2>&1 | paste -sd' ' -); RC=0
+ls "$PFX/include"/*.c >/dev/null 2>&1
 fact $? "the directory goes whole and unfiltered, as the note says"
 
 cp "$LIB/dowel.build.keep" "$LIB/dowel.build"
