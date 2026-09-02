@@ -1,20 +1,20 @@
 {
- "run_id": "33633807678",
+ "run_id": "33654556568",
  "run_attempt": "1",
- "run_url": "https://github.com/sabas0ba/dowel_examples/actions/runs/33633807678",
- "commit": "71f7513b7f8f40e0ad1950e1eeefa2aa33a00901",
+ "run_url": "https://github.com/sabas0ba/dowel_examples/actions/runs/33654556568",
+ "commit": "316882ed4e11d1b530cd3cc0ed465b19aa3a3aab",
  "branch": "main",
- "started_at": "2026-09-02T13:11:50Z",
+ "started_at": "2026-09-02T16:25:11Z",
  "dowel_version": "dowel 0.1.0",
- "dowel_ref": "f65fe20a974f589a8ae424bf97d50010fb7745e2",
- "dowel_commit": "f65fe20a974f589a8ae424bf97d50010fb7745e2",
+ "dowel_ref": "7512e7639fc7998916d2433b157d8d33b26d7428",
+ "dowel_commit": "7512e7639fc7998916d2433b157d8d33b26d7428",
  "cc": "cc (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0",
  "ninja": "1.13.2",
  "projects": [
   {
    "name": "01-minimal",
    "root": "projects",
-   "duration_ms": 4190,
+   "duration_ms": 826,
    "counts": {
     "pass": 10,
     "fail": 0,
@@ -72,7 +72,7 @@
   {
    "name": "02-config",
    "root": "projects",
-   "duration_ms": 12097,
+   "duration_ms": 6930,
    "counts": {
     "pass": 34,
     "fail": 0,
@@ -227,7 +227,7 @@
   {
    "name": "03-features",
    "root": "projects",
-   "duration_ms": 369,
+   "duration_ms": 275,
    "counts": {
     "pass": 17,
     "fail": 0,
@@ -317,7 +317,7 @@
   {
    "name": "04-diagnostics",
    "root": "projects",
-   "duration_ms": 3548,
+   "duration_ms": 547,
    "counts": {
     "pass": 94,
     "fail": 0,
@@ -732,7 +732,7 @@
   {
    "name": "05-incremental",
    "root": "projects",
-   "duration_ms": 2527,
+   "duration_ms": 1425,
    "counts": {
     "pass": 49,
     "fail": 0,
@@ -948,7 +948,7 @@
   {
    "name": "06-runner",
    "root": "projects",
-   "duration_ms": 1429,
+   "duration_ms": 998,
    "counts": {
     "pass": 40,
     "fail": 0,
@@ -1128,7 +1128,7 @@
   {
    "name": "07-robustness",
    "root": "projects",
-   "duration_ms": 2729,
+   "duration_ms": 1296,
    "counts": {
     "pass": 145,
     "fail": 0,
@@ -1726,7 +1726,7 @@
   {
    "name": "08-lsp",
    "root": "projects",
-   "duration_ms": 14363,
+   "duration_ms": 12785,
    "counts": {
     "pass": 110,
     "fail": 0,
@@ -2184,7 +2184,7 @@
   {
    "name": "09-acquisition",
    "root": "projects",
-   "duration_ms": 40297,
+   "duration_ms": 46174,
    "counts": {
     "pass": 120,
     "fail": 0,
@@ -2684,7 +2684,7 @@
   {
    "name": "10-toolchain",
    "root": "projects",
-   "duration_ms": 7006,
+   "duration_ms": 2271,
    "counts": {
     "pass": 53,
     "fail": 0,
@@ -2914,7 +2914,7 @@
   {
    "name": "11-cross",
    "root": "projects",
-   "duration_ms": 3465,
+   "duration_ms": 1066,
    "counts": {
     "pass": 17,
     "fail": 0,
@@ -3000,7 +3000,7 @@
   {
    "name": "12-store",
    "root": "projects",
-   "duration_ms": 2997,
+   "duration_ms": 1296,
    "counts": {
     "pass": 43,
     "fail": 0,
@@ -3190,7 +3190,7 @@
   {
    "name": "13-parallel",
    "root": "projects",
-   "duration_ms": 11605,
+   "duration_ms": 10929,
    "counts": {
     "pass": 18,
     "fail": 0,
@@ -3280,7 +3280,7 @@
   {
    "name": "14-scale",
    "root": "projects",
-   "duration_ms": 6872,
+   "duration_ms": 3371,
    "counts": {
     "pass": 17,
     "fail": 0,
@@ -3364,7 +3364,7 @@
   {
    "name": "15-cpp",
    "root": "projects",
-   "duration_ms": 8711,
+   "duration_ms": 5709,
    "counts": {
     "pass": 70,
     "fail": 0,
@@ -3672,7 +3672,7 @@
   {
    "name": "16-migrate",
    "root": "projects",
-   "duration_ms": 3213,
+   "duration_ms": 2518,
    "counts": {
     "pass": 87,
     "fail": 0,
@@ -4038,7 +4038,7 @@
   {
    "name": "17-deps",
    "root": "projects",
-   "duration_ms": 2240,
+   "duration_ms": 1261,
    "counts": {
     "pass": 83,
     "fail": 0,
@@ -4393,14 +4393,14 @@
   {
    "name": "18-tools",
    "root": "projects",
-   "duration_ms": 1239,
+   "duration_ms": 598,
    "counts": {
-    "pass": 32,
+    "pass": 33,
     "fail": 0,
     "xfail": 0,
     "xpass": 0
    },
-   "total": 32,
+   "total": 33,
    "ok": true,
    "checks": [
     {
@@ -4477,7 +4477,11 @@
     },
     {
      "status": "pass",
-     "desc": "the record is the tool's name, so swapping what the name resolves to does not rebuild"
+     "desc": "swapping what the name resolves to rebuilds, the identity being what is recorded"
+    },
+    {
+     "status": "pass",
+     "desc": "and settles again once the new identity is the recorded one"
     },
     {
      "status": "pass",
@@ -4542,7 +4546,7 @@
   {
    "name": "19-artifacts",
    "root": "projects",
-   "duration_ms": 1058,
+   "duration_ms": 628,
    "counts": {
     "pass": 35,
     "fail": 0,
@@ -4702,7 +4706,7 @@
   {
    "name": "20-cases",
    "root": "projects",
-   "duration_ms": 34359,
+   "duration_ms": 32487,
    "counts": {
     "pass": 62,
     "fail": 0,
@@ -4968,7 +4972,7 @@
   {
    "name": "21-debug",
    "root": "projects",
-   "duration_ms": 2159,
+   "duration_ms": 1179,
    "counts": {
     "pass": 32,
     "fail": 0,
@@ -5114,7 +5118,7 @@
   {
    "name": "22-bench",
    "root": "projects",
-   "duration_ms": 3270,
+   "duration_ms": 3278,
    "counts": {
     "pass": 34,
     "fail": 0,
@@ -5268,7 +5272,7 @@
   {
    "name": "23-probe",
    "root": "projects",
-   "duration_ms": 418,
+   "duration_ms": 251,
    "counts": {
     "pass": 23,
     "fail": 0,
@@ -5379,14 +5383,14 @@
   {
    "name": "24-install",
    "root": "projects",
-   "duration_ms": 2928,
+   "duration_ms": 1935,
    "counts": {
-    "pass": 48,
+    "pass": 55,
     "fail": 0,
     "xfail": 0,
     "xpass": 0
    },
-   "total": 48,
+   "total": 55,
    "ok": true,
    "checks": [
     {
@@ -5580,6 +5584,34 @@
     {
      "status": "pass",
      "desc": "so a define the sibling publishes reaches the consumer too"
+    },
+    {
+     "status": "pass",
+     "desc": "installing still succeeds, the behaviour being what was declared"
+    },
+    {
+     "status": "pass",
+     "desc": "and says the interface directory holds sources"
+    },
+    {
+     "status": "pass",
+     "desc": "pointing at the declaration, which is where the fix goes"
+    },
+    {
+     "status": "pass",
+     "desc": "and saying why it does not filter them out"
+    },
+    {
+     "status": "pass",
+     "desc": "one declaration produces one diagnostic, not one per file"
+    },
+    {
+     "status": "pass",
+     "desc": "the directory goes whole and unfiltered, as the note says"
+    },
+    {
+     "status": "pass",
+     "desc": "a directory that holds only headers says nothing"
     }
    ],
    "packages": [
@@ -5590,11 +5622,11 @@
   {
    "name": "25-asm",
    "root": "projects",
-   "duration_ms": 2041,
+   "duration_ms": 799,
    "counts": {
-    "pass": 52,
+    "pass": 53,
     "fail": 0,
-    "xfail": 1,
+    "xfail": 0,
     "xpass": 0
    },
    "total": 53,
@@ -5809,8 +5841,8 @@
      "desc": "and how to declare one"
     },
     {
-     "status": "xfail",
-     "desc": "and points at the source, as its sibling diagnostic does  [F-067]"
+     "status": "pass",
+     "desc": "and points at the source, as its sibling diagnostic does"
     }
    ],
    "packages": [
@@ -5821,7 +5853,7 @@
   {
    "name": "26-prebuilt",
    "root": "projects",
-   "duration_ms": 1769,
+   "duration_ms": 386,
    "counts": {
     "pass": 28,
     "fail": 0,
@@ -5949,9 +5981,467 @@
    ]
   },
   {
+   "name": "27-generate",
+   "root": "projects",
+   "duration_ms": 1705,
+   "counts": {
+    "pass": 55,
+    "fail": 0,
+    "xfail": 6,
+    "xpass": 0
+   },
+   "total": 61,
+   "ok": true,
+   "checks": [
+    {
+     "status": "pass",
+     "desc": "a package whose sources are generated builds"
+    },
+    {
+     "status": "pass",
+     "desc": "and the program it produced runs"
+    },
+    {
+     "status": "pass",
+     "desc": "the generated source is compiled into the target that declares it"
+    },
+    {
+     "status": "pass",
+     "desc": "the action graph names each generation as its own kind of step"
+    },
+    {
+     "status": "pass",
+     "desc": "each generation gets a directory of its own, named for it"
+    },
+    {
+     "status": "pass",
+     "desc": "and the program runs in it, which is why the outputs are plain names"
+    },
+    {
+     "status": "pass",
+     "desc": "the inputs are appended after the arguments, as everywhere else"
+    },
+    {
+     "status": "pass",
+     "desc": "and a file() in the arguments opens to an absolute path"
+    },
+    {
+     "status": "pass",
+     "desc": "the output directory joins the include path without being declared"
+    },
+    {
+     "status": "pass",
+     "desc": "and public = true propagates it to a dependent"
+    },
+    {
+     "status": "pass",
+     "desc": "while a generation that does not say public stays with its own target"
+    },
+    {
+     "status": "pass",
+     "desc": "a first build runs the generation"
+    },
+    {
+     "status": "pass",
+     "desc": "and a second runs nothing"
+    },
+    {
+     "status": "pass",
+     "desc": "editing what the generation reads runs it again"
+    },
+    {
+     "status": "pass",
+     "desc": "and recompiles the source it produced"
+    },
+    {
+     "status": "pass",
+     "desc": "the program that comes out is the new one"
+    },
+    {
+     "status": "pass",
+     "desc": "the dependent is recompiled too, having seen the generated header"
+    },
+    {
+     "status": "pass",
+     "desc": "every compile in the reach takes the generated outputs as inputs"
+    },
+    {
+     "status": "pass",
+     "desc": "a clean build under ninja never lets a compile outrun the generation"
+    },
+    {
+     "status": "pass",
+     "desc": "and what ninja built prints the same thing"
+    },
+    {
+     "status": "pass",
+     "desc": "a clean build under make never lets a compile outrun the generation"
+    },
+    {
+     "status": "pass",
+     "desc": "and what make built prints the same thing"
+    },
+    {
+     "status": "pass",
+     "desc": "a clean build under direct never lets a compile outrun the generation"
+    },
+    {
+     "status": "pass",
+     "desc": "and what direct built prints the same thing"
+    },
+    {
+     "status": "pass",
+     "desc": "a generation with two outputs builds under ninja"
+    },
+    {
+     "status": "pass",
+     "desc": "while make refuses it"
+    },
+    {
+     "status": "pass",
+     "desc": "saying it takes one output per step"
+    },
+    {
+     "status": "pass",
+     "desc": "and naming a backend that has no such limit"
+    },
+    {
+     "status": "pass",
+     "desc": "a generator that is not on PATH fails"
+    },
+    {
+     "status": "pass",
+     "desc": "with its own code"
+    },
+    {
+     "status": "pass",
+     "desc": "at the declaration"
+    },
+    {
+     "status": "pass",
+     "desc": "naming the program it looked for"
+    },
+    {
+     "status": "pass",
+     "desc": "and saying it runs on the build machine"
+    },
+    {
+     "status": "pass",
+     "desc": "so [toolchain] is not where it comes from"
+    },
+    {
+     "status": "pass",
+     "desc": "an output naming a path outside its directory is refused"
+    },
+    {
+     "status": "pass",
+     "desc": "naming the output that leaves"
+    },
+    {
+     "status": "pass",
+     "desc": "and saying what the names are relative to"
+    },
+    {
+     "status": "pass",
+     "desc": "a generation that writes nothing is refused"
+    },
+    {
+     "status": "pass",
+     "desc": "and says why that is a declaration error"
+    },
+    {
+     "status": "pass",
+     "desc": "ninja refuses a command it cannot spell"
+    },
+    {
+     "status": "pass",
+     "desc": "saying what ninja cannot spell"
+    },
+    {
+     "status": "pass",
+     "desc": "and naming the spelling that works everywhere, to ninja's reader"
+    },
+    {
+     "status": "pass",
+     "desc": "and the backend that runs argv without a shell (ninja)"
+    },
+    {
+     "status": "pass",
+     "desc": "make refuses a command it cannot spell"
+    },
+    {
+     "status": "pass",
+     "desc": "saying what make cannot spell"
+    },
+    {
+     "status": "pass",
+     "desc": "and naming the spelling that works everywhere, to make's reader"
+    },
+    {
+     "status": "pass",
+     "desc": "and the backend that runs argv without a shell (make)"
+    },
+    {
+     "status": "pass",
+     "desc": "and writes no build file at all, rather than a half-written one"
+    },
+    {
+     "status": "pass",
+     "desc": "the same declaration builds under direct, which passes argv"
+    },
+    {
+     "status": "pass",
+     "desc": "and the file it wrote holds the newline that was asked for"
+    },
+    {
+     "status": "pass",
+     "desc": "two generations may share a name across targets"
+    },
+    {
+     "status": "pass",
+     "desc": "each writing into a directory named for its own target"
+    },
+    {
+     "status": "pass",
+     "desc": "and neither one overwrites the other"
+    },
+    {
+     "status": "pass",
+     "desc": "direct fails a generation that does not write what it declared"
+    },
+    {
+     "status": "pass",
+     "desc": "naming the generation, not the compiler's word two stages later"
+    },
+    {
+     "status": "xfail",
+     "desc": "ninja fails it too, the declared output not being there  [F-068]"
+    },
+    {
+     "status": "xfail",
+     "desc": "make fails it too, the declared output not being there  [F-068]"
+    },
+    {
+     "status": "xfail",
+     "desc": "one rejected output produces one diagnostic  [F-069]"
+    },
+    {
+     "status": "xfail",
+     "desc": "a refusal a backend makes carries a code, like every other refusal  [F-070]"
+    },
+    {
+     "status": "xfail",
+     "desc": "editing the program a generation runs re-runs it  [F-071]"
+    },
+    {
+     "status": "xfail",
+     "desc": "why accounts for the include path a generation put on the command line  [F-072]"
+    }
+   ],
+   "packages": [
+    "."
+   ]
+  },
+  {
+   "name": "28-progress",
+   "root": "projects",
+   "duration_ms": 16025,
+   "counts": {
+    "pass": 19,
+    "fail": 0,
+    "xfail": 0,
+    "xpass": 0
+   },
+   "total": 19,
+   "ok": true,
+   "checks": [
+    {
+     "status": "pass",
+     "desc": "--jobs 1 runs the steps one at a time"
+    },
+    {
+     "status": "pass",
+     "desc": "and what it built runs"
+    },
+    {
+     "status": "pass",
+     "desc": "--jobs 4 really runs steps at the same time under direct"
+    },
+    {
+     "status": "pass",
+     "desc": "and the default is the machine's parallelism, not one"
+    },
+    {
+     "status": "pass",
+     "desc": "--jobs 4 runs steps at the same time under ninja too"
+    },
+    {
+     "status": "pass",
+     "desc": "--jobs 4 runs steps at the same time under make too"
+    },
+    {
+     "status": "pass",
+     "desc": "a clean concurrent build produces the same program every time"
+    },
+    {
+     "status": "pass",
+     "desc": "and ninja builds the same program with steps running at once"
+    },
+    {
+     "status": "pass",
+     "desc": "and make builds the same program with steps running at once"
+    },
+    {
+     "status": "pass",
+     "desc": "and direct builds the same program with steps running at once"
+    },
+    {
+     "status": "pass",
+     "desc": "progress does not go to stdout, which stays for what the command returns"
+    },
+    {
+     "status": "pass",
+     "desc": "--log-level=off silences it, being the only knob for silence"
+    },
+    {
+     "status": "pass",
+     "desc": "ninja prints one line per step at the default log level (10 of 10)"
+    },
+    {
+     "status": "pass",
+     "desc": "make prints one line per step at the default log level (10 of 10)"
+    },
+    {
+     "status": "pass",
+     "desc": "direct prints one line per step at the default log level (10 of 10)"
+    },
+    {
+     "status": "pass",
+     "desc": "direct counts the steps it ran out of the steps in the graph"
+    },
+    {
+     "status": "pass",
+     "desc": "and the numbers arrive in order, matching the lines"
+    },
+    {
+     "status": "pass",
+     "desc": "an incremental build stops short of m, m being the size of the build"
+    },
+    {
+     "status": "pass",
+     "desc": "the progress lines arrive while the build runs, not replayed at the end"
+    }
+   ],
+   "packages": [
+    "."
+   ]
+  },
+  {
+   "name": "29-tool-identity",
+   "root": "projects",
+   "duration_ms": 5434,
+   "counts": {
+    "pass": 21,
+    "fail": 0,
+    "xfail": 0,
+    "xpass": 0
+   },
+   "total": 21,
+   "ok": true,
+   "checks": [
+    {
+     "status": "pass",
+     "desc": "a package whose compiler is a wrapper builds"
+    },
+    {
+     "status": "pass",
+     "desc": "and what it built runs"
+    },
+    {
+     "status": "pass",
+     "desc": "a stamp is written for the tool, named for it and for its declaration"
+    },
+    {
+     "status": "pass",
+     "desc": "and holds the identity of the program as resolved, not of the name"
+    },
+    {
+     "status": "pass",
+     "desc": "the graph carries the stamps a reader has to write before running"
+    },
+    {
+     "status": "pass",
+     "desc": "and every action takes the stamp of its own program, link and archive too"
+    },
+    {
+     "status": "pass",
+     "desc": "the build graph says version 2, a version-1 reader having no stamps to write"
+    },
+    {
+     "status": "pass",
+     "desc": "direct: the program built by the first wrapper runs"
+    },
+    {
+     "status": "pass",
+     "desc": "direct: replacing the compiler rebuilds what it produced"
+    },
+    {
+     "status": "pass",
+     "desc": "ninja: the program built by the first wrapper runs"
+    },
+    {
+     "status": "pass",
+     "desc": "ninja: replacing the compiler rebuilds what it produced"
+    },
+    {
+     "status": "pass",
+     "desc": "make: the program built by the first wrapper runs"
+    },
+    {
+     "status": "pass",
+     "desc": "make: replacing the compiler rebuilds what it produced"
+    },
+    {
+     "status": "pass",
+     "desc": "an unchanged tool leaves its stamp alone, mtime being what rebuilds"
+    },
+    {
+     "status": "pass",
+     "desc": "and a build with the same tool runs nothing"
+    },
+    {
+     "status": "pass",
+     "desc": "two spellings of the same program get two stamps, the digest being of the spelling"
+    },
+    {
+     "status": "pass",
+     "desc": "and their contents are equal, both resolving to the same program"
+    },
+    {
+     "status": "pass",
+     "desc": "check passes without building"
+    },
+    {
+     "status": "pass",
+     "desc": "and writes no stamp, planning only stat-ing what it decides from"
+    },
+    {
+     "status": "pass",
+     "desc": "a compiler that is not there fails"
+    },
+    {
+     "status": "pass",
+     "desc": "with its own code"
+    }
+   ],
+   "packages": [
+    "."
+   ]
+  },
+  {
    "name": "blink",
    "root": "apps",
-   "duration_ms": 3157,
+   "duration_ms": 3086,
    "counts": {
     "pass": 59,
     "fail": 0,
@@ -6205,7 +6695,7 @@
   {
    "name": "dsp",
    "root": "apps",
-   "duration_ms": 2765,
+   "duration_ms": 1970,
    "counts": {
     "pass": 60,
     "fail": 0,
@@ -6466,7 +6956,7 @@
   {
    "name": "hashx",
    "root": "apps",
-   "duration_ms": 4099,
+   "duration_ms": 3129,
    "counts": {
     "pass": 88,
     "fail": 0,
@@ -6838,7 +7328,7 @@
   {
    "name": "httpd",
    "root": "apps",
-   "duration_ms": 5511,
+   "duration_ms": 4731,
    "counts": {
     "pass": 36,
     "fail": 0,
@@ -7000,7 +7490,7 @@
   {
    "name": "jsonfmt",
    "root": "apps",
-   "duration_ms": 1518,
+   "duration_ms": 1731,
    "counts": {
     "pass": 39,
     "fail": 0,
@@ -7175,7 +7665,7 @@
   {
    "name": "plot",
    "root": "apps",
-   "duration_ms": 6797,
+   "duration_ms": 4400,
    "counts": {
     "pass": 42,
     "fail": 0,
@@ -7362,7 +7852,7 @@
   {
    "name": "vision",
    "root": "apps",
-   "duration_ms": 18273,
+   "duration_ms": 18336,
    "counts": {
     "pass": 32,
     "fail": 0,
@@ -7509,7 +7999,7 @@
   {
    "name": "winapp",
    "root": "apps",
-   "duration_ms": 6846,
+   "duration_ms": 5752,
    "counts": {
     "pass": 38,
     "fail": 0,
@@ -7679,7 +8169,7 @@
   {
    "name": "docs",
    "root": "projects",
-   "duration_ms": 61,
+   "duration_ms": 84,
    "counts": {
     "pass": 9,
     "fail": 0,
@@ -7730,12 +8220,12 @@
   }
  ],
  "totals": {
-  "pass": 1756,
+  "pass": 1860,
   "fail": 0,
-  "xfail": 2,
+  "xfail": 7,
   "xpass": 0
  },
- "total": 1758,
+ "total": 1867,
  "ok": true,
  "attention": [],
  "known_issues": [
@@ -7746,8 +8236,33 @@
   },
   {
    "status": "xfail",
-   "project": "25-asm",
-   "desc": "and points at the source, as its sibling diagnostic does  [F-067]"
+   "project": "27-generate",
+   "desc": "ninja fails it too, the declared output not being there  [F-068]"
+  },
+  {
+   "status": "xfail",
+   "project": "27-generate",
+   "desc": "make fails it too, the declared output not being there  [F-068]"
+  },
+  {
+   "status": "xfail",
+   "project": "27-generate",
+   "desc": "one rejected output produces one diagnostic  [F-069]"
+  },
+  {
+   "status": "xfail",
+   "project": "27-generate",
+   "desc": "a refusal a backend makes carries a code, like every other refusal  [F-070]"
+  },
+  {
+   "status": "xfail",
+   "project": "27-generate",
+   "desc": "editing the program a generation runs re-runs it  [F-071]"
+  },
+  {
+   "status": "xfail",
+   "project": "27-generate",
+   "desc": "why accounts for the include path a generation put on the command line  [F-072]"
   }
  ]
 }
