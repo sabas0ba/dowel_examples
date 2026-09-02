@@ -109,7 +109,7 @@ export DOWELUP DOWEL_SRC
 #
 # 揃っていなければ始めない。環境によって走る検査が変わると、結果を過去の
 # 実行と比べられなくなる。
-for tool in cc ninja jq git cmake meson pkg-config gcc gcc-ar objcopy readelf g++ clang clang++ \
+for tool in cc ninja make jq git cmake meson pkg-config gcc gcc-ar objcopy readelf g++ clang clang++ nasm \
              aarch64-linux-gnu-gcc aarch64-linux-gnu-g++ aarch64-linux-gnu-objcopy \
              arm-none-eabi-gcc arm-none-eabi-objcopy qemu-system-arm \
              qemu-aarch64-static xvfb-run gdb gdb-multiarch \
@@ -123,6 +123,8 @@ migration layers
 
   gcc g++ clang clang++        10-toolchain and 15-cpp build with both families
   gcc-ar                       18-tools needs a second archiver to declare
+  make                         several layers run the make backend beside ninja
+  nasm                         25-asm declares an assembler that is not the C driver
   objcopy readelf              19-artifacts derives images and reads them back
   aarch64-linux-gnu-gcc        11-cross compiles for another architecture
   aarch64-linux-gnu-g++        15-cpp cross compiles C++ as well
@@ -148,7 +150,7 @@ with no display at all.
 
 on debian and ubuntu:
 
-  apt-get install -y ninja-build jq cmake meson pkg-config gcc g++ clang \
+  apt-get install -y ninja-build make jq nasm cmake meson pkg-config gcc g++ clang \
       gcc-aarch64-linux-gnu g++-aarch64-linux-gnu qemu-user-static \
       gcc-arm-none-eabi qemu-system-arm xvfb libcairo2-dev libx11-dev \
       gdb gdb-multiarch libosmesa6-dev libopencv-dev \

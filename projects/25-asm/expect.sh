@@ -330,17 +330,16 @@ out_has "five.asm" "naming the file that needs one" check
 out_has "MASM or NASM" "and saying what that spelling is" check
 out_has 'asm = ' "and how to declare one" check
 
-# 位置は隣の診断と揃っていない。文言は「ここでソースが宣言されている」と
-# 言うのに、下線が付くのは `[bin.app]` の行である。目標が大きいほど、
-# どのソースなのかは本文の文字列から探すことになる
-# （[F-067](../../docs/10-findings.md#f-067)）。
+# 位置が隣の診断と揃っていること。文言は「ここでソースが宣言されている」と
+# 言うのだから、下線もそのソースに付かなければならない。かつては `[bin.app]`
+# の見出しを指しており、ソースが30ある目標では本文の文字列から探すほか
+# なかった（[F-067](../../docs/10-findings.md#f-067)、dowel#172）。
 srcline=$("$DOWEL" check --message-format=json 2>/dev/null |
           jq -r 'select(.code == "missing-assembler") | .labels[0].line')
 declline=$(grep -n 'five\.asm' dowel.build | head -1 | cut -d: -f1)
 _last_cmd="dowel check --message-format=json | .labels[0].line"
 OUT="the label points at line ${srcline:-?}; the source is declared on line ${declline:-?}"
 RC=0
-known_issue F-067
 [ "$srcline" = "$declline" ]
 fact $? "and points at the source, as its sibling diagnostic does"
 cp dowel.build.keep dowel.build

@@ -1,0 +1,22 @@
+# 表を作る側。生成した `.c` はこの目標へ翻訳され、生成した `.h` は
+# `public = true` により使う側の見出しの経路にも載る。
+#
+# 2つに分けてあるのは、make が1つの段につき1つの出力しか取れないため
+# である。1つにまとめた形は expect.sh が別に組み立てて、make が拒むことの
+# 方を見る。
+[lib.table]
+sources = [file("src/use.c")]
+
+[lib.table.generate]
+code = { command = "sh", args = [file("gen/rows.sh")], inputs = [file("gen/seed.txt")], outputs = ["rows.c"] }
+decl = { command = "sh", args = [file("gen/decl.sh")], inputs = [file("gen/seed.txt")], outputs = ["rows.h"], public = true }
+
+[lib.table.public]
+includes = [dir("include")]
+
+# 使う側。自分では何も生成しないが、上の生成した見出しを名前で取り込む。
+[bin.app]
+sources = [file("src/main.c")]
+
+[bin.app.private]
+deps = [target("table")]

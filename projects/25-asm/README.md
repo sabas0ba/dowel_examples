@@ -81,9 +81,15 @@ C の駆動器のために綴られたものであり、assembler はそれで�
 実行可能スタックの主張は、最後に dowel が言える場所へ移る。`-Wa,--noexecstack`
 は C の駆動器の綴りなので渡せず、結合の側で `-z noexecstack` になる。
 
-## 残っているもの
+## 位置は隣の診断と揃う
 
-`missing-assembler` の下線が、ソースではなく `[bin.<名前>]` の行に付く
-（[F-067](../../docs/10-findings.md#f-067)）。文言は「declared as a source
-here」のままなので、指している先と言っていることが食い違っている。
-隣の `unknown-source-language` は正しく指すので、対照はその並びに在る。
+`missing-assembler` の下線は、かつて `[bin.<名前>]` の見出しに付いていた
+（[F-067](../../docs/10-findings.md#f-067)、
+[#172](https://github.com/sabas0ba/dowel/issues/172)）。文言は「declared as a
+source here」なので、指している先と言っていることが食い違っており、ソースが
+30ある目標では本文の文字列から探すほかなかった。
+
+いまは `unknown-source-language` と同じくソースの宣言を指す。**2つは
+「このソースはここでは組めない」という1つの問いへの2つの答**であり、要素の
+位置がまだ手元に在る場所は `collect_sources` の中だけである。検査は2つの
+診断の label の行を突き合わせて、揃っていることを見る。

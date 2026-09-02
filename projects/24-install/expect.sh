@@ -285,5 +285,74 @@ OUT=$(pc "$PFX" --cflags render); RC=0
 printf '%s' "$OUT" | grep -q 'SHAPES_SHARED'
 fact $? "so a define the sibling publishes reaches the consumer too"
 
+# --------------------------------------------------------------- 面として配る
+#                                                                    ディレクトリ（ADR-0059）
+#
+# `public.includes` は「使う側が何に対して翻訳するか」であり、install は
+# その中身を `include/` の下へ写す。見出しが自分のディレクトリを持つ限り、
+# 書かれたとおりに働く。**ソースの隣に置かれている**場合はこうなる——
+# ライブラリ自身のソースも、同じディレクトリに居合わせただけの binary の
+# ソースも、`pkg-config --cflags` が指す `include/` の下へ出る。
+#
+# ここでは `include/` を残したまま `src/` を足す。差し替えると隣の
+# ライブラリが見出しを見失い、確かめたい話に届かない。
+#
+# 拡張子で濾すのは明らかな一手であり、そして誤りである。宣言は
+# ディレクトリ**全体**を使う側の `-I` に載せるので、一部だけを配れば
+# `#include "impl.c"` をする単一ファイルのライブラリが壊れる。名前から
+# 面を決めるのは当て推量であり、install の経路は当て推量をしない。
+#
+# だから dowel は述べて、そのまま配る。何がソースかを見分けるのは当て
+# 推量ではない——その問いは閉じており（ADR-0051）、翻訳する側が使うのと
+# 同じ述語が答える。
+cp "$LIB/dowel.build" "$LIB/dowel.build.keep"
+python3 - "$LIB/dowel.build" <<'PY'
+import sys
+p = sys.argv[1]
+t = open(p).read()
+open(p, "w").write(t.replace('includes   = [dir("include")]',
+                            'includes   = [dir("include"), dir("src")]'))
+PY
+
+rm -rf "$PFX"
+ok "installing still succeeds, the behaviour being what was declared" \
+   -C "$LIB" install --prefix="$PFX"
+out_has "source-among-headers" "and says the interface directory holds sources" \
+        -C "$LIB" install --prefix="$PFX"
+out_has "a consumer compiles against this directory" \
+        "pointing at the declaration, which is where the fix goes" \
+        -C "$LIB" install --prefix="$PFX"
+out_has "does not guess which files are the interface" \
+        "and saying why it does not filter them out" \
+        -C "$LIB" install --prefix="$PFX"
+
+# 1つの宣言につき1件である。深い木で1ファイルにつき1件出すと、同じことを
+# 何度も言うことになる（issue #158 が既にした判断）。
+_last_cmd="dowel -C lib install --message-format=json | source-among-headers"
+OUT=$("$DOWEL" -C "$LIB" install --prefix="$PFX" --message-format=json 2>/dev/null |
+      jq -r 'select(.code == "source-among-headers") | .code' | grep -c .)
+RC=0
+[ "$OUT" = "1" ]
+fact $? "one declaration produces one diagnostic, not one per file"
+
+# 配られたものは変わらない。この決定が足したのは一文であって、振る舞いでは
+# ない——振る舞いは宣言どおりであり、誤っていたのは宣言の方だからである。
+rm -rf "$PFX"
+"$DOWEL" -C "$LIB" install --prefix="$PFX" >/dev/null 2>&1
+_last_cmd="ls $PFX/include"
+OUT=$(ls "$PFX/include" 2>&1 | paste -sd' ' -); RC=0
+ls "$PFX/include"/*.c >/dev/null 2>&1
+fact $? "the directory goes whole and unfiltered, as the note says"
+
+cp "$LIB/dowel.build.keep" "$LIB/dowel.build"
+
+# 対照。見出しが自分のディレクトリを持つなら何も言わない。上の警告が
+# 「install すると鳴る」ではなく「ソースが混ざっていると鳴る」であることは、
+# これが無いと言えない。
+rm -rf "$PFX"
+no_diag source-among-headers "a directory that holds only headers says nothing" \
+        -C "$LIB" install --prefix="$PFX"
+
+rm -f "$LIB/dowel.build.keep"
 rm -rf "$PFX" "$STG" "$MOVED" "$UNSTG" "$PWD/consumer.bin" "$PWD/render.bin" \
        "$LIB/.dowel" "$APP/.dowel" "$LIB/compile_commands.json" "$APP/compile_commands.json"
